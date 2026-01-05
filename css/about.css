@@ -1,0 +1,59 @@
+/* ============================================
+   ABOUT PAGE (The Drifter's Log)
+============================================ */
+#about {
+    display: none;
+    min-height: 100vh;
+    padding: 60px 20px 100px 20px;
+}
+
+#about.active {
+    display: block;
+}
+
+.about-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.about-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.about-text {
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.8;
+    opacity: 0;
+}
+
+.about-text.typewriter {
+    opacity: 1;
+}
+
+.btn-join {
+    display: block;
+    margin: 50px auto 0 auto;
+    padding: 15px 40px;
+    background: transparent;
+    color: var(--signal-white);
+    border: 2px solid var(--signal-white);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-join:hover {
+    background: var(--signal-white);
+    color: var(--void-black);
+}

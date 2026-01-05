@@ -1,0 +1,123 @@
+/* ============================================
+   FOOTER - NEW HIERARCHY
+============================================ */
+.site-footer {
+    margin-top: 80px;
+    padding: 60px 20px 40px 20px;
+    border-top: 1px solid rgba(240, 240, 240, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tier 1: Trust & Legal Zone */
+.footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.footer-legal a {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--signal-white);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+    position: relative;
+}
+
+.footer-legal a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--signal-white);
+    transition: width 0.3s ease;
+}
+
+.footer-legal a:hover {
+    opacity: 1;
+}
+
+.footer-legal a:hover::after {
+    width: 100%;
+}
+
+/* Tier 2: Identity & Payment Zone */
+.footer-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(240, 240, 240, 0.05);
+}
+
+.footer-copyright {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--signal-white);
+    opacity: 0.5;
+}
+
+.footer-payment {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.payment-icon {
+    height: 24px;
+    width: auto;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+    filter: brightness(0) invert(1);
+}
+
+.payment-icon:hover {
+    opacity: 0.8;
+}
+
+/* Light mode footer for checkout page */
+.site-footer-light {
+    background: var(--signal-white);
+    color: var(--void-black);
+    border-top-color: rgba(5, 5, 5, 0.1);
+}
+
+.site-footer-light .footer-legal a {
+    color: var(--void-black);
+}
+
+.site-footer-light .footer-copyright {
+    color: var(--void-black);
+}
+
+.site-footer-light .payment-icon {
+    filter: none;
+    opacity: 0.4;
+}
+
+.site-footer-light .payment-icon:hover {
+    opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+    .footer-identity {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}

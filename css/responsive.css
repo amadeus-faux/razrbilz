@@ -1,0 +1,59 @@
+/* ============================================
+   RESPONSIVE DESIGN SYSTEM
+============================================ */
+
+/* 1. TABLET / IPAD (Potrait & Landscape Kecil) */
+/* Rentang: 768px sampai 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+    
+    /* ARCHIVE: Grid 3-4 Kolom (Pas untuk Tablet) */
+    .product-stream {
+        justify-content: center; /* Rata tengah */
+        gap: 20px;
+        padding: 0 20px;
+    }
+    
+    .product-card {
+        /* Lebar dinamis: Sekitar 3 kartu per baris */
+        width: calc(33.33% - 20px); 
+        min-width: 200px; /* Jangan terlalu kecil */
+    }
+
+    /* COMMAND BAR: Sedikit lebih lebar dari HP */
+    .command-bar {
+        width: 80%;
+        bottom: 30px;
+        border-radius: 0; /* Tetap kotak industrial */
+    }
+}
+
+/* 2. DESKTOP / PC / LAPTOP BESAR */
+/* Rentang: Di atas 1025px */
+@media (min-width: 1025px) {
+    
+    /* ARCHIVE: Grid Poster Kecil (Sesuai request PC) */
+    .product-stream {
+        justify-content: center;
+        gap: 30px;
+        max-width: 1400px;
+        padding: 0 40px;
+    }
+    
+    .product-card {
+        width: 180px; /* Ukuran FIX Poster */
+    }
+    
+    .data-bar {
+        font-size: 0.75rem; 
+    }
+
+    /* COMMAND BAR: Fix di tengah */
+    .command-bar {
+        width: 480px;
+        left: 50%;
+        transform: translateX(-50%) !important;
+        bottom: 30px;
+        background: rgba(5, 5, 5, 0.9);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+}
