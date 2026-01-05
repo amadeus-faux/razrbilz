@@ -40,7 +40,7 @@ function renderProducts() {
                     STOCK: <span class="stock-indicator ${stockInfo.class}">[ ${stockInfo.status} ]</span>
                     ${product.stock > 0 && product.stock <= 25 ? `<span style="opacity: 0.7; font-size: 0.75rem;"></span>` : ''}
                 </div>
-                <div class="price-tag">VAL: IDR ${(product.price / 1000).toFixed(0)}K</div>
+                <div class="price-tag">IDR ${product.price.toLocaleString('id-ID')}</div>
             </div>
         `;
         

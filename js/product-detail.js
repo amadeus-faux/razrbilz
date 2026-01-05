@@ -41,21 +41,14 @@ function viewProduct(productId) {
     `;
     
     // Render Info
-    const info = document.getElementById('productInfo');
-    
+    const info = document.getElementById('productInfo');  
     // FIX 3: Perbaikan variabel status agar tidak muncul "undefined"
-    // Gunakan 'stockStatus.status' dan 'currentProduct.stock'
     info.innerHTML = `
         <div class="product-header">
             <h2 class="product-title">${currentProduct.name}</h2>
         </div>
-
         <p class="product-manifesto">${currentProduct.manifesto}</p>
-        
-        <div class="product-price-large">
-            IDR ${(currentProduct.price / 1000).toFixed(0)}K
-        </div>
-
+        <div class="price-tag">IDR ${product.price.toLocaleString('id-ID')}</div>
         <div class="size-selector-container">
             <span class="size-label">SELECT SIZE CONFIGURATION:</span>
             <div class="size-grid">
