@@ -136,17 +136,128 @@ function renderGallery() {
     if (!currentProduct) return;
 
     const gallery = document.getElementById('productGallery');
-    const isMobile = window.innerWidth <= 768;
+    // Deteksi Layar HP & Tablet (iPad)
+    const isMobile = window.innerWidth <= 1024; 
     
     if (isMobile) {
+        // --- TAMPILAN MOBILE (INFINITE SLIDER) ---
+        
+        // 1. Siapkan Clone (Bayangan)
+        // Clone Last -> Taruh di depan (untuk swipe ke kiri mentok)
+        // Clone First -> Taruh di belakang (untuk swipe ke kanan mentok)
+        const firstImg = currentProduct.gallery[0];
+        const lastImg = currentProduct.gallery[currentProduct.gallery.length - 1];
+
+        // Susunan: [Clone Last] - [Real 1] - [Real 2] - [Real 3] - [Clone First]
+        const slides = [
+            { src: lastImg, type: 'clone-last' },     
+            ...currentProduct.gallery.map(src => ({ src, type: 'real' })),
+            { src: firstImg, type: 'clone-first' }    
+        ];
+
+        // 2. Render HTML
+        // Kita tambahkan Container Slider + Dots Indicator
         gallery.innerHTML = `
-            <div class="gallery-container" style="display: flex; overflow-x: auto; gap: 10px; scroll-snap-type: x mandatory;">
-                ${currentProduct.gallery.map((img, index) => 
-                    `<img src="${img}" alt="${currentProduct.name}" class="gallery-image" style="width: 100%; flex-shrink: 0; scroll-snap-align: center; border-radius: 4px;">`
+            <div class="gallery-container" id="mobileSlider" style="
+                display: flex; 
+                overflow-x: auto; 
+                scroll-snap-type: x mandatory; 
+                -webkit-overflow-scrolling: touch; /* Smooth scroll di iOS */
+                scrollbar-width: none; /* Sembunyikan scrollbar */
+            ">
+                ${slides.map((slide, i) => 
+                    `<img src="${slide.src}" class="gallery-image ${slide.type}" style="
+                        min-width: 100%; 
+                        width: 100%; 
+                        flex-shrink: 0; 
+                        scroll-snap-align: center; 
+                        object-fit: cover;
+                    ">`
+                ).join('')}
+            </div>
+
+            <div class="slider-dots" id="sliderDots" style="
+                display: flex; 
+                justify-content: center; 
+                margin-top: 15px; 
+                gap: 8px;
+            ">
+                ${currentProduct.gallery.map((_, i) => 
+                    `<div class="dot" data-index="${i}" style="
+                        width: 8px; 
+                        height: 8px; 
+                        background: ${i===0 ? '#fff' : '#333'}; 
+                        border-radius: 50%;
+                        transition: all 0.3s;
+                    "></div>`
                 ).join('')}
             </div>
         `;
+
+        // 3. Pasang Logika Infinite Loop
+        const slider = document.getElementById('mobileSlider');
+        
+        // Tunggu sebentar agar elemen ter-render sempurna
+        setTimeout(() => {
+            if(!slider) return;
+            const slideWidth = slider.clientWidth;
+            
+            // A. Posisi Awal: Langsung lompat ke Index 1 (Gambar Asli Pertama)
+            // Karena Index 0 adalah Clone Last
+            slider.scrollLeft = slideWidth; 
+
+            let isJumping = false;
+
+            slider.addEventListener('scroll', () => {
+                if(isJumping) return;
+
+                const scrollLeft = slider.scrollLeft;
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+                // B. Update Dots Indicator
+                // Rumus: (ScrollPosisi / Lebar) - 1 (karena ada clone di depan)
+                let currentIndex = Math.round(scrollLeft / slideWidth) - 1;
+                // Safety check index
+                if (currentIndex < 0) currentIndex = currentProduct.gallery.length - 1;
+                if (currentIndex >= currentProduct.gallery.length) currentIndex = 0;
+                updateDots(currentIndex);
+
+                // C. Logika Lompat (Teleport)
+                
+                // Jika mentok KANAN (kena Clone First) -> Lompat ke Real First (Kiri)
+                // Buffer 5px untuk toleransi
+                if (Math.abs(scrollLeft - maxScroll) <= 5) {
+                    isJumping = true;
+                    slider.style.scrollSnapType = 'none'; // Matikan snap biar lompat instan
+                    slider.scrollLeft = slideWidth; // Lompat ke Index 1
+                    // Nyalakan snap lagi
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            slider.style.scrollSnapType = 'x mandatory';
+                            isJumping = false;
+                        });
+                    });
+                }
+                
+                // Jika mentok KIRI (kena Clone Last) -> Lompat ke Real Last (Kanan)
+                else if (scrollLeft <= 0) {
+                    isJumping = true;
+                    slider.style.scrollSnapType = 'none';
+                    // Lompat ke posisi (TotalPanjang - 2 * LebarSlide)
+                    slider.scrollLeft = slider.scrollWidth - (2 * slideWidth); 
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            slider.style.scrollSnapType = 'x mandatory';
+                            isJumping = false;
+                        });
+                    });
+                }
+            });
+        }, 50);
+
     } else {
+        // --- TAMPILAN DESKTOP (Grid PC) ---
+        // Kode lama tetap dipertahankan
         gallery.innerHTML = `
             <div class="gallery-main">
                 <img src="${currentProduct.gallery[0]}" alt="${currentProduct.name}" id="mainImage">
@@ -160,6 +271,14 @@ function renderGallery() {
             </div>
         `;
     }
+}
+
+// Fungsi Helper untuk Update Warna Titik
+function updateDots(activeIndex) {
+    const dots = document.querySelectorAll('.slider-dots .dot');
+    dots.forEach((dot, index) => {
+        dot.style.background = index === activeIndex ? '#fff' : '#333'; // Putih aktif, Abu mati
+    });
 }
 
 function changeMainImage(indexOrElement, imgSrc) {
