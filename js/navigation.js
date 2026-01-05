@@ -45,4 +45,14 @@ function navigate(page) {
             successMsg.style.display = 'none';
         }
     }
+
+    const commandBar = document.querySelector('.command-bar');
+    if (commandBar) {
+        if (page === 'checkout') {
+            commandBar.style.display = 'none'; // Sembunyi
+        } else {
+            commandBar.style.display = 'flex'; // Muncul (gunakan 'flex' agar layout tetap rapi)
+        }
+    }
 }
+
