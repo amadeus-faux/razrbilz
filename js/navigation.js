@@ -35,8 +35,6 @@ function navigate(page) {
         typewriterEffect();
     } else if (page === 'cart') {
         renderCart();
-    } else if (page === 'checkout') {
-        setupFormValidation();
     } else if (page === 'contact') {
         // Reset contact form if returning to it
         const form = document.getElementById('contactForm');
