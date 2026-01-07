@@ -556,3 +556,39 @@
     border-color: var(--signal-white);
     font-weight: 900;
 }
+
+/* ============================================
+   SIZE GUIDE TABLE STYLING (FIXED COLORS)
+============================================ */
+.size-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-tech);
+    font-size: 0.85rem;
+    margin-top: 15px;
+    text-align: left;
+}
+
+.size-table th {
+    padding: 15px 10px;
+    font-weight: 700;
+    color: #FFFFFF; /* FIX: Langsung pakai warna Putih */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.size-table td {
+    padding: 12px 10px;
+    color: rgba(255, 255, 255, 0.7); /* FIX: Putih agak transparan (pengganti secondary) */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.size-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.size-table td:first-child {
+    font-weight: 700;
+    color: #FFFFFF; /* FIX: Putih terang untuk Size */
+}
