@@ -8,7 +8,7 @@ const products = [
         code: 'RONIN BALLISTIC TEE',
         name: 'RONIN BALLISTIC TEE',
         price: 999999999,
-        stock: 0,
+        stock: 50,
         variants: {
             'S': '47989924790424', 
             'M': '47989924823192',
