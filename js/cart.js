@@ -3,10 +3,10 @@
 // ============================================
 let cart = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY)) || [];
 
-function addToCart(productId, selectedSize) {
+function addToCart(productId, selectedSize, variantId) {
     // FIX: Gunakan '==' agar cocok meskipun tipe datanya beda (String vs Number)
     const product = products.find(p => p.id == productId);
-    
+
     if (!product) {
         console.error("Cart Error: Product not found with ID", productId);
         return;
@@ -23,6 +23,7 @@ function addToCart(productId, selectedSize) {
             name: product.name,
             price: product.price,
             image: product.image,
+            variantId: variantId,
             quantity: 1,
             size: selectedSize
         });
@@ -33,11 +34,11 @@ function addToCart(productId, selectedSize) {
 
     // Feedback Visual Tombol
     const btn = document.querySelector('.btn-secure');
-    if(btn) {
+    if (btn) {
         const originalText = btn.innerHTML;
         btn.innerHTML = `[ SECURE: SIZE ${selectedSize} ]`;
         btn.classList.add('added');
-        
+
         setTimeout(() => {
             btn.innerHTML = `[ SECURE PIECE ]`;
             btn.classList.remove('added');
@@ -48,12 +49,12 @@ function addToCart(productId, selectedSize) {
 function renderCart() {
     const content = document.getElementById('cartContent');
     if (!content) return;
-    
+
     if (cart.length === 0) {
         content.innerHTML = '<p class="cart-empty">YOUR CACHE IS EMPTY</p>';
         return;
     }
-    
+
     let total = 0;
     const itemsHTML = cart.map(item => {
         total += item.price * item.quantity;
@@ -69,7 +70,7 @@ function renderCart() {
             </div>
         `;
     }).join('');
-    
+
     content.innerHTML = `
         <div class="cart-items">${itemsHTML}</div>
         <div class="cart-total">TOTAL: IDR ${formatPrice(total)}</div>
@@ -87,7 +88,7 @@ function removeFromCart(productId) {
 
 function updateCartCount() {
     const countElement = document.querySelector('.cart-count');
-    if(countElement) {
+    if (countElement) {
         countElement.textContent = `(${cart.length})`;
     }
 }

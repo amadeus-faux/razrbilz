@@ -1,47 +1,26 @@
-// Listener untuk semua input alamat agar mengecek ongkir secara real-time
-document.addEventListener('DOMContentLoaded', () => {
-    // Jalankan hanya di halaman checkout
-    if(document.getElementById('checkoutForm')) {
-        const addressInputs = ['country', 'province', 'city', 'postalCode', 'address'];
-        
-        addressInputs.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) {
-                // Saat user mengetik/memilih, coba update ongkir
-                el.addEventListener('change', checkShippingAvailability);
-                el.addEventListener('blur', checkShippingAvailability);
-            }
-        });
-
-        // Set state awal
-        updateProvinces(); 
-        checkShippingAvailability();
-    }
-});
-
 // ============================================
 // CORE FUNCTIONS
 // ============================================
 
 function proceedToCheckout() {
     if (cart.length === 0) return;
-    
+
     // Render Summary di Sidebar Kanan
     renderCheckoutSummary();
-    
+
     // Pindah Halaman
     navigate('checkout');
-    
+
     // Init form state (reset form jika baru masuk)
     setTimeout(() => {
-        updateProvinces(); 
+        updateProvinces();
         checkShippingAvailability(); // Pastikan ongkir hidden di awal
     }, 100);
 }
 
 function renderCheckoutSummary() {
     let total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
+
     const summaryHTML = cart.map(item => `
         <div class="cart-item-preview">
             <div class="item-thumb">
@@ -83,7 +62,7 @@ function renderCheckoutSummary() {
 
 function submitOrder(event) {
     event.preventDefault();
-    
+
     // Validasi akhir (double check)
     const shippingSelected = document.querySelector('input[name="shipping"]:checked');
     if (!shippingSelected) {
@@ -93,11 +72,11 @@ function submitOrder(event) {
 
     const btn = document.querySelector('.btn-submit-order');
     const originalText = btn.textContent;
-    
+
     btn.textContent = "PROCESSING...";
     btn.style.opacity = "0.7";
     btn.disabled = true;
-    
+
     setTimeout(() => {
         alert("REDIRECTING TO PAYMENT GATEWAY...");
         btn.textContent = originalText;
@@ -108,18 +87,26 @@ function submitOrder(event) {
 
 // TAMBAHKAN Fungsi Redirect ke Shopify
 function redirectToShopify() {
-    const btn = document.querySelector('.btn-submit-order');
-    btn.textContent = "ESTABLISHING SECURE LINK...";
-    btn.style.opacity = "0.7";
+    if (cart.length === 0) {
+        alert("CACHE IS EMPTY. SECURE ITEMS FIRST.");
+        return;
+    }
 
-    // CARA KERJA HEADLESS CHECKOUT (Konsep):
-    // Kita harus membuat URL khusus yang berisi ID Produk yang dibeli.
-    // Contoh format (nanti disesuaikan saat integrasi API):
-    // https://razrbilz.myshopify.com/cart/{variant_id}:{quantity},{variant_id}:{quantity}
+    // 1. Domain Shopify Kamu (Ganti dengan domain aslimu)
+    const shopifyDomain = 'razrbilz.myshopify.com'; 
+
+    // 2. Susun Link Permalink
+    // Format: https://domain/cart/{id}:{qty},{id}:{qty}
+    const cartParam = cart.map(item => {
+        return `${item.variantId}:${item.quantity}`;
+    }).join(',');
+
+    // 3. Redirect!
+    const checkoutUrl = `https://${shopifyDomain}/cart/${cartParam}`;
     
-    // Simulasi Redirect:
-    setTimeout(() => {
-        // Nanti link ini diganti dengan link dinamis Shopify
-        window.location.href = "https://razrbilz.myshopify.com/checkout"; 
-    }, 1500);
+    // Debugging (Bisa dihapus nanti)
+    console.log("Redirecting to:", checkoutUrl);
+    
+    // Buka di tab baru atau tab sama
+    window.location.href = checkoutUrl;
 }

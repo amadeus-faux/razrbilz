@@ -43,35 +43,35 @@ function viewProduct(productId) {
 function renderProductInfo() {
     const info = document.getElementById('productInfo');
     const stockStatus = getStockStatus(currentProduct.stock);
-
-    // Safety Check untuk Size Chart (Mencegah Crash jika data kosong)
     let sizeChartHTML = '';
-    if (currentProduct.sizeGuide) {
-        // Format Lama (Array of Objects) - Hapus bagian 's.chest'
-        sizeChartHTML = currentProduct.sizeGuide.map(s => 
-            `<tr>
-                <td>${s.size}</td>
-                <td>${s.length}</td>
-            </tr>`
-        ).join('');
-    } else if (currentProduct.sizeChart && currentProduct.sizeChart.rows) {
-        // FIX: Ambil Index 2 secara spesifik untuk LENGTH
-        // Struktur Data: [0:Size, 1:Chest, 2:Length, 3:Shoulder]
+    if (currentProduct.sizeChart && currentProduct.sizeChart.rows) {
         sizeChartHTML = currentProduct.sizeChart.rows.map(row => 
             `<tr>
-                <td>${row[0]}</td> <td>${row[2]}</td> </tr>`
+                <td style="color: #fff; font-weight: bold;">${row[0]}</td>
+                <td style="color: rgba(255,255,255,0.8);">${row[1]}</td>
+                <td style="color: rgba(255,255,255,0.8);">${row[2]}</td>
+            </tr>`
+        ).join('');
+    } 
+    else if (currentProduct.sizeGuide) {
+        sizeChartHTML = currentProduct.sizeGuide.map(s => 
+            `<tr>
+                <td style="color: #fff; font-weight: bold;">${s.size}</td>
+                <td style="color: rgba(255,255,255,0.8);">${s.chest}</td>
+                <td style="color: rgba(255,255,255,0.8);">${s.length}</td>
+            </tr>`
         ).join('');
     } else {
-        sizeChartHTML = '<tr><td colspan="2">Size guide unavailable</td></tr>';
+        sizeChartHTML = '<tr><td colspan="2">Data not available</td></tr>';
     }
+    // --- SELESAI PERBAIKAN ---
 
     info.innerHTML = `
         <div class="product-header">
             <h2 class="product-title">${currentProduct.name}</h2>
-            
             <div class="product-meta" style="font-family: var(--font-tech); margin-bottom: 20px; opacity: 0.8;">
                 <div>CODE: ${currentProduct.code}</div>
-                <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} ]</span></div>
+                <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} : ${currentProduct.stock} UNITS ]</span></div>
             </div>
         </div>
 
@@ -109,8 +109,14 @@ function renderProductInfo() {
         </div>
         
         <div id="tab-size" class="tab-panel">
-             <table class="size-table" style="width:100%; font-size: 0.85rem;">
-                <thead><tr style="text-align:left;"><th>SIZE</th><th>CHEST</th><th>LENGTH</th></tr></thead>
+             <table class="size-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">SIZE</th>
+                        <th style="text-align: left;">CHEST</th>
+                        <th style="text-align: left;">LENGTH</th>
+                    </tr>
+                </thead>
                 <tbody>${sizeChartHTML}</tbody>
             </table>
         </div>
@@ -271,7 +277,13 @@ function validateAndAddToCart(product) {
         alert("SYSTEM ALERT: PLEASE SELECT A SIZE CONFIGURATION.");
         return;
     }
-    addToCart(product.id, currentSelectedSize);
+    const variantId = product.variants ? product.variants[currentSelectedSize] : null;
+
+    if (!variantId) {
+        alert("SYSTEM ERROR: VARIANT ID NOT FOUND. CONTACT ADMIN.");
+        return;
+    }
+    addToCart(product.id, currentSelectedSize, variantId);
 }
 
 // Auto-Refresh Gallery saat Rotate Layar

@@ -21,13 +21,13 @@ const products = [
         },
         sizeRef: 'SUBJECT REFERENCE: Height 178cm / Weight 70kg wears Size L',
         sizeChart: {
-            headers: ['SIZE', 'CHEST', 'LENGTH', 'SHOULDER'],
+            headers: ['SIZE', 'CHEST', 'LENGTH'],
             rows: [
-                ['S', '98-102 cm', '68-70 cm', '48-50 cm'],
-                ['M', '102-106 cm', '70-72 cm', '50-52 cm'],
-                ['L', '106-110 cm', '72-74 cm', '52-54 cm'],
-                ['XL', '110-116 cm', '74-76 cm', '54-56 cm'],
-                ['2XL', '118-124 cm', '78-80 cm', '58-60 cm']
+                ['S', '57 cm', '61 cm'],
+                ['M', '59 cm', '63 cm'],
+                ['L', '62 cm', '65 cm'],
+                ['XL', '65 cm', '68 cm'],
+                ['2XL', '68 cm', '71 cm']
             ]
         }
     },
@@ -49,14 +49,21 @@ const products = [
         },
         sizeRef: 'SUBJECT REFERENCE: Height 175cm / Weight 68kg wears Size M',
         sizeChart: {
-            headers: ['SIZE', 'CHEST', 'LENGTH', 'SHOULDER'],
+            headers: ['SIZE', 'CHEST', 'LENGTH'],
             rows: [
-                ['S', '100-104 cm', '70-72 cm', '50-52 cm'],
-                ['M', '104-108 cm', '72-74 cm', '52-54 cm'],
-                ['L', '108-112 cm', '74-76 cm', '54-56 cm'],
-                ['XL', '112-118 cm', '76-78 cm', '56-58 cm'],
-                ['2XL', '118-124 cm', '78-80 cm', '58-60 cm']
+                ['S', '57 cm', '61 cm'],
+                ['M', '59 cm', '63 cm'],
+                ['L', '62 cm', '65 cm'],
+                ['XL', '65 cm', '68 cm'],
+                ['2XL', '68 cm', '71 cm']
             ]
+        },
+        variantIds: {
+            'S': '47989839036568', 
+            'M': '47989839069336',
+            'L': '47989839102104',
+            'XL': '47989839134872',
+            '2XL': '47989839167640'
         }
     },
     {
@@ -77,13 +84,13 @@ const products = [
         },
         sizeRef: 'SUBJECT REFERENCE: Height 165cm / Weight 59kg wears Size S',
         sizeChart: {
-            headers: ['SIZE', 'CHEST', 'LENGTH', 'SHOULDER'],
+            headers: ['SIZE', 'CHEST', 'LENGTH'],
             rows: [
-                ['S', '98-102 cm', '68-70 cm', '48-50 cm'],
-                ['M', '102-106 cm', '70-72 cm', '50-52 cm'],
-                ['L', '106-110 cm', '72-74 cm', '52-54 cm'],
-                ['XL', '110-116 cm', '74-76 cm', '54-56 cm'],
-                ['2XL', '118-124 cm', '78-80 cm', '58-60 cm']
+                ['S', '57 cm', '61 cm'],
+                ['M', '59 cm', '63 cm'],
+                ['L', '62 cm', '65 cm'],
+                ['XL', '65 cm', '68 cm'],
+                ['2XL', '68 cm', '71 cm']
             ]
         }
     }
