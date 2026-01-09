@@ -580,7 +580,7 @@
 
 .size-table td {
     padding: 12px 10px;
-    color: rgba(255, 255, 255, 0.7); /* FIX: Putih agak transparan (pengganti secondary) */
+    color: rgba(255, 255, 255, 0.8); /* FIX: Putih agak transparan (pengganti secondary) */
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
