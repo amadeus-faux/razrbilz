@@ -7,7 +7,7 @@ const products = [
         id: 1,
         code: 'RONIN_BALLISTIC_001',
         name: 'THE RONIN BALLISTIC TEE',
-        price: 245000,
+        price: 999999999,
         stock: 0,
         variants: {
             'S': '47989839036568', 
@@ -40,9 +40,9 @@ const products = [
     },
     {
         id: 2,
-        code: 'RECON_002',
-        name: 'THE RECON HOODIE',
-        price: 410000,
+        code: 'AZRAEL_002',
+        name: 'AZRAEL HOODIE',
+        price: 999999999,
         stock: 8,
         variants: {
             'S': '47989839036568', 
@@ -53,7 +53,7 @@ const products = [
         },
         image: 'assets/products/product2.png',
         imageDetail: 'assets/products/product2-detail.png',
-        gallery: ['assets/products/product2-1.png', 'assets/products/product2-2.png', 'assets/products/product2-3.png'],
+        gallery: ['assets/products/product2-1.png', 'assets/products/product2-2.png', 'assets/products/product2-3.png', 'assets/products/product2-4.png', 'assets/products/product2-5.png', 'assets/products/product2-6.png'],
         manifesto: 'Engineered for chaos. Tactical pockets hold your essentials while you navigate the concrete city. Soul-resistant.',
         specs: {
             material: 'AeroCool Cotton Fleece 375gsm',
@@ -61,7 +61,7 @@ const products = [
             fit: 'Boxy / Drop Shoulder',
             features: 'Tactical pockets, Reflective strips, Water-resistant'
         },
-        sizeRef: 'SUBJECT REFERENCE: Height 175cm / Weight 68kg wears Size M',
+        sizeRef: 'SUBJECT REFERENCE: Height 175cm / Weight 68kg wears Size L',
         sizeChart: {
             headers: ['SIZE', 'CHEST', 'LENGTH'],
             rows: [
@@ -77,7 +77,7 @@ const products = [
         id: 3,
         code: 'STRATA_LAYERED_003',
         name: 'THE STRATA LAYERED TEE',
-        price: 245000,
+        price: 999999999
         stock: 23,
         variants: {
             'S': '47989839036568', 
