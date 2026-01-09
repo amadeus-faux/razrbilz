@@ -10,11 +10,11 @@ const products = [
         price: 999999999,
         stock: 0,
         variants: {
-            'S': '47989839036568', 
-            'M': '47989839069336',
-            'L': '47989839102104',
-            'XL': '47989839134872',
-            '2XL': '47989839167640'
+            'S': '47989924790424', 
+            'M': '47989924823192',
+            'L': '47989924757656',
+            'XL': '47989924855960',
+            '2XL': '47989924888728'
         },
         image: 'assets/products/product1.jpg',
         imageDetail: 'assets/products/product1-detail.jpg',
@@ -54,7 +54,7 @@ const products = [
         image: 'assets/products/product2.png',
         imageDetail: 'assets/products/product2-detail.png',
         gallery: ['assets/products/product2-1.png', 'assets/products/product2-2.png', 'assets/products/product2-3.png', 'assets/products/product2-4.png', 'assets/products/product2-5.png', 'assets/products/product2-6.png'],
-        manifesto: 'Engineered for chaos. Tactical pockets hold your essentials while you navigate the concrete city. Soul-resistant.',
+        manifesto: 'Taking its name from The Reaper, this piece is a homage to shadow and structure. Built with heavyweight materials to forge a silhouette that is solid, imposing, and intimidating.',
         specs: {
             material: 'AeroCool Cotton Fleece 375gsm',
             weight: 'Heavyweight',
@@ -77,14 +77,14 @@ const products = [
         id: 3,
         code: 'STRATA_LAYERED_003',
         name: 'THE STRATA LAYERED TEE',
-        price: 999999999
+        price: 999999999,
         stock: 23,
         variants: {
-            'S': '47989839036568', 
-            'M': '47989839069336',
-            'L': '47989839102104',
-            'XL': '47989839134872',
-            '2XL': '47989839167640'
+            'S': '47989921480856', 
+            'M': '47989921513624',
+            'L': '47989921546392',
+            'XL': '47989921579160',
+            '2XL': '47989921611928'
         },
         image: 'assets/products/product3.png',
         imageDetail: 'assets/products/product3-detail.png',
