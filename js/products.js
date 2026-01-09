@@ -5,8 +5,8 @@
 const products = [
     {
         id: 1,
-        code: 'RONIN_BALLISTIC_001',
-        name: 'THE RONIN BALLISTIC TEE',
+        code: 'RONIN BALLISTIC TEE',
+        name: 'RONIN BALLISTIC TEE',
         price: 999999999,
         stock: 0,
         variants: {
@@ -16,9 +16,9 @@ const products = [
             'XL': '47989924855960',
             '2XL': '47989924888728'
         },
-        image: 'assets/products/product1.jpg',
-        imageDetail: 'assets/products/product1-detail.jpg',
-        gallery: ['assets/products/product1-1.jpg', 'assets/products/product1-2.jpg', 'assets/products/product1-3.jpg'],
+        image: 'assets/products/product1.png',
+        imageDetail: 'assets/products/product1-detail.png',
+        gallery: ['assets/products/product1-1.png', 'assets/products/product1-2.png', 'assets/products/product1-3.png'],
         manifesto: 'Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.',
         specs: {
             material: '16s Premium Cotton Combed (Acid Wash)',
@@ -40,7 +40,7 @@ const products = [
     },
     {
         id: 2,
-        code: 'AZRAEL_002',
+        code: 'AZRAEL HOODIE',
         name: 'AZRAEL HOODIE',
         price: 999999999,
         stock: 8,
@@ -75,8 +75,8 @@ const products = [
     },
     {
         id: 3,
-        code: 'STRATA_LAYERED_003',
-        name: 'THE STRATA LAYERED TEE',
+        code: 'STRATA LAYERED TEE',
+        name: 'STRATA LAYERED TEE',
         price: 999999999,
         stock: 23,
         variants: {

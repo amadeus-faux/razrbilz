@@ -70,8 +70,7 @@ function renderProductInfo() {
         <div class="product-header">
             <h2 class="product-title">${currentProduct.name}</h2>
             <div class="product-meta" style="font-family: var(--font-tech); margin-bottom: 20px; opacity: 0.8;">
-                <div>CODE: ${currentProduct.code}</div>
-                <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} : ${currentProduct.stock} UNITS ]</span></div>
+                <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} ]</span></div>
             </div>
         </div>
 
