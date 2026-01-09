@@ -9,6 +9,13 @@ const products = [
         name: 'THE RONIN BALLISTIC TEE',
         price: 245000,
         stock: 0,
+        variants: {
+            'S': '47989839036568', 
+            'M': '47989839069336',
+            'L': '47989839102104',
+            'XL': '47989839134872',
+            '2XL': '47989839167640'
+        },
         image: 'assets/products/product1.jpg',
         imageDetail: 'assets/products/product1-detail.jpg',
         gallery: ['assets/products/product1-1.jpg', 'assets/products/product1-2.jpg', 'assets/products/product1-3.jpg'],
@@ -37,6 +44,13 @@ const products = [
         name: 'THE RECON HOODIE',
         price: 410000,
         stock: 8,
+        variants: {
+            'S': '47989839036568', 
+            'M': '47989839069336',
+            'L': '47989839102104',
+            'XL': '47989839134872',
+            '2XL': '47989839167640'
+        },
         image: 'assets/products/product2.png',
         imageDetail: 'assets/products/product2-detail.png',
         gallery: ['assets/products/product2-1.png', 'assets/products/product2-2.png', 'assets/products/product2-3.png'],
@@ -57,13 +71,6 @@ const products = [
                 ['XL', '65 cm', '68 cm'],
                 ['2XL', '68 cm', '71 cm']
             ]
-        },
-        variants: {
-            'S': '47989839036568', 
-            'M': '47989839069336',
-            'L': '47989839102104',
-            'XL': '47989839134872',
-            '2XL': '47989839167640'
         }
     },
     {
@@ -72,6 +79,13 @@ const products = [
         name: 'THE STRATA LAYERED TEE',
         price: 245000,
         stock: 23,
+        variants: {
+            'S': '47989839036568', 
+            'M': '47989839069336',
+            'L': '47989839102104',
+            'XL': '47989839134872',
+            '2XL': '47989839167640'
+        },
         image: 'assets/products/product3.png',
         imageDetail: 'assets/products/product3-detail.png',
         gallery: ['assets/products/product3-1.png', 'assets/products/product3-2.png', 'assets/products/product3-3.png'],
