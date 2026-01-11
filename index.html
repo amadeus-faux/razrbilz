@@ -5,247 +5,2025 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    <!-- SEO Meta Tags -->
     <meta name="description" content="RAZRBILZ - Streetwear brand for the urban drifter. Anchor in Chaos.">
-    <meta name="keywords" content="streetwear, fashion, razrbilz, urban fashion, limited edition, indonesia streetwear">
+    <meta name="keywords" content="streetwear, fashion, razrbilz">
     <meta name="author" content="RAZRBILZ">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://razrbilz.com">
-
-    <!-- Open Graph (Facebook, WhatsApp) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="RAZRBILZ">
     <meta property="og:description" content="Streetwear for the urban drifter. Anchor in Chaos.">
     <meta property="og:image" content="https://razrbilz.com/assets/og-image.jpg">
     <meta property="og:url" content="https://razrbilz.com">
-    <meta property="og:site_name" content="RAZRBILZ">
-
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="RAZRBILZ">
-    <meta name="twitter:description" content="Streetwear for the urban drifter. Anchor in Chaos.">
-    <meta name="twitter:image" content="https://razrbilz.com/assets/og-image.jpg">
-
-    <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com https://www.googletagmanager.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:3000 https://api.midtrans.com https://app.midtrans.com https://formspree.io;">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-
     <title>RAZRBILZ</title>
-
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/favicon.png">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;900&display=swap" rel="stylesheet">
-
-    <!-- Google Analytics (Replace with your tracking ID) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
-    </script>
-
-    <!-- Midtrans Snap -->
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-XXXXXXXXXX');</script>
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
+    <style>
+        /* reset.css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Montserrat', sans-serif !important;
+        }
 
-    <!-- Lenis Smooth Scroll -->
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.27/dist/lenis.min.js"></script>
+        body {
+            background: var(--void-black);
+            color: var(--signal-white);
+            overflow-x: hidden;
+            position: relative;
+            font-family: 'Montserrat', sans-serif;
+        }
 
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/portal.css">
-    <link rel="stylesheet" href="css/archive.css">
-    <link rel="stylesheet" href="css/product-detail.css">
-    <link rel="stylesheet" href="css/about.css">
-    <link rel="stylesheet" href="css/cart.css">
-    <link rel="stylesheet" href="css/checkout.css">
-    <link rel="stylesheet" href="css/navigation.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/policies.css">
-    <link rel="stylesheet" href="css/responsive.css">
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.4;
+            z-index: 9999;
+            animation: grain 0.5s steps(1) infinite
+        }
+
+        @keyframes grain {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            10% {
+                transform: translate(-5%, -5%)
+            }
+
+            20% {
+                transform: translate(-10%, 5%)
+            }
+
+            30% {
+                transform: translate(5%, -10%)
+            }
+
+            40% {
+                transform: translate(-5%, 15%)
+            }
+
+            50% {
+                transform: translate(-10%, 5%)
+            }
+
+            60% {
+                transform: translate(15%, 0)
+            }
+
+            70% {
+                transform: translate(0, 10%)
+            }
+
+            80% {
+                transform: translate(-15%, 0)
+            }
+
+            90% {
+                transform: translate(10%, 5%)
+            }
+        }
+
+        /* variables.css */
+        :root {
+            --void-black: #050505;
+            --concrete-grey: #2A2A2A;
+            --signal-white: #F0F0F0;
+            --alert-red: #FF0000
+        }
+
+        /* layout.css */
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            overflow-x: hidden;
+            overscroll-behavior-y: none
+        }
+
+        html.lenis {
+            height: auto
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none
+        }
+
+        .typography-art {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900
+        }
+
+        .typography-data {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.05em
+        }
+
+        .data-bar,
+        .size-table,
+        .stock-indicator,
+        .price-tag,
+        .product-code {
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--signal-white);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 10000;
+            transition: transform 0.1s ease-out
+        }
+
+        /* portal.css */
+        #portal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            background: var(--void-black)
+        }
+
+        #portal.hidden {
+            display: none
+        }
+
+        #portal-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            filter: contrast(1.3) brightness(0.8)
+        }
+
+        .logo-portal {
+            position: absolute;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 1.5rem;
+            letter-spacing: 0.2em;
+            background: linear-gradient(135deg, #B8B8B8 0%, #FFFFFF 50%, #B8B8B8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            position: relative;
+            z-index: 2
+        }
+
+        .portal-enter {
+            position: absolute;
+            bottom: 10%;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            color: var(--signal-white);
+            animation: blink 1.5s ease-in-out infinite;
+            cursor: pointer;
+            z-index: 2;
+            padding: 15px 30px;
+            border: 1px solid var(--signal-white);
+            background: transparent;
+            transition: all 0.3s ease
+        }
+
+        .portal-enter:hover {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        @media (max-width:768px) {
+            .logo-portal {
+                font-size: 2rem;
+                margin-bottom: 0
+            }
+        }
+
+        @media (max-width:480px) {
+            .logo-portal {
+                font-size: 1.3rem
+            }
+
+            .portal-enter {
+                bottom: 12%
+            }
+        }
+
+        @media (max-width:400px) {
+            .logo-portal {
+                font-size: 1.1rem
+            }
+        }
+
+        @media (max-width:375px) {
+            .logo-portal {
+                font-size: 1rem
+            }
+        }
+
+        /* archive.css */
+        #archive {
+            display: none;
+            min-height: 100vh;
+            padding: 30px 20px 120px 20px
+        }
+
+        #archive.active {
+            display: block
+        }
+
+        .archive-header {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: 0.15em;
+            margin: 50px 0 40px 0;
+            text-align: center
+        }
+
+        .product-stream {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 30px 20px
+        }
+
+        .product-card {
+            width: calc(50% - 10px);
+            margin-bottom: 20px;
+            position: relative
+        }
+
+        @media (min-width:769px) {
+            .product-card {
+                width: calc(33.333% - 14px)
+            }
+        }
+
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            background: var(--concrete-grey);
+            cursor: pointer;
+            border-radius: 2px
+        }
+
+        .product-image,
+        .product-image-detail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease
+        }
+
+        .product-image-detail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0
+        }
+
+        .product-image-container.xray-active .product-image {
+            opacity: 0
+        }
+
+        .product-image-container.xray-active .product-image-detail {
+            opacity: 1
+        }
+
+        .xray-icon {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: 10px;
+            right: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 20;
+            pointer-events: auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px)
+        }
+
+        .xray-icon:hover {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        .data-bar {
+            margin-top: 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            line-height: 1.6
+        }
+
+        .stock-indicator {
+            padding: 3px 8px;
+            font-size: 0.65rem;
+            border-radius: 2px;
+            font-weight: 700;
+            letter-spacing: 0.1em
+        }
+
+        .stock-available {
+            color: #00FF41;
+            background: rgba(0, 255, 65, 0.08)
+        }
+
+        .stock-critical {
+            color: #FFD700;
+            background: rgba(255, 215, 0, 0.08);
+            animation: pulse-warning 2s infinite
+        }
+
+        .stock-low {
+            color: var(--alert-red);
+            background: rgba(255, 0, 0, 0.08);
+            animation: pulse-danger 1.5s infinite
+        }
+
+        .stock-sold-out {
+            color: #888;
+            text-decoration: line-through;
+            opacity: 0.6
+        }
+
+        @keyframes pulse-warning {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.6
+            }
+        }
+
+        @keyframes pulse-danger {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.8
+            }
+        }
+
+        .price-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px
+        }
+
+        .product-card.sold-out .product-image-container::after {
+            content: '';
+            display: none;
+        }
+
+        .product-card.sold-out .product-image {
+            filter: grayscale(100%) brightness(0.6) blur(2px);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .product-card.sold-out {
+            pointer-events: none;
+        }
+
+        .product-card.sold-out .product-name {
+            opacity: 0.5;
+        }
+
+        /* product-detail.css */
+        #product-detail {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 200px
+        }
+
+        #product-detail.active {
+            display: block
+        }
+
+        .image-gallery {
+            max-width: 600px;
+            margin: 40px auto 30px auto;
+            position: relative;
+            display: block;
+        }
+
+        /* Universal Slider Styles */
+        .gallery-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            /* IE/Edge */
+            display: flex;
+        }
+
+        .gallery-container::-webkit-scrollbar {
+            display: none
+        }
+
+        .gallery-image {
+            width: 100%;
+            min-width: 100%;
+            height: auto;
+            aspect-ratio: 3/4;
+            object-fit: contain;
+            display: block;
+            scroll-snap-align: center;
+            margin-right: 0;
+            transition: opacity 0.3s ease;
+            flex-shrink: 0;
+            max-height: 75vh;
+        }
+
+        @media (min-width:769px) {
+            .image-gallery {
+                max-width: 500px;
+                /* Limit width on desktop for neat look */
+                margin: 60px auto 40px auto;
+                /* Reset grid if previously applied globally */
+                display: block;
+                grid-template-columns: none;
+                gap: 0;
+                position: relative;
+            }
+
+            /* Hide the old grid elements if present in DOM (though JS removes them, CSS safety) */
+            .gallery-main,
+            .gallery-thumbnails {
+                display: none !important;
+            }
+
+            /* Force slider display */
+            .gallery-container {
+                display: flex !important;
+                cursor: pointer;
+            }
+
+            .click-zone {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 50%;
+                z-index: 20;
+                cursor: pointer;
+            }
+
+            .click-zone-left {
+                left: 0;
+            }
+
+            .click-zone-right {
+                right: 0;
+            }
+        }
+
+        .product-info {
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .product-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px
+        }
+
+        .product-manifesto {
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-style: italic;
+            opacity: 0.9
+        }
+
+        @media (min-width:769px) {
+            .product-info {
+                max-width: 800px;
+                /* Slightly wider text containment */
+            }
+
+            .product-title {
+                font-size: 2.5rem;
+                margin-bottom: 25px
+            }
+
+            .product-manifesto {
+                font-size: 1.1rem;
+                margin-bottom: 40px
+            }
+        }
+
+        .product-command-center {
+            background: var(--concrete-grey);
+            margin-bottom: 30px
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid rgba(240, 240, 240, 0.1)
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 10px;
+            background: transparent;
+            color: var(--signal-white);
+            border: none;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            border-bottom: 2px solid transparent
+        }
+
+        .tab-btn:hover {
+            opacity: 0.8
+        }
+
+        .tab-btn.active {
+            opacity: 1;
+            background: rgba(240, 240, 240, 0.05);
+            border-bottom-color: var(--signal-white)
+        }
+
+        .tab-content {
+            padding: 25px
+        }
+
+        .tab-panel {
+            display: none
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out
+        }
+
+        /* UNIFIED TAB TYPOGRAPHY START */
+        /* Applies to tech-specs, size-guide, and shipping tabs to ensure exact match */
+
+        .tech-specs,
+        #tab-ship,
+        .size-guide-tab {
+            padding-top: 25px;
+        }
+
+        .tech-specs h3,
+        #tab-ship h4,
+        .shipping-option h4,
+        .size-guide-tab h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            /* Unified */
+            letter-spacing: 0.15em;
+            /* Unified */
+            margin-bottom: 15px;
+            /* Unified */
+            color: var(--signal-white);
+        }
+
+        /* List Items (Tech Specs) and Paragraphs (Shipping) should match visually */
+        .tech-specs ul {
+            list-style: none;
+        }
+
+        .tech-specs li,
+        #tab-ship p,
+        .shipping-option p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            /* Unified */
+            line-height: 1.6;
+            /* Unified */
+            margin-bottom: 10px;
+            opacity: 0.9;
+            color: var(--signal-white);
+        }
+
+        .tech-specs li {
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .tech-specs li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+        }
+
+        /* UNIFIED TAB TYPOGRAPHY END */
+
+        .size-guide-tab table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0
+        }
+
+        .size-guide-tab th,
+        .size-guide-tab td {
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid rgba(240, 240, 240, 0.1);
+            font-size: 0.85rem
+        }
+
+        .size-guide-tab th {
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            background: var(--void-black)
+        }
+
+        .size-guide-instructions {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+            line-height: 1.6
+        }
+
+        .shipping-option {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(240, 240, 240, 0.1)
+        }
+
+        .shipping-option:last-child {
+            border-bottom: none
+        }
+
+        .size-reference {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            opacity: 0.8
+        }
+
+        .sticky-buy {
+            position: fixed;
+            z-index: 990;
+            background: var(--void-black);
+            left: 0;
+            width: 100%;
+            bottom: 54px;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(240, 240, 240, 0.1);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8)
+        }
+
+        .btn-secure {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: block;
+            padding: 15px;
+            background: var(--signal-white);
+            color: var(--void-black);
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.95rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s ease
+        }
+
+        .btn-secure:hover {
+            background: var(--void-black);
+            color: var(--signal-white);
+            border: 2px solid var(--signal-white)
+        }
+
+        .btn-secure.added {
+            background: var(--void-black);
+            color: var(--alert-red);
+            border: 2px solid var(--alert-red)
+        }
+
+        @media (min-width:768px) {
+            .sticky-buy {
+                width: 480px;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: 95px;
+                padding: 0;
+                border: none;
+                background: transparent;
+                box-shadow: none
+            }
+
+            .btn-secure {
+                border: 1px solid var(--signal-white);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
+            }
+        }
+
+        @media (max-width:480px) {
+            .sticky-buy {
+                bottom: 48px;
+                padding: 12px 15px
+            }
+
+            .btn-secure {
+                font-size: 0.85rem;
+                padding: 14px
+            }
+        }
+
+        @media (max-width:375px) {
+            .sticky-buy {
+                bottom: 43px;
+                padding: 10px 15px
+            }
+
+            .btn-secure {
+                font-size: 0.8rem;
+                padding: 12px;
+                letter-spacing: 0.15em
+            }
+        }
+
+        .product-price-large {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--signal-white);
+            margin-top: 20px;
+            margin-bottom: 20px;
+            letter-spacing: -0.05em;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(240, 240, 240, 0.1)
+        }
+
+        .size-selector-container {
+            margin-bottom: 30px
+        }
+
+        .size-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #737373;
+            margin-bottom: 10px;
+            display: block
+        }
+
+        .size-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .size-btn {
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border: 1px solid rgba(240, 240, 240, 0.3);
+            color: var(--signal-white);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .size-btn:hover {
+            border-color: var(--signal-white)
+        }
+
+        .size-btn.selected {
+            background: var(--signal-white);
+            color: var(--void-black);
+            border-color: var(--signal-white);
+            font-weight: 900
+        }
+
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-tech);
+            font-size: 0.85rem;
+            margin-top: 15px;
+            text-align: left
+        }
+
+        .size-table th {
+            padding: 15px 10px;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2)
+        }
+
+        .size-table td {
+            padding: 12px 10px;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08)
+        }
+
+        .size-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03)
+        }
+
+        .size-table td:first-child {
+            font-weight: 700;
+            color: #FFFFFF
+        }
+
+        /* about.css */
+        #about {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 20px 100px 20px
+        }
+
+        #about.active {
+            display: block
+        }
+
+        .about-content {
+            max-width: 700px;
+            margin: 0 auto
+        }
+
+        .about-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 40px;
+            text-align: center
+        }
+
+        .about-text {
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.8;
+            opacity: 0
+        }
+
+        .about-text.typewriter {
+            opacity: 1
+        }
+
+        .btn-join {
+            display: block;
+            margin: 50px auto 0 auto;
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--signal-white);
+            border: 2px solid var(--signal-white);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center
+        }
+
+        .btn-join:hover {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        /* cart.css */
+        #cart {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 20px 100px 20px
+        }
+
+        #cart.active {
+            display: block
+        }
+
+        .cart-header {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+            text-align: center
+        }
+
+        .cart-empty {
+            text-align: center;
+            font-weight: 500;
+            opacity: 0.6;
+            margin-top: 100px
+        }
+
+        .cart-items {
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--concrete-grey)
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 133px;
+            object-fit: cover
+        }
+
+        .cart-item-info {
+            flex: 1
+        }
+
+        .cart-item-name {
+            font-weight: 900;
+            font-size: 1rem;
+            margin-bottom: 10px
+        }
+
+        .cart-item-price {
+            font-weight: 500;
+            font-size: 0.9rem
+        }
+
+        .btn-remove {
+            background: transparent;
+            color: var(--alert-red);
+            border: 1px solid var(--alert-red);
+            padding: 5px 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px
+        }
+
+        .cart-total {
+            max-width: 600px;
+            margin: 30px auto;
+            text-align: right;
+            font-weight: 900;
+            font-size: 1.3rem
+        }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 18px;
+            background: var(--signal-white);
+            color: var(--void-black);
+            border: 2px solid var(--signal-white);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: pointer
+        }
+
+        /* checkout.css */
+        #checkout {
+            display: none;
+            min-height: 100vh;
+            background: #FFFFFF;
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
+        }
+
+        #checkout.active {
+            display: block
+        }
+
+        .checkout-container {
+            display: flex;
+            flex-direction: column-reverse;
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        .checkout-main {
+            padding: 20px;
+            flex: 1.2;
+            border-right: 1px solid #e1e1e1;
+            padding-top: 40px
+        }
+
+        .checkout-sidebar {
+            background: #fafafa;
+            padding: 20px;
+            flex: 0.8;
+            border-bottom: 1px solid #e1e1e1;
+            padding-top: 40px
+        }
+
+        .checkout-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em
+        }
+
+        .btn-submit-order {
+            width: 100%;
+            padding: 22px;
+            background: #121212;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s
+        }
+
+        .btn-submit-order:hover {
+            background: #333
+        }
+
+        .btn-back-cart {
+            background: none;
+            border: none;
+            color: #5a31f4;
+            cursor: pointer;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            display: block
+        }
+
+        .cart-item-preview {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px
+        }
+
+        .item-thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            border: 1px solid #e1e1e1;
+            position: relative
+        }
+
+        .item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px
+        }
+
+        .item-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #737373;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600
+        }
+
+        .item-details {
+            flex: 1;
+            margin-left: 15px
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 5px
+        }
+
+        .item-variant {
+            font-size: 0.85rem;
+            color: #737373
+        }
+
+        .item-price {
+            font-weight: 600
+        }
+
+        @media (min-width:1000px) {
+            .checkout-container {
+                flex-direction: row;
+                min-height: 100vh
+            }
+
+            .checkout-sidebar {
+                border-bottom: none;
+                border-left: 1px solid #e1e1e1;
+                height: 100vh;
+                position: sticky;
+                top: 0
+            }
+        }
+
+        /* navigation.css */
+        .command-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0;
+            background: rgba(42, 42, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0;
+            z-index: 1000;
+            border: 1px solid rgba(240, 240, 240, 0.2)
+        }
+
+        .command-btn {
+            padding: 18px 30px;
+            background: transparent;
+            color: var(--signal-white);
+            border: none;
+            border-right: 1px solid rgba(240, 240, 240, 0.2);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.2s ease
+        }
+
+        .command-btn:last-child {
+            border-right: none
+        }
+
+        .command-btn:hover,
+        .command-btn.active {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        .cart-count {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: 900
+        }
+
+        .command-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 54px;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            background: rgba(42, 42, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(240, 240, 240, 0.2);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: none;
+            margin: 0
+        }
+
+        .command-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            background: transparent;
+            color: var(--signal-white);
+            border: none;
+            border-right: 1px solid rgba(240, 240, 240, 0.2);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.2s ease
+        }
+
+        .command-btn:last-child {
+            border-right: none
+        }
+
+        .command-btn:hover,
+        .command-btn.active {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        .cart-count {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: 900
+        }
+
+        @media (min-width:768px) {
+            .command-bar {
+                width: 480px;
+                left: 50%;
+                transform: translateX(-50%) !important;
+                bottom: 30px;
+                border: 1px solid rgba(240, 240, 240, 0.2);
+                background: rgba(5, 5, 5, 0.9);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
+            }
+
+            .command-btn {
+                flex: 1;
+                font-size: 0.8rem
+            }
+        }
+
+        /* footer.css */
+        .site-footer {
+            margin-top: 80px;
+            padding: 60px 20px 40px 20px;
+            border-top: 1px solid rgba(240, 240, 240, 0.1)
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        .footer-legal {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px
+        }
+
+        .footer-legal a {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: var(--signal-white);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            position: relative
+        }
+
+        .footer-legal a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--signal-white);
+            transition: width 0.3s ease
+        }
+
+        .footer-legal a:hover {
+            opacity: 1
+        }
+
+        .footer-legal a:hover::after {
+            width: 100%
+        }
+
+        .footer-identity {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(240, 240, 240, 0.05)
+        }
+
+        .footer-copyright {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: var(--signal-white);
+            opacity: 0.5
+        }
+
+        .footer-payment {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center
+        }
+
+        .payment-icon {
+            height: 24px;
+            width: auto;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+            filter: brightness(0) invert(1)
+        }
+
+        .payment-icon:hover {
+            opacity: 0.8
+        }
+
+        .site-footer-light {
+            background: var(--signal-white);
+            color: var(--void-black);
+            border-top-color: rgba(5, 5, 5, 0.1)
+        }
+
+        .site-footer-light .footer-legal a {
+            color: var(--void-black)
+        }
+
+        .site-footer-light .footer-copyright {
+            color: var(--void-black)
+        }
+
+        .site-footer-light .payment-icon {
+            filter: none;
+            opacity: 0.4
+        }
+
+        .site-footer-light .payment-icon:hover {
+            opacity: 0.8
+        }
+
+        @media (min-width:768px) {
+            .footer-identity {
+                flex-direction: row;
+                justify-content: space-between
+            }
+
+            .footer-lang {
+                order: 1
+            }
+
+            .footer-copyright {
+                order: 2
+            }
+
+            .footer-payment {
+                order: 3
+            }
+        }
+
+        .footer-lang {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 18px;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+            filter: grayscale(100%)
+        }
+
+        .lang-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 2px
+        }
+
+        .lang-btn:hover,
+        .lang-btn.active {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.1)
+        }
+
+        /* policies.css */
+        #size-guide,
+        #shipping-policy,
+        #return-policy,
+        #terms,
+        #privacy,
+        #contact {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 20px 100px 20px
+        }
+
+        #size-guide.active,
+        #shipping-policy.active,
+        #return-policy.active,
+        #terms.active,
+        #privacy.active,
+        #contact.active {
+            display: block
+        }
+
+        .policy-content {
+            max-width: 800px;
+            margin: 0 auto
+        }
+
+        .policy-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 40px;
+            text-align: center
+        }
+
+        .policy-text {
+            font-weight: 500;
+            font-size: 0.95rem;
+            line-height: 1.8
+        }
+
+        .policy-text h3 {
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            margin-top: 30px;
+            margin-bottom: 15px
+        }
+
+        .policy-text p {
+            margin-bottom: 20px
+        }
+
+        .policy-text ul,
+        .policy-text ol {
+            margin-left: 20px;
+            margin-bottom: 20px
+        }
+
+        .policy-text li {
+            margin-bottom: 10px
+        }
+
+        .policy-text a {
+            color: var(--signal-white);
+            text-decoration: underline
+        }
+
+        .size-table-container {
+            margin: 40px 0
+        }
+
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--concrete-grey)
+        }
+
+        .size-table th,
+        .size-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(240, 240, 240, 0.1)
+        }
+
+        .size-table th {
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            background: var(--void-black)
+        }
+
+        .size-table td {
+            font-weight: 500
+        }
+
+        .size-note {
+            background: var(--concrete-grey);
+            padding: 25px;
+            margin-top: 30px
+        }
+
+        .size-note p {
+            margin-bottom: 15px
+        }
+
+        .size-note ul {
+            margin-left: 20px
+        }
+
+        .size-note li {
+            margin-bottom: 8px
+        }
+
+        .btn-close-policy {
+            display: block;
+            margin: 50px auto;
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--signal-white);
+            border: 2px solid var(--signal-white);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s ease
+        }
+
+        .btn-close-policy:hover {
+            background: var(--signal-white);
+            color: var(--void-black)
+        }
+
+        .contact-intro {
+            text-align: center;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto 60px auto;
+            opacity: 0.9
+        }
+
+        .contact-methods {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto 80px auto
+        }
+
+        .contact-method {
+            background: var(--concrete-grey);
+            padding: 30px;
+            text-align: center
+        }
+
+        .contact-method h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px
+        }
+
+        .contact-method p {
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            opacity: 0.8
+        }
+
+        .contact-link {
+            display: inline-block;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--signal-white);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            position: relative;
+            transition: all 0.3s ease
+        }
+
+        .contact-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--signal-white);
+            transition: width 0.3s ease
+        }
+
+        .contact-link:hover {
+            color: #00FF41
+        }
+
+        .contact-link:hover::after {
+            width: 100%;
+            background: #00FF41
+        }
+
+        .contact-form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--concrete-grey);
+            padding: 40px;
+            margin-bottom: 50px
+        }
+
+        .contact-form-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+            text-align: center
+        }
+
+        .contact-form .form-group {
+            margin-bottom: 25px
+        }
+
+        .contact-form label {
+            display: block;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px
+        }
+
+        .contact-form input,
+        .contact-form select,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(240, 240, 240, 0.2);
+            background: var(--void-black);
+            color: var(--signal-white);
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease
+        }
+
+        .contact-form input:focus,
+        .contact-form select:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--signal-white)
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 120px
+        }
+
+        .btn-submit-contact {
+            width: 100%;
+            padding: 18px;
+            background: var(--signal-white);
+            color: var(--void-black);
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s ease
+        }
+
+        .btn-submit-contact:hover {
+            background: var(--void-black);
+            color: var(--signal-white);
+            border: 2px solid var(--signal-white)
+        }
+
+        .btn-submit-contact:disabled {
+            opacity: 0.5;
+            cursor: not-allowed
+        }
+
+        .contact-success {
+            text-align: center;
+            padding: 40px 20px
+        }
+
+        .contact-success h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+            color: #00FF41
+        }
+
+        .contact-success p {
+            font-weight: 500;
+            line-height: 1.8;
+            margin-bottom: 10px
+        }
+
+        @media (min-width:768px) {
+            .contact-methods {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            .contact-form-container {
+                padding: 50px
+            }
+        }
+
+        @media (max-width:480px) {
+            .contact-form-container {
+                padding: 25px
+            }
+
+            .contact-method {
+                padding: 20px
+            }
+        }
+
+        /* responsive.css */
+        @media (min-width:768px) and (max-width:1024px) {
+            .product-stream {
+                justify-content: center;
+                gap: 20px;
+                padding: 0 20px
+            }
+
+            .product-card {
+                width: calc(33.33% - 20px);
+                min-width: 200px
+            }
+
+            .command-bar {
+                width: 80%;
+                bottom: 30px;
+                border-radius: 0
+            }
+        }
+
+        @media (min-width:1025px) {
+            .product-stream {
+                justify-content: center;
+                gap: 30px;
+                max-width: 1400px;
+                padding: 0 40px
+            }
+
+            .product-card {
+                width: 180px
+            }
+
+            .data-bar {
+                font-size: 0.75rem
+            }
+
+            .command-bar {
+                width: 480px;
+                left: 50%;
+                transform: translateX(-50%) !important;
+                bottom: 30px;
+                background: rgba(5, 5, 5, 0.9);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
+            }
+        }
+    </style>
 </head>
 
 <body>
-
-    <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator"></div>
-
-    <!-- ============================================
-         1. THE PORTAL
-    ============================================ -->
     <section id="portal">
-        <!-- Replace with actual video -->
-        <video id="portal-video" autoplay muted loop playsinline>
+        <video id="portal-video" autoplay muted loop playsinline poster="assets/portal-poster.jpg">
             <source src="assets/videos/portal-video.mp4" type="video/mp4">
         </video>
-        <div class="logo-portal">NORTH IS NOT A PLACE.</div>
+        <div class="logo-portal" data-i18n="portal_slogan">NORTH IS NOT A PLACE.</div>
         <button class="portal-enter" onclick="enterSite()" data-i18n="portal_enter">[ TAP TO ENTER ]</button>
     </section>
-
-    <!-- ============================================
-         2. THE ARCHIVE (Shop)
-    ============================================ -->
     <section id="archive">
-        <h1 class="archive-header">COLLECTIONS 001 : STEEL SKINS</h1>
+        <h1 class="archive-header" data-i18n="archive_header">COLLECTIONS 001 : STEEL SKINS</h1>
         <div class="product-stream" id="productStream"></div>
-
-        <!-- Footer -->
         <footer class="site-footer">
             <div class="footer-content">
-                <!-- Tier 1: Legal & Trust -->
                 <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
+                    <a onclick="navigate('return-policy')" style="cursor: pointer" data-i18n="footer_refund">REFUND
+                        POLICY</a>
+                    <a onclick="navigate('terms')" style="cursor: pointer" data-i18n="footer_terms">TERMS OF SERVICE</a>
+                    <a onclick="navigate('contact')" style="cursor: pointer" data-i18n="footer_contact">CONTACT US</a>
                     <a onclick="navigate('privacy')" style="cursor: pointer" data-i18n="footer_privacy">PRIVACY
                         POLICY</a>
                 </nav>
-
-                <!-- Tier 2: Identity & Payment -->
                 <div class="footer-identity">
                     <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
+                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')"
+                            title="Bahasa Indonesia"><img src="https://flagcdn.com/w40/id.png" alt="ID"
+                                loading="lazy"></button>
+                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English"><img
+                                src="https://flagcdn.com/w40/gb.png" alt="EN" loading="lazy"></button>
                     </div>
                     <div class="footer-copyright">© 2026, RAZRBILZ</div>
                     <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
+                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon" loading="lazy">
                     </div>
                 </div>
             </div>
         </footer>
     </section>
-
-    <!-- ============================================
-         3. PRODUCT DETAIL
-    ============================================ -->
     <section id="product-detail">
         <div class="image-gallery" id="productGallery"></div>
         <div class="product-info" id="productInfo"></div>
         <div class="sticky-buy">
-            <button class="btn-secure" onclick="addToCart()">[ SECURE PIECE ]</button>
+            <button class="btn-secure" onclick="addToCart()" data-i18n="product_secure">[ SECURE PIECE ]</button>
         </div>
-
-        <!-- Footer -->
         <footer class="site-footer">
             <div class="footer-content">
-                <!-- Tier 1: Legal & Trust -->
                 <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
+                    <a onclick="navigate('return-policy')" style="cursor: pointer" data-i18n="footer_refund">REFUND
+                        POLICY</a>
+                    <a onclick="navigate('terms')" style="cursor: pointer" data-i18n="footer_terms">TERMS OF SERVICE</a>
+                    <a onclick="navigate('contact')" style="cursor: pointer" data-i18n="footer_contact">CONTACT US</a>
+                    <a onclick="navigate('privacy')" style="cursor: pointer" data-i18n="footer_privacy">PRIVACY
+                        POLICY</a>
                 </nav>
-
-                <!-- Tier 2: Identity & Payment -->
                 <div class="footer-identity">
                     <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
+                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')"
+                            title="Bahasa Indonesia"><img src="https://flagcdn.com/w40/id.png" alt="ID"
+                                loading="lazy"></button>
+                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English"><img
+                                src="https://flagcdn.com/w40/gb.png" alt="EN" loading="lazy"></button>
                     </div>
                     <div class="footer-copyright">© 2026, RAZRBILZ</div>
                     <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
+                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon" loading="lazy">
                     </div>
                 </div>
             </div>
         </footer>
     </section>
-
-    <!-- ============================================
-         4. ABOUT PAGE
-    ============================================ -->
     <section id="about">
         <div class="about-content">
-            <h1 class="about-title">THE DRIFTER OBSERVES.<br>THE STRATEGIST ACTS.</h1>
-
-            <div class="about-text" id="aboutText" style="margin-bottom: 40px; min-height: 120px;">
-                You choose to drift, but you do not move blind. In a world of noise, information is leverage. The public
-                gets the echo. The Community gets the source. We established this network for the realists, the ones
-                with steel skins who demand precision, not spam.
-            </div>
-
+            <h1 class="about-title" data-i18n="about_title">THE DRIFTER OBSERVES.<br>THE STRATEGIST ACTS.</h1>
+            <div class="about-text" id="aboutText" style="margin-bottom: 40px; min-height: 120px;"
+                data-i18n="about_text">You choose to drift,
+                but you do not move blind. In a world of noise, information is leverage. The public gets the echo. The
+                Community gets the source. We established this network for the realists, the ones with steel skins who
+                demand precision, not spam.</div>
             <div class="uplink-container" style="max-width: 700px; margin: 0 auto; text-align: left;">
-
                 <div class="uplink-reasons"
                     style="margin-bottom: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
-                    <h3
-                        style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: #fff; margin-bottom: 25px; letter-spacing: 0.1em;">
+                    <h3 style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: #fff; margin-bottom: 25px; letter-spacing: 0.1em;"
+                        data-i18n="why_connect">
                         WHY CONNECT?</h3>
-
                     <div style="margin-bottom: 20px;">
                         <span
-                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;">PRIORITY
+                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;"
+                            data-i18n="uplink_title_1">PRIORITY
                             COORDINATES:</span>
                         <span
-                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;">You
+                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;"
+                            data-i18n="uplink_desc_1">You
                             receive 24-Hour Early Access to every drop before the public panic begins. Secure your size
                             while the crowd is still loading the page.</span>
                     </div>
-
                     <div style="margin-bottom: 20px;">
                         <span
-                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;">RAW
+                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;"
+                            data-i18n="uplink_title_2">RAW
                             SCHEMATICS:</span>
                         <span
-                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;">Get
+                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;"
+                            data-i18n="uplink_desc_2">Get
                             direct transmission of our design blueprints, philosophy, and future architecture. See the
                             process before the product exists.</span>
                     </div>
-
                     <div style="margin-bottom: 20px;">
                         <span
-                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;">ZERO
+                            style="color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 5px;"
+                            data-i18n="uplink_title_3">ZERO
                             NOISE PROTOCOL:</span>
                         <span
-                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;">We
+                            style="color: #999; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;"
+                            data-i18n="uplink_desc_3">We
                             do not send clutter. We transmit only signal. If you receive a message from Razrbilz, it
                             signifies something critical.</span>
                     </div>
                 </div>
-
                 <form id="communityForm" class="uplink-form" onsubmit="handleJoinNetwork(event)"
                     style="display: flex; flex-direction: column; gap: 15px;">
                     <input type="email" name="email" placeholder="[ Enter Email Address ]" required
+                        data-i18n="placeholder_email"
                         style="width: 100%; padding: 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-family: 'Space Mono', monospace; text-align: center; outline: none; transition: all 0.3s;">
-                    <button type="submit" class="btn-join" id="btnJoin"
-                        style="width: 100%; margin-top: 0; background: #fff; color: #121212; border: none; cursor: pointer; transition: all 0.3s;">
-                        [ INITIATE UPLINK ]
-                    </button>
+                    <button type="submit" class="btn-join" id="btnJoin" data-i18n="btn_uplink"
+                        style="width: 100%; margin-top: 0; background: #fff; color: #121212; border: none; cursor: pointer; transition: all 0.3s;">[
+                        INITIATE UPLINK ]</button>
                     <p id="formStatus"
                         style="display: none; text-align: center; font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #00ff00; margin-top: 10px;">
                     </p>
                 </form>
-
             </div>
         </div>
-
         <footer class="site-footer">
             <div class="footer-content">
                 <nav class="footer-legal">
@@ -256,551 +2034,226 @@
                 </nav>
                 <div class="footer-identity">
                     <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
+                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')"
+                            title="Bahasa Indonesia"><img src="https://flagcdn.com/w40/id.png" alt="ID"
+                                loading="lazy"></button>
+                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English"><img
+                                src="https://flagcdn.com/w40/gb.png" alt="EN" loading="lazy"></button>
                     </div>
                     <div class="footer-copyright">© 2026, RAZRBILZ</div>
                     <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
+                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon" loading="lazy">
                     </div>
                 </div>
             </div>
         </footer>
     </section>
-
-    <!-- ============================================
-         5. CART
-    ============================================ -->
     <section id="cart">
-        <h1 class="cart-header">CACHE</h1>
+        <h1 class="cart-header" data-i18n="cart_header">CACHE</h1>
         <div id="cartContent">
-            <p class="cart-empty">YOUR CACHE IS EMPTY</p>
+            <p class="cart-empty" data-i18n="cart_empty">YOUR CACHE IS EMPTY</p>
         </div>
-
-        <!-- Footer -->
         <footer class="site-footer">
             <div class="footer-content">
-                <!-- Tier 1: Legal & Trust -->
                 <nav class="footer-legal">
                     <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
                     <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
                     <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
                     <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
                 </nav>
-
-                <!-- Tier 2: Identity & Payment -->
                 <div class="footer-identity">
                     <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
+                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')"
+                            title="Bahasa Indonesia"><img src="https://flagcdn.com/w40/id.png" alt="ID"
+                                loading="lazy"></button>
+                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English"><img
+                                src="https://flagcdn.com/w40/gb.png" alt="EN" loading="lazy"></button>
                     </div>
                     <div class="footer-copyright">© 2026, RAZRBILZ</div>
                     <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
+                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon" loading="lazy">
+                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon" loading="lazy">
                     </div>
                 </div>
             </div>
         </footer>
     </section>
-
-    <!-- ============================================
-         6. CHECKOUT
-    ============================================ -->
     <section id="checkout">
         <div class="checkout-container">
             <div class="checkout-main" style="display:flex; flex-direction:column; justify-content:center;">
                 <h1 class="checkout-logo">RAZRBILZ</h1>
-
                 <div style="margin-bottom: 30px; color: #333;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;">Ready to Secure?</h2>
-                    <p style="color: #737373;">Shipping & Taxes will be calculated at the next step via Shopify Secure
+                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;" data-i18n="checkout_title">Ready to Secure?</h2>
+                    <p style="color: #737373;" data-i18n="checkout_desc">Shipping & Taxes will be calculated at the next
+                        step via Shopify Secure
                         Checkout.</p>
                 </div>
-
-                <button class="btn-submit-order" onclick="redirectToShopify()">
-                    PROCEED TO CHECKOUT
-                </button>
-
-                <button class="btn-back-cart" onclick="navigate('cart')">&lt; Return to cart</button>
+                <button class="btn-submit-order" onclick="redirectToShopify()" data-i18n="btn_checkout">PROCEED TO
+                    CHECKOUT</button>
+                <button class="btn-back-cart" onclick="navigate('cart')" data-i18n="btn_return_cart">&lt; Return to
+                    cart</button>
             </div>
-
             <div class="checkout-sidebar">
-                <div class="manifest-cargo" id="checkoutSummary">
-                </div>
+                <div class="manifest-cargo" id="checkoutSummary"></div>
             </div>
         </div>
     </section>
-
-    <!-- ============================================
-         COMMAND BAR (Navigation)
-    ============================================ -->
     <nav class="command-bar">
-        <button class="command-btn active" onclick="navigate('archive')">ARCHIVE</button>
-        <button class="command-btn" onclick="navigate('about')">LOG</button>
-        <button class="command-btn" onclick="navigate('cart')">CACHE <span class="cart-count">(0)</span></button>
+        <button class="command-btn active" onclick="navigate('archive')" data-i18n="nav_archive">ARCHIVE</button>
+        <button class="command-btn" onclick="navigate('about')" data-i18n="nav_log">LOG</button>
+        <button class="command-btn" onclick="navigate('cart')"><span data-i18n="nav_cache">CACHE</span> <span
+                class="cart-count">(0)</span></button>
     </nav>
-
-    <!-- ============================================
-     TERMS OF SERVICE PAGE
-============================================ -->
     <section id="terms">
         <div class="policy-content">
-            <h1 class="policy-title">TERMS OF SERVICE</h1>
-
-            <div class="policy-text">
+            <h1 class="policy-title" data-i18n="policy_terms_title">TERMS OF SERVICE</h1>
+            <div class="policy-text" data-i18n="policy_terms_content">
                 <h3>1. AGREEMENT TO TERMS</h3>
                 <p>By accessing and placing an order with RAZRBILZ, you confirm that you are in agreement with and bound
                     by the terms and conditions contained in the Terms Of Service outlined below. These terms apply to
                     the entire website and any email or other type of communication between you and RAZRBILZ.</p>
-
                 <h3>2. PRODUCT INFORMATION</h3>
                 <p>All product descriptions, images, references, features, content, specifications, products, and prices
                     of products and services described or depicted on this website are subject to change at any time
-                    without notice. Certain weights, measures and similar descriptions are approximate and are provided
-                    for convenience purposes only. We make all reasonable efforts to accurately display the attributes
-                    of our products, including the applicable colors; however, the actual color you see will depend on
-                    your screen and we cannot guarantee that your screen's display of any color will be accurate.</p>
-
+                    without notice. We make all reasonable efforts to accurately display the attributes of our products.
+                </p>
                 <h3>3. PRICING & AVAILABILITY</h3>
                 <p>All prices are listed in Indonesian Rupiah (IDR). We reserve the right to change prices for products
-                    displayed at any time, and to correct pricing errors that may inadvertently occur. Additional
-                    information about pricing and sales tax is available on the payment page.</p>
+                    displayed at any time.</p>
                 <p>We cannot guarantee that all products shown are in stock. If an item is out of stock after you place
                     your order, we will notify you and issue a full refund.</p>
-
                 <h3>4. ORDER ACCEPTANCE & CANCELLATION</h3>
-                <p>We reserve the right to refuse or cancel any order for any reason at any given time. You may cancel
-                    your order at no charge before the item has been shipped. Once an item has shipped, cancellation is
-                    subject to our return policy.</p>
-
+                <p>We reserve the right to refuse or cancel any order for any reason at any given time.</p>
                 <h3>5. INTELLECTUAL PROPERTY</h3>
-                <p>All content on this website, including but not limited to text, graphics, logos, images, and
-                    software, is the property of RAZRBILZ and is protected by Indonesian and international copyright
-                    laws. Unauthorized use of any content may violate copyright, trademark, and other laws.</p>
-
+                <p>All content on this website is the property of RAZRBILZ and is protected by Indonesian and
+                    international copyright laws.</p>
                 <h3>6. USER CONDUCT</h3>
-                <p>You agree not to:</p>
-                <ul>
-                    <li>Use the website for any illegal purpose or in violation of any laws</li>
-                    <li>Attempt to gain unauthorized access to any portion of the website</li>
-                    <li>Impersonate any person or entity or falsely state your affiliation with a person or entity</li>
-                    <li>Interfere with or disrupt the operation of the website or servers</li>
-                    <li>Use any automated system to access the website</li>
-                </ul>
-
-                <h3>7. LIMITATION OF LIABILITY</h3>
-                <p>RAZRBILZ shall not be liable for any indirect, incidental, special, consequential, or punitive
-                    damages resulting from your use of or inability to use the service, even if RAZRBILZ has been
-                    advised of the possibility of such damages.</p>
-
-                <h3>8. FORCE MAJEURE</h3>
-                <p>We shall not be held responsible for any delay or failure to comply with our obligations under these
-                    conditions if the delay or failure arises from any cause which is beyond our reasonable control,
-                    including but not limited to natural disasters, war, civil unrest, or government restrictions.</p>
-
-                <h3>9. GOVERNING LAW</h3>
-                <p>These Terms of Service and any separate agreements whereby we provide you services shall be governed
-                    by and construed in accordance with the laws of Indonesia.</p>
-
-                <h3>10. CHANGES TO TERMS</h3>
-                <p>We reserve the right to update, change or replace any part of these Terms of Service at any time. It
-                    is your responsibility to check this page periodically for changes. Your continued use of the
-                    website following the posting of any changes constitutes acceptance of those changes.</p>
-
+                <p>You agree not to use the website for any illegal purpose.</p>
                 <h3>11. CONTACT INFORMATION</h3>
-                <p>If you have any questions about these Terms of Service, please contact us at:</p>
-                <p style="font-family: 'Courier New', monospace; margin-top: 10px;">
-                    Email: info@razrbilz.id<br>
-                    Instagram: @razrbilz
-                    Phone: +62 812-3456-7890
-                </p>
+                <p>Email: info@razrbilz.id</p>
             </div>
-
-            <button class="btn-close-policy" onclick="closePolicy()">[ CLOSE ]</button>
+            <button class="btn-close-policy" onclick="closePolicy()" data-i18n="btn_close_policy">[ CLOSE ]</button>
         </div>
-
-        <footer class="site-footer">
-            <div class="footer-content">
-                <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
-                </nav>
-                <div class="footer-identity">
-                    <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
-                    </div>
-                    <div class="footer-copyright">© 2026, RAZRBILZ</div>
-                    <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
-                    </div>
-                </div>
-            </div>
-        </footer>
     </section>
-
-    <!-- ============================================
-     PRIVACY POLICY PAGE
-============================================ -->
     <section id="privacy">
         <div class="policy-content">
-            <h1 class="policy-title">PRIVACY POLICY</h1>
-
-            <div class="policy-text">
+            <h1 class="policy-title" data-i18n="policy_privacy_title">PRIVACY POLICY</h1>
+            <div class="policy-text" data-i18n="policy_privacy_content">
                 <h3>1. INFORMATION WE COLLECT</h3>
-                <p>When you make a purchase or attempt to make a purchase through the website, we collect certain
-                    information from you, including:</p>
-                <ul>
-                    <li><strong>Personal Information:</strong> Name, billing address, shipping address, email address,
-                        phone number</li>
-                    <li><strong>Payment Information:</strong> Processed securely through our payment gateway (Midtrans).
-                        We do not store credit card details</li>
-                    <li><strong>Browsing Information:</strong> IP address, browser type, referring/exit pages, and
-                        date/time stamps</li>
-                    <li><strong>Device Information:</strong> Computer or mobile device information</li>
-                </ul>
-
+                <p>We collect personal information, payment information, and browsing data.</p>
                 <h3>2. HOW WE USE YOUR INFORMATION</h3>
-                <p>We use the information we collect to:</p>
-                <ul>
-                    <li>Process and fulfill your orders</li>
-                    <li>Communicate with you about your orders and respond to inquiries</li>
-                    <li>Screen orders for potential risk or fraud</li>
-                    <li>Provide you with information about our products and services (if you opt-in)</li>
-                    <li>Improve and optimize our website and user experience</li>
-                    <li>Comply with legal obligations</li>
-                </ul>
-
-                <h3>3. DATA SHARING & DISCLOSURE</h3>
-                <p>We may share your personal information with third parties to help us use your information as
-                    described above. For example:</p>
-                <ul>
-                    <li><strong>Payment Processors:</strong> Midtrans (secure payment gateway)</li>
-                    <li><strong>Shipping Partners:</strong> JNE, J&T, Ninja Express, Sicepat</li>
-                    <li><strong>Analytics Services:</strong> Google Analytics (anonymized data)</li>
-                </ul>
-                <p>We will never sell, rent, or share your personal information with third parties for their marketing
-                    purposes without your explicit consent.</p>
-
-                <h3>4. DATA SECURITY</h3>
-                <p>We implement a variety of security measures to maintain the safety of your personal information:</p>
-                <ul>
-                    <li>SSL/TLS encryption for all data transmission</li>
-                    <li>Secure payment processing through PCI DSS compliant gateways</li>
-                    <li>Regular security audits and updates</li>
-                    <li>Restricted access to personal data on a need-to-know basis</li>
-                </ul>
-                <p>However, no method of transmission over the Internet or electronic storage is 100% secure. While we
-                    strive to use commercially acceptable means to protect your information, we cannot guarantee
-                    absolute security.</p>
-
-                <h3>5. COOKIES & TRACKING</h3>
-                <p>We use cookies and similar tracking technologies to:</p>
-                <ul>
-                    <li>Keep track of items stored in your shopping cart</li>
-                    <li>Remember your preferences and settings</li>
-                    <li>Understand how you use our website</li>
-                    <li>Analyze trends and improve performance</li>
-                </ul>
-                <p>You can set your browser to refuse all or some browser cookies. However, if you disable cookies, some
-                    features of the website may not function properly.</p>
-
-                <h3>6. YOUR RIGHTS</h3>
-                <p>You have the right to:</p>
-                <ul>
-                    <li>Access the personal information we hold about you</li>
-                    <li>Request correction of inaccurate information</li>
-                    <li>Request deletion of your personal information</li>
-                    <li>Object to processing of your personal information</li>
-                    <li>Withdraw consent at any time (where we rely on consent)</li>
-                    <li>Lodge a complaint with a supervisory authority</li>
-                </ul>
-
-                <h3>7. DATA RETENTION</h3>
-                <p>We retain your personal information for as long as necessary to fulfill the purposes outlined in this
-                    privacy policy, unless a longer retention period is required or permitted by law. Order information
-                    is retained for 7 years for tax and accounting purposes.</p>
-
-                <h3>8. AGE RESTRICTIONS</h3>
-                <p>Our website is not intended for individuals under the age of 18. We do not knowingly collect personal
-                    information from children. If you are a parent or guardian and believe your child has provided us
-                    with personal information, please contact us.</p>
-
-                <h3>9. CHANGES TO THIS POLICY</h3>
-                <p>We may update this privacy policy from time to time to reflect changes in our practices or for other
-                    operational, legal, or regulatory reasons. We will notify you of any material changes by posting the
-                    new policy on this page.</p>
-
-                <h3>10. CONTACT US</h3>
-                <p>If you have any questions about this Privacy Policy or wish to exercise your rights, please contact
-                    us at:</p>
-                <p style="font-family: 'Courier New', monospace; margin-top: 10px;">
-                    Email: info@razrbilz.id<br>
-                    Instagram: @razrbilz<br>
-                    Phone: +62 812-3456-7890
-                </p>
+                <p>To process orders, screen for fraud, and improve our services.</p>
+                <h3>3. DATA SHARING</h3>
+                <p>We share data with Midtrans (payment) and logistics partners.</p>
             </div>
-
-            <button class="btn-close-policy" onclick="closePolicy()">[ CLOSE ]</button>
+            <button class="btn-close-policy" onclick="closePolicy()" data-i18n="btn_close_policy">[ CLOSE ]</button>
         </div>
-
-        <footer class="site-footer">
-            <div class="footer-content">
-                <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
-                </nav>
-                <div class="footer-identity">
-                    <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
-                    </div>
-                    <div class="footer-copyright">© 2026, RAZRBILZ</div>
-                    <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
-                    </div>
-                </div>
-            </div>
-        </footer>
     </section>
-
-    <!-- ============================================
-     CONTACT US PAGE
-============================================ -->
     <section id="contact">
         <div class="policy-content">
-            <h1 class="policy-title">CONTACT US</h1>
-
+            <h1 class="policy-title" data-i18n="contact_title">CONTACT US</h1>
             <div class="contact-intro">
-                <p>Need assistance? Have questions? We're here to help. Reach out through any of the channels below or
-                    send us a direct message.</p>
+                <p data-i18n="contact_intro">Need assistance? Contact us below.</p>
             </div>
-
             <div class="contact-methods">
                 <div class="contact-method">
-                    <h3>EMAIL</h3>
-                    <p>For general inquiries:</p>
-                    <a href="mailto:info@razrbilz.id" class="contact-link">info@razrbilz.id</a>
+                    <h3 data-i18n="contact_method_email">EMAIL</h3><a href="mailto:info@razrbilz.id"
+                        class="contact-link">info@razrbilz.id</a>
                 </div>
-
                 <div class="contact-method">
-                    <h3>SOCIAL MEDIA</h3>
-                    <p>Follow us for drops:</p>
-                    <a href="https://instagram.com/razrbilz" target="_blank" class="contact-link">@razrbilz</a>
-                </div>
-
-                <div class="contact-method">
-                    <h3>WHATSAPP</h3>
-                    <p>Quick questions:</p>
-                    <a href="https://wa.me/6281234567890" target="_blank" class="contact-link">+62 812-3456-7890</a>
+                    <h3 data-i18n="contact_method_social">SOCIAL MEDIA</h3><a href="https://instagram.com/razrbilz"
+                        target="_blank" class="contact-link">@razrbilz</a>
                 </div>
             </div>
-
             <div class="contact-form-container">
-                <h2 class="contact-form-title">SEND A MESSAGE</h2>
+                <h2 class="contact-form-title" data-i18n="contact_form_title">SEND A MESSAGE</h2>
                 <form id="contactForm" class="contact-form" onsubmit="submitContactForm(event); return false;">
-                    <div class="form-group">
-                        <label for="contact-name">NAME</label>
-                        <input type="text" id="contact-name" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contact-email">EMAIL</label>
-                        <input type="email" id="contact-email" name="email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contact-subject">SUBJECT</label>
-                        <select id="contact-subject" name="subject" required>
-                            <option value="">SELECT A TOPIC</option>
-                            <option value="order">Order Inquiry</option>
-                            <option value="product">Product Question</option>
-                            <option value="shipping">Shipping Issue</option>
-                            <option value="return">Return/Exchange</option>
-                            <option value="business">Business/Wholesale</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="contact-message">MESSAGE</label>
-                        <textarea id="contact-message" name="message" rows="6" required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit-contact">[ SEND MESSAGE ]</button>
+                    <div class="form-group"><label for="contact-name" data-i18n="form_name">NAME</label><input
+                            type="text" id="contact-name" name="name" required></div>
+                    <div class="form-group"><label for="contact-email" data-i18n="form_email">EMAIL</label><input
+                            type="email" id="contact-email" name="email" required></div>
+                    <div class="form-group"><label for="contact-subject" data-i18n="form_subject">SUBJECT</label><select
+                            id="contact-subject" name="subject" required>
+                            <option value="" data-i18n="form_select_topic">SELECT A TOPIC</option>
+                            <option value="order" data-i18n="form_topic_order">Order Inquiry</option>
+                            <option value="other" data-i18n="form_topic_other">Other</option>
+                        </select></div>
+                    <div class="form-group"><label for="contact-message"
+                            data-i18n="form_message">MESSAGE</label><textarea id="contact-message" name="message"
+                            rows="6" required></textarea></div>
+                    <button type="submit" class="btn-submit-contact" data-i18n="btn_send">[ SEND MESSAGE ]</button>
                 </form>
-
                 <div id="contact-success" class="contact-success" style="display: none;">
-                    <h3>MESSAGE SENT</h3>
-                    <p>We've received your message and will respond within 1-2 business days.</p>
+                    <h3 data-i18n="contact_sent_title">MESSAGE SENT</h3>
+                    <p data-i18n="contact_sent_desc">We've received your message.</p>
                 </div>
             </div>
-
-            <button class="btn-close-policy" onclick="navigate('archive')">[ CLOSE ]</button>
+            <button class="btn-close-policy" onclick="navigate('archive')" data-i18n="btn_close_policy">[ CLOSE
+                ]</button>
         </div>
-
-        <footer class="site-footer">
-            <div class="footer-content">
-                <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
-                </nav>
-                <div class="footer-identity">
-                    <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
-                    </div>
-                    <div class="footer-copyright">© 2026, RAZRBILZ</div>
-                    <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
-                    </div>
-                </div>
-            </div>
-        </footer>
     </section>
-
-
-    <!-- ============================================
-         RETURN POLICY PAGE
-    ============================================ -->
     <section id="return-policy">
         <div class="policy-content">
-            <h1 class="policy-title">RETURN & EXCHANGE</h1>
-
-            <div class="policy-text">
+            <h1 class="policy-title" data-i18n="policy_return_title">RETURN & EXCHANGE</h1>
+            <div class="policy-text" data-i18n="policy_return_content">
                 <h3>RETURN WINDOW</h3>
-                <p>You have 7 days from the date of delivery to request a return or exchange.</p>
-
+                <p>7 days from delivery.</p>
                 <h3>ELIGIBLE RETURNS</h3>
-                <ul>
-                    <li>Defective or damaged items</li>
-                    <li>Wrong size received (must be unworn with tags)</li>
-                    <li>Incorrect item shipped</li>
-                </ul>
-
-                <h3>NON-RETURNABLE ITEMS</h3>
-                <ul>
-                    <li>Items without original tags</li>
-                    <li>Worn, washed, or altered items</li>
-                    <li>Items damaged by customer misuse</li>
-                </ul>
-
-                <h3>HOW TO REQUEST A RETURN</h3>
-                <ol>
-                    <li>Contact us at <a href="mailto:info@razrbilz.id">info@razrbilz.id</a> within 7 days of delivery
-                    </li>
-                    <li>Include your order number and reason for return</li>
-                    <li>We will send you return instructions</li>
-                    <li>Ship the item back to our warehouse</li>
-                    <li>Refund will be processed within 3-5 business days after inspection</li>
-                </ol>
-
-                <h3>EXCHANGE PROCESS</h3>
-                <p>If you received the wrong size, we offer free size exchange. Contact us and we'll arrange a swap.</p>
-
-                <h3>REFUND METHOD</h3>
-                <p>Refunds will be credited to your original payment method or as store credit (your choice).</p>
+                <p>Defective, wrong size, incorrect item.</p>
             </div>
-
-            <button class="btn-close-policy" onclick="closePolicy()">[ CLOSE ]</button>
+            <button class="btn-close-policy" onclick="closePolicy()" data-i18n="btn_close_policy">[ CLOSE ]</button>
         </div>
-
-        <footer class="site-footer">
-            <div class="footer-content">
-                <!-- Tier 1: Legal & Trust -->
-                <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
-                </nav>
-
-                <!-- Tier 2: Identity & Payment -->
-                <div class="footer-identity">
-                    <div class="footer-lang">
-                        <button class="lang-btn" data-lang="id" onclick="setLanguage('id')" title="Bahasa Indonesia">
-                            <img src="https://flagcdn.com/w40/id.png" alt="ID">
-                        </button>
-                        <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" title="English">
-                            <img src="https://flagcdn.com/w40/gb.png" alt="EN">
-                        </button>
-                    </div>
-                    <div class="footer-copyright">© 2026, RAZRBILZ</div>
-                    <div class="footer-payment">
-                        <img src="assets/icons/visa.svg" alt="Visa" class="payment-icon">
-                        <img src="assets/icons/discover.svg" alt="Discover" class="payment-icon">
-                        <img src="assets/icons/mastercard.svg" alt="Mastercard" class="payment-icon">
-                        <img src="assets/icons/shopify.svg" alt="Shopify Pay" class="payment-icon">
-                        <img src="assets/icons/apple-pay.svg" alt="Apple Pay" class="payment-icon">
-                    </div>
-                </div>
-            </div>
-        </footer>
     </section>
 
-    <!-- JavaScript -->
-    <script src="js/config.js"></script>
-    <script src="js/products.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/validation.js"></script>
-    <script src="js/smooth-scroll.js"></script>
-    <script src="js/portal.js"></script>
-    <script src="js/navigation.js"></script>
-    <script src="js/archive.js"></script>
-    <script src="js/product-detail.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/checkout.js"></script>
-    <script src="js/about.js"></script>
-    <script src="js/policies.js"></script>
-    <script src="js/init.js"></script>
-    <script src="js/translation.js"></script>
+    <!-- Cookie Consent -->
+    <div id="cookie-banner"
+        style="display: none; position: fixed; bottom: -100px; left: 0; width: 100%; background: var(--void-black); border-top: 1px solid rgba(255,255,255,0.1); padding: 20px; z-index: 10000; transition: bottom 0.5s ease; font-family: 'Montserrat', sans-serif;">
+        <div
+            style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px; text-align: center;">
+            <p style="font-size: 0.8rem; opacity: 0.8; margin: 0; line-height: 1.5;">
+                RAZRBILZ uses cookies to enhance your experience and optimize local currency settings. By continuing,
+                you agree to our usage protocols.
+            </p>
+            <button onclick="acceptCookies()"
+                style="padding: 10px 25px; background: var(--signal-white); color: var(--void-black); border: none; font-weight: 900; font-size: 0.8rem; letter-spacing: 0.1em; cursor: pointer;">
+                [ ACKNOWLEDGE ]
+            </button>
+        </div>
+    </div>
+    <style>
+        #cookie-banner.visible {
+            bottom: 0;
+        }
 
+        @media (min-width: 768px) {
+            #cookie-banner>div {
+                flex-direction: row;
+                text-align: left;
+                justify-content: space-between;
+            }
+        }
+    </style>
+    <script src="js/config.js" defer></script>
+    <script src="js/products.js" defer></script>
+    <script src="js/utils.js" defer></script>
+    <script src="js/smooth-scroll.js" defer></script>
+    <script src="js/portal.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/archive.js" defer></script>
+    <script src="js/product-detail.js" defer></script>
+    <script src="js/cart.js" defer></script>
+    <script src="js/checkout.js" defer></script>
+    <script src="js/about.js" defer></script>
+    <script src="js/policies.js" defer></script>
+    <script src="js/init.js" defer></script>
+    <script src="js/translation.js" defer></script>
 </body>
 
 </html>

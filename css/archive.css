@@ -1,12 +1,8 @@
-/* ============================================
-   THE ARCHIVE WITH LIVE STOCK SYSTEM
-============================================ */
-
+/* ARCHIVE OPTIMIZED */
 #archive {
     display: none;
     min-height: 100vh;
-    padding: 20px;
-    padding-bottom: 100px;
+    padding: 30px 20px 120px 20px;
 }
 
 #archive.active {
@@ -16,27 +12,33 @@
 .archive-header {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     letter-spacing: 0.15em;
-    margin: 40px 0 30px 0;
+    margin: 50px 0 40px 0;
     text-align: center;
 }
 
 .product-stream {
-    max-width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 10px; /* Padding kiri-kanan dikit */
+    padding: 0 15px;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    grid-template-columns: repeat(2, 1fr); /* 2 Kolom Kiri-Kanan */
-    gap: 15px 10px; /* Jarak vertikal 15px, horizontal 10px */
+    gap: 30px 20px;
+    /* Increased breathing room */
 }
 
 .product-card {
-    width: calc(50% - 15px);
-    margin-bottom: 0;
+    width: calc(50% - 10px);
+    margin-bottom: 20px;
     position: relative;
+}
+
+@media (min-width: 769px) {
+    .product-card {
+        width: calc(33.333% - 14px);
+    }
 }
 
 .product-image-container {
@@ -46,24 +48,22 @@
     overflow: hidden;
     background: var(--concrete-grey);
     cursor: pointer;
+    border-radius: 2px;
 }
 
-.product-image {
+.product-image,
+.product-image-detail {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
 .product-image-detail {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
 .product-image-container.xray-active .product-image {
@@ -76,23 +76,21 @@
 
 .xray-icon {
     position: absolute;
-    width: 25px;
-    height: 25px;
-    font-size: 0.7rem;
-    top: 8px;
-    right: 8px;
-    border: 1px solid var(--signal-white); /* Border lebih tipis biar elegan */
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(5,5,5,0.8); /* Background lebih gelap */
-    z-index: 20; /* Z-Index tinggi agar ada di atas gambar */
-    
-    /* PENTING: Ubah dari 'none' ke 'auto' agar bisa diklik */
-    pointer-events: auto; 
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 20;
+    pointer-events: auto;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
 
 .xray-icon:hover {
@@ -100,91 +98,103 @@
     color: var(--void-black);
 }
 
-.xray-icon:active {
-    transform: scale(0.9);
-}
-
-/* Data Bar with Monospace Typography */
 .data-bar {
-    margin-top: 10px;
-    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
-    font-weight: 500;
-    font-size: 0.65rem; /* Font lebih kecil (sebelumnya 0.85rem) */
+    margin-top: 15px;
+    font-family: 'Montserrat', sans-serif;
+    /* More consistent font */
+    font-weight: 600;
+    font-size: 0.75rem;
     letter-spacing: 0.05em;
-    line-height: 1.4;
+    line-height: 1.6;
 }
 
-.data-bar div {
-    margin-bottom: 2px;
-}
-
-/* Live Stock Status System */
 .stock-indicator {
-    padding: 2px 6px;
-    font-size: 0.6rem;
-    border-width: 1px;
+    padding: 3px 8px;
+    font-size: 0.65rem;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
 }
 
-/* Stock Status Colors */
 .stock-available {
     color: #00FF41;
-    border-color: #00FF41;
-    background: rgba(0, 255, 65, 0.1);
+    background: rgba(0, 255, 65, 0.08);
 }
 
 .stock-critical {
     color: #FFD700;
-    border-color: #FFD700;
-    background: rgba(255, 215, 0, 0.1);
-    animation: pulse-warning 2s ease-in-out infinite;
+    background: rgba(255, 215, 0, 0.08);
+    animation: pulse-warning 2s infinite;
 }
 
 .stock-low {
     color: var(--alert-red);
-    border-color: var(--alert-red);
-    background: rgba(255, 0, 0, 0.1);
-    animation: pulse-danger 1.5s ease-in-out infinite;
+    background: rgba(255, 0, 0, 0.08);
+    animation: pulse-danger 1.5s infinite;
 }
 
 .stock-sold-out {
-    color: #666;
-    border-color: #666;
-    background: rgba(102, 102, 102, 0.1);
+    color: #888;
     text-decoration: line-through;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 @keyframes pulse-warning {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0.6
+    }
 }
 
 @keyframes pulse-danger {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: 0.8
+    }
 }
 
-/* Price in monospace */
 .price-tag {
-    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 5px;
 }
 
-/* Sold out overlay on product image */
 .product-card.sold-out .product-image-container::after {
-    content: 'SOLD OUT';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 2rem;
-    letter-spacing: 0.2em;
-    color: var(--alert-red);
-    text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-    z-index: 10;
+    /* Keeping this as it's good UX, can be removed if user strictly wants NO text, but "disabled look" usually implies text or icon. 
+       Use previously requested "Keep only Image and Name" -> Maybe I should remove this text?
+       User said: "Keep only the Product Image and Product Name visible."
+       "Sold Out Visual Indicator... apply a CSS filter."
+       I will REMOVE the ::after "SOLD OUT" text to strictly follow "Only Image and Name" and rely on the filter opacity/blur.
+       Actually, sold out needs to be communicated. I'll hide the text for now to be "aesthetic" and strict.
+    */
+    content: '';
+    display: none;
 }
 
 .product-card.sold-out .product-image {
-    filter: grayscale(100%) brightness(0.5);
+    filter: grayscale(100%) brightness(0.6) blur(2px);
+    /* Aesthetic disable */
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Cleanup */
+.product-card.sold-out {
+    pointer-events: none;
+    /* Disable interaction */
+}
+
+.product-card.sold-out .product-name {
+    opacity: 0.5;
 }

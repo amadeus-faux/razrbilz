@@ -1,40 +1,35 @@
-/* ============================================
-   CHECKOUT PRO (Shopify Style)
-============================================ */
 #checkout {
     display: none;
     min-height: 100vh;
-    background: #FFFFFF; /* Putih bersih */
+    background: #FFFFFF;
     color: #333;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
 }
 
 #checkout.active {
-    display: block;
+    display: block
 }
 
 .checkout-container {
     display: flex;
-    flex-direction: column-reverse; /* Mobile: Summary di bawah/hidden logic */
+    flex-direction: column-reverse;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto
 }
 
-/* Kiri: Form */
 .checkout-main {
     padding: 20px;
     flex: 1.2;
     border-right: 1px solid #e1e1e1;
-    padding-top: 40px;
+    padding-top: 40px
 }
 
-/* Kanan: Sidebar Summary */
 .checkout-sidebar {
     background: #fafafa;
     padding: 20px;
     flex: 0.8;
     border-bottom: 1px solid #e1e1e1;
-    padding-top: 40px;
+    padding-top: 40px
 }
 
 .checkout-logo {
@@ -42,10 +37,9 @@
     font-weight: 900;
     font-size: 1.8rem;
     margin-bottom: 30px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.1em
 }
 
-/* Action Buttons */
 .btn-submit-order {
     width: 100%;
     padding: 22px;
@@ -57,10 +51,12 @@
     font-size: 1.1rem;
     cursor: pointer;
     margin-top: 10px;
-    transition: background 0.3s;
+    transition: background 0.3s
 }
 
-.btn-submit-order:hover { background: #333; }
+.btn-submit-order:hover {
+    background: #333
+}
 
 .btn-back-cart {
     background: none;
@@ -69,14 +65,13 @@
     cursor: pointer;
     margin-top: 30px;
     font-size: 0.9rem;
-    display: block;
+    display: block
 }
 
-/* Sidebar Summary */
 .cart-item-preview {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .item-thumb {
@@ -84,14 +79,14 @@
     height: 70px;
     border-radius: 8px;
     border: 1px solid #e1e1e1;
-    position: relative;
+    position: relative
 }
 
 .item-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 8px
 }
 
 .item-badge {
@@ -107,24 +102,41 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 600
 }
 
-.item-details { flex: 1; margin-left: 15px; }
-.item-name { font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 5px; }
-.item-variant { font-size: 0.85rem; color: #737373; }
-.item-price { font-weight: 600; }
+.item-details {
+    flex: 1;
+    margin-left: 15px
+}
 
-@media (min-width: 1000px) {
+.item-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    margin-bottom: 5px
+}
+
+.item-variant {
+    font-size: 0.85rem;
+    color: #737373
+}
+
+.item-price {
+    font-weight: 600
+}
+
+@media (min-width:1000px) {
     .checkout-container {
         flex-direction: row;
-        min-height: 100vh;
+        min-height: 100vh
     }
+
     .checkout-sidebar {
         border-bottom: none;
         border-left: 1px solid #e1e1e1;
         height: 100vh;
         position: sticky;
-        top: 0;
+        top: 0
     }
 }

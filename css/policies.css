@@ -1,7 +1,3 @@
-/* ============================================
-   POLICY PAGES
-============================================ */
-
 #size-guide,
 #shipping-policy,
 #return-policy,
@@ -10,7 +6,7 @@
 #contact {
     display: none;
     min-height: 100vh;
-    padding: 60px 20px 100px 20px;
+    padding: 60px 20px 100px 20px
 }
 
 #size-guide.active,
@@ -19,12 +15,12 @@
 #terms.active,
 #privacy.active,
 #contact.active {
-    display: block;
+    display: block
 }
 
 .policy-content {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 0 auto
 }
 
 .policy-title {
@@ -33,13 +29,13 @@
     font-size: 2rem;
     letter-spacing: 0.15em;
     margin-bottom: 40px;
-    text-align: center;
+    text-align: center
 }
 
 .policy-text {
     font-weight: 500;
     font-size: 0.95rem;
-    line-height: 1.8;
+    line-height: 1.8
 }
 
 .policy-text h3 {
@@ -47,73 +43,72 @@
     font-size: 1.1rem;
     letter-spacing: 0.1em;
     margin-top: 30px;
-    margin-bottom: 15px;
+    margin-bottom: 15px
 }
 
 .policy-text p {
-    margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .policy-text ul,
 .policy-text ol {
     margin-left: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .policy-text li {
-    margin-bottom: 10px;
+    margin-bottom: 10px
 }
 
 .policy-text a {
     color: var(--signal-white);
-    text-decoration: underline;
+    text-decoration: underline
 }
 
-/* Size Table */
 .size-table-container {
-    margin: 40px 0;
+    margin: 40px 0
 }
 
 .size-table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    background: var(--concrete-grey);
+    background: var(--concrete-grey)
 }
 
 .size-table th,
 .size-table td {
     padding: 15px;
     text-align: center;
-    border: 1px solid rgba(240, 240, 240, 0.1);
+    border: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .size-table th {
     font-weight: 900;
     letter-spacing: 0.1em;
-    background: var(--void-black);
+    background: var(--void-black)
 }
 
 .size-table td {
-    font-weight: 500;
+    font-weight: 500
 }
 
 .size-note {
     background: var(--concrete-grey);
     padding: 25px;
-    margin-top: 30px;
+    margin-top: 30px
 }
 
 .size-note p {
-    margin-bottom: 15px;
+    margin-bottom: 15px
 }
 
 .size-note ul {
-    margin-left: 20px;
+    margin-left: 20px
 }
 
 .size-note li {
-    margin-bottom: 8px;
+    margin-bottom: 8px
 }
 
 .btn-close-policy {
@@ -128,17 +123,13 @@
     font-size: 0.9rem;
     letter-spacing: 0.2em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease
 }
 
 .btn-close-policy:hover {
     background: var(--signal-white);
-    color: var(--void-black);
+    color: var(--void-black)
 }
-
-/* ============================================
-   CONTACT PAGE SPECIFIC STYLES
-============================================ */
 
 .contact-intro {
     text-align: center;
@@ -147,22 +138,21 @@
     line-height: 1.8;
     max-width: 700px;
     margin: 0 auto 60px auto;
-    opacity: 0.9;
+    opacity: 0.9
 }
 
-/* Contact Methods Grid */
 .contact-methods {
     display: grid;
     grid-template-columns: 1fr;
     gap: 40px;
     max-width: 900px;
-    margin: 0 auto 80px auto;
+    margin: 0 auto 80px auto
 }
 
 .contact-method {
     background: var(--concrete-grey);
     padding: 30px;
-    text-align: center;
+    text-align: center
 }
 
 .contact-method h3 {
@@ -170,7 +160,7 @@
     font-weight: 900;
     font-size: 1rem;
     letter-spacing: 0.15em;
-    margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .contact-method p {
@@ -178,7 +168,7 @@
     font-weight: 500;
     font-size: 0.9rem;
     margin-bottom: 10px;
-    opacity: 0.8;
+    opacity: 0.8
 }
 
 .contact-link {
@@ -190,7 +180,7 @@
     text-decoration: none;
     letter-spacing: 0.05em;
     position: relative;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease
 }
 
 .contact-link::after {
@@ -201,25 +191,24 @@
     width: 0;
     height: 2px;
     background: var(--signal-white);
-    transition: width 0.3s ease;
+    transition: width 0.3s ease
 }
 
 .contact-link:hover {
-    color: #00FF41;
+    color: #00FF41
 }
 
 .contact-link:hover::after {
     width: 100%;
-    background: #00FF41;
+    background: #00FF41
 }
 
-/* Contact Form */
 .contact-form-container {
     max-width: 600px;
     margin: 0 auto;
     background: var(--concrete-grey);
     padding: 40px;
-    margin-bottom: 50px;
+    margin-bottom: 50px
 }
 
 .contact-form-title {
@@ -228,11 +217,11 @@
     font-size: 1.3rem;
     letter-spacing: 0.15em;
     margin-bottom: 30px;
-    text-align: center;
+    text-align: center
 }
 
 .contact-form .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 25px
 }
 
 .contact-form label {
@@ -241,7 +230,7 @@
     font-weight: 700;
     font-size: 0.8rem;
     letter-spacing: 0.1em;
-    margin-bottom: 8px;
+    margin-bottom: 8px
 }
 
 .contact-form input,
@@ -255,19 +244,19 @@
     font-family: 'Courier New', 'Consolas', monospace;
     font-weight: 500;
     font-size: 0.9rem;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease
 }
 
 .contact-form input:focus,
 .contact-form select:focus,
 .contact-form textarea:focus {
     outline: none;
-    border-color: var(--signal-white);
+    border-color: var(--signal-white)
 }
 
 .contact-form textarea {
     resize: vertical;
-    min-height: 120px;
+    min-height: 120px
 }
 
 .btn-submit-contact {
@@ -281,24 +270,23 @@
     font-size: 1rem;
     letter-spacing: 0.2em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease
 }
 
 .btn-submit-contact:hover {
     background: var(--void-black);
     color: var(--signal-white);
-    border: 2px solid var(--signal-white);
+    border: 2px solid var(--signal-white)
 }
 
 .btn-submit-contact:disabled {
     opacity: 0.5;
-    cursor: not-allowed;
+    cursor: not-allowed
 }
 
-/* Success Message */
 .contact-success {
     text-align: center;
-    padding: 40px 20px;
+    padding: 40px 20px
 }
 
 .contact-success h3 {
@@ -307,32 +295,31 @@
     font-size: 1.5rem;
     letter-spacing: 0.15em;
     margin-bottom: 20px;
-    color: #00FF41;
+    color: #00FF41
 }
 
 .contact-success p {
     font-weight: 500;
     line-height: 1.8;
-    margin-bottom: 10px;
+    margin-bottom: 10px
 }
 
-/* Responsive */
-@media (min-width: 768px) {
+@media (min-width:768px) {
     .contact-methods {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr)
     }
-    
+
     .contact-form-container {
-        padding: 50px;
+        padding: 50px
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .contact-form-container {
-        padding: 25px;
+        padding: 25px
     }
-    
+
     .contact-method {
-        padding: 20px;
+        padding: 20px
     }
 }

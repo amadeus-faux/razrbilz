@@ -1,59 +1,44 @@
-/* ============================================
-   RESPONSIVE DESIGN SYSTEM
-============================================ */
-
-/* 1. TABLET / IPAD (Potrait & Landscape Kecil) */
-/* Rentang: 768px sampai 1024px */
-@media (min-width: 768px) and (max-width: 1024px) {
-    
-    /* ARCHIVE: Grid 3-4 Kolom (Pas untuk Tablet) */
+@media (min-width:768px) and (max-width:1024px) {
     .product-stream {
-        justify-content: center; /* Rata tengah */
+        justify-content: center;
         gap: 20px;
-        padding: 0 20px;
-    }
-    
-    .product-card {
-        /* Lebar dinamis: Sekitar 3 kartu per baris */
-        width: calc(33.33% - 20px); 
-        min-width: 200px; /* Jangan terlalu kecil */
+        padding: 0 20px
     }
 
-    /* COMMAND BAR: Sedikit lebih lebar dari HP */
+    .product-card {
+        width: calc(33.33% - 20px);
+        min-width: 200px
+    }
+
     .command-bar {
         width: 80%;
         bottom: 30px;
-        border-radius: 0; /* Tetap kotak industrial */
+        border-radius: 0
     }
 }
 
-/* 2. DESKTOP / PC / LAPTOP BESAR */
-/* Rentang: Di atas 1025px */
-@media (min-width: 1025px) {
-    
-    /* ARCHIVE: Grid Poster Kecil (Sesuai request PC) */
+@media (min-width:1025px) {
     .product-stream {
         justify-content: center;
         gap: 30px;
         max-width: 1400px;
-        padding: 0 40px;
-    }
-    
-    .product-card {
-        width: 180px; /* Ukuran FIX Poster */
-    }
-    
-    .data-bar {
-        font-size: 0.75rem; 
+        padding: 0 40px
     }
 
-    /* COMMAND BAR: Fix di tengah */
+    .product-card {
+        width: 180px
+    }
+
+    .data-bar {
+        font-size: 0.75rem
+    }
+
     .command-bar {
         width: 480px;
         left: 50%;
         transform: translateX(-50%) !important;
         bottom: 30px;
         background: rgba(5, 5, 5, 0.9);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
     }
 }

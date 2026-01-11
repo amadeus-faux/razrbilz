@@ -1,74 +1,72 @@
-/* ============================================
-   LAYOUT & ANIMATIONS
-============================================ */
-
-/* Smooth Gravitational Scrolling */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: smooth
 }
 
 body {
     overflow-x: hidden;
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: none
 }
 
-/* Lenis Smooth Scroll akan ditambahkan via JS */
 html.lenis {
-    height: auto;
+    height: auto
 }
 
 .lenis.lenis-smooth {
-    scroll-behavior: auto;
+    scroll-behavior: auto
 }
 
 .lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
+    overscroll-behavior: contain
 }
 
 .lenis.lenis-stopped {
-    overflow: hidden;
+    overflow: hidden
 }
 
 .lenis.lenis-scrolling iframe {
-    pointer-events: none;
+    pointer-events: none
 }
 
-/* Industrial Typography System */
 .typography-art {
     font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
+    font-weight: 900
 }
 
 .typography-data {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.05em
 }
 
-/* Data elements styling */
 .data-bar,
 .size-table,
 .stock-indicator,
 .price-tag,
 .product-code {
-    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace
 }
 
 .loading {
     opacity: 0.5;
-    pointer-events: none;
+    pointer-events: none
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
 }
 
 .fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
+    animation: fadeIn 0.6s ease-out forwards
 }
 
-/* Scroll indicator for cinematic feel */
 .scroll-indicator {
     position: fixed;
     top: 0;
@@ -79,5 +77,5 @@ html.lenis {
     transform-origin: left;
     transform: scaleX(0);
     z-index: 10000;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.1s ease-out
 }

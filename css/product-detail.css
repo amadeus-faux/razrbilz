@@ -1,210 +1,119 @@
-/* ============================================
-   PRODUCT DETAIL PAGE WITH TAB SYSTEM
-============================================ */
-
 #product-detail {
     display: none;
     min-height: 100vh;
     padding: 20px;
-    padding-bottom: 200px;
+    padding-bottom: 200px
 }
 
 #product-detail.active {
-    display: block;
+    display: block
 }
 
-/* ============================================
-   IMAGE GALLERY - RESPONSIVE SYSTEM
-============================================ */
-
-/* Mobile: Horizontal Slider (Default) */
 .image-gallery {
     max-width: 600px;
     margin: 40px auto 30px auto;
     position: relative;
+    /* Clean up grid properties just in case */
+    display: block;
 }
 
-/* Mobile: Swipeable Gallery */
+/* Universal Slider Styles */
 .gallery-container {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* IE/Edge */
+    display: flex;
 }
 
 .gallery-container::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none
 }
 
 .gallery-image {
     width: 100%;
-    display: inline-block;
+    min-width: 100%;
+    height: auto;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    display: block;
     scroll-snap-align: center;
-    margin-right: 10px;
-    transition: opacity 0.3s ease;
-}
-
-.gallery-image:last-child {
     margin-right: 0;
+    transition: opacity 0.3s ease;
+    flex-shrink: 0;
 }
 
-/* Desktop: Grid Layout with Main + Thumbnails */
-@media (min-width: 769px) {
+@media (min-width:769px) {
     .image-gallery {
-        max-width: 1200px;
-        display: grid;
-        grid-template-columns: 1fr 150px;
-        gap: 20px;
+        max-width: 500px;
+        /* Limit width on desktop for neat look */
         margin: 60px auto 40px auto;
-    }
-    
-    /* Main Image Area */
-    .gallery-main {
+        /* Reset grid if previously applied globally */
+        display: block;
+        grid-template-columns: none;
+        gap: 0;
         position: relative;
-        width: 100%;
-        
-        /* FIX: Batasi tinggi maksimal 75% layar agar muat tanpa scroll */
-        height: 75vh; 
-        max-height: 800px; 
-        
-        overflow: hidden;
-        background: var(--concrete-grey);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        /* Ensure click zones are relative to this */
     }
-    
-    .gallery-main img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; /* Gambar utuh terlihat semua */
-        background: #1a1a1a; /* Background filler jika rasio beda */
-    }
-    
-    .gallery-main:hover img {
-        transform: scale(1.05);
-    }
-    
-    /* Thumbnail Grid */
-    .gallery-thumbnails {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .gallery-thumbnail {
-        width: 100%;
-        aspect-ratio: 3/4;
-        overflow: hidden;
-        background: var(--concrete-grey);
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        opacity: 0.5;
-    }
-    
-    .gallery-thumbnail.active {
-        border-color: var(--signal-white);
-        opacity: 1;
-    }
-    
-    .gallery-thumbnail:hover {
-        opacity: 1;
-        border-color: rgba(240, 240, 240, 0.5);
-    }
-    
-    .gallery-thumbnail img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    /* Hide mobile slider on desktop */
-    .gallery-container {
-        display: none;
-    }
-}
 
-/* Tablet: Smaller Grid */
-@media (min-width: 769px) {
-    .image-gallery {
-        max-width: 1200px;
-        display: grid;
-        /* UPDATE: Kolom thumbnail diperbesar dari 120px jadi 160px */
-        grid-template-columns: 1fr 160px; 
-        gap: 30px;
-        margin: 40px auto;
-        align-items: start;
-    }
-    
-    /* Main Image Area */
-    .gallery-main {
-        position: relative;
-        width: 100%;
-        
-        height: 75vh; 
-        max-height: 800px; 
-        
-        overflow: hidden;
-        /* UPDATE: Background jadi transparan (bukan abu-abu lagi) */
-        background: transparent; 
-        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        /* Optional: Tambahkan border tipis agar rapi jika gambar PNG transparan */
-        /* border: 1px solid rgba(0,0,0,0.05); */
-    }
-    
-    .gallery-main img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; 
-        /* Hapus background filler gelap */
-        background: transparent; 
-    }
-    
-    /* UPDATE: Thumbnail juga transparan backgroundnya */
-    .gallery-thumbnail {
-        width: 100%;
-        aspect-ratio: 3/4;
-        overflow: hidden;
-        background: transparent; /* Update here */
-        cursor: pointer;
-        border: 1px solid transparent; /* Ganti border jadi 1px biar halus */
-        transition: all 0.3s ease;
-        opacity: 0.6; /* Sedikit lebih jelas defaultnya */
-    }
-    
-    .gallery-thumbnail.active {
-        border-color: var(--void-black); /* Border hitam saat aktif */
-        opacity: 1;
-    }
-}
-
-/* Mobile: Keep Original Slider */
-@media (max-width: 768px) {
+    /* Hide the old grid elements if present in DOM (though JS removes them, CSS safety) */
     .gallery-main,
     .gallery-thumbnails {
-        display: none;
+        display: none !important;
     }
-    
+
+    /* Force slider display and interactions */
     .gallery-container {
-        display: block;
+        display: flex !important;
+        cursor: pointer;
+        /* Indicate interaction */
+    }
+
+    /* Overlay Click Zones */
+    .click-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        z-index: 20;
+        cursor: pointer;
+    }
+
+    .click-zone-left {
+        left: 0;
+    }
+
+    .click-zone-right {
+        right: 0;
     }
 }
 
-/* ============================================
-   PRODUCT INFO
-============================================ */
+.gallery-image {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    /* Height Optimization: Max height 75vh to fit above fold */
+    max-height: 75vh;
+    aspect-ratio: auto;
+    /* Allow aspect ratio to adapt to containment */
+    object-fit: contain;
+    /* Ensure it fits within the max-height */
+
+    display: block;
+    scroll-snap-align: center;
+    margin-right: 0;
+    transition: opacity 0.3s ease;
+    flex-shrink: 0;
+}
+
 
 .product-info {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto
 }
 
 .product-title {
@@ -212,7 +121,7 @@
     font-weight: 900;
     font-size: 1.8rem;
     letter-spacing: 0.1em;
-    margin-bottom: 20px;
+    margin-bottom: 20px
 }
 
 .product-manifesto {
@@ -221,38 +130,34 @@
     line-height: 1.6;
     margin-bottom: 30px;
     font-style: italic;
-    opacity: 0.9;
+    opacity: 0.9
 }
 
-/* Desktop: Side-by-side Layout */
-@media (min-width: 769px) {
+@media (min-width:769px) {
     .product-info {
-        max-width: 1200px;
+        max-width: 800px;
+        /* Slightly wider text containment */
     }
-    
+
     .product-title {
         font-size: 2.5rem;
-        margin-bottom: 25px;
+        margin-bottom: 25px
     }
-    
+
     .product-manifesto {
         font-size: 1.1rem;
-        margin-bottom: 40px;
+        margin-bottom: 40px
     }
 }
-
-/* ============================================
-   TAB SYSTEM
-============================================ */
 
 .product-command-center {
     background: var(--concrete-grey);
-    margin-bottom: 30px;
+    margin-bottom: 30px
 }
 
 .tab-navigation {
     display: flex;
-    border-bottom: 1px solid rgba(240, 240, 240, 0.1);
+    border-bottom: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .tab-btn {
@@ -268,57 +173,76 @@
     cursor: pointer;
     transition: all 0.3s ease;
     opacity: 0.5;
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid transparent
 }
 
 .tab-btn:hover {
-    opacity: 0.8;
+    opacity: 0.8
 }
 
 .tab-btn.active {
     opacity: 1;
     background: rgba(240, 240, 240, 0.05);
-    border-bottom-color: var(--signal-white);
+    border-bottom-color: var(--signal-white)
 }
 
 .tab-content {
-    padding: 25px;
+    padding: 25px
 }
 
 .tab-panel {
-    display: none;
+    display: none
 }
 
 .tab-panel.active {
     display: block;
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.4s ease-out
 }
 
-/* ============================================
-   TECH SPECS TAB
-============================================ */
+/* UNIFIED TAB TYPOGRAPHY START */
+/* Applies to tech-specs, size-guide, and shipping tabs to ensure exact match */
 
-.tech-specs {
-    padding-top: 25px; 
+.tech-specs,
+#tab-ship,
+.size-guide-tab {
+    padding-top: 25px;
 }
 
-.tech-specs h3 {
+.tech-specs h3,
+#tab-ship h4,
+.shipping-option h4,
+.size-guide-tab h4 {
+    font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 1rem;
+    /* Unified */
     letter-spacing: 0.15em;
+    /* Unified */
     margin-bottom: 15px;
-    font-family: 'Montserrat', sans-serif;
+    /* Unified */
+    color: var(--signal-white);
 }
 
+/* List Items (Tech Specs) and Paragraphs (Shipping) should match visually */
 .tech-specs ul {
     list-style: none;
 }
 
-.tech-specs li {
-    font-family: 'Courier New', 'Consolas', monospace;
+.tech-specs li,
+#tab-ship p,
+.shipping-option p {
+    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    /* Unified */
+    line-height: 1.6;
+    /* Unified */
     margin-bottom: 10px;
+    opacity: 0.9;
+    color: var(--signal-white);
+}
+
+.tech-specs li {
     padding-left: 15px;
     position: relative;
 }
@@ -329,24 +253,12 @@
     left: 0;
 }
 
-/* ============================================
-   SIZE GUIDE TAB
-============================================ */
-.size-guide-tab {
-    font-family: 'Courier New', 'Consolas', monospace;
-}
-
-.size-guide-tab h4 {
-    font-weight: 900;
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 15px;
-}
+/* UNIFIED TAB TYPOGRAPHY END */
 
 .size-guide-tab table {
     width: 100%;
     border-collapse: collapse;
-    margin: 15px 0;
+    margin: 15px 0
 }
 
 .size-guide-tab th,
@@ -354,68 +266,39 @@
     padding: 12px 8px;
     text-align: center;
     border: 1px solid rgba(240, 240, 240, 0.1);
-    font-size: 0.85rem;
+    font-size: 0.85rem
 }
 
 .size-guide-tab th {
     font-weight: 900;
     letter-spacing: 0.1em;
-    background: var(--void-black);
+    background: var(--void-black)
 }
 
 .size-guide-instructions {
     margin-top: 20px;
     font-size: 0.8rem;
     opacity: 0.8;
-    line-height: 1.6;
-}
-
-/* ============================================
-   SHIPPING TAB
-============================================ */
-
-.tab-ship {
-    padding-top: 25px;
-}
-
-.shipping-info {
-    font-family: 'Courier New', 'Consolas', monospace;
+    line-height: 1.6
 }
 
 .shipping-option {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(240, 240, 240, 0.1);
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .shipping-option:last-child {
-    border-bottom: none;
-}
-
-.shipping-option h4 {
-    font-weight: 900;
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-}
-
-.shipping-option p {
-    font-size: 0.85rem;
-    opacity: 0.8;
-    line-height: 1.5;
+    border-bottom: none
 }
 
 .size-reference {
-    font-family: 'Courier New', 'Consolas', monospace;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.85rem;
     margin-bottom: 30px;
-    opacity: 0.8;
+    opacity: 0.8
 }
-
-/* ============================================
-   STICKY BUY BUTTON
-============================================ */
 
 .sticky-buy {
     position: fixed;
@@ -426,7 +309,7 @@
     bottom: 54px;
     padding: 15px 20px;
     border-top: 1px solid rgba(240, 240, 240, 0.1);
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8)
 }
 
 .btn-secure {
@@ -443,72 +326,66 @@
     font-size: 0.95rem;
     letter-spacing: 0.2em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease
 }
 
 .btn-secure:hover {
     background: var(--void-black);
     color: var(--signal-white);
-    border: 2px solid var(--signal-white);
+    border: 2px solid var(--signal-white)
 }
 
 .btn-secure.added {
     background: var(--void-black);
     color: var(--alert-red);
-    border: 2px solid var(--alert-red);
+    border: 2px solid var(--alert-red)
 }
 
-@media (min-width: 768px) {
+@media (min-width:768px) {
     .sticky-buy {
         width: 480px;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 95px; 
+        bottom: 95px;
         padding: 0;
         border: none;
         background: transparent;
-        box-shadow: none;
+        box-shadow: none
     }
 
     .btn-secure {
         border: 1px solid var(--signal-white);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .sticky-buy {
         bottom: 48px;
-        padding: 12px 15px;
+        padding: 12px 15px
     }
-    
+
     .btn-secure {
         font-size: 0.85rem;
-        padding: 14px;
+        padding: 14px
     }
 }
 
-/* Untuk HP Kecil */
-@media (max-width: 375px) {
+@media (max-width:375px) {
     .sticky-buy {
         bottom: 43px;
-        padding: 10px 15px;
+        padding: 10px 15px
     }
 
     .btn-secure {
         font-size: 0.8rem;
         padding: 12px;
-        letter-spacing: 0.15em;
+        letter-spacing: 0.15em
     }
 }
 
-/* ============================================
-   NEW ELEMENTS: PRICE & SIZE SELECTOR
-============================================ */
-
-/* 1. Harga di bawah Manifesto */
 .product-price-large {
-    font-family: 'Space Mono', monospace; /* Font teknikal */
+    font-family: 'Space Mono', monospace;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--signal-white);
@@ -516,12 +393,11 @@
     margin-bottom: 20px;
     letter-spacing: -0.05em;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(240, 240, 240, 0.1);
+    border-bottom: 1px solid rgba(240, 240, 240, 0.1)
 }
 
-/* 2. Container Size */
 .size-selector-container {
-    margin-bottom: 30px;
+    margin-bottom: 30px
 }
 
 .size-label {
@@ -529,16 +405,15 @@
     font-size: 0.8rem;
     color: #737373;
     margin-bottom: 10px;
-    display: block;
+    display: block
 }
 
 .size-grid {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 
-/* 3. Tombol Size Industrial */
 .size-btn {
     width: 50px;
     height: 50px;
@@ -552,53 +427,49 @@
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center
 }
 
 .size-btn:hover {
-    border-color: var(--signal-white);
+    border-color: var(--signal-white)
 }
 
-/* State Aktif (Saat Dipilih) */
 .size-btn.selected {
     background: var(--signal-white);
     color: var(--void-black);
     border-color: var(--signal-white);
-    font-weight: 900;
+    font-weight: 900
 }
 
-/* ============================================
-   SIZE GUIDE TABLE STYLING (FIXED COLORS)
-============================================ */
 .size-table {
     width: 100%;
     border-collapse: collapse;
     font-family: var(--font-tech);
     font-size: 0.85rem;
     margin-top: 15px;
-    text-align: left;
+    text-align: left
 }
 
 .size-table th {
     padding: 15px 10px;
     font-weight: 700;
-    color: #FFFFFF; /* FIX: Langsung pakai warna Putih */
+    color: #FFFFFF;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2)
 }
 
 .size-table td {
     padding: 12px 10px;
-    color: rgba(255, 255, 255, 0.8); /* FIX: Putih agak transparan (pengganti secondary) */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08)
 }
 
 .size-table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.03)
 }
 
 .size-table td:first-child {
     font-weight: 700;
-    color: #FFFFFF; /* FIX: Putih terang untuk Size */
+    color: #FFFFFF
 }

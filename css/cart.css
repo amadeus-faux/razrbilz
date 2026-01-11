@@ -1,14 +1,11 @@
-/* ============================================
-   CART
-============================================ */
 #cart {
     display: none;
     min-height: 100vh;
-    padding: 60px 20px 100px 20px;
+    padding: 60px 20px 100px 20px
 }
 
 #cart.active {
-    display: block;
+    display: block
 }
 
 .cart-header {
@@ -17,19 +14,19 @@
     font-size: 1.8rem;
     letter-spacing: 0.15em;
     margin-bottom: 30px;
-    text-align: center;
+    text-align: center
 }
 
 .cart-empty {
     text-align: center;
     font-weight: 500;
     opacity: 0.6;
-    margin-top: 100px;
+    margin-top: 100px
 }
 
 .cart-items {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto
 }
 
 .cart-item {
@@ -37,28 +34,28 @@
     gap: 20px;
     margin-bottom: 30px;
     padding-bottom: 30px;
-    border-bottom: 1px solid var(--concrete-grey);
+    border-bottom: 1px solid var(--concrete-grey)
 }
 
 .cart-item-image {
     width: 100px;
     height: 133px;
-    object-fit: cover;
+    object-fit: cover
 }
 
 .cart-item-info {
-    flex: 1;
+    flex: 1
 }
 
 .cart-item-name {
     font-weight: 900;
     font-size: 1rem;
-    margin-bottom: 10px;
+    margin-bottom: 10px
 }
 
 .cart-item-price {
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.9rem
 }
 
 .btn-remove {
@@ -70,7 +67,7 @@
     font-weight: 500;
     font-size: 0.8rem;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 10px
 }
 
 .cart-total {
@@ -78,7 +75,7 @@
     margin: 30px auto;
     text-align: right;
     font-weight: 900;
-    font-size: 1.3rem;
+    font-size: 1.3rem
 }
 
 .btn-checkout {
@@ -94,5 +91,5 @@
     font-weight: 900;
     font-size: 1rem;
     letter-spacing: 0.2em;
-    cursor: pointer;
+    cursor: pointer
 }

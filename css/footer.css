@@ -1,24 +1,20 @@
-/* ============================================
-   FOOTER - NEW HIERARCHY
-============================================ */
 .site-footer {
     margin-top: 80px;
     padding: 60px 20px 40px 20px;
-    border-top: 1px solid rgba(240, 240, 240, 0.1);
+    border-top: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .footer-content {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto
 }
 
-/* Tier 1: Trust & Legal Zone */
 .footer-legal {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 30px;
-    margin-bottom: 50px;
+    margin-bottom: 50px
 }
 
 .footer-legal a {
@@ -30,7 +26,7 @@
     text-decoration: none;
     opacity: 0.7;
     transition: opacity 0.3s ease;
-    position: relative;
+    position: relative
 }
 
 .footer-legal a::after {
@@ -41,25 +37,24 @@
     width: 0;
     height: 1px;
     background: var(--signal-white);
-    transition: width 0.3s ease;
+    transition: width 0.3s ease
 }
 
 .footer-legal a:hover {
-    opacity: 1;
+    opacity: 1
 }
 
 .footer-legal a:hover::after {
-    width: 100%;
+    width: 100%
 }
 
-/* Tier 2: Identity & Payment Zone */
 .footer-identity {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 25px;
     padding-top: 40px;
-    border-top: 1px solid rgba(240, 240, 240, 0.05);
+    border-top: 1px solid rgba(240, 240, 240, 0.05)
 }
 
 .footer-copyright {
@@ -68,7 +63,7 @@
     font-size: 0.85rem;
     letter-spacing: 0.15em;
     color: var(--signal-white);
-    opacity: 0.5;
+    opacity: 0.5
 }
 
 .footer-payment {
@@ -76,7 +71,7 @@
     gap: 15px;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: center
 }
 
 .payment-icon {
@@ -84,61 +79,59 @@
     width: auto;
     opacity: 0.4;
     transition: opacity 0.3s ease;
-    filter: brightness(0) invert(1);
+    filter: brightness(0) invert(1)
 }
 
 .payment-icon:hover {
-    opacity: 0.8;
+    opacity: 0.8
 }
 
-/* Light mode footer for checkout page */
 .site-footer-light {
     background: var(--signal-white);
     color: var(--void-black);
-    border-top-color: rgba(5, 5, 5, 0.1);
+    border-top-color: rgba(5, 5, 5, 0.1)
 }
 
 .site-footer-light .footer-legal a {
-    color: var(--void-black);
+    color: var(--void-black)
 }
 
 .site-footer-light .footer-copyright {
-    color: var(--void-black);
+    color: var(--void-black)
 }
 
 .site-footer-light .payment-icon {
     filter: none;
-    opacity: 0.4;
+    opacity: 0.4
 }
 
 .site-footer-light .payment-icon:hover {
-    opacity: 0.8;
+    opacity: 0.8
 }
 
-@media (min-width: 768px) {
+@media (min-width:768px) {
     .footer-identity {
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: space-between
     }
 
     .footer-lang {
-        order: 1;
+        order: 1
     }
 
     .footer-copyright {
-        order: 2;
+        order: 2
     }
 
     .footer-payment {
-        order: 3;
+        order: 3
     }
 }
 
-/* LANGUAGE SELECTOR */
 .footer-lang {
     display: flex;
     gap: 10px;
-    align-items: center;
+    align-items: center
 }
 
 .lang-btn {
@@ -150,21 +143,19 @@
     height: 18px;
     opacity: 0.4;
     transition: all 0.3s ease;
-    filter: grayscale(100%);
-    /* Hitam putih kalau tidak aktif */
+    filter: grayscale(100%)
 }
 
 .lang-btn img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 2px;
+    border-radius: 2px
 }
 
 .lang-btn:hover,
 .lang-btn.active {
     opacity: 1;
     filter: grayscale(0%);
-    /* Berwarna saat aktif/hover */
-    transform: scale(1.1);
+    transform: scale(1.1)
 }

@@ -1,6 +1,3 @@
-/* ============================================
-   COMMAND BAR (Navigation)
-============================================ */
 .command-bar {
     position: fixed;
     bottom: 20px;
@@ -12,7 +9,7 @@
     backdrop-filter: blur(10px);
     padding: 0;
     z-index: 1000;
-    border: 1px solid rgba(240, 240, 240, 0.2);
+    border: 1px solid rgba(240, 240, 240, 0.2)
 }
 
 .command-btn {
@@ -26,33 +23,31 @@
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease
 }
 
 .command-btn:last-child {
-    border-right: none;
+    border-right: none
 }
 
 .command-btn:hover,
 .command-btn.active {
     background: var(--signal-white);
-    color: var(--void-black);
+    color: var(--void-black)
 }
 
 .cart-count {
     display: inline-block;
     margin-left: 5px;
-    font-weight: 900;
+    font-weight: 900
 }
-/* ============================================
-   COMMAND BAR (Navigation)
-============================================ */
+
 .command-bar {
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;           /* Penuh layar di HP */
-    height: 54px;          /* Tinggi sinkron dengan tombol Buy */
+    width: 100%;
+    height: 54px;
     display: flex;
     justify-content: center;
     align-items: stretch;
@@ -60,13 +55,13 @@
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(240, 240, 240, 0.2);
     z-index: 1000;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Animasi halus saat resize */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     transform: none;
-    margin: 0;
+    margin: 0
 }
 
 .command-btn {
-    flex: 1;               /* Membagi rata lebar layar (33% each) */
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,50 +69,44 @@
     background: transparent;
     color: var(--signal-white);
     border: none;
-    border-right: 1px solid rgba(240, 240, 240, 0.2); /* Garis pemisah antar tombol */
+    border-right: 1px solid rgba(240, 240, 240, 0.2);
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.75rem;
     letter-spacing: 0.15em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease
 }
 
 .command-btn:last-child {
-    border-right: none;
+    border-right: none
 }
 
 .command-btn:hover,
 .command-btn.active {
     background: var(--signal-white);
-    color: var(--void-black);
+    color: var(--void-black)
 }
 
 .cart-count {
     display: inline-block;
     margin-left: 5px;
-    font-weight: 900;
+    font-weight: 900
 }
 
-
-/* ============================================
-   RESPONSIVE TWEAKS
-============================================ */
-/* Untuk Tablet/Desktop, jika ingin tombol tidak terlalu lebar */
-@media (min-width: 768px) {
+@media (min-width:768px) {
     .command-bar {
-        width: 480px; /* Lebar fix agar rapi */
+        width: 480px;
         left: 50%;
-        /* Aktifkan geser tengah HANYA di desktop */
-        transform: translateX(-50%) !important; 
+        transform: translateX(-50%) !important;
         bottom: 30px;
         border: 1px solid rgba(240, 240, 240, 0.2);
         background: rgba(5, 5, 5, 0.9);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
     }
-    
+
     .command-btn {
         flex: 1;
-        font-size: 0.8rem;
+        font-size: 0.8rem
     }
 }

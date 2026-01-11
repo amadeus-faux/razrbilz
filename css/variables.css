@@ -1,9 +1,6 @@
-/* ============================================
-   CSS VARIABLES
-============================================ */
 :root {
     --void-black: #050505;
     --concrete-grey: #2A2A2A;
     --signal-white: #F0F0F0;
-    --alert-red: #FF0000;
+    --alert-red: #FF0000
 }

@@ -1,85 +1,60 @@
-// ============================================
-// PRODUCT DETAIL: FINAL FIXED & ROBUST
-// ============================================
 
 let currentProduct = null;
-let currentTab = 'specs';
+let currentTab = "specs";
 let currentSelectedSize = null;
 
-function viewProduct(productId) {
-    // 1. Reset State
+function viewProduct(id) {
     currentSelectedSize = null;
-    
-    // 2. Cari Produk (Gunakan '==' agar aman untuk ID angka/huruf)
-    // Pastikan 'products' sudah dimuat dari products.js
-    if (typeof products === 'undefined') {
+    if (typeof products !== "undefined") {
+        currentProduct = products.find(p => p.id == id);
+        if (currentProduct) {
+            renderGallery();
+            renderProductInfo();
+            setupAddToCartButton();
+            navigate("product-detail");
+            return;
+        }
+        console.error("Product not found for ID:", id);
+    } else {
         console.error("Critical Error: 'products' data is missing.");
-        return;
     }
-
-    currentProduct = products.find(p => p.id == productId);
-    
-    if (!currentProduct) {
-        console.error("Product not found for ID:", productId);
-        return;
-    }
-    
-    // 3. Render Gallery (Panggil fungsi terpisah agar aman & responsif)
-    renderGallery();
-    
-    // 4. Render Info Produk
-    renderProductInfo();
-
-    // 5. Setup Tombol & Navigasi
-    setupAddToCartButton();
-
-    // 6. Akhirnya, Pindah Halaman
-    navigate('product-detail');
 }
 
-// ============================================
-// HELPER: RENDER INFO (Memisahkan Logika HTML)
-// ============================================
 function renderProductInfo() {
-    const info = document.getElementById('productInfo');
+    const container = document.getElementById("productInfo");
+    if (!container || !currentProduct) return;
+
     const stockStatus = getStockStatus(currentProduct.stock);
-    let sizeChartHTML = '';
+
+    // Get translations
+    const lang = window.appState.lang;
+    const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : {};
+
+    // Generate Size Table
+    let sizeTableRows = "";
     if (currentProduct.sizeChart && currentProduct.sizeChart.rows) {
-        sizeChartHTML = currentProduct.sizeChart.rows.map(row => 
+        sizeTableRows = currentProduct.sizeChart.rows.map(row =>
             `<tr>
                 <td style="color: #fff; font-weight: bold;">${row[0]}</td>
                 <td style="color: rgba(255,255,255,0.8);">${row[1]}</td>
                 <td style="color: rgba(255,255,255,0.8);">${row[2]}</td>
             </tr>`
-        ).join('');
-    } 
-    else if (currentProduct.sizeGuide) {
-        sizeChartHTML = currentProduct.sizeGuide.map(s => 
-            `<tr>
-                <td style="color: #fff; font-weight: bold;">${s.size}</td>
-                <td style="color: rgba(255,255,255,0.8);">${s.chest}</td>
-                <td style="color: rgba(255,255,255,0.8);">${s.length}</td>
-            </tr>`
-        ).join('');
+        ).join("");
     } else {
-        sizeChartHTML = '<tr><td colspan="2">Data not available</td></tr>';
+        sizeTableRows = '<tr><td colspan="2">Data not available</td></tr>';
     }
-    // --- SELESAI PERBAIKAN ---
 
-    info.innerHTML = `
+    container.innerHTML = `
         <div class="product-header">
             <h2 class="product-title">${currentProduct.name}</h2>
             <div class="product-meta" style="font-family: var(--font-tech); margin-bottom: 20px; opacity: 0.8;">
                 <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} ]</span></div>
             </div>
         </div>
-
         <p class="product-manifesto">${currentProduct.manifesto || "No description available."}</p>
         
-        <div class="product-price-large">
-            IDR ${(currentProduct.price).toLocaleString('id-ID')}
-        </div>
-
+        <div class="product-price-large">${formatPrice(currentProduct.price)}</div>
+        
         <div class="size-selector-container">
             <span class="size-label">SELECT SIZE CONFIGURATION:</span>
             <div class="size-grid">
@@ -90,25 +65,25 @@ function renderProductInfo() {
                 <button class="size-btn" onclick="selectSize(this, '2XL')">2XL</button>
             </div>
         </div>
-        
+
         <div class="detail-tabs">
-            <button class="tab-btn active" onclick="switchTab('specs')">TECH SPECS</button>
-            <button class="tab-btn" onclick="switchTab('size')">SIZE GUIDE</button>
-            <button class="tab-btn" onclick="switchTab('ship')">SHIPPING</button>
+            <button class="tab-btn active" onclick="switchTab('specs')">${t.tab_specs || "TECH SPECS"}</button>
+            <button class="tab-btn" onclick="switchTab('size')">${t.tab_size || "SIZE GUIDE"}</button>
+            <button class="tab-btn" onclick="switchTab('ship')">${t.tab_ship || "SHIPPING"}</button>
         </div>
 
         <div id="tab-specs" class="tab-panel active">
             <div class="tech-specs">
                 <ul>
-                    <li>MATERIAL: ${currentProduct.specs ? currentProduct.specs.material : '-'}</li>
-                    <li>WEIGHT: ${currentProduct.specs ? currentProduct.specs.weight : '-'}</li>
-                    <li>FIT: ${currentProduct.specs ? currentProduct.specs.fit : '-'}</li>
+                    <li>MATERIAL: ${currentProduct.specs ? currentProduct.specs.material : "-"}</li>
+                    <li>WEIGHT: ${currentProduct.specs ? currentProduct.specs.weight : "-"}</li>
+                    <li>FIT: ${currentProduct.specs ? currentProduct.specs.fit : "-"}</li>
                 </ul>
             </div>
         </div>
-        
+
         <div id="tab-size" class="tab-panel">
-             <table class="size-table">
+            <table class="size-table">
                 <thead>
                     <tr>
                         <th style="text-align: center;">SIZE</th>
@@ -116,182 +91,184 @@ function renderProductInfo() {
                         <th style="text-align: center;">LENGTH</th>
                     </tr>
                 </thead>
-                <tbody>${sizeChartHTML}</tbody>
+                <tbody>
+                    ${sizeTableRows}
+                </tbody>
             </table>
         </div>
-        
+
         <div id="tab-ship" class="tab-panel">
-            <p>Standard delivery: 3-5 business days.</p>
-            <p>Express deployment available at checkout.</p>
+            ${t.shipping_info || "<p>Standard delivery: 3-5 business days.</p>"}
         </div>
     `;
 }
 
 function setupAddToCartButton() {
-    const btn = document.querySelector('.btn-secure');
-    if(btn) {
-        btn.innerHTML = `[ SECURE PIECE ]`;
-        btn.classList.remove('added');
-        btn.onclick = function() {
+    const btn = document.querySelector(".btn-secure");
+    if (btn) {
+        const lang = window.appState.lang;
+        const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : {};
+        btn.innerHTML = t.product_secure || "[ SECURE PIECE ]";
+        btn.classList.remove("added");
+        btn.onclick = function () {
             validateAndAddToCart(currentProduct);
         };
     }
 }
 
-// ============================================
-// LOGIKA GALLERY (INFINITE SLIDER MOBILE)
-// ============================================
+// Updated Universal Gallery (Slider everywhere)
 function renderGallery() {
     if (!currentProduct) return;
+    const galleryContainer = document.getElementById("productGallery");
 
-    const gallery = document.getElementById('productGallery');
-    // Deteksi Layar HP & Tablet (iPad)
-    const isMobile = window.innerWidth <= 1024; 
-    
-    if (isMobile) {
-        // --- TAMPILAN MOBILE (INFINITE SLIDER) ---
-        const firstImg = currentProduct.gallery[0];
-        const lastImg = currentProduct.gallery[currentProduct.gallery.length - 1];
+    // Universal Slider Logic (Desktop & Mobile)
+    const firstClone = currentProduct.gallery[0];
+    const lastClone = currentProduct.gallery[currentProduct.gallery.length - 1];
+    const slides = [
+        { src: lastClone, type: "clone-last" },
+        ...currentProduct.gallery.map(src => ({ src, type: "real" })),
+        { src: firstClone, type: "clone-first" }
+    ];
 
-        const slides = [
-            { src: lastImg, type: 'clone-last' },     
-            ...currentProduct.gallery.map(src => ({ src, type: 'real' })),
-            { src: firstImg, type: 'clone-first' }    
-        ];
+    galleryContainer.innerHTML = `
+        <div class="gallery-container" id="universalSlider" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+            ${slides.map(slide => `
+                <img src="${slide.src}" class="gallery-image ${slide.type}" style="min-width: 100%; width: 100%; flex-shrink: 0; scroll-snap-align: center; object-fit: cover;">
+            `).join("")}
+        </div>
+        
+        <!-- Desktop Click Zones -->
+        <div class="click-zone click-zone-left" onclick="scrollSlider(-1)"></div>
+        <div class="click-zone click-zone-right" onclick="scrollSlider(1)"></div>
+        
+        <div class="slider-dots" id="sliderDots" style="display: flex; justify-content: center; margin-top: 15px; gap: 8px;">
+            ${currentProduct.gallery.map((_, i) => `
+                <div class="dot" data-index="${i}" style="width: 8px; height: 8px; background: ${i === 0 ? "#fff" : "#333"}; border-radius: 50%; transition: all 0.3s; cursor:pointer;" onclick="scrollToSlide(${i})"></div>
+            `).join("")}
+        </div>
+    `;
 
-        gallery.innerHTML = `
-            <div class="gallery-container" id="mobileSlider" style="
-                display: flex; 
-                overflow-x: auto; 
-                scroll-snap-type: x mandatory; 
-                -webkit-overflow-scrolling: touch; 
-                scrollbar-width: none;
-            ">
-                ${slides.map((slide, i) => 
-                    `<img src="${slide.src}" class="gallery-image ${slide.type}" style="
-                        min-width: 100%; 
-                        width: 100%; 
-                        flex-shrink: 0; 
-                        scroll-snap-align: center; 
-                        object-fit: cover;
-                    ">`
-                ).join('')}
-            </div>
 
-            <div class="slider-dots" id="sliderDots" style="display: flex; justify-content: center; margin-top: 15px; gap: 8px;">
-                ${currentProduct.gallery.map((_, i) => 
-                    `<div class="dot" data-index="${i}" style="width: 8px; height: 8px; background: ${i===0 ? '#fff' : '#333'}; border-radius: 50%; transition: all 0.3s;"></div>`
-                ).join('')}
-            </div>
-        `;
+    // Initialize Slider Interactions (Infinite Scroll Logic)
+    setTimeout(() => {
+        const slider = document.getElementById("universalSlider");
+        if (!slider) return;
+        const slideWidth = slider.clientWidth;
+        slider.scrollLeft = slideWidth; // Start at first real slide
 
-        // Logic Slider (sama seperti sebelumnya)
-        setTimeout(() => {
-            const slider = document.getElementById('mobileSlider');
-            if(!slider) return;
-            
-            const slideWidth = slider.clientWidth;
-            slider.scrollLeft = slideWidth; // Start at real first item
+        let isScrolling = false;
+        slider.addEventListener("scroll", () => {
+            if (isScrolling) return;
+            const scrollLeft = slider.scrollLeft;
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
 
-            let isJumping = false;
-            slider.addEventListener('scroll', () => {
-                if(isJumping) return;
-                const scrollLeft = slider.scrollLeft;
-                const maxScroll = slider.scrollWidth - slider.clientWidth;
+            // Update dots
+            let currentIndex = Math.round(scrollLeft / slideWidth) - 1;
+            if (currentIndex < 0) currentIndex = currentProduct.gallery.length - 1;
+            if (currentIndex >= currentProduct.gallery.length) currentIndex = 0;
 
-                let currentIndex = Math.round(scrollLeft / slideWidth) - 1;
-                if (currentIndex < 0) currentIndex = currentProduct.gallery.length - 1;
-                if (currentIndex >= currentProduct.gallery.length) currentIndex = 0;
-                
-                document.querySelectorAll('.slider-dots .dot').forEach((dot, index) => {
-                    dot.style.background = index === currentIndex ? '#fff' : '#333';
-                });
-
-                if (Math.abs(scrollLeft - maxScroll) <= 5) {
-                    isJumping = true;
-                    slider.style.scrollSnapType = 'none'; 
-                    slider.scrollLeft = slideWidth; 
-                    requestAnimationFrame(() => { requestAnimationFrame(() => { slider.style.scrollSnapType = 'x mandatory'; isJumping = false; }); });
-                } else if (scrollLeft <= 0) {
-                    isJumping = true;
-                    slider.style.scrollSnapType = 'none';
-                    slider.scrollLeft = slider.scrollWidth - (2 * slideWidth); 
-                    requestAnimationFrame(() => { requestAnimationFrame(() => { slider.style.scrollSnapType = 'x mandatory'; isJumping = false; }); });
-                }
+            document.querySelectorAll(".slider-dots .dot").forEach((dot, i) => {
+                dot.style.background = i === currentIndex ? "#fff" : "#333";
             });
-        }, 50);
 
-    } else {
-        // --- TAMPILAN DESKTOP ---
-        gallery.innerHTML = `
-            <div class="gallery-main">
-                <img src="${currentProduct.gallery[0]}" alt="${currentProduct.name}" id="mainImage">
-            </div>
-            <div class="gallery-thumbnails">
-                ${currentProduct.gallery.map((img, index) => 
-                    `<div class="gallery-thumbnail ${index === 0 ? 'active' : ''}" onclick="changeMainImage(this, '${img}')">
-                        <img src="${img}" alt="Thumbnail">
-                    </div>`
-                ).join('')}
-            </div>
-        `;
-    }
+            // Infinite loop jump
+            if (Math.abs(scrollLeft - maxScroll) <= 5) {
+                // Reached end clone -> jump to first real
+                isScrolling = true;
+                slider.style.scrollSnapType = "none";
+                slider.scrollLeft = slideWidth;
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        slider.style.scrollSnapType = "x mandatory";
+                        isScrolling = false;
+                    });
+                });
+            } else if (scrollLeft <= 0) {
+                // Reached start clone -> jump to last real
+                isScrolling = true;
+                slider.style.scrollSnapType = "none";
+                slider.scrollLeft = slider.scrollWidth - (2 * slideWidth);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        slider.style.scrollSnapType = "x mandatory";
+                        isScrolling = false;
+                    });
+                });
+            }
+        });
+    }, 50);
 }
 
-function changeMainImage(indexOrElement, imgSrc) {
-    let src = imgSrc;
-    if (typeof indexOrElement === 'object') {
-        document.querySelectorAll('.gallery-thumbnail').forEach(t => t.classList.remove('active'));
-        indexOrElement.classList.add('active');
-        src = imgSrc;
-    } else {
-        src = currentProduct.gallery[indexOrElement];
-    }
-    const mainImage = document.querySelector('.gallery-main img');
-    if (mainImage) mainImage.src = src;
+// Helper to interact with dots
+function scrollToSlide(index) {
+    const slider = document.getElementById("universalSlider");
+    if (!slider) return;
+    const slideWidth = slider.clientWidth;
+    // index 0 is at slideWidth (after first clone)
+    slider.scrollTo({
+        left: slideWidth * (index + 1),
+        behavior: 'smooth'
+    });
 }
 
-// ============================================
-// TABS & INTERAKSI
-// ============================================
+function scrollSlider(direction) {
+    const slider = document.getElementById("universalSlider");
+    if (!slider) return;
+    const slideWidth = slider.clientWidth;
+    slider.scrollBy({
+        left: direction * slideWidth,
+        behavior: 'smooth'
+    });
+}
+
+
+function changeMainImage(element, src) {
+    // Deprecated for new slider layout but keeping to clear potential errors if referenced
+}
+
 function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    if(event && event.currentTarget) event.currentTarget.classList.add('active');
-    
-    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    const target = document.getElementById(`tab-${tabName}`);
-    if(target) target.classList.add('active');
-    
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+    if (event && event.currentTarget) event.currentTarget.classList.add("active");
+
+    document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.remove("active"));
+    const tabPanel = document.getElementById(`tab-${tabName}`);
+    if (tabPanel) tabPanel.classList.add("active");
+
     currentTab = tabName;
 }
 
-function selectSize(btnElement, size) {
-    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-    btnElement.classList.add('selected');
+function selectSize(btn, size) {
+    document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
     currentSelectedSize = size;
 }
 
 function validateAndAddToCart(product) {
-    if (!currentSelectedSize) {
-        alert("SYSTEM ALERT: PLEASE SELECT A SIZE CONFIGURATION.");
-        return;
-    }
-    const variantId = product.variants ? product.variants[currentSelectedSize] : null;
-
-    if (!variantId) {
+    if (currentSelectedSize) {
+        const variantId = product.variants ? product.variants[currentSelectedSize] : null;
+        if (variantId) {
+            addToCart(product.id, currentSelectedSize, variantId);
+            return;
+        }
         alert("SYSTEM ERROR: VARIANT ID NOT FOUND. CONTACT ADMIN.");
-        return;
+    } else {
+        alert("SYSTEM ALERT: PLEASE SELECT A SIZE CONFIGURATION.");
     }
-    addToCart(product.id, currentSelectedSize, variantId);
 }
 
-// Auto-Refresh Gallery saat Rotate Layar
 let resizeTimer;
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-        if (currentProduct && document.getElementById('product-detail').classList.contains('active')) {
+        if (currentProduct && document.getElementById("product-detail").classList.contains("active")) {
             renderGallery();
         }
     }, 250);
+});
+
+document.addEventListener('localizationChanged', () => {
+    if (currentProduct && document.getElementById("product-detail").classList.contains("active")) {
+        renderProductInfo();
+        setupAddToCartButton();
+    }
 });

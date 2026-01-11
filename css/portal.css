@@ -1,6 +1,3 @@
-/* ============================================
-   THE PORTAL (Landing Page)
-============================================ */
 #portal {
     position: fixed;
     top: 0;
@@ -12,11 +9,11 @@
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    background: var(--void-black);
+    background: var(--void-black)
 }
 
 #portal.hidden {
-    display: none;
+    display: none
 }
 
 #portal-video {
@@ -27,7 +24,7 @@
     height: 100%;
     object-fit: cover;
     opacity: 0.6;
-    filter: contrast(1.3) brightness(0.8);
+    filter: contrast(1.3) brightness(0.8)
 }
 
 .logo-portal {
@@ -41,10 +38,10 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 30px rgba(255,255,255,0.3);
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
     animation: pulse 2s ease-in-out infinite;
     position: relative;
-    z-index: 2;
+    z-index: 2
 }
 
 .portal-enter {
@@ -61,38 +58,39 @@
     padding: 15px 30px;
     border: 1px solid var(--signal-white);
     background: transparent;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease
 }
 
 .portal-enter:hover {
     background: var(--signal-white);
-    color: var(--void-black);
+    color: var(--void-black)
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .logo-portal {
         font-size: 2rem;
-        margin-bottom: 0; 
+        margin-bottom: 0
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .logo-portal {
-        font-size: 1.3rem;
-    } 
+        font-size: 1.3rem
+    }
+
     .portal-enter {
-        bottom: 12%;
+        bottom: 12%
     }
 }
 
-@media (max-width: 400px) {
+@media (max-width:400px) {
     .logo-portal {
-        font-size: 1.1rem;
+        font-size: 1.1rem
     }
 }
 
-@media (max-width: 375px) {
+@media (max-width:375px) {
     .logo-portal {
-        font-size: 1rem;
+        font-size: 1rem
     }
 }
