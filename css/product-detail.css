@@ -297,6 +297,11 @@
 /* ============================================
    TECH SPECS TAB
 ============================================ */
+
+.tech-specs {
+    padding-top: 25px; 
+}
+
 .tech-specs h3 {
     font-weight: 900;
     font-size: 1rem;
@@ -368,6 +373,11 @@
 /* ============================================
    SHIPPING TAB
 ============================================ */
+
+.tab-ship {
+    padding-top: 25px;
+}
+
 .shipping-info {
     font-family: 'Courier New', 'Consolas', monospace;
 }
