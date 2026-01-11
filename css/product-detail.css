@@ -51,7 +51,7 @@
     .image-gallery {
         max-width: 500px;
         /* Limit width on desktop for neat look */
-        margin: 60px auto 40px auto;
+        margin: 20px auto 40px auto;
         /* Reset grid if previously applied globally */
         display: block;
         grid-template-columns: none;
@@ -359,48 +359,36 @@
     }
 }
 
-@media (max-width:480px) {
+/* Mobile - Stick to Bottom Full Width (All Mobile Sizes up to Tablet) */
+@media (max-width: 767px) {
     .sticky-buy {
-        bottom: 48px;
-        padding: 12px 15px
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+        border-top: 1px solid rgba(240, 240, 240, 0.1);
+        background: var(--void-black);
+        /* Ensure background is solid */
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
 
     .btn-secure {
-        font-size: 0.85rem;
-        padding: 14px
+        width: 100%;
+        margin: 0;
+        border: none;
+        padding: 18px;
+        font-size: 0.9rem;
+        letter-spacing: 0.15em;
+        border-radius: 0;
+        /* Enhance full width feel */
     }
 }
 
-@media (max-width:375px) {
-    .sticky-buy {
-        bottom: 0;
-        padding: 0;
-        border-top: 1px solid rgba(240, 240, 240, 0.1);
-    }
-
+/* Tiny Phones Adjustment */
+@media (max-width: 375px) {
     .btn-secure {
         font-size: 0.8rem;
-        padding: 18px;
-        letter-spacing: 0.15em;
-        width: 100%;
-        margin: 0;
-        border: none;
-    }
-}
-
-@media (min-width: 376px) and (max-width: 480px) {
-    .sticky-buy {
-        bottom: 0;
-        padding: 0;
-        border-top: 1px solid rgba(240, 240, 240, 0.1);
-    }
-
-    .btn-secure {
-        font-size: 0.85rem;
-        padding: 18px;
-        width: 100%;
-        margin: 0;
-        border: none;
+        padding: 16px;
     }
 }
 
