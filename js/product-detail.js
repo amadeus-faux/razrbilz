@@ -111,9 +111,9 @@ function renderProductInfo() {
              <table class="size-table">
                 <thead>
                     <tr>
-                        <th style="text-align: left;">SIZE</th>
-                        <th style="text-align: left;">CHEST</th>
-                        <th style="text-align: left;">LENGTH</th>
+                        <th style="text-align: center;">SIZE</th>
+                        <th style="text-align: center;">CHEST</th>
+                        <th style="text-align: center;">LENGTH</th>
                     </tr>
                 </thead>
                 <tbody>${sizeChartHTML}</tbody>

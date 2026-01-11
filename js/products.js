@@ -8,7 +8,7 @@ const products = [
         code: 'RONIN BALLISTIC TEE',
         name: 'RONIN BALLISTIC TEE',
         price: 999999999,
-        stock: 50,
+        stock: 45,
         variants: {
             'S': '47989924790424', 
             'M': '47989924823192',
@@ -43,7 +43,7 @@ const products = [
         code: 'AZRAEL HOODIE',
         name: 'AZRAEL HOODIE',
         price: 999999999,
-        stock: 8,
+        stock: 45,
         variants: {
             'S': '47989839036568', 
             'M': '47989839069336',
@@ -78,7 +78,7 @@ const products = [
         code: 'STRATA LAYERED TEE',
         name: 'STRATA LAYERED TEE',
         price: 999999999,
-        stock: 23,
+        stock: 45,
         variants: {
             'S': '47989921480856', 
             'M': '47989921513624',
