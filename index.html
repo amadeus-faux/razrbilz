@@ -2230,34 +2230,77 @@
         </div>
     </section>
 
-    <!-- Cookie Consent -->
-    <div id="cookie-banner"
-        style="display: none; position: fixed; bottom: -100px; left: 0; width: 100%; background: var(--void-black); border-top: 1px solid rgba(255,255,255,0.1); padding: 20px; z-index: 10000; transition: bottom 0.5s ease; font-family: 'Montserrat', sans-serif;">
-        <div
-            style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 15px; text-align: center;">
-            <p style="font-size: 0.8rem; opacity: 0.8; margin: 0; line-height: 1.5;">
-                RAZRBILZ uses cookies to enhance your experience and optimize local currency settings. By continuing,
-                you agree to our usage protocols.
+    <!-- Cookie Consent Modal -->
+    <div id="cookie-modal-backdrop">
+        <div id="cookie-modal">
+            <h3 class="cookie-title">JANGAN HANYUT TANPA TUJUAN</h3>
+            <p class="cookie-text">
+                Kami menggunakan cookie untuk mengoptimalkan pengalaman Anda dan menyesuaikan mata uang berdasarkan
+                lokasi Anda.
             </p>
-            <button onclick="acceptCookies()"
-                style="padding: 10px 25px; background: var(--signal-white); color: var(--void-black); border: none; font-weight: 900; font-size: 0.8rem; letter-spacing: 0.1em; cursor: pointer;">
-                [ ACKNOWLEDGE ]
-            </button>
+            <button class="btn-secure" onclick="acceptCookies()" style="margin-top: 20px;">[ TERIMA & LANJUTKAN
+                ]</button>
         </div>
     </div>
+
     <style>
-        #cookie-banner.visible {
-            bottom: 0;
+        #cookie-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(5, 5, 5, 0.9);
+            z-index: 11000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(5px);
         }
 
-        @media (min-width: 768px) {
-            #cookie-banner>div {
-                flex-direction: row;
-                text-align: left;
-                justify-content: space-between;
-            }
+        #cookie-modal-backdrop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #cookie-modal {
+            background: var(--void-black);
+            border: 1px solid var(--signal-white);
+            padding: 40px;
+            max-width: 90%;
+            width: 450px;
+            text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        #cookie-modal-backdrop.visible #cookie-modal {
+            transform: scale(1);
+        }
+
+        .cookie-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 0.15em;
+            color: var(--signal-white);
+            margin-bottom: 20px;
+        }
+
+        .cookie-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(240, 240, 240, 0.8);
+            margin-bottom: 10px;
         }
     </style>
+
     <script src="js/config.js" defer></script>
     <script src="js/products.js" defer></script>
     <script src="js/utils.js" defer></script>
