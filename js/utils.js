@@ -1,7 +1,7 @@
 
 // Application State
 window.appState = {
-    // Default: English & IDR (until Geo/Cookie override)
+    // Default setting: English Language but IDR Currency
     lang: localStorage.getItem('razr_lang') || 'en',
     currency: localStorage.getItem('razr_currency') || 'IDR',
     exchangeRate: 15500, // 1 USD = 15,500 IDR
@@ -101,19 +101,20 @@ async function checkGeoLocation() {
         const data = await response.json();
 
         // Logic: Outside Indonesia -> USD. Inside -> IDR.
-        // Default Lang is EN. We do NOT switch Lang automatically based on user request "Default Language: English".
+        // Default is IDR. Only switch to USD if explicitly detected as NOT ID.
 
-        if (data.country_code !== 'ID') {
+        if (data.country_code && data.country_code !== 'ID') {
             window.appState.currency = 'USD';
         } else {
             window.appState.currency = 'IDR';
         }
 
-        // Mark as set so we don't re-fetch unnecessarily
+        // Mark as set
         localStorage.setItem('razr_currency_set', 'true');
 
     } catch (error) {
-        console.log('Geo-location failed, using default IDR/EN.');
+        console.log('Geo-location failed, keeping default (IDR).');
+        window.appState.currency = 'IDR';
     }
 }
 

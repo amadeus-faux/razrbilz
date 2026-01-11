@@ -1,1 +1,83 @@
-function navigate(e) { document.querySelectorAll("section").forEach(e => { e.classList.remove("active") }), ["size-guide", "shipping-policy", "return-policy", "terms", "privacy", "contact"].includes(e) || document.querySelectorAll(".command-btn").forEach(e => { e.classList.remove("active") }); const t = document.getElementById(e); if (t) { t.classList.add("active"), currentPage = e, window.scrollTo(0, 0); if (["archive", "about", "cart"].includes(e)) { const t = Array.from(document.querySelectorAll(".command-btn")).find(t => t.textContent.includes(e.toUpperCase().substring(0, 3))); t && t.classList.add("active") } } "archive" === e ? renderProducts() : "about" === e ? typewriterEffect() : "cart" === e ? renderCart() : "contact" === e && (() => { const e = document.getElementById("contactForm"), t = document.getElementById("contact-success"); e && t && (e.style.display = "block", e.reset(), t.style.display = "none") })(); const c = document.querySelector(".command-bar"); c && ("checkout" === e ? c.style.display = "none" : c.style.display = "flex") }
+// History Management
+let isNavigating = false;
+
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.page) {
+        navigate(event.state.page, false); // false = don't push state again
+    } else {
+        // Fallback or default
+        navigate('archive', false);
+    }
+});
+
+function navigate(sectionId, pushState = true) {
+    if (isNavigating) return;
+
+    // Deactivate all sections
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+
+    // Deactivate command buttons except for special ones (toggle-like)
+    if (!["size-guide", "shipping-policy", "return-policy", "terms", "privacy", "contact"].includes(sectionId)) {
+        document.querySelectorAll(".command-btn").forEach(btn => btn.classList.remove("active"));
+    }
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.classList.add("active");
+        currentPage = sectionId;
+        window.scrollTo(0, 0);
+
+        // Highlight Active Button
+        if (["archive", "about", "cart"].includes(sectionId)) {
+            const btn = Array.from(document.querySelectorAll(".command-btn"))
+                .find(b => b.textContent && b.textContent.includes(sectionId.toUpperCase().substring(0, 3)));
+            if (btn) btn.classList.add("active");
+        }
+    }
+
+    // Specific Page Logic
+    if (sectionId === "archive") {
+        renderProducts();
+    } else if (sectionId === "about") {
+        typewriterEffect(); // Ensure this function exists and is accessible
+    } else if (sectionId === "cart") {
+        renderCart();
+    } else if (sectionId === "contact") {
+        const form = document.getElementById("contactForm");
+        const msg = document.getElementById("contact-success");
+        if (form && msg) {
+            form.style.display = "block";
+            form.reset();
+            msg.style.display = "none";
+        }
+    }
+
+    // Command Bar Visibility
+    const cmdBar = document.querySelector(".command-bar");
+    if (cmdBar) {
+        if (sectionId === "checkout") {
+            cmdBar.style.display = "none";
+        } else {
+            cmdBar.style.display = "flex";
+        }
+    }
+
+    // History Push
+    if (pushState) {
+        const url = `#${sectionId}`;
+        history.pushState({ page: sectionId }, "", url);
+    }
+}
+
+// Initial History State Replacement on Load
+document.addEventListener('DOMContentLoaded', () => {
+    const initialPage = 'archive'; // Default
+    // Check hash
+    const hash = window.location.hash.substring(1);
+    if (hash && document.getElementById(hash)) {
+        navigate(hash, false); // Render but don't duplicate push
+        history.replaceState({ page: hash }, "", `#${hash}`);
+    } else {
+        history.replaceState({ page: initialPage }, "", `#${initialPage}`);
+    }
+});
