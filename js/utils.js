@@ -51,47 +51,47 @@ function sendEmail() {
 
 // Cookie Consent & Localization Initialization
 async function initLocalization() {
-    // Check Consent
-    const consentBanner = document.getElementById('cookie-banner');
+    // We do NOT automatically show banner on load anymore.
+    // Logic is moved to tryShowCookieConsent() called by navigation.
 
-    if (!window.appState.consent) {
-        // Show Banner
-        if (consentBanner) {
-            consentBanner.style.display = 'block';
-            setTimeout(() => consentBanner.classList.add('visible'), 100);
-        }
-    } else {
-        // Already Consented, perform Geo Check if not already cached/set
-        // Note: Logic says "If detection ... switch currency".
-        // If we have stored currency preference, we respect it? 
-        // Or do we re-check geo? Usually respect stored.
+    // If already consented, run checks (e.g. Geo) silently if needed
+    if (window.appState.consent) {
         if (!localStorage.getItem('razr_currency_set')) {
             await checkGeoLocation();
         }
     }
 
-    // Check banner visibility if element missing (safety)
-    if (!window.appState.consent && !consentBanner) {
-        // Fallback or retry?
-        console.warn("Cookie banner element missing");
-    }
-
     applyLocalization();
 }
+
+// New Function: Try to show consent modal if requirements met
+window.tryShowCookieConsent = function () {
+    // Requirement: Show only if consent NOT given yet.
+    if (!window.appState.consent) {
+        const modalBackdrop = document.getElementById('cookie-modal-backdrop');
+        if (modalBackdrop) {
+            // Slight delay for animation effect after navigation
+            setTimeout(() => {
+                modalBackdrop.classList.add('visible');
+            }, 1000); // 1s delay as requested (or just enough to settle)
+        }
+    }
+};
 
 async function acceptCookies() {
     window.appState.consent = true;
     localStorage.setItem('razr_consent', 'true');
 
-    // Hide Banner
-    const consentBanner = document.getElementById('cookie-banner');
-    if (consentBanner) {
-        consentBanner.classList.remove('visible');
-        setTimeout(() => consentBanner.style.display = 'none', 500);
+    // Hide Modal
+    const modalBackdrop = document.getElementById('cookie-modal-backdrop');
+    if (modalBackdrop) {
+        modalBackdrop.classList.remove('visible');
     }
 
-    // Trigger Geo Location Logic
+    // Trigger Geo Location Logic & Currency Update IMMEDIATELY
     await checkGeoLocation();
+
+    // Apply changes
     applyLocalization();
 }
 

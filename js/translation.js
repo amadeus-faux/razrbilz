@@ -87,7 +87,7 @@ const translations = {
         portal_enter: "[ KETUK UNTUK MASUK ]",
 
         // Archive
-        archive_header: "KOLEKSI 001 : KULIT BAJA",
+        archive_header: "COLLECTIONS 001 : STEEL SKINS",
 
         // Product Detail
         product_secure: "[ AMANKAN BARANG ]",

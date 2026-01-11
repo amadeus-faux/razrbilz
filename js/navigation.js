@@ -38,6 +38,10 @@ function navigate(sectionId, pushState = true) {
     // Specific Page Logic
     if (sectionId === "archive") {
         renderProducts();
+        // TRIGGER COOKIE MODAL LOGIC (One-time, Archive only)
+        if (window.tryShowCookieConsent) {
+            window.tryShowCookieConsent();
+        }
     } else if (sectionId === "about") {
         typewriterEffect(); // Ensure this function exists and is accessible
     } else if (sectionId === "cart") {
