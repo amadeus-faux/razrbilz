@@ -162,3 +162,33 @@ if (document.readyState === 'loading') {
 } else {
     initLocalization();
 }
+
+function submitContactForm(event) {
+    if (event) event.preventDefault();
+
+    // Simulate sending
+    const btn = document.querySelector('.btn-submit-contact');
+    const originalText = btn.innerHTML;
+    const form = document.getElementById('contactForm');
+
+    btn.innerHTML = "[ TRANSMITTING... ]";
+    btn.disabled = true;
+
+    setTimeout(() => {
+        // Hide form, show success
+        form.style.display = 'none';
+        document.getElementById('contact-success').style.display = 'block';
+
+        // Use mailto as backup/actual transmission for static site
+        const name = document.getElementById('contact-name').value;
+        const email = document.getElementById('contact-email').value;
+        const subject = document.getElementById('contact-subject').value;
+        const message = document.getElementById('contact-message').value;
+
+        // Construct detailed body
+        const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+        window.location.href = `mailto:info@razrbilz.id?subject=[${subject.toUpperCase()}] ${name}&body=${body}`;
+
+        // Reset after delay? keeping it as sent is better.
+    }, 1500);
+}

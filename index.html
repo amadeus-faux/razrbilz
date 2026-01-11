@@ -2045,10 +2045,12 @@
         <footer class="site-footer">
             <div class="footer-content">
                 <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
+                    <a onclick="navigate('return-policy')" style="cursor: pointer" data-i18n="footer_refund">REFUND
+                        POLICY</a>
+                    <a onclick="navigate('terms')" style="cursor: pointer" data-i18n="footer_terms">TERMS OF SERVICE</a>
+                    <a onclick="navigate('contact')" style="cursor: pointer" data-i18n="footer_contact">CONTACT US</a>
+                    <a onclick="navigate('privacy')" style="cursor: pointer" data-i18n="footer_privacy">PRIVACY
+                        POLICY</a>
                 </nav>
                 <div class="footer-identity">
                     <div class="footer-lang">
@@ -2078,10 +2080,12 @@
         <footer class="site-footer">
             <div class="footer-content">
                 <nav class="footer-legal">
-                    <a onclick="navigate('return-policy')" style="cursor: pointer">REFUND POLICY</a>
-                    <a onclick="navigate('terms')" style="cursor: pointer">TERMS OF SERVICE</a>
-                    <a onclick="navigate('contact')" style="cursor: pointer">CONTACT US</a>
-                    <a onclick="navigate('privacy')" style="cursor: pointer">PRIVACY POLICY</a>
+                    <a onclick="navigate('return-policy')" style="cursor: pointer" data-i18n="footer_refund">REFUND
+                        POLICY</a>
+                    <a onclick="navigate('terms')" style="cursor: pointer" data-i18n="footer_terms">TERMS OF SERVICE</a>
+                    <a onclick="navigate('contact')" style="cursor: pointer" data-i18n="footer_contact">CONTACT US</a>
+                    <a onclick="navigate('privacy')" style="cursor: pointer" data-i18n="footer_privacy">PRIVACY
+                        POLICY</a>
                 </nav>
                 <div class="footer-identity">
                     <div class="footer-lang">
@@ -2182,12 +2186,16 @@
             </div>
             <div class="contact-methods">
                 <div class="contact-method">
-                    <h3 data-i18n="contact_method_email">EMAIL</h3><a href="mailto:info@razrbilz.id"
+                    <h3 data-i18n="contact_method_email">EMAIL</h3><a href="#" onclick="sendEmail(); return false;"
                         class="contact-link">info@razrbilz.id</a>
                 </div>
                 <div class="contact-method">
-                    <h3 data-i18n="contact_method_social">SOCIAL MEDIA</h3><a href="https://instagram.com/razrbilz"
-                        target="_blank" class="contact-link">@razrbilz</a>
+                    <h3 data-i18n="contact_method_social">SOCIAL MEDIA</h3><a href="#"
+                        onclick="openInstagram(); return false;" class="contact-link">@razrbilz</a>
+                </div>
+                <div class="contact-method">
+                    <h3 data-i18n="contact_method_whatsapp">WHATSAPP</h3><a href="#"
+                        onclick="openWhatsApp(); return false;" class="contact-link">+62 812-3456-7890</a>
                 </div>
             </div>
             <div class="contact-form-container">
@@ -2233,13 +2241,13 @@
     <!-- Cookie Consent Modal -->
     <div id="cookie-modal-backdrop">
         <div id="cookie-modal">
-            <h3 class="cookie-title">JANGAN HANYUT TANPA TUJUAN</h3>
-            <p class="cookie-text">
-                Kami menggunakan cookie untuk mengoptimalkan pengalaman Anda dan menyesuaikan mata uang berdasarkan
-                lokasi Anda.
-            </p>
-            <button class="btn-secure" onclick="acceptCookies()" style="margin-top: 20px;">[ TERIMA & LANJUTKAN
-                ]</button>
+            <h3 data-i18n="cookie_title">DON'T DRIFT WITHOUT PURPOSE</h3>
+            <p data-i18n="cookie_text">We use cookies to enhance your experience and analyze our traffic. By continuing
+                to visit this site, you agree to our use of cookies.</p>
+            <div class="cookie-actions">
+                <button onclick="acceptCookies()" class="btn-cookie-accept" data-i18n="btn_accept_cookies">[ ACCEPT &
+                    CONTINUE ]</button>
+            </div>
         </div>
     </div>
 

@@ -19,7 +19,10 @@ const products = [
             "assets/products/product1-2.png",
             "assets/products/product1-3.png"
         ],
-        manifesto: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
+        manifesto: {
+            en: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
+            id: "Baja dibalut katun. Dibangun untuk mereka yang menolak berbaur. Ini bukan fashion. Ini adalah perlengkapan bertahan hidup untuk kehampaan urban."
+        },
         specs: {
             material: "16s Premium Cotton Combed (Acid Wash)",
             weight: "Heavyweight",
@@ -61,7 +64,10 @@ const products = [
             "assets/products/product2-5.png",
             "assets/products/product2-6.png"
         ],
-        manifesto: "Taking its name from The Reaper, this piece is a homage to shadow and structure. Built with heavyweight materials to forge a silhouette that is solid, imposing, and intimidating.",
+        manifesto: {
+            en: "Taking its name from The Reaper, this piece is a homage to shadow and structure. Built with heavyweight materials to forge a silhouette that is solid, imposing, and intimidating.",
+            id: "Mengambil namanya dari Sang Pencabut Nyawa, karya ini adalah penghormatan pada bayangan dan struktur. Dibangun dengan material kelas berat untuk menempa siluet yang kokoh, megah, dan mengintimidasi."
+        },
         specs: {
             material: "AeroCool Cotton Fleece 375gsm",
             weight: "Heavyweight",
@@ -100,7 +106,10 @@ const products = [
             "assets/products/product3-2.png",
             "assets/products/product3-3.png"
         ],
-        manifesto: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
+        manifesto: {
+            en: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
+            id: "Baja dibalut katun. Dibangun untuk mereka yang menolak berbaur. Ini bukan fashion. Ini adalah perlengkapan bertahan hidup untuk kehampaan urban."
+        },
         specs: {
             material: "16s Premium Cotton Combed, AeroCool Cotton Fleece 285gsm",
             weight: "Heavyweight",

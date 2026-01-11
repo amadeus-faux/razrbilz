@@ -13,7 +13,10 @@ const translations = {
         archive_header: "COLLECTIONS 001 : STEEL SKINS",
 
         // Product Detail
+        // Product Detail
         product_secure: "[ SECURE PIECE ]",
+        product_select_size_label: "SELECT SIZE CONFIGURATION:",
+        manifesto_label: "MANIFESTO",
         tab_specs: "TECH SPECS",
         tab_size: "SIZE GUIDE",
         tab_ship: "SHIPPING",
@@ -47,6 +50,7 @@ const translations = {
         contact_intro: "Need assistance? Contact us below.",
         contact_method_email: "EMAIL",
         contact_method_social: "SOCIAL MEDIA",
+        contact_method_whatsapp: "WHATSAPP", // Added
         contact_form_title: "SEND A MESSAGE",
         form_name: "NAME",
         form_email: "EMAIL",
@@ -74,6 +78,11 @@ const translations = {
         policy_return_title: "RETURN & EXCHANGE",
         policy_return_content: `<h3>RETURN WINDOW</h3><p>Our policy lasts 7 days. If 7 days have gone by since your purchase arrived, unfortunately we can’t offer you a refund or exchange.</p><h3>ELIGIBILITY</h3><p>To be eligible for a return, your item must be unused and in the same condition that you received it. It must also be in the original packaging with all tags attached.</p><h3>NON-RETURNABLE ITEMS</h3><p>To maintain our quality and hygiene standards, we cannot accept exchanges or refunds for the following conditions:</p><ul><li><b>Sale/Discounted Items:</b> Products purchased during promotional periods, flash sales, or marked as 'Final Sale'.</li><li><b>Product Condition:</b> Items that have been washed, worn, ironed, or altered in any way.</li><li><b>Missing Components:</b> Items returned without original hangtags, labels, or complete packaging (including stickers/warranty cards).</li><li><b>Specific Accessories:</b> Intimate accessory categories such as masks, socks, or underwear (for hygiene reasons).</li><li><b>Packaging Damage:</b> If the exclusive packaging (Pouch/Anti-Static Bag) is severely damaged, torn, or missing.</li></ul><h3>REFUNDS (IF APPLICABLE)</h3><p>Once your return is received and inspected, we will send you an email to notify you that we have received your returned item. We will also notify you of the approval or rejection of your refund. If you are approved, then your refund will be processed, and a credit will automatically be applied to your credit card or original method of payment, within a certain amount of days.</p><h3>EXCHANGES (IF APPLICABLE)</h3><p>We only replace items if they are defective or damaged. If you need to exchange it for the same item, send us an email at info@razrbilz.id.</p><h3>SHIPPING</h3><p>You will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable.</p>`,
 
+        // Cookie Consent
+        cookie_title: "DON'T DRIFT WITHOUT PURPOSE",
+        cookie_text: "We use cookies to enhance your experience and analyze our traffic. By continuing to visit this site, you agree to our use of cookies.",
+        btn_accept_cookies: "[ ACCEPT & CONTINUE ]",
+
         btn_close_policy: "[ CLOSE ]"
     },
     id: {
@@ -91,6 +100,8 @@ const translations = {
 
         // Product Detail
         product_secure: "[ AMANKAN BARANG ]",
+        product_select_size_label: "PILIH KONFIGURASI UKURAN:",
+        manifesto_label: "MANIFESTO",
         tab_specs: "SPESIFIKASI",
         tab_size: "PANDUAN UKURAN",
         tab_ship: "PENGIRIMAN",
@@ -124,6 +135,7 @@ const translations = {
         contact_intro: "Butuh bantuan? Hubungi kami di bawah ini.",
         contact_method_email: "SUREL",
         contact_method_social: "MEDIA SOSIAL",
+        contact_method_whatsapp: "WHATSAPP", // Added
         contact_form_title: "KIRIM PESAN",
         form_name: "NAMA",
         form_email: "EMAIL",
@@ -150,6 +162,11 @@ const translations = {
 
         policy_return_title: "PENGEMBALIAN & PENUKARAN",
         policy_return_content: `<h3>JENDELA PENGEMBALIAN</h3><p>Kebijakan kami berlaku selama 7 hari. Jika 7 hari telah berlalu sejak pembelian Anda tiba, sayangnya kami tidak dapat menawarkan pengembalian uang atau penukaran.</p><h3>KELAYAKAN</h3><p>Agar memenuhi syarat untuk pengembalian, barang Anda harus belum digunakan dan dalam kondisi yang sama seperti saat Anda menerimanya. Barang juga harus berada dalam kemasan aslinya dengan semua tag terpasang.</p><h3>BARANG YANG TIDAK DAPAT DIKEMBALIKAN</h3><p>Demi menjaga standar kualitas dan kebersihan, kami tidak dapat menerima penukaran atau pengembalian dana untuk kondisi berikut:</p><ul><li><b>Barang Sale/Diskon:</b> Produk yang dibeli saat periode promo, flash sale, atau bertanda 'Final Sale'.</li><li><b>Kondisi Produk:</b> Barang yang telah dicuci, dipakai beraktivitas, disetrika, atau diubah ukurannya (dipermak).</li><li><b>Kelengkapan Hilang:</b> Barang yang dikembalikan tanpa hangtag, label, atau kemasan asli yang lengkap (termasuk stiker/kartu garansi).</li><li><b>Aksesoris Khusus:</b> Produk kategori aksesoris intim seperti masker, kaos kaki, atau underwear (alasan kebersihan).</li><li><b>Kerusakan Kemasan:</b> Jika kemasan eksklusif (Pouch/Anti-Static Bag) rusak parah, sobek, atau hilang.</li></ul><h3>PENGEMBALIAN DANA (JIKA BERLAKU)</h3><p>Setelah pengembalian Anda diterima dan diperiksa, kami akan mengirimi Anda email untuk memberi tahu bahwa kami telah menerima barang yang Anda kembalikan. Kami juga akan memberi tahu Anda tentang persetujuan atau penolakan pengembalian dana Anda.</p><h3>PENUKARAN (JIKA BERLAKU)</h3><p>Kami hanya mengganti barang jika barang tersebut cacat atau rusak. Jika Anda perlu menukarnya dengan barang yang sama, kirimkan email kepada kami di info@razrbilz.id.</p><h3>PENGIRIMAN</h3><p>Anda bertanggung jawab untuk membayar biaya pengiriman Anda sendiri untuk mengembalikan barang Anda. Biaya pengiriman tidak dapat dikembalikan.</p>`,
+
+        // Cookie Consent
+        cookie_title: "JANGAN HANYUT TANPA TUJUAN",
+        cookie_text: "Kami menggunakan cookie untuk meningkatkan pengalaman Anda dan menganalisis lalu lintas kami. Dengan terus mengunjungi situs ini, Anda setuju dengan penggunaan cookie kami.",
+        btn_accept_cookies: "[ TERIMA & LANJUTKAN ]",
 
         btn_close_policy: "[ TUTUP ]"
     }

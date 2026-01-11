@@ -1,12 +1,23 @@
 
 let cart = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY)) || [];
 
+const MAX_QTY_PER_VARIANT = 2;
+
 function addToCart(productId, size, variantId) {
     const product = products.find(p => p.id == productId);
     if (product) {
-        const existingItem = cart.find(item => item.id == productId && item.size === size);
+        // Use variantId for uniqueness (Product + Size)
+        const existingItem = cart.find(item => item.variantId === variantId);
+
         if (existingItem) {
-            existingItem.quantity += 1;
+            if (existingItem.quantity < MAX_QTY_PER_VARIANT) {
+                existingItem.quantity += 1;
+                saveCart();
+                updateCartCount();
+                showFeedback(size, true);
+            } else {
+                alert("LIMIT REACHED: MAX 2 ITEMS PER SIZE PER MODEL.");
+            }
         } else {
             cart.push({
                 id: product.id,
@@ -17,26 +28,26 @@ function addToCart(productId, size, variantId) {
                 quantity: 1,
                 size: size
             });
-        }
-        saveCart();
-        updateCartCount();
-
-        // UI Feedback
-        const btn = document.querySelector(".btn-secure");
-        if (btn) {
-            btn.innerHTML = `[ SECURE: SIZE ${size} ]`;
-            btn.classList.add("added");
-            setTimeout(() => {
-                // Restore button text based on current language
-                const lang = window.appState.lang;
-                // Safely access translations if available, else fallback
-                const text = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang].product_secure : "[ SECURE PIECE ]";
-                btn.innerHTML = text;
-                btn.classList.remove("added");
-            }, 2000);
+            saveCart();
+            updateCartCount();
+            showFeedback(size, true);
         }
     } else {
         console.error("Cart Error: Product not found with ID", productId);
+    }
+}
+
+function showFeedback(size, success) {
+    const btn = document.querySelector(".btn-secure");
+    if (btn) {
+        btn.innerHTML = `[ SECURE: SIZE ${size} ]`;
+        btn.classList.add("added");
+        setTimeout(() => {
+            const lang = window.appState.lang;
+            const text = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang].product_secure : "[ SECURE PIECE ]";
+            btn.innerHTML = text;
+            btn.classList.remove("added");
+        }, 2000);
     }
 }
 
@@ -48,11 +59,6 @@ function renderCart() {
     const lang = window.appState.lang;
     const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : {};
     const emptyMsg = t.cart_empty || "YOUR CACHE IS EMPTY";
-    const checkoutBtn = t.btn_checkout || "[ PROCEED TO SECUREMENT ]"; // Fallback differently for cart button? index.html uses btn_checkout but maybe cart had different text. 
-    // Wait, index.html used nav keys. 
-    // Let's use "[ PROCEED TO SECUREMENT ]" or reuse `checkout_proceed`? 
-    // The previous code had "[ PROCEED TO SECUREMENT ]". 
-    // I added `btn_checkout` ("PROCEED TO CHECKOUT") to translation.js. I'll use that for consistency.
 
     if (cart.length === 0) {
         cartContainer.innerHTML = `<p class="cart-empty" data-i18n="cart_empty">${emptyMsg}</p>`;
@@ -69,7 +75,14 @@ function renderCart() {
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-variant">SIZE: ${item.size}</div>
                     <div class="cart-item-price">${formatPrice(item.price)}</div>
-                    <button class="btn-remove" onclick="removeFromCart(${item.id})">REMOVE</button>
+                    
+                    <div class="qty-selector" style="display:flex; align-items:center; gap:10px; margin-top:10px; margin-bottom:10px;">
+                        <button onclick="updateQuantity('${item.variantId}', -1)" style="background:transparent; color:#fff; border:1px solid #555; width:25px; height:25px; cursor:pointer;">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity('${item.variantId}', 1)" style="background:transparent; color:#fff; border:1px solid #555; width:25px; height:25px; cursor:pointer;">+</button>
+                    </div>
+
+                    <button class="btn-remove" onclick="removeFromCart('${item.variantId}')">REMOVE</button>
                 </div>
             </div>
         `;
@@ -82,8 +95,33 @@ function renderCart() {
     `;
 }
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id != productId);
+function updateQuantity(variantId, change) {
+    const item = cart.find(i => i.variantId === variantId);
+    if (!item) return;
+
+    const newQty = item.quantity + change;
+
+    if (newQty > MAX_QTY_PER_VARIANT) {
+        alert("LIMIT REACHED: MAX 2 ITEMS PER SIZE PER MODEL.");
+        return;
+    }
+
+    if (newQty < 1) {
+        // Optional: Confirm before remove? Or just remove? 
+        // User asked for "Remove Item Bug" fix, let's keep explicit remove button for full removal, 
+        // but often < 1 implies removal. 
+        // We will keep it at 1 min here to avoid accidental removal via -, force use of Remove button.
+        return;
+    }
+
+    item.quantity = newQty;
+    saveCart();
+    renderCart(); // Re-render to update total and display
+}
+
+function removeFromCart(variantId) {
+    // FIX: Filter by variantId ONLY
+    cart = cart.filter(item => item.variantId !== variantId);
     saveCart();
     updateCartCount();
     renderCart();
@@ -92,7 +130,10 @@ function removeFromCart(productId) {
 function updateCartCount() {
     const count = document.querySelector(".cart-count");
     if (count) {
-        count.textContent = `(${cart.length})`;
+        // Total items count (sum of quantities) or unique items?
+        // Usually cart count is unique items or total qty. "2 items" usually means 2 physical things.
+        const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+        count.textContent = `(${totalQty})`;
     }
 }
 

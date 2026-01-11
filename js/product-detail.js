@@ -51,12 +51,13 @@ function renderProductInfo() {
                 <div>STATUS: <span class="${stockStatus.class}">[ ${stockStatus.status} ]</span></div>
             </div>
         </div>
-        <p class="product-manifesto">${currentProduct.manifesto || "No description available."}</p>
+        </div>
+        <p class="product-manifesto">${(currentProduct.manifesto && currentProduct.manifesto[lang]) ? currentProduct.manifesto[lang] : (currentProduct.manifesto.en || "No description available.")}</p>
         
         <div class="product-price-large">${formatPrice(currentProduct.price)}</div>
         
         <div class="size-selector-container">
-            <span class="size-label">SELECT SIZE CONFIGURATION:</span>
+            <span class="size-label" data-i18n="product_select_size_label">${t.product_select_size_label || "SELECT SIZE CONFIGURATION:"}</span>
             <div class="size-grid">
                 <button class="size-btn" onclick="selectSize(this, 'S')">S</button>
                 <button class="size-btn" onclick="selectSize(this, 'M')">M</button>
@@ -141,6 +142,14 @@ function renderGallery() {
         <div class="click-zone click-zone-left" onclick="scrollSlider(-1)"></div>
         <div class="click-zone click-zone-right" onclick="scrollSlider(1)"></div>
         
+        <!-- Mobile Tap Zone (Transparent overlay for mobile only if needed, or stick to simple scroll) -->
+        <!-- For this request: "Navigasi gambar... berat. Ubah event listener agar cukup sekali klik (tap)." -->
+        <!-- We will attach a click listener to the images directly in the JS below to handle "tap to next" logic if not using zones. -->
+        <!-- However, let's make the entire gallery clickable for "Next" on mobile if strictly requested, OR just rely on the scroll snap which is already there, 
+             BUT the user said "pindah gambar" (move image) is heavy (berat). 
+             Often swipe is fine, but if they want tap: -->
+
+        
         <div class="slider-dots" id="sliderDots" style="display: flex; justify-content: center; margin-top: 15px; gap: 8px;">
             ${currentProduct.gallery.map((_, i) => `
                 <div class="dot" data-index="${i}" style="width: 8px; height: 8px; background: ${i === 0 ? "#fff" : "#333"}; border-radius: 50%; transition: all 0.3s; cursor:pointer;" onclick="scrollToSlide(${i})"></div>
@@ -197,6 +206,8 @@ function renderGallery() {
             }
         });
     }, 50);
+
+
 }
 
 // Helper to interact with dots

@@ -16,12 +16,6 @@ function renderProducts() {
 
         card.innerHTML = `
             <div class="product-image-container" ${isSoldOut ? "" : `onclick="viewProduct('${product.id}')"`} style="cursor: pointer;">
-                <div class="xray-icon" 
-                     onmousedown="activateXray(event)" 
-                     onmouseup="deactivateXray(event)" 
-                     ontouchstart="activateXray(event)" 
-                     ontouchend="deactivateXray(event)" 
-                     onclick="event.stopPropagation()">👁</div>
                 ${isSoldOut ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
                 <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy">
                 <img src="${product.imageDetail}" alt="${product.name} detail" class="product-image-detail" loading="lazy">

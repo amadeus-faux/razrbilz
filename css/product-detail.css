@@ -373,14 +373,34 @@
 
 @media (max-width:375px) {
     .sticky-buy {
-        bottom: 43px;
-        padding: 10px 15px
+        bottom: 0;
+        padding: 0;
+        border-top: 1px solid rgba(240, 240, 240, 0.1);
     }
 
     .btn-secure {
         font-size: 0.8rem;
-        padding: 12px;
-        letter-spacing: 0.15em
+        padding: 18px;
+        letter-spacing: 0.15em;
+        width: 100%;
+        margin: 0;
+        border: none;
+    }
+}
+
+@media (min-width: 376px) and (max-width: 480px) {
+    .sticky-buy {
+        bottom: 0;
+        padding: 0;
+        border-top: 1px solid rgba(240, 240, 240, 0.1);
+    }
+
+    .btn-secure {
+        font-size: 0.85rem;
+        padding: 18px;
+        width: 100%;
+        margin: 0;
+        border: none;
     }
 }
 
@@ -448,6 +468,34 @@
     font-size: 0.85rem;
     margin-top: 15px;
     text-align: left
+}
+
+/* Mobile Tabs Fix - Single Line */
+@media (max-width: 480px) {
+    .tab-navigation {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0;
+        /* Remove gap if any to save space */
+    }
+
+    .tab-navigation::-webkit-scrollbar {
+        display: none;
+        /* Hide scrollbar for aesthetics */
+    }
+
+    .tab-btn {
+        flex: 0 0 auto;
+        /* Allow auto width based on content */
+        font-size: 0.65rem;
+        /* Smaller font */
+        padding: 15px 12px;
+        /* Reduced padding */
+        white-space: nowrap;
+        /* Prevent text wrap */
+    }
 }
 
 .size-table th {
