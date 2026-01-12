@@ -17,7 +17,7 @@ const translations = {
         product_secure: "[ SECURE PIECE ]",
         product_select_size_label: "SELECT SIZE CONFIGURATION:",
         manifesto_label: "MANIFESTO",
-        tab_specs: "TECH SPECS",
+        tab_specs: "SPECS",
         tab_size: "SIZE GUIDE",
         tab_ship: "SHIPPING",
         shipping_info: `<div class="shipping-option"><li>SHIPPING WITHIN 2-3 WEEKS</li><li>ORDERS SHIPPED OUTSIDE OF INDONESIA MAY BE SUBJECT TO IMPORT TAXES, CUSTOM DUTIES, AND FEES LEVIED BY THE DESTINATION COUNTRY. THESE CHARGES ARE THE RESPONSIBILITY OF THE RECIPIENT.</li></div>`,
@@ -88,11 +88,11 @@ const translations = {
     id: {
         // Navigation
         nav_archive: "ARSIP",
-        nav_log: "JURNAL",
+        nav_log: "LOG",
         nav_cache: "KERANJANG",
 
         // Portal
-        portal_slogan: "UTARA BUKANLAH TEMPAT.",
+        portal_slogan: "NORTH IS NOT A PLACE.",
         portal_enter: "[ KETUK UNTUK MASUK ]",
 
         // Archive
@@ -102,8 +102,8 @@ const translations = {
         product_secure: "[ AMANKAN BARANG ]",
         product_select_size_label: "PILIH KONFIGURASI UKURAN:",
         manifesto_label: "MANIFESTO",
-        tab_specs: "SPESIFIKASI",
-        tab_size: "PANDUAN UKURAN",
+        tab_specs: "SPEK",
+        tab_size: "UKURAN",
         tab_ship: "PENGIRIMAN",
         shipping_info: `<div class="shipping-option"><li>PENGIRIMAN DILAKUKAN DALAM 2-3 MINGGU</li><li>PESANAN YANG DIKIRIM KE LUAR WILAYAH INDONESIA DAPAT DIKENAKAN PAJAK IMPOR, BEA MASUK, DAN BIAYA ADMINISTRASI YANG DIBERLAKUKAN OLEH NEGARA TUJUAN. SEGALA BIAYA TERSEBUT SEPENUHNYA MENJADI TANGGUNG JAWAB PENERIMA.</li></div>`,
 
