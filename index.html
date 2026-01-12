@@ -500,8 +500,7 @@
         #product-detail {
             display: none;
             min-height: 100vh;
-            padding: 20px;
-            padding-bottom: 200px
+            padding: 10px 20px 200px 20px
         }
 
         #product-detail.active {
@@ -510,7 +509,7 @@
 
         .image-gallery {
             max-width: 600px;
-            margin: 40px auto 30px auto;
+            margin: 10px auto 30px auto;
             position: relative;
             display: block;
         }
@@ -550,7 +549,7 @@
             .image-gallery {
                 max-width: 500px;
                 /* Limit width on desktop for neat look */
-                margin: 60px auto 40px auto;
+                margin: 10px auto 40px auto;
                 /* Reset grid if previously applied globally */
                 display: block;
                 grid-template-columns: none;
@@ -818,7 +817,25 @@
             border: 2px solid var(--alert-red)
         }
 
-        @media (min-width:768px) {
+        @media (min-width:768px) and (max-width:1024px) {
+            .sticky-buy {
+                width: 80%;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: 30px;
+                padding: 0;
+                border: none;
+                background: transparent;
+                box-shadow: none;
+            }
+
+            .btn-secure {
+                border: 1px solid var(--signal-white);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
+            }
+        }
+
+        @media (min-width:1025px) {
             .sticky-buy {
                 width: 480px;
                 left: 50%;
@@ -839,7 +856,8 @@
         @media (max-width:480px) {
             .sticky-buy {
                 bottom: 48px;
-                padding: 12px 15px
+                width: 100%;
+                padding: 0
             }
 
             .btn-secure {
@@ -1430,7 +1448,8 @@
             font-size: 0.85rem;
             letter-spacing: 0.15em;
             color: var(--signal-white);
-            opacity: 0.5
+            opacity: 0.5;
+            margin-left: 20px;
         }
 
         .footer-payment {
@@ -1871,6 +1890,28 @@
                 width: 80%;
                 bottom: 30px;
                 border-radius: 0
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tab-navigation {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                gap: 0;
+                scrollbar-width: none;
+            }
+
+            .tab-navigation::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-btn {
+                flex: 0 0 auto;
+                font-size: 0.65rem;
+                padding: 15px 12px;
+                white-space: nowrap;
             }
         }
 
