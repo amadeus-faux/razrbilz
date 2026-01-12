@@ -1,4 +1,3 @@
-
 function closePolicy() {
     navigate("archive");
 }
@@ -10,7 +9,7 @@ function contactSupport() {
 async function submitContactForm(e) {
     e.preventDefault();
     const btn = e.target.querySelector(".btn-submit-contact");
-    const originalText = btn.innerHTML; // Use innerHTML to preserve any potential formatting? No, textContent is fine.
+    const originalText = btn.innerHTML;
 
     const lang = window.appState.lang;
     const sendingText = lang === 'id' ? "[ MENGIRIM... ]" : "[ SENDING... ]";
@@ -39,12 +38,10 @@ async function submitContactForm(e) {
         const result = await response.json();
 
         if (response.ok) {
-            // Success logic handles below
         } else {
             throw new Error(result.error || "Failed to send message");
         }
 
-        // Success
         document.getElementById("contactForm").style.display = "none";
         document.getElementById("contact-success").style.display = "block";
 

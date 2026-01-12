@@ -4,7 +4,6 @@ function proceedToCheckout() {
         renderCheckoutSummary();
         navigate("checkout");
         setTimeout(() => {
-            // Check shipping if relevant (removed specific functions if they were undefined in previous context, but kept structure)
             if (typeof updateProvinces === 'function') updateProvinces();
             if (typeof checkShippingAvailability === 'function') checkShippingAvailability();
         }, 100);
@@ -55,9 +54,6 @@ function renderCheckoutSummary() {
 function submitOrder(e) {
     e.preventDefault();
     if (!document.querySelector('input[name="shipping"]:checked')) {
-        // This logic assumed a shipping form in previous versions, preserving check
-        // alert("Please select a shipping method first."); 
-        // Actually, the new checkout redirects to Shopify, so this might be dead code, but keeping for safety.
     }
 
     const btn = document.querySelector(".btn-submit-order");
@@ -86,7 +82,6 @@ function redirectToShopify() {
 }
 
 document.addEventListener('localizationChanged', () => {
-    // Re-render summary if visible
     if (document.getElementById("checkout").classList.contains("active")) {
         renderCheckoutSummary();
     }

@@ -121,8 +121,6 @@ function setupAddToCartButton() {
 function renderGallery() {
     if (!currentProduct) return;
     const galleryContainer = document.getElementById("productGallery");
-
-    // Universal Slider Logic (Desktop & Mobile)
     const firstClone = currentProduct.gallery[0];
     const lastClone = currentProduct.gallery[currentProduct.gallery.length - 1];
     const slides = [
@@ -163,15 +161,13 @@ function renderGallery() {
         const slider = document.getElementById("universalSlider");
         if (!slider) return;
         const slideWidth = slider.clientWidth;
-        slider.scrollLeft = slideWidth; // Start at first real slide
+        slider.scrollLeft = slideWidth;
 
         let isScrolling = false;
         slider.addEventListener("scroll", () => {
             if (isScrolling) return;
             const scrollLeft = slider.scrollLeft;
             const maxScroll = slider.scrollWidth - slider.clientWidth;
-
-            // Update dots
             let currentIndex = Math.round(scrollLeft / slideWidth) - 1;
             if (currentIndex < 0) currentIndex = currentProduct.gallery.length - 1;
             if (currentIndex >= currentProduct.gallery.length) currentIndex = 0;
@@ -182,7 +178,6 @@ function renderGallery() {
 
             // Infinite loop jump
             if (Math.abs(scrollLeft - maxScroll) <= 5) {
-                // Reached end clone -> jump to first real
                 isScrolling = true;
                 slider.style.scrollSnapType = "none";
                 slider.scrollLeft = slideWidth;
@@ -193,7 +188,6 @@ function renderGallery() {
                     });
                 });
             } else if (scrollLeft <= 0) {
-                // Reached start clone -> jump to last real
                 isScrolling = true;
                 slider.style.scrollSnapType = "none";
                 slider.scrollLeft = slider.scrollWidth - (2 * slideWidth);
@@ -206,8 +200,6 @@ function renderGallery() {
             }
         });
     }, 50);
-
-
 }
 
 // Helper to interact with dots
@@ -215,7 +207,6 @@ function scrollToSlide(index) {
     const slider = document.getElementById("universalSlider");
     if (!slider) return;
     const slideWidth = slider.clientWidth;
-    // index 0 is at slideWidth (after first clone)
     slider.scrollTo({
         left: slideWidth * (index + 1),
         behavior: 'smooth'
@@ -234,7 +225,6 @@ function scrollSlider(direction) {
 
 
 function changeMainImage(element, src) {
-    // Deprecated for new slider layout but keeping to clear potential errors if referenced
 }
 
 function switchTab(tabName) {

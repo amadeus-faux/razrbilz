@@ -1,4 +1,3 @@
-
 function renderProducts() {
     const stream = document.getElementById("productStream");
     if (!stream) return;
@@ -7,13 +6,8 @@ function renderProducts() {
     products.forEach((product, index) => {
         const isSoldOut = product.stock === 0;
         const card = document.createElement("div");
-
         card.className = `product-card fade-in ${isSoldOut ? "sold-out" : ""}`;
         card.style.animationDelay = `${0.1 * index}s`;
-
-        // Clean Look: Only Image + Name. 
-        // Removing Code, StockStatus, and Price from display as requested.
-
         card.innerHTML = `
             <div class="product-image-container" ${isSoldOut ? "" : `onclick="viewProduct('${product.id}')"`} style="cursor: pointer;">
                 ${isSoldOut ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
@@ -42,7 +36,5 @@ function deactivateXray(e) {
 
 // Re-render when language/currency changes
 document.addEventListener('localizationChanged', () => {
-    // Only re-render if we are on the archive page or if it's visible?
-    // It's safer to just re-render.
     renderProducts();
 });

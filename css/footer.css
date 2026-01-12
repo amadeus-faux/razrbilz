@@ -128,7 +128,6 @@
         order: 2;
         justify-self: center;
         white-space: nowrap;
-        /* Prevent wrap */
     }
 
     .footer-payment {

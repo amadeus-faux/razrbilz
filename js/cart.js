@@ -6,7 +6,6 @@ const MAX_QTY_PER_VARIANT = 2;
 function addToCart(productId, size, variantId) {
     const product = products.find(p => p.id == productId);
     if (product) {
-        // Use variantId for uniqueness (Product + Size)
         const existingItem = cart.find(item => item.variantId === variantId);
 
         if (existingItem) {
@@ -107,20 +106,15 @@ function updateQuantity(variantId, change) {
     }
 
     if (newQty < 1) {
-        // Optional: Confirm before remove? Or just remove? 
-        // User asked for "Remove Item Bug" fix, let's keep explicit remove button for full removal, 
-        // but often < 1 implies removal. 
-        // We will keep it at 1 min here to avoid accidental removal via -, force use of Remove button.
         return;
     }
 
     item.quantity = newQty;
     saveCart();
-    renderCart(); // Re-render to update total and display
+    renderCart();
 }
 
 function removeFromCart(variantId) {
-    // FIX: Filter by variantId ONLY
     cart = cart.filter(item => item.variantId !== variantId);
     saveCart();
     updateCartCount();
@@ -130,8 +124,6 @@ function removeFromCart(variantId) {
 function updateCartCount() {
     const count = document.querySelector(".cart-count");
     if (count) {
-        // Total items count (sum of quantities) or unique items?
-        // Usually cart count is unique items or total qty. "2 items" usually means 2 physical things.
         const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
         count.textContent = `(${totalQty})`;
     }

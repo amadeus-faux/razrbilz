@@ -3,20 +3,15 @@ let isNavigating = false;
 
 window.addEventListener('popstate', (event) => {
     if (event.state && event.state.page) {
-        navigate(event.state.page, false); // false = don't push state again
+        navigate(event.state.page, false);
     } else {
-        // Fallback or default
         navigate('archive', false);
     }
 });
 
 function navigate(sectionId, pushState = true) {
     if (isNavigating) return;
-
-    // Deactivate all sections
     document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-
-    // Deactivate command buttons except for special ones (toggle-like)
     if (!["size-guide", "shipping-policy", "return-policy", "terms", "privacy", "contact"].includes(sectionId)) {
         document.querySelectorAll(".command-btn").forEach(btn => btn.classList.remove("active"));
     }
@@ -38,12 +33,11 @@ function navigate(sectionId, pushState = true) {
     // Specific Page Logic
     if (sectionId === "archive") {
         renderProducts();
-        // TRIGGER COOKIE MODAL LOGIC (One-time, Archive only)
         if (window.tryShowCookieConsent) {
             window.tryShowCookieConsent();
         }
     } else if (sectionId === "about") {
-        typewriterEffect(); // Ensure this function exists and is accessible
+        typewriterEffect();
     } else if (sectionId === "cart") {
         renderCart();
     } else if (sectionId === "contact") {
@@ -75,11 +69,10 @@ function navigate(sectionId, pushState = true) {
 
 // Initial History State Replacement on Load
 document.addEventListener('DOMContentLoaded', () => {
-    const initialPage = 'archive'; // Default
-    // Check hash
+    const initialPage = 'archive';
     const hash = window.location.hash.substring(1);
     if (hash && document.getElementById(hash)) {
-        navigate(hash, false); // Render but don't duplicate push
+        navigate(hash, false);
         history.replaceState({ page: hash }, "", `#${hash}`);
     } else {
         history.replaceState({ page: initialPage }, "", `#${initialPage}`);

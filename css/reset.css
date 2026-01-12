@@ -1,11 +1,9 @@
-/* reset.css */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
     font-family: 'Montserrat', sans-serif !important;
-    /* Universal Typography Enforced */
 }
 
 body {
@@ -13,7 +11,6 @@ body {
     color: var(--signal-white);
     overflow-x: hidden;
     position: relative;
-    /* font-family is redundant here due to * but kept for safety */
     font-family: 'Montserrat', sans-serif;
 }
 
