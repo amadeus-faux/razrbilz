@@ -1,7 +1,7 @@
 #product-detail {
     display: none;
     min-height: 100vh;
-    padding: 10px 20px 200px 20px;
+    padding: 10px 20px 160px 20px;
 }
 
 #product-detail.active {
@@ -10,7 +10,7 @@
 
 .image-gallery {
     max-width: 600px;
-    margin: 10px auto 30px auto;
+    margin: 10px auto 5px auto;
     position: relative;
     display: block;
 }
@@ -46,7 +46,7 @@
 @media (min-width:769px) {
     .image-gallery {
         max-width: 500px;
-        margin: 10px auto 40px auto;
+        margin: 10px auto 20px auto;
         display: block;
         grid-template-columns: none;
         gap: 0;
@@ -194,7 +194,7 @@
 .shipping-option h4,
 .size-guide-tab h4 {
     font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
+    font-weight: 800;
     font-size: 1rem;
     letter-spacing: 0.15em;
     margin-bottom: 5px;
