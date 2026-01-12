@@ -28,26 +28,20 @@ async function submitContactForm(e) {
             message: sanitizeInput(formData.get("message"))
         };
 
-        // Determine API URL (Mock logic preserved)
-        // const apiUrl = window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'https://your-backend-domain.com';
-
-        /* 
-           Simulate network request for demo purposes since backend might not exist.
-           Remove this block and uncomment fetch if real backend exists.
-        */
-        const response = await new Promise(resolve => setTimeout(() => resolve({ ok: true, json: () => ({ success: true }) }), 1500));
-
-        // Real fetch:
-        // const response = await fetch(`${apiUrl}/api/contact`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(data)
-        // });
+        const response = await fetch("https://formspree.io/f/xojvrojk", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
 
         const result = await response.json();
 
-        if (!result.success) {
-            throw new Error(result.message || "Failed to send message");
+        if (response.ok) {
+            // Success logic handles below
+        } else {
+            throw new Error(result.error || "Failed to send message");
         }
 
         // Success
