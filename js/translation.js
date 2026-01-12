@@ -20,7 +20,7 @@ const translations = {
         tab_specs: "TECH SPECS",
         tab_size: "SIZE GUIDE",
         tab_ship: "SHIPPING",
-        shipping_info: `<div class="shipping-option"><p>SHIPPING WITHIN 2-3 WEEKS</p><p>Orders shipped outside of Indonesia may be subject to import taxes, customs duties, and fees levied by the destination country. These charges are the responsibility of the recipient.</p></div>`,
+        shipping_info: `<div class="shipping-option"><li>SHIPPING WITHIN 2-3 WEEKS</li><li>ORDERS SHIPPED OUTSIDE OF INDONESIA MAY BE SUBJECT TO IMPORT TAXES, CUSTOM DUTIES, AND FEES LEVIED BY THE DESTINATION COUNTRY. THESE CHARGES ARE THE RESPONSIBILITY OF THE RECIPIENT.</li></div>`,
 
         // Cart
         cart_header: "CACHE",
@@ -105,7 +105,7 @@ const translations = {
         tab_specs: "SPESIFIKASI",
         tab_size: "PANDUAN UKURAN",
         tab_ship: "PENGIRIMAN",
-        shipping_info: `<div class="shipping-option"><p>Pengiriman dilakukan dalam 2-3 minggu</p><p>Pesanan yang dikirim ke luar wilayah Indonesia dapat dikenakan pajak impor, bea masuk, dan biaya administrasi yang diberlakukan oleh negara tujuan. Segala biaya tersebut sepenuhnya menjadi tanggung jawab penerima.</p></div>`,
+        shipping_info: `<div class="shipping-option"><li>PENGIRIMAN DILAKUKAN DALAM 2-3 MINGGU</li><li>PESANAN YANG DIKIRIM KE LUAR WILAYAH INDONESIA DAPAT DIKENAKAN PAJAK IMPOR, BEA MASUK, DAN BIAYA ADMINISTRASI YANG DIBERLAKUKAN OLEH NEGARA TUJUAN. SEGALA BIAYA TERSEBUT SEPENUHNYA MENJADI TANGGUNG JAWAB PENERIMA.</li></div>`,
 
         // Cart
         cart_header: "KERANJANG",
