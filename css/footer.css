@@ -63,7 +63,9 @@
     font-size: 0.85rem;
     letter-spacing: 0.15em;
     color: var(--signal-white);
-    opacity: 0.5
+    opacity: 0.5;
+    margin-left: 20px;
+    /* Optical adjustment */
 }
 
 .footer-payment {
