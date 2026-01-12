@@ -13,11 +13,9 @@
     max-width: 600px;
     margin: 40px auto 30px auto;
     position: relative;
-    /* Clean up grid properties just in case */
     display: block;
 }
 
-/* Universal Slider Styles */
 .gallery-container {
     overflow-x: auto;
     overflow-y: hidden;
@@ -26,7 +24,6 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    /* IE/Edge */
     display: flex;
 }
 
@@ -50,30 +47,23 @@
 @media (min-width:769px) {
     .image-gallery {
         max-width: 500px;
-        /* Limit width on desktop for neat look */
         margin: 20px auto 40px auto;
-        /* Reset grid if previously applied globally */
         display: block;
         grid-template-columns: none;
         gap: 0;
         position: relative;
-        /* Ensure click zones are relative to this */
     }
 
-    /* Hide the old grid elements if present in DOM (though JS removes them, CSS safety) */
     .gallery-main,
     .gallery-thumbnails {
         display: none !important;
     }
 
-    /* Force slider display and interactions */
     .gallery-container {
         display: flex !important;
         cursor: pointer;
-        /* Indicate interaction */
     }
 
-    /* Overlay Click Zones */
     .click-zone {
         position: absolute;
         top: 0;
@@ -96,13 +86,9 @@
     width: 100%;
     min-width: 100%;
     height: auto;
-    /* Height Optimization: Max height 75vh to fit above fold */
     max-height: 75vh;
     aspect-ratio: auto;
-    /* Allow aspect ratio to adapt to containment */
     object-fit: contain;
-    /* Ensure it fits within the max-height */
-
     display: block;
     scroll-snap-align: center;
     margin-right: 0;
@@ -136,7 +122,6 @@
 @media (min-width:769px) {
     .product-info {
         max-width: 800px;
-        /* Slightly wider text containment */
     }
 
     .product-title {
@@ -199,9 +184,6 @@
     animation: fadeIn 0.4s ease-out
 }
 
-/* UNIFIED TAB TYPOGRAPHY START */
-/* Applies to tech-specs, size-guide, and shipping tabs to ensure exact match */
-
 .tech-specs,
 #tab-ship,
 .size-guide-tab {
@@ -215,15 +197,11 @@
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 1rem;
-    /* Unified */
     letter-spacing: 0.15em;
-    /* Unified */
-    margin-bottom: 15px;
-    /* Unified */
+    margin-bottom: 5px;
     color: var(--signal-white);
 }
 
-/* List Items (Tech Specs) and Paragraphs (Shipping) should match visually */
 .tech-specs ul {
     list-style: none;
 }
@@ -234,10 +212,8 @@
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 0.95rem;
-    /* Unified */
     line-height: 1.6;
-    /* Unified */
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     opacity: 0.9;
     color: var(--signal-white);
 }
@@ -252,8 +228,6 @@
     position: absolute;
     left: 0;
 }
-
-/* UNIFIED TAB TYPOGRAPHY END */
 
 .size-guide-tab table {
     width: 100%;
@@ -359,7 +333,6 @@
     }
 }
 
-/* Mobile - Stick to Bottom Full Width (All Mobile Sizes up to Tablet) */
 @media (max-width: 767px) {
     .sticky-buy {
         bottom: 0;
@@ -368,7 +341,6 @@
         padding: 0;
         border-top: 1px solid rgba(240, 240, 240, 0.1);
         background: var(--void-black);
-        /* Ensure background is solid */
         box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
     }
 
@@ -380,14 +352,13 @@
         font-size: 0.9rem;
         letter-spacing: 0.15em;
         border-radius: 0;
-        /* Enhance full width feel */
     }
 }
 
-/* Tiny Phones Adjustment */
 @media (max-width: 375px) {
     .btn-secure {
         font-size: 0.8rem;
+        width: 100%;
         padding: 16px;
     }
 }
@@ -458,7 +429,6 @@
     text-align: left
 }
 
-/* Mobile Tabs Fix - Single Line */
 @media (max-width: 480px) {
     .tab-navigation {
         display: flex;
@@ -466,23 +436,17 @@
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         gap: 0;
-        /* Remove gap if any to save space */
     }
 
     .tab-navigation::-webkit-scrollbar {
         display: none;
-        /* Hide scrollbar for aesthetics */
     }
 
     .tab-btn {
         flex: 0 0 auto;
-        /* Allow auto width based on content */
         font-size: 0.65rem;
-        /* Smaller font */
         padding: 15px 12px;
-        /* Reduced padding */
         white-space: nowrap;
-        /* Prevent text wrap */
     }
 }
 
