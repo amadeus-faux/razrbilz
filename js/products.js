@@ -4,7 +4,7 @@ const products = [
         code: "RONIN BALLISTIC TEE",
         name: "RONIN BALLISTIC TEE",
         price: 999999999,
-        stock: 45,
+        stock: 50,
         variants: {
             S: "47989924790424",
             M: "47989924823192",
@@ -12,12 +12,11 @@ const products = [
             XL: "47989924855960",
             "2XL": "47989924888728"
         },
-        image: "assets/products/product1.png",
-        imageDetail: "assets/products/product1-detail.png",
+        image: "assets/products/product1.webp",
         gallery: [
-            "assets/products/product1-1.png",
-            "assets/products/product1-2.png",
-            "assets/products/product1-3.png"
+            "assets/products/product1-1.webp",
+            "assets/products/product1-2.webp",
+            "assets/products/product1-3.webp"
         ],
         manifesto: {
             en: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
@@ -46,7 +45,7 @@ const products = [
         code: "AZRAEL HOODIE",
         name: "AZRAEL HOODIE",
         price: 999999999,
-        stock: 45,
+        stock: 50,
         variants: {
             S: "47989839036568",
             M: "47989839069336",
@@ -54,15 +53,14 @@ const products = [
             XL: "47989839134872",
             "2XL": "47989839167640"
         },
-        image: "assets/products/product2.png",
-        imageDetail: "assets/products/product2-detail.png",
+        image: "assets/products/product2.webp",
         gallery: [
-            "assets/products/product2-1.png",
-            "assets/products/product2-2.png",
-            "assets/products/product2-3.png",
-            "assets/products/product2-4.png",
-            "assets/products/product2-5.png",
-            "assets/products/product2-6.png"
+            "assets/products/product2-1.webp",
+            "assets/products/product2-2.webp",
+            "assets/products/product2-3.webp",
+            "assets/products/product2-4.webp",
+            "assets/products/product2-5.webp",
+            "assets/products/product2-6.webp"
         ],
         manifesto: {
             en: "Taking its name from The Reaper, this piece is a homage to shadow and structure. Built with heavyweight materials to forge a silhouette that is solid, imposing, and intimidating.",
@@ -91,7 +89,7 @@ const products = [
         code: "STRATA LAYERED TEE",
         name: "STRATA LAYERED TEE",
         price: 999999999,
-        stock: 0,
+        stock: 50,
         variants: {
             S: "47989921480856",
             M: "47989921513624",
@@ -99,12 +97,11 @@ const products = [
             XL: "47989921579160",
             "2XL": "47989921611928"
         },
-        image: "assets/products/product3.png",
-        imageDetail: "assets/products/product3-detail.png",
+        image: "assets/products/product3.webp",
         gallery: [
-            "assets/products/product3-1.png",
-            "assets/products/product3-2.png",
-            "assets/products/product3-3.png"
+            "assets/products/product3-1.webp",
+            "assets/products/product3-2.webp",
+            "assets/products/product3-3.webp"
         ],
         manifesto: {
             en: "Steel wrapped in cotton. Built for those who refuse to blend. This is not fashion. This is survival gear for the urban void.",
