@@ -13,9 +13,8 @@ const translations = {
         archive_header: "COLLECTIONS 001 : STEEL SKINS",
 
         // Product Detail
-        // Product Detail
         product_secure: "[ SECURE PIECE ]",
-        product_select_size_label: "SELECT SIZE CONFIGURATION:",
+        product_select_size_label: "SELECT SIZE:",
         manifesto_label: "MANIFESTO",
         tab_specs: "SPECS",
         tab_size: "SIZE GUIDE",
@@ -50,7 +49,7 @@ const translations = {
         contact_intro: "Need assistance? Contact us below.",
         contact_method_email: "EMAIL",
         contact_method_social: "SOCIAL MEDIA",
-        contact_method_whatsapp: "WHATSAPP", // Added
+        contact_method_whatsapp: "WHATSAPP",
         contact_form_title: "SEND A MESSAGE",
         form_name: "NAME",
         form_email: "EMAIL",
@@ -100,7 +99,7 @@ const translations = {
 
         // Product Detail
         product_secure: "[ AMANKAN BARANG ]",
-        product_select_size_label: "PILIH KONFIGURASI UKURAN:",
+        product_select_size_label: "PILIH UKURAN:",
         manifesto_label: "MANIFESTO",
         tab_specs: "SPEK",
         tab_size: "UKURAN",
