@@ -3,7 +3,7 @@ let selectedAreaId = null;
 let selectedCourier = null;
 let shippingCost = 0;
 let cartTotal = 0;
-let usdRate = 16000; // Fixed rate fallback, can be dynamic if needed
+let usdRate = 16800;
 
 // Debounce Utility
 function debounce(func, wait) {
@@ -73,15 +73,7 @@ function updateTotals() {
 
     const grandTotal = cartTotal + shippingCost;
     if (totalEl) totalEl.textContent = formatPrice(grandTotal);
-
-    // Currency Logic (Simple IP/Timezone check or just always show if requested)
-    // Prompt: "Jika user terdeteksi dari luar negeri... tampilkan estimasi USD"
-    // Since we can't easily detect IP in client without external service, we'll check timezone offset or allow it to be visible always for now as a feature
-    // OR we check if the selected shipping is international (courier logic)
-
     const isInternational = selectedCourier && ['rayspeed', 'dhl', 'fedex'].some(c => selectedCourier.name.toLowerCase().includes(c));
-
-    // Also check timezone as a hint
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const likelyInternational = !timezone.startsWith("Asia/Jakarta") && !timezone.startsWith("Asia/Makassar") && !timezone.startsWith("Asia/Jayapura");
 
@@ -124,18 +116,14 @@ async function searchArea(query) {
 
 function selectArea(area) {
     document.getElementById("addressSearch").value = `${area.name}, ${area.city_name}`;
-    // Populate dummy zip if available or just leave auto
     if (area.postal_code) {
         document.getElementById("postalCode").value = area.postal_code;
     } else {
         document.getElementById("postalCode").value = "AUTO";
     }
-
     document.getElementById("selectedAreaId").value = area.id;
     document.getElementById("addressSuggestions").style.display = "none";
     selectedAreaId = area.id;
-
-    // Trigger Shipping Calculation
     document.getElementById("step-shipping").classList.remove("disabled");
     getRates(area.id);
 }
@@ -143,8 +131,6 @@ function selectArea(area) {
 async function getRates(destinationId) {
     const container = document.getElementById("courierOptions");
     container.innerHTML = '<p class="loading-text">SCANNING LOGISTICS NETWORK...</p>';
-
-    // Prepare items with weight
     const items = cart.map(c => {
         const product = products.find(p => p.id === c.id);
         return {
@@ -158,32 +144,27 @@ async function getRates(destinationId) {
             quantity: c.quantity
         };
     });
-
-    // Hardcoded Origin (Jakarta Selatan/Tebet) - Replace with your valid origin ID
-    const ORIGIN_AREA_ID = "IDNP6"; // Example for Jakarta Pusat/Selatan often used in examples. 
-
+    const ORIGIN_AREA_ID = "id.31.74.01.1001"; // Tebet, Jakarta Selatan (Standard Area ID)
     try {
         const res = await fetch('/api/shipping/rates', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                origin_area_id: 'IDNP6', // Gambir, Jakarta Pusat (Safe default)
+                origin_area_id: ORIGIN_AREA_ID,
                 destination_area_id: destinationId,
                 items: items
             })
         });
 
         const data = await res.json();
-
         if (!data.success) {
-            throw new Error(data.error);
+            throw new Error(data.error || "Unknown shipping error");
         }
-
         renderCouriers(data.pricing);
 
     } catch (e) {
         console.error(e);
-        container.innerHTML = '<p class="error-text">Shipping calculation unavailable. Please contact us via WhatsApp.</p>';
+        container.innerHTML = `<p class="error-text">SHIPPING CALCULATION FAILED: ${e.message}. <br>PLEASE CONTACT SUPPORT.</p>`;
     }
 }
 
@@ -215,8 +196,6 @@ function renderCouriers(couriers) {
             shippingCost = courier.price;
             updateTotals();
             document.getElementById("btnPayNow").disabled = false;
-
-            // Highlight selection
             document.querySelectorAll(".courier-card").forEach(c => c.classList.remove("selected"));
             div.classList.add("selected");
         });
@@ -231,20 +210,18 @@ async function handlePayment() {
     btn.disabled = true;
 
     try {
-        const orderId = `RZ-${Date.now()}`; // Generate Order ID
+        const orderId = `RZ-${Date.now()}`;
         const grandTotal = cartTotal + shippingCost;
 
         const fname = document.getElementById("firstName").value;
         const lname = document.getElementById("lastName").value;
         const fullName = `${fname} ${lname}`.trim();
-
         const payload = {
             order_id: orderId,
             amount: grandTotal,
             customer_name: fullName,
             customer_email: document.getElementById("customerEmail").value
         };
-
         const res = await fetch('/api/payment/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -258,7 +235,6 @@ async function handlePayment() {
         } else {
             throw new Error("Payment URL missing");
         }
-
     } catch (e) {
         console.error("Payment Error", e);
         alert("Payment initialization failed. Please try again.");
@@ -266,7 +242,6 @@ async function handlePayment() {
         btn.disabled = false;
     }
 }
-
 document.addEventListener('localizationChanged', () => {
     if (document.getElementById("checkout").classList.contains("active")) {
         renderCheckoutSummary();
