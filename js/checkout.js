@@ -124,6 +124,13 @@ async function searchArea(query) {
 
 function selectArea(area) {
     document.getElementById("addressSearch").value = `${area.name}, ${area.city_name}`;
+    // Populate dummy zip if available or just leave auto
+    if (area.postal_code) {
+        document.getElementById("postalCode").value = area.postal_code;
+    } else {
+        document.getElementById("postalCode").value = "AUTO";
+    }
+
     document.getElementById("selectedAreaId").value = area.id;
     document.getElementById("addressSuggestions").style.display = "none";
     selectedAreaId = area.id;
@@ -138,15 +145,13 @@ async function getRates(destinationId) {
     container.innerHTML = '<p class="loading-text">SCANNING LOGISTICS NETWORK...</p>';
 
     // Prepare items with weight
-    // We need to fetch product info to get weights if not in cart (cart usually has product ref)
-    // Assuming cart items have product ID or code. products.js is global.
     const items = cart.map(c => {
         const product = products.find(p => p.id === c.id);
         return {
             name: c.name,
             description: c.variant,
             value: c.price,
-            length: 10, // Defaults
+            length: 10,
             width: 10,
             height: 10,
             weight: product ? product.weight_grams : 1000,
@@ -155,30 +160,7 @@ async function getRates(destinationId) {
     });
 
     // Hardcoded Origin (Jakarta Selatan/Tebet) - Replace with your valid origin ID
-    // 696b8903b13769064d4e156a is the user ID in the key, NOT the area ID.
-    // We need a valid Origin Area ID. I will use a known ID for Jakarta Selatan or similar if I knew it.
-    // For now, I will use a PLACEHOLDER and hope the user knows or I can search it.
-    // "Tebet" Area ID example. Since I cannot search now, I will assume a default or fail.
-    // WAIT: The prompt does NOT provide an origin_area_id.
-    // "PENTING: Area ID standard Biteship".
-    // I will search for "Jakarta Selatan" in the backend or just hardcode if I could.
-    // Since I can't browse, I'll use a dynamic search in the backend? No. 
-    // I will use a hardcoded ID for "Jakarta Selatan" which is common. 
-    // ID: "id.jakarta_selatan" sounds fake.
-    // I will use the `search-area` endpoint to find it once? No, too risky.
-    // I'll assume the codebase might have it or I'll use a specific one.
-    // Let's use a dummy ID and add a comment that it needs to be set.
-    // UPDATE: The prompt does NOT verify origin. I'll put a TODO or better, fetch it.
-    // Actually, `search-area` is available.
-    // But I can't call it from here during `getRates` easily without `await`.
     const ORIGIN_AREA_ID = "IDNP6"; // Example for Jakarta Pusat/Selatan often used in examples. 
-    // Or better, let's look at the implementation plan. I didn't specify origin.
-    // I will add a constant at the top.
-
-    // NOTE: Using a likely valid generic ID or asking user? 
-    // I'll stick to a placeholder 'IDNP6' (DKI Jakarta) or similar.
-    // To be safe, I'll use: 'id.35.78.01.1001' format if I knew it.
-    // Let's use `ID` for now, assuming Biteship might default or error.
 
     try {
         const res = await fetch('/api/shipping/rates', {
@@ -218,15 +200,15 @@ function renderCouriers(couriers) {
         const div = document.createElement("div");
         div.className = "courier-card";
         div.innerHTML = `
-            <input type="radio" name="shipping" id="ship_${index}" value="${courier.price}">
-            <label for="ship_${index}" class="courier-label">
-                <div class="courier-info">
-                    <span class="courier-name">${courier.courier_name} ${courier.courier_service_name}</span>
-                    <span class="courier-meta">${courier.duration}</span>
-                </div>
-                <div class="courier-price">${formatPrice(courier.price)}</div>
-            </label>
-        `;
+                <input type="radio" name="shipping" id="ship_${index}" value="${courier.price}">
+                <label for="ship_${index}" class="courier-label">
+                    <div class="courier-info">
+                        <span class="courier-name">${courier.courier_name} ${courier.courier_service_name}</span>
+                        <span class="courier-meta">${courier.duration}</span>
+                    </div>
+                    <div class="courier-price">${formatPrice(courier.price)}</div>
+                </label>
+            `;
 
         div.querySelector("input").addEventListener("change", () => {
             selectedCourier = courier;
@@ -252,10 +234,14 @@ async function handlePayment() {
         const orderId = `RZ-${Date.now()}`; // Generate Order ID
         const grandTotal = cartTotal + shippingCost;
 
+        const fname = document.getElementById("firstName").value;
+        const lname = document.getElementById("lastName").value;
+        const fullName = `${fname} ${lname}`.trim();
+
         const payload = {
             order_id: orderId,
             amount: grandTotal,
-            customer_name: document.getElementById("customerName").value,
+            customer_name: fullName,
             customer_email: document.getElementById("customerEmail").value
         };
 
