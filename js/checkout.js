@@ -144,8 +144,7 @@ async function getRates(destinationId) {
             quantity: c.quantity
         };
     });
-    const ORIGIN_AREA_ID = "id.31.74.01.1001"; // Tebet, Jakarta Selatan
-    // Get postal code from input (populated by search or auto)
+    const ORIGIN_AREA_ID = "id.31.74.01.1001";
     const destPostalCode = document.getElementById("postalCode").value;
     const cleanDestPostalCode = destPostalCode === "AUTO" ? "" : destPostalCode;
 
@@ -155,7 +154,7 @@ async function getRates(destinationId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 origin_area_id: ORIGIN_AREA_ID,
-                origin_postal_code: 12810, // Hardcoded for Tebet
+                origin_postal_code: 12810,
                 destination_area_id: destinationId,
                 destination_postal_code: cleanDestPostalCode,
                 items: items
