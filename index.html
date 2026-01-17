@@ -1900,6 +1900,147 @@
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
             }
         }
+
+        /* CHECKOUT NEW STYLES */
+        .checkout-step {
+            margin-bottom: 40px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .checkout-step.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .step-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 20px;
+            color: var(--signal-white);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .checkout-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+
+        .checkout-input:focus {
+            outline: none;
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--void-black);
+            border: 1px solid #fff;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .suggestion-item:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .courier-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .courier-card:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .courier-card.selected {
+            border-color: #00FF41;
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        /* Hide default radio */
+        .courier-card input {
+            display: none;
+        }
+
+        .courier-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .courier-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .courier-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .courier-meta {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .courier-price {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+        }
+
+        .pricing-breakdown {
+            margin-top: 30px;
+            border-top: 2px solid #fff;
+            padding-top: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .price-row.total {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 
@@ -2110,21 +2251,69 @@
     </section>
     <section id="checkout">
         <div class="checkout-container">
-            <div class="checkout-main" style="display:flex; flex-direction:column; justify-content:center;">
+            <div class="checkout-main">
                 <h1 class="checkout-logo">RAZRBILZ</h1>
-                <div style="margin-bottom: 30px; color: #333;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;" data-i18n="checkout_title">Ready to Secure?</h2>
-                    <p style="color: #737373;" data-i18n="checkout_desc">Shipping & Taxes will be calculated at the next
-                        step via Shopify Secure
-                        Checkout.</p>
+
+                <div class="checkout-step" id="step-address">
+                    <h2 class="step-title" data-i18n="checkout_step1">01. COORDINATES</h2>
+                    <div class="form-group">
+                        <label for="customerName">FULL NAME</label>
+                        <input type="text" id="customerName" placeholder="[ ENTER FULL NAME ]" class="checkout-input"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">EMAIL ADDRESS</label>
+                        <input type="email" id="customerEmail" placeholder="[ ENTER EMAIL ]" class="checkout-input"
+                            required>
+                    </div>
+                    <div class="form-group" style="position:relative;">
+                        <label for="addressSearch">DISTRICT / CITY</label>
+                        <input type="text" id="addressSearch" placeholder="[ TYPE KECAMATAN / KOTA ]"
+                            class="checkout-input" autocomplete="off">
+                        <div id="addressSuggestions" class="suggestions-box"></div>
+                        <input type="hidden" id="selectedAreaId">
+                    </div>
+                    <div class="form-group">
+                        <label for="addressDetail">FULL ADDRESS</label>
+                        <textarea id="addressDetail" rows="3" placeholder="[ STREET, NUMBER, ETC ]"
+                            class="checkout-input" required></textarea>
+                    </div>
                 </div>
-                <button class="btn-submit-order" onclick="redirectToShopify()" data-i18n="btn_checkout">PROCEED TO
-                    CHECKOUT</button>
-                <button class="btn-back-cart" onclick="navigate('cart')" data-i18n="btn_return_cart">&lt; Return to
-                    cart</button>
+
+                <div class="checkout-step disabled" id="step-shipping">
+                    <h2 class="step-title" data-i18n="checkout_step2">02. LOGISTICS</h2>
+                    <div id="courierOptions" class="courier-options">
+                        <p class="step-placeholder">[ ENTER COORDINATES FIRST ]</p>
+                    </div>
+                </div>
+
+                <div class="checkout-actions">
+                    <button class="btn-submit-order" id="btnPayNow" onclick="handlePayment()" disabled>[ PAY NOW
+                        ]</button>
+                    <button class="btn-back-cart" onclick="navigate('cart')">&lt; RETURN TO CACHE</button>
+                </div>
             </div>
+
             <div class="checkout-sidebar">
                 <div class="manifest-cargo" id="checkoutSummary"></div>
+                <div class="pricing-breakdown">
+                    <div class="price-row">
+                        <span>SUBTOTAL</span>
+                        <span id="summarySubtotal">IDR 0</span>
+                    </div>
+                    <div class="price-row">
+                        <span>SHIPPING</span>
+                        <span id="summaryShipping">CALCULATING...</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>TOTAL</span>
+                        <span id="summaryTotal">IDR 0</span>
+                    </div>
+                    <div class="currency-note" id="currencyNote"
+                        style="display:none; color: #888; font-size: 0.8rem; margin-top: 10px; text-align: right;">
+                        EST. <span id="usdTotal"></span> USD
+                    </div>
+                </div>
             </div>
         </div>
     </section>
