@@ -9,6 +9,11 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing required parameters' });
     }
 
+    if (!process.env.BITESHIP_API_KEY) {
+        console.error("BITESHIP_API_KEY is missing");
+        return res.status(500).json({ error: 'Server Configuration Error: Missing API Key' });
+    }
+
     try {
         const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
             method: 'POST',
@@ -19,44 +24,39 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 origin_area_id,
                 destination_area_id,
-                couriers: "jne,jnt,sicepat,rayspeed,dhl", // Request all relevant couriers, filter later
+                couriers: "jne,jnt,sicepat,rayspeed,dhl",
                 items
             })
         });
 
-        const data = await response.json();
+        const rawText = await response.text();
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (e) {
+            console.error("Biteship Non-JSON Response:", rawText);
+            throw new Error(`Biteship returned non-JSON: ${rawText.substring(0, 100)}...`);
+        }
 
         if (!response.ok) {
-            throw new Error(data.error || 'Failed to fetch rates from Biteship');
+            console.error('Biteship API Error Response:', data);
+            throw new Error(data.error || `Biteship Error ${response.status}: ${JSON.stringify(data)}`);
         }
 
         // Filter Logic
         let pricing = data.pricing || [];
 
-        // Determine if destination is Indonesia (usually check area info, but simplified logic here based on successful couriers)
-        // A more robust way is to check the country of the destination_area_id if available, but Biteship rates response contains courier info.
-        // We can infer domestic vs international by the available couriers or by querying area details separately.
-        // However, the prompt says: "Jika destination = Indonesia: Tampilkan JNE, J&T, SiCepat. Jika destination = Luar Negeri: Tampilkan Rayspeed, DHL."
-
-        // We will simple filter the list.
         const domesticCouriers = ['jne', 'jnt', 'sicepat'];
         const internationalCouriers = ['rayspeed', 'dhl'];
 
-        // Heuristic: If we have domestic results, assume domestic. If only international, assume international.
-        // Or better: Checking the country code from the frontend passed area would be ideal, but we only have ID here.
-        // Let's rely on the result set. 
-
+        // Ensure filtering exists
         const domesticResults = pricing.filter(p => domesticCouriers.includes(p.courier_code));
         const internationalResults = pricing.filter(p => internationalCouriers.includes(p.courier_code));
-
         let finalResults = [];
 
-        // If we have domestic couriers, it's likely a domestic shipment.
         if (domesticResults.length > 0) {
             finalResults = domesticResults;
         } else {
-            // Otherwise, show international (or if mixed, show both? Prompt implies strict separation)
-            // If domestic is empty, it might be an international shipment
             finalResults = internationalResults;
         }
 
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('Biteship Rates Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Biteship Rates Logic Error:', error);
+        res.status(500).json({ error: `Server Error: ${error.message}` });
     }
 }
