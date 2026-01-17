@@ -3,7 +3,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const { origin_area_id, destination_area_id, items } = req.body;
+    const { origin_area_id, destination_area_id, origin_postal_code, destination_postal_code, items } = req.body;
 
     if (!origin_area_id || !destination_area_id || !items || items.length === 0) {
         return res.status(400).json({ error: 'Missing required parameters' });
@@ -15,18 +15,26 @@ export default async function handler(req, res) {
     }
 
     try {
+        const payload = {
+            origin_area_id,
+            origin_postal_code: parseInt(origin_postal_code), // Ensure integer
+            destination_area_id,
+            couriers: "jne,jnt,sicepat,rayspeed,dhl",
+            items
+        };
+
+        // Only add destination_postal_code if valid string/number
+        if (destination_postal_code && destination_postal_code !== "") {
+            payload.destination_postal_code = parseInt(destination_postal_code);
+        }
+
         const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${process.env.BITESHIP_API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                origin_area_id,
-                destination_area_id,
-                couriers: "jne,jnt,sicepat,rayspeed,dhl",
-                items
-            })
+            body: JSON.stringify(payload)
         });
 
         const rawText = await response.text();
