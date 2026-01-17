@@ -2255,35 +2255,49 @@
                 <h1 class="checkout-logo">RAZRBILZ</h1>
 
                 <div class="checkout-step" id="step-address">
-                    <h2 class="step-title" data-i18n="checkout_step1">01. COORDINATES</h2>
-                    <div class="form-group">
-                        <label for="customerName">FULL NAME</label>
-                        <input type="text" id="customerName" placeholder="[ ENTER FULL NAME ]" class="checkout-input"
-                            required>
+                    <h2 class="step-title" data-i18n="checkout_step1">01. IDENTIFICATION & COORDINATES</h2>
+
+                    <div class="checkout-grid-row">
+                        <div class="form-group half">
+                            <label for="firstName">FIRST NAME</label>
+                            <input type="text" id="firstName" class="checkout-input-line" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="lastName">LAST NAME</label>
+                            <input type="text" id="lastName" class="checkout-input-line" required>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="customerEmail">EMAIL ADDRESS</label>
-                        <input type="email" id="customerEmail" placeholder="[ ENTER EMAIL ]" class="checkout-input"
-                            required>
+                        <input type="email" id="customerEmail" class="checkout-input-line" required>
                     </div>
-                    <div class="form-group" style="position:relative;">
-                        <label for="addressSearch">DISTRICT / CITY</label>
-                        <input type="text" id="addressSearch" placeholder="[ TYPE KECAMATAN / KOTA ]"
-                            class="checkout-input" autocomplete="off">
-                        <div id="addressSuggestions" class="suggestions-box"></div>
-                        <input type="hidden" id="selectedAreaId">
+
+                    <div class="checkout-grid-row">
+                        <div class="form-group half" style="position:relative;">
+                            <label for="addressSearch">DISTRICT / CITY</label>
+                            <input type="text" id="addressSearch" placeholder="SEARCH AREA..."
+                                class="checkout-input-line" autocomplete="off">
+                            <div id="addressSuggestions" class="suggestions-box"></div>
+                            <input type="hidden" id="selectedAreaId">
+                        </div>
+                        <div class="form-group half">
+                            <label for="postalCode">POSTAL CODE</label>
+                            <input type="text" id="postalCode" class="checkout-input-line" readonly placeholder="AUTO">
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="addressDetail">FULL ADDRESS</label>
-                        <textarea id="addressDetail" rows="3" placeholder="[ STREET, NUMBER, ETC ]"
-                            class="checkout-input" required></textarea>
+                        <textarea id="addressDetail" rows="2" placeholder="STREET, NUMBER, UNIT"
+                            class="checkout-input-line" required></textarea>
                     </div>
                 </div>
 
                 <div class="checkout-step disabled" id="step-shipping">
                     <h2 class="step-title" data-i18n="checkout_step2">02. LOGISTICS</h2>
-                    <div id="courierOptions" class="courier-options">
-                        <p class="step-placeholder">[ ENTER COORDINATES FIRST ]</p>
+                    <div id="courierOptions" class="courier-grid">
+                        <p class="step-placeholder">[ AWAITING COORDINATES ]</p>
                     </div>
                 </div>
 
