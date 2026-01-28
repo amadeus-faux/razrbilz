@@ -141,7 +141,7 @@
 
 .tab-navigation {
     display: flex;
-    border-bottom: 1px solid rgba(244, 245, 240, 0.1)
+    border-bottom: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .tab-btn {
@@ -166,7 +166,7 @@
 
 .tab-btn.active {
     opacity: 1;
-    background: rgba(244, 245, 240, 0.05);
+    background: rgba(240, 240, 240, 0.05);
     border-bottom-color: var(--signal-white)
 }
 
@@ -238,7 +238,7 @@
 .size-guide-tab td {
     padding: 12px 8px;
     text-align: center;
-    border: 1px solid rgba(244, 245, 240, 0.1);
+    border: 1px solid rgba(240, 240, 240, 0.1);
     font-size: 0.85rem
 }
 
@@ -281,7 +281,7 @@
     width: 100%;
     bottom: 54px;
     padding: 15px 20px;
-    border-top: 1px solid rgba(244, 245, 240, 0.1);
+    border-top: 1px solid rgba(240, 240, 240, 0.1);
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8)
 }
 
@@ -409,7 +409,7 @@
     width: 50px;
     height: 50px;
     background: transparent;
-    border: 1px solid rgba(244, 245, 240, 0.3);
+    border: 1px solid rgba(240, 240, 240, 0.3);
     color: var(--signal-white);
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
@@ -466,23 +466,23 @@
 .size-table th {
     padding: 15px 10px;
     font-weight: 700;
-    color: var(--signal-white);
+    color: #FFFFFF;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-bottom: 2px solid rgba(244, 245, 240, 0.2)
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2)
 }
 
 .size-table td {
     padding: 12px 10px;
-    color: rgba(244, 245, 240, 0.8);
-    border-bottom: 1px solid rgba(244, 245, 240, 0.08)
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08)
 }
 
 .size-table tbody tr:hover {
-    background-color: rgba(244, 245, 240, 0.03)
+    background-color: rgba(255, 255, 255, 0.03)
 }
 
 .size-table td:first-child {
     font-weight: 700;
-    color: var(--signal-white)
+    color: #FFFFFF
 }

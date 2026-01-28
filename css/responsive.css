@@ -38,7 +38,7 @@
         left: 50%;
         transform: translateX(-50%) !important;
         bottom: 30px;
-        background: rgba(39, 44, 45, 0.9);
+        background: rgba(5, 5, 5, 0.9);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
     }
 }

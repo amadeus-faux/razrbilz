@@ -44,10 +44,10 @@
         body::before {
             content: '';
             position: fixed;
-            top: -25vh;
-            left: -25vw;
-            width: 150vw;
-            height: 150vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
             pointer-events: none;
             opacity: 0.4;
@@ -100,9 +100,9 @@
         }
 
         :root {
-            --void-black: #272C2D;
+            --void-black: #050505;
             --concrete-grey: #2A2A2A;
-            --signal-white: #F4F5F0;
+            --signal-white: #F0F0F0;
             --alert-red: #FF0000
         }
 
@@ -224,11 +224,11 @@
             font-weight: 500;
             font-size: 1.5rem;
             letter-spacing: 0.2em;
-            background: linear-gradient(135deg, #B8B8B8 0%, #F4F5F0 50%, #B8B8B8 100%);
+            background: linear-gradient(135deg, #B8B8B8 0%, #FFFFFF 50%, #B8B8B8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(244, 245, 240, 0.3);
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
             animation: pulse 2s ease-in-out infinite;
             position: relative;
             z-index: 2
@@ -431,7 +431,7 @@
         .price-tag {
             font-family: 'Space Mono', monospace;
             font-size: 0.9rem;
-            color: rgba(244, 245, 240, 0.9);
+            color: rgba(255, 255, 255, 0.9);
             margin-top: 5px
         }
 
@@ -466,9 +466,9 @@
             letter-spacing: 0.2em;
             z-index: 10;
             pointer-events: none;
-            background: rgba(39, 44, 45, 0.7);
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px 20px;
-            border: 1px solid rgba(244, 245, 240, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             white-space: nowrap;
         }
 
@@ -601,7 +601,7 @@
 
         .tab-navigation {
             display: flex;
-            border-bottom: 1px solid rgba(244, 245, 240, 0.1)
+            border-bottom: 1px solid rgba(240, 240, 240, 0.1)
         }
 
         .tab-btn {
@@ -626,7 +626,7 @@
 
         .tab-btn.active {
             opacity: 1;
-            background: rgba(244, 245, 240, 0.05);
+            background: rgba(240, 240, 240, 0.05);
             border-bottom-color: var(--signal-white)
         }
 
@@ -697,7 +697,7 @@
         .size-guide-tab td {
             padding: 12px 8px;
             text-align: center;
-            border: 1px solid rgba(244, 245, 240, 0.1);
+            border: 1px solid rgba(240, 240, 240, 0.1);
             font-size: 0.85rem
         }
 
@@ -715,7 +715,7 @@
         }
 
         .shipping-option {
-            border-bottom: 1px solid rgba(244, 245, 240, 0.1)
+            border-bottom: 1px solid rgba(240, 240, 240, 0.1)
         }
 
         .shipping-option:last-child {
@@ -738,7 +738,7 @@
             width: 100%;
             bottom: 54px;
             padding: 15px 20px;
-            border-top: 1px solid rgba(244, 245, 240, 0.1);
+            border-top: 1px solid rgba(240, 240, 240, 0.1);
             box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.8)
         }
 
@@ -1900,197 +1900,6 @@
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)
             }
         }
-
-        /* CHECKOUT NEW STYLES */
-        .checkout-step {
-            margin-bottom: 40px;
-            opacity: 1;
-            transition: opacity 0.3s;
-        }
-
-        .checkout-step.disabled {
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .step-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 0.9rem;
-            letter-spacing: 0.2em;
-            margin-bottom: 30px;
-            color: var(--signal-white);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .checkout-grid-row {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            width: 100%;
-        }
-
-        .form-group.half {
-            width: 50%;
-        }
-
-        .form-group label {
-            display: block;
-            font-family: 'Courier New', 'Consolas', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 0.1em;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        /* Underline Input Style */
-        .checkout-input-line {
-            width: 100%;
-            padding: 10px 0;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid #333;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border-radius: 0;
-        }
-
-        .checkout-input-line::placeholder {
-            color: #444;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        .checkout-input-line:focus {
-            outline: none;
-            border-bottom-color: var(--signal-white);
-            background: linear-gradient(to bottom, transparent 95%, rgba(255, 255, 255, 0.05) 100%);
-        }
-
-        .checkout-input-line:disabled,
-        .checkout-input-line[readonly] {
-            color: #666;
-            border-bottom-color: #222;
-        }
-
-        /* Remove default number arrows */
-        .checkout-input-line::-webkit-outer-spin-button,
-        .checkout-input-line::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .suggestions-box {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: var(--void-black);
-            border: 1px solid #fff;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-        }
-
-        .suggestion-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .suggestion-item:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        .courier-card {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .courier-card:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .courier-card.selected {
-            border-color: #00FF41;
-            background: rgba(0, 255, 65, 0.05);
-        }
-
-        /* Hide default radio */
-        .courier-card input {
-            display: none;
-        }
-
-        .courier-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .courier-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .courier-name {
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-
-        .courier-meta {
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
-        .courier-price {
-            font-family: 'Space Mono', monospace;
-            font-weight: 700;
-        }
-
-        .pricing-breakdown {
-            margin-top: 30px;
-            border-top: 2px solid #fff;
-            padding-top: 20px;
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .price-row.total {
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.2);
-        }
     </style>
 </head>
 
@@ -2301,83 +2110,21 @@
     </section>
     <section id="checkout">
         <div class="checkout-container">
-            <div class="checkout-main">
+            <div class="checkout-main" style="display:flex; flex-direction:column; justify-content:center;">
                 <h1 class="checkout-logo">RAZRBILZ</h1>
-
-                <div class="checkout-step" id="step-address">
-                    <h2 class="step-title" data-i18n="checkout_step1">01. IDENTIFICATION & COORDINATES</h2>
-
-                    <div class="checkout-grid-row">
-                        <div class="form-group half">
-                            <label for="firstName">FIRST NAME</label>
-                            <input type="text" id="firstName" class="checkout-input-line" required>
-                        </div>
-                        <div class="form-group half">
-                            <label for="lastName">LAST NAME</label>
-                            <input type="text" id="lastName" class="checkout-input-line" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="customerEmail">EMAIL ADDRESS</label>
-                        <input type="email" id="customerEmail" class="checkout-input-line" required>
-                    </div>
-
-                    <div class="checkout-grid-row">
-                        <div class="form-group half" style="position:relative;">
-                            <label for="addressSearch">DISTRICT / CITY</label>
-                            <input type="text" id="addressSearch" placeholder="SEARCH AREA..."
-                                class="checkout-input-line" autocomplete="off">
-                            <div id="addressSuggestions" class="suggestions-box"></div>
-                            <input type="hidden" id="selectedAreaId">
-                        </div>
-                        <div class="form-group half">
-                            <label for="postalCode">POSTAL CODE</label>
-                            <input type="number" id="postalCode" class="checkout-input-line" placeholder="00000">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="addressDetail">FULL ADDRESS</label>
-                        <textarea id="addressDetail" rows="2" placeholder="STREET, NUMBER, UNIT"
-                            class="checkout-input-line" required></textarea>
-                    </div>
+                <div style="margin-bottom: 30px; color: #333;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 10px;" data-i18n="checkout_title">Ready to Secure?</h2>
+                    <p style="color: #737373;" data-i18n="checkout_desc">Shipping & Taxes will be calculated at the next
+                        step via Shopify Secure
+                        Checkout.</p>
                 </div>
-
-                <div class="checkout-step disabled" id="step-shipping">
-                    <h2 class="step-title" data-i18n="checkout_step2">02. LOGISTICS</h2>
-                    <div id="courierOptions" class="courier-grid">
-                        <p class="step-placeholder">[ AWAITING COORDINATES ]</p>
-                    </div>
-                </div>
-
-                <div class="checkout-actions">
-                    <button class="btn-submit-order" id="btnPayNow" onclick="handlePayment()" disabled>[ PAY NOW
-                        ]</button>
-                    <button class="btn-back-cart" onclick="navigate('cart')">&lt; RETURN TO CACHE</button>
-                </div>
+                <button class="btn-submit-order" onclick="redirectToShopify()" data-i18n="btn_checkout">PROCEED TO
+                    CHECKOUT</button>
+                <button class="btn-back-cart" onclick="navigate('cart')" data-i18n="btn_return_cart">&lt; Return to
+                    cart</button>
             </div>
-
             <div class="checkout-sidebar">
                 <div class="manifest-cargo" id="checkoutSummary"></div>
-                <div class="pricing-breakdown">
-                    <div class="price-row">
-                        <span>SUBTOTAL</span>
-                        <span id="summarySubtotal">IDR 0</span>
-                    </div>
-                    <div class="price-row">
-                        <span>SHIPPING</span>
-                        <span id="summaryShipping">CALCULATING...</span>
-                    </div>
-                    <div class="price-row total">
-                        <span>TOTAL</span>
-                        <span id="summaryTotal">IDR 0</span>
-                    </div>
-                    <div class="currency-note" id="currencyNote"
-                        style="display:none; color: #888; font-size: 0.8rem; margin-top: 10px; text-align: right;">
-                        EST. <span id="usdTotal"></span> USD
-                    </div>
-                </div>
             </div>
         </div>
     </section>

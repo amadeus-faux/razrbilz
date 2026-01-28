@@ -2,7 +2,7 @@
 window.appState = {
     lang: localStorage.getItem('razr_lang') || 'en',
     currency: localStorage.getItem('razr_currency') || 'IDR',
-    exchangeRate: 16800,
+    exchangeRate: 15500, // 1 USD = 15,500 IDR
     consent: localStorage.getItem('razr_consent') === 'true'
 };
 

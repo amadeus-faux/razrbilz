@@ -1,7 +1,7 @@
 .site-footer {
     margin-top: 20px;
     padding: 60px 20px 40px 20px;
-    border-top: 1px solid rgba(244, 245, 240, 0.1)
+    border-top: 1px solid rgba(240, 240, 240, 0.1)
 }
 
 .footer-content {
@@ -54,7 +54,7 @@
     align-items: center;
     gap: 25px;
     padding-top: 40px;
-    border-top: 1px solid rgba(244, 245, 240, 0.05)
+    border-top: 1px solid rgba(240, 240, 240, 0.05)
 }
 
 .footer-copyright {
@@ -90,7 +90,7 @@
 .site-footer-light {
     background: var(--signal-white);
     color: var(--void-black);
-    border-top-color: rgba(39, 44, 45, 0.1)
+    border-top-color: rgba(5, 5, 5, 0.1)
 }
 
 .site-footer-light .footer-legal a {

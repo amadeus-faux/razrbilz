@@ -26,8 +26,7 @@ const products = [
             material: "16s Premium Cotton Combed (Acid Wash)",
             weight: "Heavyweight",
             fit: "Boxy / Drop Shoulder",
-            features: "Triple-tiered sleeves, Metal Rivets",
-            weight_grams: 1000
+            features: "Triple-tiered sleeves, Metal Rivets"
         },
         sizeRef: "SUBJECT REFERENCE: Height 178cm / Weight 70kg wears Size L",
         sizeChart: {
@@ -71,8 +70,7 @@ const products = [
             material: "AeroCool Cotton Fleece 375gsm",
             weight: "Heavyweight",
             fit: "Boxy / Drop Shoulder",
-            features: "Tactical pockets, Reflective strips, Water-resistant",
-            weight_grams: 1000
+            features: "Tactical pockets, Reflective strips, Water-resistant"
         },
         sizeRef: "SUBJECT REFERENCE: Height 175cm / Weight 68kg wears Size L",
         sizeChart: {
@@ -113,8 +111,7 @@ const products = [
             material: "16s Premium Cotton Combed, AeroCool Cotton Fleece 285gsm",
             weight: "Heavyweight",
             fit: "Oversize",
-            features: "Double layered sleeves, Metal Rivets",
-            weight_grams: 1000
+            features: "Double layered sleeves, Metal Rivets"
         },
         sizeRef: "SUBJECT REFERENCE: Height 165cm / Weight 59kg wears Size S",
         sizeChart: {
