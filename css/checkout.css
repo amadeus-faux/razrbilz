@@ -1,7 +1,7 @@
 #checkout {
     display: none;
     min-height: 100vh;
-    background: #FFFFFF;
+    background: var(--signal-white);
     color: #333;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif
 }
@@ -43,8 +43,8 @@
 .btn-submit-order {
     width: 100%;
     padding: 22px;
-    background: #121212;
-    color: white;
+    background: var(--void-black);
+    color: var(--signal-white);
     border: none;
     border-radius: 5px;
     font-weight: 600;
@@ -94,7 +94,7 @@
     top: -10px;
     right: -10px;
     background: #737373;
-    color: white;
+    color: var(--signal-white);
     border-radius: 50%;
     width: 22px;
     height: 22px;
