@@ -42,50 +42,6 @@ const products = [
     },
     {
         id: 2,
-        code: "AZRAEL HOODIE",
-        name: "AZRAEL HOODIE",
-        price: 999999999,
-        stock: 50,
-        variants: {
-            S: "47989839036568",
-            M: "47989839069336",
-            L: "47989839102104",
-            XL: "47989839134872",
-            "2XL": "47989839167640"
-        },
-        image: "assets/products/product2.webp",
-        gallery: [
-            "assets/products/product2-1.webp",
-            "assets/products/product2-2.webp",
-            "assets/products/product2-3.webp",
-            "assets/products/product2-4.webp",
-            "assets/products/product2-5.webp",
-            "assets/products/product2-6.webp"
-        ],
-        manifesto: {
-            en: "Taking its name from The Reaper, this piece is a homage to shadow and structure. Built with heavyweight materials to forge a silhouette that is solid, imposing, and intimidating.",
-            id: "Mengambil namanya dari Sang Pencabut Nyawa, karya ini adalah penghormatan pada bayangan dan struktur. Dibangun dengan material kelas berat untuk menempa siluet yang kokoh, megah, dan mengintimidasi."
-        },
-        specs: {
-            material: "AeroCool Cotton Fleece 375gsm",
-            weight: "Heavyweight",
-            fit: "Boxy / Drop Shoulder",
-            features: "Tactical pockets, Reflective strips, Water-resistant"
-        },
-        sizeRef: "SUBJECT REFERENCE: Height 175cm / Weight 68kg wears Size L",
-        sizeChart: {
-            headers: ["SIZE", "CHEST", "LENGTH"],
-            rows: [
-                ["S", "57 cm", "61 cm"],
-                ["M", "59 cm", "63 cm"],
-                ["L", "62 cm", "65 cm"],
-                ["XL", "65 cm", "68 cm"],
-                ["2XL", "68 cm", "71 cm"]
-            ]
-        }
-    },
-    {
-        id: 3,
         code: "STRATA LAYERED TEE",
         name: "STRATA LAYERED TEE",
         price: 999999999,
