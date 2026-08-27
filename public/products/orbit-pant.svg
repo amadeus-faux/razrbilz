@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <!-- Sweatpants silhouette -->
+  <path d="M135 80 L120 80 L105 100 L105 120 L135 120 L125 440 L185 440 L195 220 L205 440 L265 440 L255 120 L285 120 L285 100 L270 80 L255 80Z" fill="#222222"/>
+  <!-- Elastic cuffs -->
+  <rect x="123" y="435" width="64" height="10" rx="3" fill="#1a1a1a"/>
+  <rect x="203" y="435" width="64" height="10" rx="3" fill="#1a1a1a"/>
+</svg>

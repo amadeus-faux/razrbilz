@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" fill="none">
+  <!-- Pullover hoodie silhouette (minimal/vintage) -->
+  <path d="M130 135 L105 160 L65 150 L55 205 L105 215 L105 395 L295 395 L295 215 L345 205 L335 150 L295 160 L270 135 C260 115 240 105 200 100 C160 105 140 115 130 135Z" fill="#252525"/>
+  <!-- Hood -->
+  <path d="M160 135 C160 95 178 75 200 70 C222 75 240 95 240 135" fill="#252525" opacity="0.85"/>
+</svg>
