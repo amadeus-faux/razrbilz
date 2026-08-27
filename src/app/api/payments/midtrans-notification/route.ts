@@ -4,6 +4,38 @@ import { verifySignature, snap } from "@/lib/midtrans";
 import { createBiteshipOrder } from "@/lib/biteship";
 
 /**
+ * Helper function to determine if an order_id is a test payload from Midtrans dashboard or manual testing.
+ * Midtrans test notification typically uses `payment_notif_test_*` or contains test keywords.
+ * Genuine orders in our system follow the format `RZ-<TIMESTAMP>-<RANDOM>` (e.g. RZ-M7ABC12-4X9Y).
+ */
+function isMidtransTestOrderId(orderId: string): boolean {
+  const normalized = orderId.trim().toLowerCase();
+
+  // Explicit test patterns commonly used by Midtrans dashboard test button or mock webhooks
+  if (
+    normalized.startsWith("payment_notif_test") ||
+    normalized.startsWith("test_") ||
+    normalized.startsWith("test-") ||
+    normalized.startsWith("notif_test") ||
+    normalized.includes("test") ||
+    normalized.includes("dummy") ||
+    normalized.includes("sample") ||
+    normalized.includes("mock")
+  ) {
+    return true;
+  }
+
+  // Check if it matches genuine order format (RZ-...)
+  const isGenuineFormat = /^RZ-[A-Za-z0-9]+-[A-Za-z0-9]+$/i.test(orderId.trim());
+  if (!isGenuineFormat) {
+    // Non-standard format and not found in DB -> treated as test / foreign payload
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Midtrans Webhook Handler
  * Endpoint: POST /api/payments/midtrans-notification
  */
@@ -110,7 +142,30 @@ export async function POST(request: Request) {
     });
 
     if (!order) {
-      console.error(`[Midtrans] ❌ Order not found in database: ${orderNumber}`);
+      const isTestPayload = isMidtransTestOrderId(orderNumber);
+
+      if (isTestPayload) {
+        console.warn(
+          `[Midtrans] ⚠️ Midtrans test payload detected (order_id: '${orderNumber}'). ` +
+          `Order is not in database because this is a Midtrans Dashboard test or mock payload. Returning 200 OK.`
+        );
+        console.log(`================== [MIDTRANS NOTIFICATION COMPLETED (TEST)] ==================\n`);
+        return NextResponse.json(
+          {
+            received: true,
+            status: "OK",
+            message: "Test notification received successfully",
+            order_id: orderNumber,
+          },
+          { status: 200 }
+        );
+      }
+
+      // If it looks like a genuine order (RZ-...) but is missing in DB -> real issue!
+      console.error(
+        `[Midtrans] ❌ CRITICAL: Genuine-formatted order not found in database: '${orderNumber}'. ` +
+        `This is NOT a test payload. Check for database sync issues or checkout failure!`
+      );
       return NextResponse.json(
         { error: `Order ${orderNumber} not found in database` },
         { status: 404 }
@@ -121,16 +176,31 @@ export async function POST(request: Request) {
     console.log(`[Midtrans] Order ${orderNumber} current paymentStatus: '${previousPaymentStatus}', updating to: '${paymentStatus}'`);
 
     // 4. Update Order Status in Supabase
-    const updatedOrder = await prisma.order.update({
-      where: { orderNumber },
-      data: {
-        paymentStatus,
-        orderStatus: paymentStatus === "paid" ? "processing" : order.orderStatus,
-        midtransOrderId: orderNumber,
-      },
-    });
-
-    console.log(`[Midtrans] ✅ Supabase order ${orderNumber} updated successfully.`);
+    let updatedOrder;
+    try {
+      updatedOrder = await prisma.order.update({
+        where: { orderNumber },
+        data: {
+          paymentStatus,
+          orderStatus: paymentStatus === "paid" ? "processing" : order.orderStatus,
+          midtransOrderId: orderNumber,
+        },
+      });
+      console.log(`[Midtrans] ✅ Supabase order ${orderNumber} updated successfully.`);
+    } catch (dbUpdateError) {
+      console.error(
+        `[Midtrans] ❌ CRITICAL: Failed to update order status in Supabase for existing order '${orderNumber}'!`,
+        dbUpdateError
+      );
+      return NextResponse.json(
+        {
+          error: "Failed to update order in database",
+          order_id: orderNumber,
+          details: dbUpdateError instanceof Error ? dbUpdateError.message : "Database error",
+        },
+        { status: 500 }
+      );
+    }
 
     let biteshipOrderIdCreated: string | null = order.biteshipOrderId || null;
 
@@ -221,7 +291,6 @@ export async function POST(request: Request) {
       }
     }
 
-
     console.log(`================== [MIDTRANS NOTIFICATION COMPLETED] ==================\n`);
 
     return NextResponse.json({
@@ -231,7 +300,7 @@ export async function POST(request: Request) {
       biteship_order_id: biteshipOrderIdCreated || updatedOrder.biteshipOrderId || null,
     });
   } catch (error) {
-    console.error("[Midtrans] ❌ Fatal error in notification handler:", error);
+    console.error("[Midtrans] ❌ CRITICAL: Fatal error processing notification:", error);
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Webhook processing failed",
@@ -240,4 +309,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
