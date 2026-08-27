@@ -511,22 +511,22 @@ export default function CheckoutPage() {
                   {/* First name & Last name */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <FieldLabel>First Name *</FieldLabel>
+                      <FieldLabel>{isIndonesia ? "Nama Depan *" : "First Name *"}</FieldLabel>
                       <input
                         {...register("firstName")}
                         type="text"
-                        placeholder="First name"
+                        placeholder="E.g., John / Jane"
                         className={inputCls}
                         id="checkout-firstname"
                       />
                       <FieldError message={errors.firstName?.message} />
                     </div>
                     <div>
-                      <FieldLabel>Last Name</FieldLabel>
+                      <FieldLabel>{isIndonesia ? "Nama Belakang *" : "Last Name *"}</FieldLabel>
                       <input
                         {...register("lastName")}
                         type="text"
-                        placeholder="Last name"
+                        placeholder="E.g., Doe"
                         className={inputCls}
                         id="checkout-lastname"
                       />
@@ -535,7 +535,7 @@ export default function CheckoutPage() {
 
                   {/* Street Address */}
                   <div>
-                    <FieldLabel>Address *</FieldLabel>
+                    <FieldLabel>{isIndonesia ? "Alamat Lengkap *" : "Address *"}</FieldLabel>
                     <input
                       {...register("address")}
                       type="text"
@@ -575,8 +575,8 @@ export default function CheckoutPage() {
                               {!isCountrySelected
                                 ? "Pilih negara terlebih dahulu"
                                 : loadingProvinces
-                                ? "Memuat daftar provinsi..."
-                                : "— Pilih Provinsi —"}
+                                  ? "Memuat daftar provinsi..."
+                                  : "— Pilih Provinsi —"}
                             </option>
                             {provinces.map((p) => (
                               <option key={p} value={p}>
@@ -602,9 +602,9 @@ export default function CheckoutPage() {
                       <FieldError message={errors.province?.message} />
                     </div>
 
-                    {/* City / Kota */}
+                    {/* City */}
                     <div>
-                      <FieldLabel>City / Kota *</FieldLabel>
+                      <FieldLabel>{isIndonesia ? "Kota / Kabupaten *" : "City *"}</FieldLabel>
                       {isIndonesia ? (
                         <div className="relative">
                           <select
@@ -617,8 +617,8 @@ export default function CheckoutPage() {
                               {!selectedProvince
                                 ? "Pilih provinsi terlebih dahulu"
                                 : loadingCities
-                                ? "Memuat daftar kota..."
-                                : "— Pilih Kota / Kabupaten —"}
+                                  ? "Memuat daftar kota..."
+                                  : "— Pilih Kota / Kabupaten —"}
                             </option>
                             {cities.map((c) => (
                               <option key={c} value={c}>
@@ -646,9 +646,9 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* District / Kecamatan */}
+                    {/* District / Area */}
                     <div>
-                      <FieldLabel>{isIndonesia ? "Kecamatan / District *" : "District / Area"}</FieldLabel>
+                      <FieldLabel>{isIndonesia ? "Kecamatan *" : "District / Area *"}</FieldLabel>
                       {isIndonesia ? (
                         <div className="relative">
                           <select
@@ -661,8 +661,8 @@ export default function CheckoutPage() {
                               {!selectedCity
                                 ? "Pilih kota terlebih dahulu"
                                 : loadingDistricts
-                                ? "Memuat daftar kecamatan..."
-                                : "— Pilih Kecamatan —"}
+                                  ? "Memuat daftar kecamatan..."
+                                  : "— Pilih Kecamatan —"}
                             </option>
                             {districts.map((d) => (
                               <option key={d} value={d}>
@@ -679,7 +679,7 @@ export default function CheckoutPage() {
                         <input
                           {...register("district")}
                           type="text"
-                          placeholder="District / Area (optional)"
+                          placeholder="District / Area"
                           className={inputCls}
                           id="checkout-district"
                           disabled={!isCountrySelected}
@@ -690,7 +690,7 @@ export default function CheckoutPage() {
 
                     {/* Postal Code / Kode Pos */}
                     <div>
-                      <FieldLabel>Postal Code / Kode Pos *</FieldLabel>
+                      <FieldLabel>{isIndonesia ? "Kode Pos *" : "Postal Code *"}</FieldLabel>
                       {isIndonesia && availablePostalCodes.length > 1 ? (
                         <div className="relative">
                           <select
@@ -759,7 +759,7 @@ export default function CheckoutPage() {
                 {loadingRates ? (
                   <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2.5 text-xs text-muted border border-border">
                     <Loader2 size={15} className="animate-spin text-foreground" />
-                    <span>Menghitung opsi kurir Biteship...</span>
+                    <span>Menghitung opsi kurir...</span>
                   </div>
                 ) : rateError ? (
                   <div className="p-4 bg-surface text-red-500 text-xs rounded-xl flex items-center gap-2 border border-red-200">
@@ -777,20 +777,18 @@ export default function CheckoutPage() {
                           key={`${rate.courier_code}-${rate.courier_service_code}-${idx}`}
                           type="button"
                           onClick={() => setSelectedCourier(rate)}
-                          className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer ${
-                            isSelected
-                              ? "border-foreground bg-surface ring-1 ring-foreground"
-                              : "border-border hover:border-black/25 bg-white"
-                          }`}
+                          className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer ${isSelected
+                            ? "border-foreground bg-surface ring-1 ring-foreground"
+                            : "border-border hover:border-black/25 bg-white"
+                            }`}
                           id={`courier-option-${idx}`}
                         >
                           <div className="flex items-center gap-3.5 min-w-0">
                             <div
-                              className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${
-                                isSelected
-                                  ? "border-foreground bg-foreground"
-                                  : "border-border bg-white"
-                              }`}
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isSelected
+                                ? "border-foreground bg-foreground"
+                                : "border-border bg-white"
+                                }`}
                             >
                               {isSelected && (
                                 <div className="w-1.5 h-1.5 rounded-full bg-background" />
@@ -817,8 +815,8 @@ export default function CheckoutPage() {
                     {!isCountrySelected
                       ? "Pilih negara pengiriman di atas untuk melihat metode pengiriman."
                       : isIndonesia && (!postalCode || postalCode.length < 4)
-                      ? "Lengkapi pemilihan provinsi, kota, kecamatan, dan kode pos untuk memuat kurir Biteship."
-                      : "Tidak ada opsi pengiriman yang tersedia."}
+                        ? "Lengkapi pemilihan provinsi, kota, kecamatan, dan kode pos untuk memuat opsi kurir."
+                        : "Tidak ada opsi pengiriman yang tersedia."}
                   </div>
                 )}
               </div>
@@ -836,7 +834,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted leading-relaxed">
-                  Setelah menekan <strong>PAY NOW</strong>, popup pembayaran Midtrans akan muncul.
+                  After clicking <strong>PAY NOW</strong>, the Midtrans payment popup will appear.
                 </p>
               </div>
 

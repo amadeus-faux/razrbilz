@@ -52,8 +52,7 @@ export default function ContactPage() {
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Contact Us</h1>
         <p className="text-sm text-muted leading-relaxed">
-          Punya pertanyaan seputar ukuran, ketersediaan produk, atau status pesanan?
-          Kirimkan pesan langsung ke studio RAZRBILZ.
+          Have questions about sizing, product availability, or your order status? Send a direct message to the RAZRBILZ studio.
         </p>
       </header>
 
@@ -106,16 +105,16 @@ export default function ContactPage() {
               <CheckCircle2 size={24} className="text-foreground" strokeWidth={1.5} />
             </div>
             <div className="space-y-2">
-              <h2 className="text-section-heading">Pesan Berhasil Terkirim</h2>
+              <h2 className="text-section-heading">Message Received!</h2>
               <p className="text-sm text-muted max-w-sm mx-auto leading-relaxed">
-                Terima kasih! Tim kami akan merespon melalui email dalam 1×24 jam.
+                Thank you! Our team will respond via email within 24 hours.
               </p>
             </div>
             <button
               onClick={() => setSubmitted(false)}
               className="text-[11px] font-semibold tracking-widest uppercase underline underline-offset-4 text-muted hover:text-foreground transition-colors pt-2"
             >
-              Kirim Pesan Lain
+              Send Another Message
             </button>
           </div>
         ) : (
@@ -130,13 +129,13 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-1.5">
                 <label className="block text-[10px] uppercase font-semibold tracking-[0.14em] text-muted">
-                  Nama Lengkap <span className="text-foreground">*</span>
+                  Full Name <span className="text-foreground">*</span>
                 </label>
                 <input
                   type="text"
                   name="name"
                   required
-                  placeholder="Nama Anda"
+                  placeholder="E.g., Budi Santoso"
                   className={inputCls}
                 />
               </div>
@@ -149,7 +148,7 @@ export default function ContactPage() {
                   type="email"
                   name="email"
                   required
-                  placeholder="email@domain.com"
+                  placeholder="email@example.com"
                   className={inputCls}
                 />
               </div>
@@ -157,28 +156,28 @@ export default function ContactPage() {
 
             <div className="space-y-1.5">
               <label className="block text-[10px] uppercase font-semibold tracking-[0.14em] text-muted">
-                Subjek / No. Pesanan
+                Subject / No. Order
                 <span className="ml-1.5 text-muted/60 normal-case tracking-normal text-[9px]">
-                  (opsional)
+                  (optional)
                 </span>
               </label>
               <input
                 type="text"
                 name="subject"
-                placeholder="Contoh: Penukaran Ukuran RZ-12345"
+                placeholder="E.g., Size Exchange RZ-12345"
                 className={inputCls}
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="block text-[10px] uppercase font-semibold tracking-[0.14em] text-muted">
-                Pesan <span className="text-foreground">*</span>
+                Message <span className="text-foreground">*</span>
               </label>
               <textarea
                 name="message"
                 required
                 rows={5}
-                placeholder="Tuliskan pertanyaan atau kendala Anda secara detail..."
+                placeholder="Please details your inquiry or issue here..."
                 className={`${inputCls} resize-none`}
               />
             </div>
@@ -192,11 +191,11 @@ export default function ContactPage() {
               {submitting ? (
                 <>
                   <Loader2 size={14} className="animate-spin" />
-                  MENGIRIM PESAN...
+                  SENDING MESSAGE...
                 </>
               ) : (
                 <>
-                  KIRIM PESAN
+                  SEND MESSAGE
                   <Send size={13} strokeWidth={1.5} />
                 </>
               )}

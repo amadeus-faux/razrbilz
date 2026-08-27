@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — RAZRBILZ",
-  description: "Kebijakan privasi dan perlindungan data pelanggan RAZRBILZ",
+  title: "Privacy Policy",
+  description: "Protection and governance of RAZRBILZ customer personal data.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Privacy Policy</h1>
         <p className="text-[11px] text-muted tracking-wide">
-          Perlindungan dan tata kelola data pribadi pelanggan RAZRBILZ.
+          Protection and governance of RAZRBILZ customer personal data.
         </p>
       </header>
 
@@ -20,41 +20,36 @@ export default function PrivacyPolicyPage() {
       <div className="space-y-10 prose-policy">
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            1. Informasi yang Kami Kumpulkan
+            1. Information We Collect
           </h2>
           <p>
-            Saat Anda melakukan transaksi atau menghubungi kami, kami mengumpulkan informasi yang
-            diperlukan untuk pemrosesan order dan pengiriman, meliputi: Nama Lengkap, Alamat Email,
-            Nomor Telepon, Alamat Pengiriman Lengkap, dan Kode Pos.
+            When you complete a transaction or contact us, we collect the necessary information required for order processing and delivery, including: Full Name, Email Address, Phone Number, Full Shipping Address, and Postal Code.
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            2. Penggunaan Informasi
+            2. Use of Information
           </h2>
-          <p>Informasi Anda digunakan secara eksklusif untuk:</p>
+          <p>Your information is used exclusively to:</p>
           <ul>
-            <li>Memproses, memverifikasi, dan menyelesaikan pesanan pakaian Anda.</li>
+            <li>Process, verify, and fulfill your apparel orders.</li>
             <li>
-              Mengatur pengiriman paket dengan mitra ekspedisi (Biteship, JNE, SiCepat, J&amp;T,
-              DHL/FedEx).
+              Arrange package delivery with official logistics partners (JNE, SiCepat, J&T, DHL/FedEx).
             </li>
-            <li>Mengirimkan notifikasi status pembayaran dan nomor resi pengiriman.</li>
+            <li>Send payment status updates and shipping tracking numbers.</li>
             <li>
-              Memberikan respon terhadap pertanyaan layanan pelanggan via Formspree.
+              Respond to customer service inquiries.
             </li>
           </ul>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            3. Perlindungan &amp; Kerahasiaan Data
+            3. Data Protection &amp; Confidentiality
           </h2>
           <p>
-            Kami menjamin bahwa data pribadi Anda tidak akan pernah dijual, disewakan, atau
-            dibagikan kepada pihak ketiga di luar kebutuhan pemrosesan transaksi dan logistik resmi
-            kami.
+            We guarantee that your personal data will never be sold, rented, or shared with third parties, except as required for official transaction processing and logistics operations.
           </p>
         </section>
       </div>

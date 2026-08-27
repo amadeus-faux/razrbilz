@@ -3,13 +3,18 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RAZRBILZ — Unisex Streetwear",
+  title: "RAZRBILZ",
   description:
-    "RAZRBILZ is a unisex streetwear brand. Shop the latest collection of tees, hoodies, and pants.",
+    "Find Your North.",
   keywords: ["streetwear", "unisex", "fashion", "RAZRBILZ", "clothing"],
+  icons: {
+    icon: "/icon.ico",
+    shortcut: "/icon.ico",
+    apple: "/icon.ico",
+  },
   openGraph: {
-    title: "RAZRBILZ — Unisex Streetwear",
-    description: "Shop the latest collection of unisex streetwear.",
+    title: "RAZRBILZ",
+    description: "Find Your North.",
     type: "website",
   },
 };

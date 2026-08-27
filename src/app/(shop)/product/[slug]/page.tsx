@@ -9,7 +9,7 @@ const mockProducts = [
     name: "EQUATOR TEE",
     slug: "equator-tee",
     description:
-      "Premium heavyweight cotton tee with relaxed fit. Pre-shrunk fabric, ribbed crew neck. Made in Indonesia.",
+      "Premium heavyweight cotton tee with relaxed fit.",
     price: 350000,
     images: ["/products/equator-tee.svg"],
     category: "T-Shirts",
@@ -59,14 +59,14 @@ export async function generateMetadata({
   const product = await getProduct(slug);
 
   if (!product) {
-    return { title: "Product Not Found — RAZRBILZ" };
+    return { title: "Product Not Found" };
   }
 
   return {
-    title: `${product.name} — RAZRBILZ`,
+    title: `${product.name}`,
     description: product.description,
     openGraph: {
-      title: `${product.name} — RAZRBILZ`,
+      title: `${product.name}`,
       description: product.description,
       images: product.images[0] ? [product.images[0]] : [],
     },

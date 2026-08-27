@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Refund Policy — RAZRBILZ",
+  title: "Refund Policy",
   description: "Kebijakan pengembalian dan penukaran produk RAZRBILZ",
 };
 
@@ -12,7 +12,7 @@ export default function RefundPolicyPage() {
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Refund &amp; Exchange Policy</h1>
         <p className="text-[11px] text-muted tracking-wide">
-          Terakhir diperbarui: 2026 · Berlaku untuk semua pembelian melalui situs resmi RAZRBILZ.
+          Last updated: 2026 · Applies to all purchases made through the official RAZRBILZ website.
         </p>
       </header>
 
@@ -20,56 +20,49 @@ export default function RefundPolicyPage() {
       <div className="space-y-10 prose-policy">
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            1. Syarat &amp; Ketentuan Penukaran (Exchange)
+            1. Size Exchange Policy
           </h2>
           <p>
-            Kami menerima penukaran ukuran (size exchange) dalam jangka waktu maksimal{" "}
-            <strong>3 (tiga) hari kalender</strong> sejak pesanan diterima oleh pelanggan
-            berdasarkan status pelacakan ekspedisi.
+            We accept size exchanges within a maximum of{" "}
+            <strong>3 (three) calendar days</strong> from the date the order is received, based on the courier's tracking status.
           </p>
           <ul>
-            <li>Produk dalam kondisi baru, belum pernah dipakai keluar atau dicuci.</li>
-            <li>Hangtag, label barcode, dan packaging original masih lengkap dan utuh.</li>
-            <li>Stok ukuran pengganti masih tersedia di sistem inventaris kami.</li>
+            <li>Products must be in brand-new condition, unworn outdoors, and unwashed.</li>
+            <li>Original hangtags, labels, and packaging must be intact and fully complete.</li>
+            <li>Replacement size availability is subject to our current stock.</li>
+            <li>Must include a clear unboxing video (un-cut and un-edited)</li>
           </ul>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            2. Pengembalian Dana (Refund)
+            2. Refund Policy
           </h2>
           <p>
-            Pengembalian dana (refund) hanya berlaku jika barang yang diterima terbukti mengalami
-            cacat produksi major (major defect) atau terjadi kesalahan pengiriman model/ukuran dari
-            pihak RAZRBILZ dan stok pengganti tidak lagi tersedia.
+            Refunds are only applicable if the item received has a proven major manufacturing defect or if RAZRBILZ sent the wrong model/size, and the replacement stock is no longer available.
           </p>
           <p>
-            Proses refund akan diproses kembali ke rekening atau metode pembayaran asal via Midtrans
-            dalam waktu <strong>3–7 hari kerja</strong> setelah produk retur kami terima dan
-            verifikasi.
+            Refunds will be processed back to the original bank account or payment method via Midtrans within <strong>3–7 business days</strong> after the returned item is received and verified by our team.
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            3. Ongkos Kirim Retur
+            3. Shipping Costs for Returns
           </h2>
           <p>
-            Untuk penukaran ukuran atas keinginan pembeli, ongkos kirim pengembalian dan pengiriman
-            ulang ditanggung oleh pembeli. Jika penukaran disebabkan oleh kesalahan pihak RAZRBILZ,
-            seluruh ongkos kirim akan ditanggung sepenuhnya oleh kami.
+            For size exchanges requested by the customer, all return and re-shipping costs are covered by the buyer. If the return or exchange is due to an error made by RAZRBILZ, we will cover all shipping expenses in full.
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            4. Cara Mengajukan Retur
+            4. How to Request a Return
           </h2>
           <p>
-            Silakan hubungi customer service kami melalui halaman{" "}
-            <a href="/contact">Contact Us</a> atau kirimkan email ke{" "}
-            <strong>razrbilz@gmail.com</strong> dengan menyertakan Nomor Pesanan, foto produk/cacat,
-            dan detail ukuran yang diinginkan.
+            Please contact our Customer Support via the{" "}
+            <a href="/contact">Contact Us</a> page or send an email to{" "}
+            <strong>razrbilz@gmail.com</strong> with the following details Order ID / Order Number, a clear unboxing video (un-cut and un-edited), and details of the requested size.
           </p>
         </section>
       </div>
