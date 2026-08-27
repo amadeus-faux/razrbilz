@@ -30,23 +30,18 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container-shop pt-20 pb-32 min-h-[80vh] flex flex-col items-center justify-center">
-        <div className="w-full max-w-sm bg-white border border-border p-10 text-center rounded-2xl shadow-sm space-y-6">
+        <div className="w-full max-w-sm card p-10 text-center space-y-6">
           <div className="w-14 h-14 mx-auto rounded-full bg-surface flex items-center justify-center text-muted">
-            <RefreshCw size={22} strokeWidth={1.5} />
+            <RefreshCw size={20} strokeWidth={1.5} />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xs font-semibold tracking-widest uppercase text-foreground">
-              YOUR BAG IS EMPTY
-            </h1>
+            <h1 className="text-section-heading">Your Bag Is Empty</h1>
             <p className="text-xs text-muted leading-relaxed">
               Looks like you haven&apos;t added any RAZRBILZ pieces yet.
             </p>
           </div>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-[11px] font-semibold tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
-          >
-            EXPLORE COLLECTION
+          <Link href="/" className="btn-primary w-full">
+            Explore Collection
             <ArrowRight size={13} strokeWidth={2} />
           </Link>
         </div>
@@ -61,18 +56,12 @@ export default function CartPage() {
 
         {/* Page header */}
         <div className="flex items-end justify-between pb-6 border-b border-border mb-10">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <h1 className="text-page-heading">Shopping Bag</h1>
-            <p className="text-[11px] text-muted tracking-wide">
+            <p className="text-label text-muted !tracking-normal normal-case">
               {totalCount} {totalCount === 1 ? "item" : "items"} ready for checkout
             </p>
           </div>
-          <Link
-            href="/"
-            className="text-[10px] font-medium text-muted hover:text-foreground transition-colors uppercase tracking-[0.14em]"
-          >
-            Continue Shopping
-          </Link>
         </div>
 
         {/* 2-col responsive grid */}
@@ -83,55 +72,55 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={`${item.productId}-${item.size}`}
-                className="flex gap-4 p-4 bg-white border border-border rounded-2xl hover:border-black/15 transition-colors duration-200"
+                className="card group relative flex gap-4 p-4 hover:shadow-modal transition-shadow duration-300"
                 id={`cart-item-${item.productId}-${item.size}`}
               >
+                {/* Remove — subtle, top-right corner */}
+                <button
+                  onClick={() => removeItem(item.productId, item.size)}
+                  className="absolute top-3 right-3 p-1.5 text-disabled hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  aria-label={`Remove ${item.name}`}
+                >
+                  <Trash2 size={13} strokeWidth={1.5} />
+                </button>
+
                 {/* Thumbnail */}
                 <Link
                   href={`/product/${item.slug}`}
-                  className="relative w-20 h-24 flex-shrink-0 bg-surface rounded-xl overflow-hidden"
+                  className="relative w-24 h-28 flex-shrink-0 bg-surface rounded-xl overflow-hidden"
                 >
                   <Image
                     src={item.image || "/placeholder-product.svg"}
                     alt={item.name}
                     fill
-                    className="object-contain p-2 hover:scale-[1.04] transition-transform duration-300"
-                    sizes="80px"
+                    className="object-contain p-3 group-hover:scale-[1.04] transition-transform duration-300"
+                    sizes="96px"
                   />
                 </Link>
 
                 {/* Info column */}
-                <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
-                  {/* Name + delete */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <Link
-                        href={`/product/${item.slug}`}
-                        className="block text-[11px] font-semibold uppercase tracking-widest text-foreground hover:opacity-60 transition-opacity truncate"
-                      >
-                        {item.name}
-                      </Link>
-                      <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-                        <span className="inline-block px-2 py-0.5 bg-surface border border-border text-[9px] font-semibold tracking-widest uppercase rounded-md text-muted">
-                          SIZE {item.size}
-                        </span>
-                        <span className="text-[10px] text-muted">
-                          {formatRupiah(item.price)} / pcs
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => removeItem(item.productId, item.size)}
-                      className="flex-shrink-0 p-1.5 text-muted hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      aria-label={`Remove ${item.name}`}
+                <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5 pr-6">
+                  {/* Name + meta */}
+                  <div className="min-w-0">
+                    <Link
+                      href={`/product/${item.slug}`}
+                      className="block text-[11px] font-semibold uppercase tracking-widest text-foreground hover:opacity-60 transition-opacity truncate"
                     >
-                      <Trash2 size={13} strokeWidth={1.5} />
-                    </button>
+                      {item.name}
+                    </Link>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center px-2 py-0.5 bg-surface border border-border text-[9px] font-semibold tracking-widest uppercase rounded-full text-muted">
+                        Size {item.size}
+                      </span>
+                      <span className="text-price">
+                        {formatRupiah(item.price)} / pcs
+                      </span>
+                    </div>
                   </div>
 
                   {/* Qty stepper + subtotal */}
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
-                    <div className="flex items-center border border-border rounded-lg bg-surface overflow-hidden">
+                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/60">
+                    <div className="flex items-center border border-border rounded-full bg-surface overflow-hidden">
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
                         className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-black/5 transition-colors"
@@ -139,7 +128,7 @@ export default function CartPage() {
                       >
                         <Minus size={11} strokeWidth={2} />
                       </button>
-                      <span className="w-8 text-center text-xs font-semibold text-foreground select-none">
+                      <span className="w-7 text-center text-xs font-semibold text-foreground tabular-nums select-none">
                         {item.quantity}
                       </span>
                       <button
@@ -151,7 +140,7 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    <span className="text-xs font-bold text-foreground">
+                    <span className="text-xs font-bold text-foreground tabular-nums">
                       {formatRupiah(item.price * item.quantity)}
                     </span>
                   </div>
@@ -159,18 +148,18 @@ export default function CartPage() {
               </div>
             ))}
 
-            {/* Trust badges */}
-            <div className="grid grid-cols-3 gap-3 pt-6 border-t border-border text-center">
+            {/* Trust strip — lighter footnote treatment */}
+            <div className="flex items-center justify-between gap-4 pt-6 mt-2 border-t border-border">
               {[
-                { icon: Truck, label: "Fast Dispatch", sub: "1–2 business days" },
-                { icon: ShieldCheck, label: "100% Authentic", sub: "Direct from studio" },
+                { icon: Truck, label: "Pre Order", sub: "14–21 business days" },
+                { icon: ShieldCheck, label: "100% Authentic", sub: "Made with passion" },
                 { icon: RefreshCw, label: "Easy Exchange", sub: "Within 3 days" },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={label} className="p-4 bg-surface rounded-2xl flex flex-col items-center gap-2">
-                  <Icon size={14} className="text-muted" strokeWidth={1.5} />
-                  <div>
-                    <p className="text-[10px] font-semibold text-foreground tracking-wide">{label}</p>
-                    <p className="text-[9px] text-muted mt-0.5 leading-snug">{sub}</p>
+                <div key={label} className="flex items-center gap-2.5 min-w-0">
+                  <Icon size={15} className="text-disabled flex-shrink-0" strokeWidth={1.5} />
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold text-foreground tracking-wide truncate">{label}</p>
+                    <p className="text-[9px] text-muted truncate">{sub}</p>
                   </div>
                 </div>
               ))}
@@ -179,19 +168,19 @@ export default function CartPage() {
 
           {/* ── RIGHT: Order summary (5 cols sticky) ──────────────────────── */}
           <div className="lg:col-span-5 lg:sticky lg:top-8">
-            <div className="bg-white border border-border rounded-2xl shadow-sm overflow-hidden">
+            <div className="card overflow-hidden">
               {/* Summary header */}
               <div className="px-6 py-5 border-b border-border">
-                <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
-                  ORDER SUMMARY ({totalCount})
+                <h2 className="text-section-heading">
+                  Order Summary ({totalCount})
                 </h2>
               </div>
 
               {/* Price breakdown */}
-              <div className="px-6 py-5 space-y-3">
+              <div className="px-6 py-5 space-y-2.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted">Subtotal ({totalCount} items)</span>
-                  <span className="text-xs font-semibold text-foreground">{formatRupiah(subtotal())}</span>
+                  <span className="text-xs text-muted">Subtotal ({totalCount} {totalCount === 1 ? "item" : "items"})</span>
+                  <span className="text-xs font-medium text-foreground tabular-nums">{formatRupiah(subtotal())}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-muted">Shipping</span>
@@ -201,26 +190,20 @@ export default function CartPage() {
                   <span className="text-xs text-muted">Taxes &amp; Duties</span>
                   <span className="text-xs font-medium text-foreground">Included</span>
                 </div>
+              </div>
 
-                {/* Total */}
-                <div className="pt-4 border-t border-border flex justify-between items-baseline">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-foreground">
-                    ESTIMATED TOTAL
-                  </span>
-                  <span className="text-lg font-bold text-foreground">
-                    {formatRupiah(subtotal())}
-                  </span>
-                </div>
+              {/* Total — the hero of this card */}
+              <div className="px-6 py-5 bg-surface border-y border-border flex items-baseline justify-between">
+                <span className="text-label text-muted">Estimated Total</span>
+                <span className="text-2xl font-bold text-foreground tabular-nums">
+                  {formatRupiah(subtotal())}
+                </span>
               </div>
 
               {/* CTA */}
-              <div className="px-6 pb-6 space-y-3">
-                <Link
-                  href="/checkout"
-                  className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background text-[11px] font-semibold tracking-[0.15em] uppercase rounded-xl hover:opacity-90 active:scale-[0.99] transition-all shadow-md"
-                  id="btn-checkout"
-                >
-                  PROCEED TO CHECKOUT
+              <div className="p-6 space-y-4">
+                <Link href="/checkout" className="btn-primary w-full" id="btn-checkout">
+                  Proceed to Checkout
                   <ArrowRight size={13} strokeWidth={2.5} />
                 </Link>
 

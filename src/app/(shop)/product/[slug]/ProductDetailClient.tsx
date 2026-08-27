@@ -66,7 +66,7 @@ export default function ProductDetailClient({
         <ImageGallery images={product.images} productName={product.name} />
 
         {/* Product info */}
-        <div className="text-center mt-7 space-y-1.5">
+        <div className="text-center mt-0 space-y-1.5">
           <h1
             className="text-product-name"
             style={{ fontSize: "0.65rem", letterSpacing: "0.18em" }}
@@ -77,7 +77,7 @@ export default function ProductDetailClient({
         </div>
 
         {/* Add to cart CTA */}
-        <div className="flex justify-center mt-9">
+        <div className="flex justify-center mt-5">
           <button
             onClick={() => setSheetOpen(!sheetOpen)}
             className="group flex items-center justify-center w-14 h-14 rounded-full border border-black/10 bg-white hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200"
@@ -92,9 +92,8 @@ export default function ProductDetailClient({
             <Plus
               size={20}
               strokeWidth={1.5}
-              className={`transition-all duration-300 group-hover:text-white ${
-                sheetOpen ? "rotate-45" : ""
-              }`}
+              className={`transition-all duration-300 group-hover:text-white ${sheetOpen ? "rotate-45" : ""
+                }`}
             />
           </button>
         </div>

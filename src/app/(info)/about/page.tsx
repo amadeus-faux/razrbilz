@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About — RAZRBILZ",
-  description: "Tentang RAZRBILZ — Brand pakaian unisex kontemporer dari Bandung, Indonesia.",
+  title: "RAZRBILZ",
+  description: "Find Your North.",
 };
 
 export default function AboutPage() {

@@ -2,7 +2,6 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Color Tokens ─────────────────────────────────────────────── */
   --color-background: #ffffff;
   --color-foreground: #0a0a0a;
   --color-muted: #787878;
@@ -11,300 +10,392 @@
   --color-surface: #f6f6f6;
   --color-surface-hover: #eeeeee;
 
-  /* ── Typography ───────────────────────────────────────────────── */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* ── Shadows ──────────────────────────────────────────────────── */
   --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
   --shadow-modal: 0 8px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-nav: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-nav: 0 8px 32px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   BASE RESET
+   BASE — reset & element defaults. Layered so Tailwind utilities
+   (which live in @layer utilities) can always override these.
 ───────────────────────────────────────────────────────────────── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-html {
-  scroll-behavior: smooth;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   TYPOGRAPHY SCALE
-   Hierarchy: Display > Page Heading > Section Heading > Body > Label
+   COMPONENTS — reusable classes. Layered between base and
+   utilities so Tailwind utility classes in className can still
+   override any of these when combined (e.g. className="card p-8").
 ───────────────────────────────────────────────────────────────── */
+@layer components {
 
-/* Display — for hero/brand titles */
-.text-display {
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1.1;
-}
+  .text-display {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
 
-/* Page Heading — h1 on most pages (Cart, Policy, Contact) */
-.text-page-heading {
-  font-size: 1.125rem; /* 18px */
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
+  .text-page-heading {
+    font-size: 1.125rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
 
-/* Section Heading — h2 inside cards/sections */
-.text-section-heading {
-  font-size: 0.6875rem; /* 11px */
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  line-height: 1.4;
-}
+  .text-section-heading {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
 
-/* Policy Section Heading — h2 in legal pages (slightly larger) */
-.text-policy-heading {
-  font-size: 0.75rem; /* 12px */
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  line-height: 1.4;
-  color: var(--color-foreground);
-}
+  .text-policy-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    color: var(--color-foreground);
+  }
 
-/* Label / Meta */
-.text-label {
-  font-size: 0.6875rem; /* 11px */
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
+  .text-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
 
-/* Product name on card */
-.text-product-name {
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-foreground);
-}
+  .text-product-name {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+  }
 
-/* Product price */
-.text-price {
-  font-size: 0.7rem;
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
+  .text-price {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.99);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-surface);
+    color: var(--color-foreground);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-surface-hover);
+  }
+
+  .prose-policy {
+    font-size: 0.875rem;
+    line-height: 1.85;
+    color: var(--color-muted);
+  }
+
+  .prose-policy p {
+    margin-bottom: 0;
+  }
+
+  .prose-policy ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .prose-policy li {
+    padding-left: 0.25rem;
+  }
+
+  .prose-policy strong {
+    color: var(--color-foreground);
+    font-weight: 600;
+  }
+
+  .prose-policy a {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .input-base {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+  }
+
+  .input-base::placeholder {
+    color: color-mix(in srgb, var(--color-muted) 50%, transparent);
+  }
+
+  .input-base:focus {
+    border-color: var(--color-foreground);
+    background: var(--color-background);
+    box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
+  }
+
+  .card {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .sheet-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .bottom-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    z-index: 50;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .bottom-sheet.open {
+    transform: translateY(0);
+  }
+
+  .reveal-up {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .reveal-up.revealed {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .animate-popIn {
+    animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.22s ease-out forwards;
+  }
+
+  .animate-popInCenter {
+    animation: popInCenter 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .badge-animate {
+    animation: badge-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .floating-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 9999px;
+    box-shadow: var(--shadow-nav);
+  }
+
+  .size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--color-foreground);
+    position: relative;
+  }
+
+  .size-btn:hover:not(:disabled) {
+    background: var(--color-surface);
+  }
+
+  .size-btn:disabled {
+    color: var(--color-disabled);
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .size-btn.selected {
+    background: var(--color-foreground);
+    color: white;
+  }
+
+  .nav-chevron {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+    padding: 16px;
+    color: var(--color-foreground);
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-chevron:hover {
+    opacity: 1;
+  }
+
+  .pagination-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-disabled);
+    transition: background 0.2s ease;
+  }
+
+  .pagination-dot.active {
+    background: var(--color-foreground);
+  }
+
+  .container-shop {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 100px;
+  }
+
+  @media (min-width: 768px) {
+    .container-shop {
+      padding-left: 48px;
+      padding-right: 48px;
+      padding-bottom: 100px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container-shop {
+      padding-left: 80px;
+      padding-right: 80px;
+      padding-bottom: 100px;
+    }
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   REUSABLE BUTTON STYLES
+   KEYFRAMES — global, not layer-sensitive
 ───────────────────────────────────────────────────────────────── */
-
-/* Primary CTA — black fill */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
-  background: var(--color-foreground);
-  color: var(--color-background);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  border-radius: 0.75rem;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.15s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.btn-primary:hover:not(:disabled) {
-  opacity: 0.88;
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: scale(0.99);
-}
-
-.btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Ghost — outlined / surface */
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--color-surface);
-  color: var(--color-foreground);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  border-radius: 0.75rem;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.btn-ghost:hover {
-  background: var(--color-surface-hover);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   PROSE — for policy/legal pages
-───────────────────────────────────────────────────────────────── */
-.prose-policy {
-  font-size: 0.875rem;  /* 14px — more readable than xs */
-  line-height: 1.85;
-  color: var(--color-muted);
-}
-
-.prose-policy p {
-  margin-bottom: 0;
-}
-
-.prose-policy ul {
-  list-style: disc;
-  padding-left: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.prose-policy li {
-  padding-left: 0.25rem;
-}
-
-.prose-policy strong {
-  color: var(--color-foreground);
-  font-weight: 600;
-}
-
-.prose-policy a {
-  color: var(--color-foreground);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   FORM ELEMENTS
-───────────────────────────────────────────────────────────────── */
-.input-base {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
-  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-  outline: none;
-}
-
-.input-base::placeholder {
-  color: color-mix(in srgb, var(--color-muted) 50%, transparent);
-}
-
-.input-base:focus {
-  border-color: var(--color-foreground);
-  background: var(--color-background);
-  box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.06);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   CARD / SURFACE
-───────────────────────────────────────────────────────────────── */
-.card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  box-shadow: var(--shadow-card);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   BOTTOM SHEET
-───────────────────────────────────────────────────────────────── */
-.sheet-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 40;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.sheet-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.bottom-sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 20px 20px 0 0;
-  z-index: 50;
-  transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.bottom-sheet.open {
-  transform: translateY(0);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   SCROLLBAR
-───────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   ANIMATIONS
-───────────────────────────────────────────────────────────────── */
-.reveal-up {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.reveal-up.revealed {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @keyframes popIn {
   0% {
     opacity: 0;
     transform: translate(-50%, 15px) scale(0.92);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
@@ -312,8 +403,13 @@ body {
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes popInCenter {
@@ -321,6 +417,7 @@ body {
     opacity: 0;
     transform: scale(0.94);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -328,135 +425,15 @@ body {
 }
 
 @keyframes badge-pop {
-  0% { transform: scale(0.5); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-.animate-popIn {
-  animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.22s ease-out forwards;
-}
-
-.animate-popInCenter {
-  animation: popInCenter 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.badge-animate {
-  animation: badge-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   FLOATING NAV
-───────────────────────────────────────────────────────────────── */
-.floating-nav {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 12px 28px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 9999px;
-  box-shadow: var(--shadow-nav);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   SIZE BUTTONS (in size selector)
-───────────────────────────────────────────────────────────────── */
-.size-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 20px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--color-foreground);
-  position: relative;
-}
-
-.size-btn:hover:not(:disabled) {
-  background: var(--color-surface);
-}
-
-.size-btn:disabled {
-  color: var(--color-disabled);
-  cursor: not-allowed;
-  text-decoration: line-through;
-}
-
-.size-btn.selected {
-  background: var(--color-foreground);
-  color: white;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   IMAGE GALLERY NAVIGATION
-───────────────────────────────────────────────────────────────── */
-.nav-chevron {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  cursor: pointer;
-  padding: 16px;
-  color: var(--color-foreground);
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.nav-chevron:hover {
-  opacity: 1;
-}
-
-/* Pagination dots */
-.pagination-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-disabled);
-  transition: background 0.2s ease;
-}
-
-.pagination-dot.active {
-  background: var(--color-foreground);
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   PAGE CONTAINER — mobile-first with space for floating nav
-───────────────────────────────────────────────────────────────── */
-.container-shop {
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-bottom: 100px;
-}
-
-@media (min-width: 768px) {
-  .container-shop {
-    padding-left: 48px;
-    padding-right: 48px;
-    padding-bottom: 100px;
+  0% {
+    transform: scale(0.5);
   }
-}
 
-@media (min-width: 1280px) {
-  .container-shop {
-    padding-left: 80px;
-    padding-right: 80px;
-    padding-bottom: 100px;
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }

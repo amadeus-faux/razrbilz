@@ -26,11 +26,13 @@ interface SizeSelectorPopoverProps {
 
 // Static size chart data
 const SIZE_CHART = [
-  { size: "S", chest: "48 cm", length: "68 cm" },
-  { size: "M", chest: "51 cm", length: "71 cm" },
-  { size: "L", chest: "54 cm", length: "74 cm" },
-  { size: "XL", chest: "57 cm", length: "77 cm" },
+  { size: "S", chest: "51 cm", length: "53 cm" },
+  { size: "M", chest: "53 cm", length: "55 cm" },
+  { size: "L", chest: "55 cm", length: "58 cm" },
+  { size: "XL", chest: "58 cm", length: "60 cm" },
 ];
+
+const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export default function SizeSelectorPopover({
   isOpen,
@@ -63,6 +65,10 @@ export default function SizeSelectorPopover({
     }, 350);
   };
 
+  const sortedSizes = [...sizes].sort(
+    (a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)
+  );
+
   return (
     <>
       {/* ── LAYER 1: Shared backdrop (z-60) ── */}
@@ -92,18 +98,10 @@ export default function SizeSelectorPopover({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header row */}
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="flex items-center justify-center pb-3 border-b border-border">
               <span className="text-[11px] font-semibold tracking-widest uppercase">
                 SELECT SIZE
               </span>
-
-              <button
-                onClick={onClose}
-                className="p-1.5 text-muted hover:text-foreground hover:bg-surface rounded-lg transition-colors"
-                aria-label="Close size picker"
-              >
-                <X size={15} strokeWidth={1.5} />
-              </button>
             </div>
 
             {/* Price */}
@@ -115,7 +113,7 @@ export default function SizeSelectorPopover({
 
             {/* Size grid — 4 cols */}
             <div className="grid grid-cols-4 gap-2">
-              {sizes.map(({ size, stock }) => {
+              {sortedSizes.map(({ size, stock }) => {
                 const isOutOfStock = stock === 0;
                 const isSelected = selectedSize === size;
                 return (
@@ -160,7 +158,7 @@ export default function SizeSelectorPopover({
                 className="w-full flex items-center justify-between text-[10px] tracking-widest font-medium text-muted hover:text-foreground uppercase transition-colors py-0.5"
                 id="btn-shipping-info-toggle"
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 pb-2.5">
                   <Package2 size={11} strokeWidth={1.5} />
                   SHIPPING INFORMATION
                 </span>
@@ -190,7 +188,6 @@ export default function SizeSelectorPopover({
                   <p>
                     Estimated dispatch within <strong className="text-foreground">2–3 weeks</strong> from order date.
                   </p>
-                  <p className="text-[10px] opacity-75 leading-relaxed">{product.description}</p>
                 </div>
               )}
             </div>
@@ -198,7 +195,7 @@ export default function SizeSelectorPopover({
         </div>
       )}
 
-      {/* ── LAYER 3: SIZE GUIDE modal (z-75) — replaces size selector ── */}
+      {/* ── LAYER 3: SIZE GUIDE modal ── */}
       {showSizeChart && (
         <div
           className="fixed inset-0 z-[75] flex items-center justify-center p-4 pointer-events-none"
@@ -212,20 +209,13 @@ export default function SizeSelectorPopover({
             id="size-chart-modal"
           >
             {/* Modal header */}
-            <div className="flex items-center justify-between pb-3 border-b border-border mb-5">
+            <div className="flex items-center justify-center pb-3 border-b border-border mb-5">
               <div className="flex items-center gap-2">
                 <Ruler size={14} strokeWidth={1.5} className="text-muted" />
                 <span className="text-[11px] font-semibold tracking-widest uppercase">
                   Size Guide
                 </span>
               </div>
-              <button
-                onClick={() => setShowSizeChart(false)}
-                className="p-1.5 text-muted hover:text-foreground hover:bg-surface rounded-lg transition-colors"
-                aria-label="Close size guide"
-              >
-                <X size={15} strokeWidth={1.5} />
-              </button>
             </div>
 
             {/* Size chart table */}

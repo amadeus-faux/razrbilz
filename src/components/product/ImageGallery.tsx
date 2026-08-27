@@ -45,10 +45,10 @@ export default function ImageGallery({
   if (images.length === 0) return null;
 
   return (
-    <div className="relative w-full" id="image-gallery">
+    <div className="relative w-full max-w-[380px] mx-auto" id="image-gallery">
       {/* Main Image */}
       <div
-        className="relative w-full aspect-square flex items-center justify-center bg-white"
+        className="relative w-full aspect-[5/4] flex items-center justify-center bg-white"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -56,7 +56,7 @@ export default function ImageGallery({
           src={images[currentIndex]}
           alt={`${productName} - Image ${currentIndex + 1}`}
           fill
-          className="object-contain p-8 md:p-16"
+          className="object-contain p-2 md:p-0"
           sizes="(max-width: 768px) 100vw, 60vw"
           priority
         />

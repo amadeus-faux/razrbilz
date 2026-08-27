@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <article className="pb-16 space-y-12">
+    <article className="space-y-12">
       {/* Page header */}
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Terms of Service</h1>

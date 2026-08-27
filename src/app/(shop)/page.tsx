@@ -3,61 +3,18 @@ import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shop — RAZRBILZ",
+  title: "RAZRBILZ",
   description:
-    "Browse the full RAZRBILZ collection. Unisex streetwear tees, hoodies, and pants.",
+    "Find Your North.",
 };
 
-// Mock data for development (before database is connected)
 const mockProducts = [
   {
     id: "1",
     name: "EQUATOR TEE",
     slug: "equator-tee",
     images: ["/products/equator-tee.svg"],
-  },
-  {
-    id: "2",
-    name: "VOID HOODIE",
-    slug: "void-hoodie",
-    images: ["/products/void-hoodie.svg"],
-  },
-  {
-    id: "3",
-    name: "DRIFT PANT",
-    slug: "drift-pant",
-    images: ["/products/drift-pant.svg"],
-  },
-  {
-    id: "4",
-    name: "SIGNAL TEE",
-    slug: "signal-tee",
-    images: ["/products/signal-tee.svg"],
-  },
-  {
-    id: "5",
-    name: "STATIC HOODIE",
-    slug: "static-hoodie",
-    images: ["/products/static-hoodie.svg"],
-  },
-  {
-    id: "6",
-    name: "ORBIT PANT",
-    slug: "orbit-pant",
-    images: ["/products/orbit-pant.svg"],
-  },
-  {
-    id: "7",
-    name: "APEX TEE",
-    slug: "apex-tee",
-    images: ["/products/apex-tee.svg"],
-  },
-  {
-    id: "8",
-    name: "ZERO HOODIE",
-    slug: "zero-hoodie",
-    images: ["/products/zero-hoodie.svg"],
-  },
+  }
 ];
 
 async function getProducts() {
@@ -74,7 +31,6 @@ async function getProducts() {
     });
     return products.length > 0 ? products : mockProducts;
   } catch {
-    // Database not connected yet, use mock data
     return mockProducts;
   }
 }
