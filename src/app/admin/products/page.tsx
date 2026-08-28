@@ -3,6 +3,7 @@ import { formatRupiah } from "@/lib/utils";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import ProductActions from "./ProductActions";
 
 async function getProducts() {
   try {
@@ -50,6 +51,7 @@ export default async function AdminProductsPage() {
                   <th className="p-4">Harga</th>
                   <th className="p-4">Stok Ukuran</th>
                   <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -75,11 +77,10 @@ export default async function AdminProductsPage() {
                           {p.sizes.map((s) => (
                             <span
                               key={s.size}
-                              className={`px-1.5 py-0.5 border text-[10px] ${
-                                s.stock === 0
-                                  ? "border-red-200 text-red-500 line-through"
-                                  : "border-border text-muted"
-                              }`}
+                              className={`px-1.5 py-0.5 border text-[10px] ${s.stock === 0
+                                ? "border-red-200 text-red-500 line-through"
+                                : "border-border text-muted"
+                                }`}
                             >
                               {s.size}: {s.stock}
                             </span>
@@ -88,14 +89,16 @@ export default async function AdminProductsPage() {
                       </td>
                       <td className="p-4">
                         <span
-                          className={`inline-block px-2 py-0.5 text-[10px] uppercase font-medium rounded-full ${
-                            p.isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-500"
-                          }`}
+                          className={`inline-block px-2 py-0.5 text-[10px] uppercase font-medium rounded-full ${p.isActive
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-500"
+                            }`}
                         >
                           {p.isActive ? "Aktif" : "Non-aktif"}
                         </span>
+                      </td>
+                      <td className="p-4 text-right">
+                        <ProductActions productId={p.id} />
                       </td>
                     </tr>
                   );

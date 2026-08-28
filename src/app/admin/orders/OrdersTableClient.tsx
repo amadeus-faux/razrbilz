@@ -20,6 +20,11 @@ export interface OrderType {
   orderNumber: string;
   customerName: string;
   phone: string;
+  shippingAddress: string;
+  district: string | null;
+  city: string;
+  province: string | null;
+  postalCode: string;
   courier: string;
   total: number;
   paymentStatus: string;
@@ -83,11 +88,10 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     <div className="space-y-4">
       {actionMessage && (
         <div
-          className={`p-3 rounded-lg text-xs flex items-center justify-between ${
-            actionMessage.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
+          className={`p-3 rounded-lg text-xs flex items-center justify-between ${actionMessage.type === "success"
+            ? "bg-green-50 text-green-800 border border-green-200"
+            : "bg-red-50 text-red-800 border border-red-200"
+            }`}
         >
           <span>{actionMessage.text}</span>
           <button
@@ -104,7 +108,9 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
           <thead>
             <tr className="border-b border-border text-muted bg-surface/50">
               <th className="p-4">No. Pesanan</th>
+              <th className="p-4">Waktu Pesan</th>
               <th className="p-4">Customer</th>
+              <th className="p-4">Alamat</th>
               <th className="p-4">Item & Ukuran</th>
               <th className="p-4">Total</th>
               <th className="p-4">Kurir</th>
@@ -126,9 +132,26 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                   <td className="p-4 font-mono font-medium">
                     {order.orderNumber}
                   </td>
+                  <td className="p-4 text-[11px] whitespace-nowrap">
+                    {new Date(order.createdAt).toLocaleString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </td>
                   <td className="p-4">
                     <p className="font-medium">{order.customerName}</p>
                     <p className="text-[10px] text-muted">{order.phone}</p>
+                  </td>
+                  <td className="p-4 text-[11px] max-w-[220px]">
+                    <p>{order.shippingAddress}</p>
+                    <p className="text-muted mt-0.5">
+                      {[order.district, order.city, order.province, order.postalCode]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
                   </td>
                   <td className="p-4">
                     {order.items.map((it, idx) => (
@@ -144,11 +167,10 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                   <td className="p-4">{order.courier}</td>
                   <td className="p-4">
                     <span
-                      className={`inline-block px-2 py-0.5 text-[10px] uppercase font-medium rounded-full ${
-                        isPaid
-                          ? "bg-green-100 text-green-700"
-                          : "bg-amber-100 text-amber-700"
-                      }`}
+                      className={`inline-block px-2 py-0.5 text-[10px] uppercase font-medium rounded-full ${isPaid
+                        ? "bg-green-100 text-green-700"
+                        : "bg-amber-100 text-amber-700"
+                        }`}
                     >
                       {order.paymentStatus}
                     </span>
@@ -206,11 +228,10 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                       <button
                         onClick={() => handleRetryShipping(order)}
                         disabled={isRetrying}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
-                          isFailed
-                            ? "bg-red-600 hover:bg-red-700 text-white"
-                            : "bg-foreground hover:bg-foreground/90 text-background"
-                        } disabled:opacity-50`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${isFailed
+                          ? "bg-red-600 hover:bg-red-700 text-white"
+                          : "bg-foreground hover:bg-foreground/90 text-background"
+                          } disabled:opacity-50`}
                       >
                         <RefreshCw size={11} className={isRetrying ? "animate-spin" : ""} />
                         {isRetrying ? "Memproses..." : "Retry Shipping"}

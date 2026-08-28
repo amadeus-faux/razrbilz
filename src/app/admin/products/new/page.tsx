@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { slugify } from "@/lib/utils";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NewProductPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(350000);
   const [category, setCategory] = useState("T-Shirts");
-  const [imageUrl, setImageUrl] = useState("/products/equator-tee.svg");
+  const [images, setImages] = useState<string[]>([]);
   const [sizes, setSizes] = useState([
     { size: "S", stock: 10 },
     { size: "M", stock: 20 },
@@ -31,6 +32,11 @@ export default function NewProductPage() {
     e.preventDefault();
     setSubmitting(true);
 
+    if (images.length === 0) {
+      alert("Tambahkan minimal 1 foto produk.");
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/products", {
         method: "POST",
@@ -41,7 +47,7 @@ export default function NewProductPage() {
           description,
           price: Number(price),
           category,
-          images: [imageUrl],
+          images,
           sizes,
         }),
       });
@@ -102,7 +108,7 @@ export default function NewProductPage() {
               type="number"
               required
               min={0}
-              step={1000}
+              step={1}
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
               className="w-full p-2.5 border border-border text-sm focus:outline-none focus:border-foreground"
@@ -142,16 +148,9 @@ export default function NewProductPage() {
 
         <div>
           <label className="block text-xs font-medium uppercase tracking-wider text-muted mb-1.5">
-            URL Foto Produk (atau path public)
+            Foto Produk
           </label>
-          <input
-            type="text"
-            required
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="/products/equator-tee.svg atau https://..."
-            className="w-full p-2.5 border border-border text-sm focus:outline-none focus:border-foreground"
-          />
+          <ImageUploader images={images} onChange={setImages} />
         </div>
 
         {/* Stock Per Size */}

@@ -25,12 +25,11 @@ export default function AdminLoginPage() {
       });
 
       if (authError) {
-        // Fallback for local development if Supabase credentials are placeholder
         if (
           process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("[YOUR-PROJECT-REF]") ||
           !process.env.NEXT_PUBLIC_SUPABASE_URL
         ) {
-          router.push("/admin/dashboard");
+          window.location.href = "/admin/dashboard";
           return;
         }
         throw authError;
