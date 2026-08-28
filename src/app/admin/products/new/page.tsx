@@ -15,6 +15,7 @@ export default function NewProductPage() {
   const [price, setPrice] = useState<number>(350000);
   const [category, setCategory] = useState("T-Shirts");
   const [images, setImages] = useState<string[]>([]);
+  const [isActive, setIsActive] = useState(true);
   const [sizes, setSizes] = useState([
     { size: "S", stock: 10 },
     { size: "M", stock: 20 },
@@ -34,6 +35,7 @@ export default function NewProductPage() {
 
     if (images.length === 0) {
       alert("Tambahkan minimal 1 foto produk.");
+      setSubmitting(false);
       return;
     }
 
@@ -49,6 +51,7 @@ export default function NewProductPage() {
           category,
           images,
           sizes,
+          isActive,
         }),
       });
 
@@ -175,6 +178,20 @@ export default function NewProductPage() {
             ))}
           </div>
         </div>
+
+        {/* Status Aktif */}
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={isActive}
+            onChange={(e) => setIsActive(e.target.checked)}
+            className="w-4 h-4 cursor-pointer"
+          />
+          <span className="text-sm">
+            Produk aktif{" "}
+            <span className="text-muted">(tampil di toko)</span>
+          </span>
+        </label>
 
         <button
           type="submit"

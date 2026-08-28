@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, slug, description, price, category, images, sizes } = body;
+        const { name, slug, description, price, category, images, sizes, isActive } = body;
 
         const product = await prisma.product.create({
             data: {
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
                 price,
                 category,
                 images,
+                isActive: isActive ?? true,
                 sizes: {
                     create: (sizes || []).map(
                         (s: { size: string; stock: number }) => ({

@@ -8,8 +8,6 @@ export const metadata: Metadata = {
     "Find Your North.",
 };
 
-
-
 async function getProducts() {
   try {
     const products = await prisma.product.findMany({
