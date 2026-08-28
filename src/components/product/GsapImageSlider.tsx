@@ -20,6 +20,8 @@ export default function GsapImageSlider({
   const slidesRef = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
+  /** Tracks the currently running slide timeline so we can kill it on rapid clicks */
+  const activeTlRef = useRef<gsap.core.Timeline | null>(null);
 
   // Preload all images for this product
   useEffect(() => {
@@ -31,23 +33,39 @@ export default function GsapImageSlider({
     });
   }, [images]);
 
-  // Initialize GSAP state: first slide visible at xPercent: 0, other slides hidden at xPercent: 100
+  // Initialize GSAP state: first slide visible at x:0, others hidden at x:0
+  // Hidden slides stay at x:0 — they're invisible (autoAlpha:0) so position
+  // doesn't matter; we stage them correctly just before each animation.
   useEffect(() => {
     const ctx = gsap.context(() => {
       slidesRef.current.forEach((slide, i) => {
         if (!slide) return;
-        gsap.set(slide, {
-          autoAlpha: i === 0 ? 1 : 0,
-          xPercent: i === 0 ? 0 : 100,
-        });
+        gsap.set(slide, { autoAlpha: i === 0 ? 1 : 0, x: 0 });
       });
     }, containerRef);
 
     return () => ctx.revert();
   }, [images]);
 
+  // Kill active timeline on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      activeTlRef.current?.kill();
+    };
+  }, []);
+
+  /**
+   * runSlide — core animation engine.
+   *
+   * Travel distance is calculated in PIXELS from the live viewport width
+   * and the container's current bounding rect, so the slide exits/enters
+   * PAST the actual screen edge regardless of the container's narrow width.
+   *
+   * direction "next" → current exits LEFT  | next enters from RIGHT
+   * direction "prev" → current exits RIGHT | prev enters from LEFT
+   */
   const runSlide = useCallback(
-    (targetIndex: number, outXPercent: number, inXPercent: number) => {
+    (targetIndex: number, direction: "next" | "prev") => {
       const currentSlide = slidesRef.current[currentIndexRef.current];
       const nextSlide = slidesRef.current[targetIndex];
 
@@ -56,60 +74,83 @@ export default function GsapImageSlider({
         return;
       }
 
-      // Stage incoming slide
-      gsap.set(nextSlide, { xPercent: inXPercent, autoAlpha: 1 });
+      // Kill any in-progress animation to prevent overlap on rapid clicks
+      if (activeTlRef.current) {
+        activeTlRef.current.kill();
+        activeTlRef.current = null;
+      }
+      gsap.killTweensOf([currentSlide, nextSlide]);
+
+      // ─── Calculate full-viewport pixel distances ──────────────────────
+      // containerRef has no transform applied, so getBoundingClientRect()
+      // always reflects its natural (x=0) position in the viewport.
+      // The .gsap-slide elements are inset:0 within the same-width inner
+      // div, so they share containerRef's left/right viewport coordinates.
+      const vw = window.innerWidth;
+      const BUFFER = 20; // extra px so slides fully clear the screen edge
+      let exitX: number;  // pixels: how far current slide must travel to exit
+      let startX: number; // pixels: where incoming slide starts off-screen
+
+      const container = containerRef.current;
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        if (direction === "next") {
+          // Current exits LEFT:  right edge of slide reaches 0 (viewport left)
+          exitX = -(rect.right + BUFFER);
+          // Next enters from RIGHT: left edge of slide starts at viewport right
+          startX = vw - rect.left + BUFFER;
+        } else {
+          // Current exits RIGHT: left edge reaches vw (viewport right)
+          exitX = vw - rect.left + BUFFER;
+          // Prev enters from LEFT: right edge starts at viewport left
+          startX = -(rect.right + BUFFER);
+        }
+      } else {
+        // Fallback: safe ± full-viewport estimate
+        exitX = direction === "next" ? -(vw + BUFFER) : vw + BUFFER;
+        startX = direction === "next" ? vw + BUFFER : -(vw + BUFFER);
+      }
+      // ─────────────────────────────────────────────────────────────────
+
+      // Stage incoming slide off-screen (invisible so no flash on stage)
+      gsap.set(nextSlide, { x: startX, autoAlpha: 0 });
 
       const tl = gsap.timeline({
+        defaults: { ease: "power2.inOut", duration: 0.45 },
         onComplete: () => {
           currentIndexRef.current = targetIndex;
           setCurrentIndex(targetIndex);
           isAnimatingRef.current = false;
+          activeTlRef.current = null;
+          // Reset outgoing slide to x:0 so it's ready for the next run
+          gsap.set(currentSlide, { x: 0, autoAlpha: 0 });
         },
       });
 
-      // Outgoing slide animation: xPercent + autoAlpha: 0 with power2.inOut
-      tl.to(
-        currentSlide,
-        {
-          xPercent: outXPercent,
-          autoAlpha: 0,
-          duration: 0.5,
-          ease: "power2.inOut",
-        },
-        0
-      );
+      // Outgoing: slide out to edge + fade out
+      tl.to(currentSlide, { x: exitX, autoAlpha: 0 }, 0);
+      // Incoming: slide in from edge + fade in simultaneously
+      tl.to(nextSlide, { x: 0, autoAlpha: 1 }, 0);
 
-      // Incoming slide animation: xPercent to 0 + autoAlpha: 1 with power2.inOut
-      tl.to(
-        nextSlide,
-        {
-          xPercent: 0,
-          autoAlpha: 1,
-          duration: 0.5,
-          ease: "power2.inOut",
-        },
-        0
-      );
+      activeTlRef.current = tl;
     },
     []
   );
 
-  /** Infinite loop: Right arrow / Next */
+  /** Right arrow / Next — infinite loop */
   const goNext = useCallback(() => {
     if (isAnimatingRef.current || images.length <= 1) return;
     isAnimatingRef.current = true;
     const next = (currentIndexRef.current + 1) % images.length;
-    // Current exits to left (-100%), next enters from right (100%)
-    runSlide(next, -100, 100);
+    runSlide(next, "next");
   }, [images.length, runSlide]);
 
-  /** Infinite loop: Left arrow / Previous */
+  /** Left arrow / Previous — infinite loop */
   const goPrev = useCallback(() => {
     if (isAnimatingRef.current || images.length <= 1) return;
     isAnimatingRef.current = true;
     const prev = (currentIndexRef.current - 1 + images.length) % images.length;
-    // Current exits to right (100%), prev enters from left (-100%)
-    runSlide(prev, 100, -100);
+    runSlide(prev, "prev");
   }, [images.length, runSlide]);
 
   /** Dot pagination click */
@@ -117,17 +158,15 @@ export default function GsapImageSlider({
     (targetIndex: number) => {
       if (isAnimatingRef.current || targetIndex === currentIndexRef.current) return;
       isAnimatingRef.current = true;
-      const isForward = targetIndex > currentIndexRef.current;
       runSlide(
         targetIndex,
-        isForward ? -100 : 100,
-        isForward ? 100 : -100
+        targetIndex > currentIndexRef.current ? "next" : "prev"
       );
     },
     [runSlide]
   );
 
-  // Touch handlers for mobile swipe
+  // Touch swipe handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
   };
@@ -136,11 +175,7 @@ export default function GsapImageSlider({
     if (touchStartXRef.current === null) return;
     const diff = touchStartXRef.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        goNext();
-      } else {
-        goPrev();
-      }
+      diff > 0 ? goNext() : goPrev();
     }
     touchStartXRef.current = null;
   };
@@ -148,10 +183,22 @@ export default function GsapImageSlider({
   if (images.length === 0) return null;
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[340px] sm:max-w-[380px] md:max-w-[420px] mx-auto select-none" id="image-gallery">
-      {/* Slides Container */}
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-[340px] sm:max-w-[380px] md:max-w-[420px] mx-auto select-none"
+      id="image-gallery"
+    >
+      {/*
+        ── Slides Stage ────────────────────────────────────────────────────
+        overflow-hidden is intentionally REMOVED here so slides can travel
+        all the way to the viewport edge during animation.
+        The outer .product-detail-page { overflow: hidden } (globals.css)
+        serves as the true clip boundary at the viewport edges.
+        Slides move HORIZONTALLY, so they never overlap the text/button
+        that sits below this container.
+        ────────────────────────────────────────────────────────────────── */}
       <div
-        className="relative w-full aspect-[5/4] sm:aspect-[4/3] overflow-hidden bg-white"
+        className="relative w-full aspect-[5/4] sm:aspect-[4/3] bg-white"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -179,7 +226,7 @@ export default function GsapImageSlider({
         ))}
       </div>
 
-      {/* Infinite Arrow Navigation */}
+      {/* ── Arrow Navigation ─────────────────────────────────────────── */}
       {images.length > 1 && (
         <>
           <button
@@ -201,7 +248,7 @@ export default function GsapImageSlider({
         </>
       )}
 
-      {/* Pagination Dots */}
+      {/* ── Pagination Dots ──────────────────────────────────────────── */}
       {images.length > 1 && (
         <div className="flex items-center justify-center gap-1.5 mt-2.5">
           {images.map((_, index) => (
