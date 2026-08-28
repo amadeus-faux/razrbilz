@@ -62,10 +62,13 @@ export default function EditProductForm({ product }: EditProductFormProps) {
                 }),
             });
 
-            if (!res.ok) throw new Error("Gagal menyimpan perubahan");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || "Gagal menyimpan perubahan ke database");
+            }
             router.push("/admin/products");
-        } catch {
-            alert("Gagal menyimpan perubahan.");
+        } catch (err: any) {
+            alert(err.message || "Gagal menyimpan perubahan.");
         } finally {
             setSubmitting(false);
         }

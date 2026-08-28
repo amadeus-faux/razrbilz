@@ -56,12 +56,13 @@ export default function NewProductPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Gagal menyimpan produk");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Gagal menyimpan produk ke database");
       }
 
       router.push("/admin/products");
-    } catch {
-      alert("Gagal menambahkan produk (Database belum terhubung).");
+    } catch (err: any) {
+      alert(err.message || "Gagal menambahkan produk.");
     } finally {
       setSubmitting(false);
     }

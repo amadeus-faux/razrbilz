@@ -33,10 +33,10 @@ export async function POST(request: Request) {
         revalidatePath(`/product/${slug}`);
 
         return NextResponse.json({ product });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Create product error:", error);
         return NextResponse.json(
-            { error: "Gagal membuat produk" },
+            { error: error?.message || "Gagal membuat produk" },
             { status: 500 }
         );
     }
