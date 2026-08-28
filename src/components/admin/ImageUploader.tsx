@@ -15,7 +15,13 @@ interface ImageUploaderProps {
  * completely preventing Vercel 413 (Payload Too Large) errors and speeding up uploads.
  */
 async function compressImage(file: File, maxWidth = 1600, quality = 0.85): Promise<File> {
+  // Pass through formats that don't need compression or that Canvas can't encode losslessly
   if (file.type === "image/svg+xml" || file.type === "image/gif") {
+    return file;
+  }
+
+  // Skip compression for already-small files (< 800 KB) to avoid unnecessary re-encoding
+  if (file.size < 800 * 1024) {
     return file;
   }
 
@@ -49,15 +55,32 @@ async function compressImage(file: File, maxWidth = 1600, quality = 0.85): Promi
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
+        // Preserve the original format to keep alpha/transparency:
+        //   WebP  → image/webp  (supports transparency)
+        //   PNG   → image/png   (supports transparency)
+        //   Other → image/jpeg  (no transparency, fine for photos)
+        const outputType =
+          file.type === "image/webp"
+            ? "image/webp"
+            : file.type === "image/png"
+            ? "image/png"
+            : "image/jpeg";
+
+        const extMap: Record<string, string> = {
+          "image/webp": "webp",
+          "image/png": "png",
+          "image/jpeg": "jpg",
+        };
+        const ext = extMap[outputType] ?? "jpg";
+
         canvas.toBlob(
           (blob) => {
             if (!blob) {
               resolve(file);
               return;
             }
+            // Only use compressed version if it's actually smaller
             if (blob.size < file.size) {
-              const ext = outputType === "image/png" ? "png" : "jpg";
               const newName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
               resolve(new File([blob], newName, { type: outputType }));
             } else {
