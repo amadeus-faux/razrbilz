@@ -97,7 +97,7 @@
 
   .text-product-name {
     font-size: 0.6rem;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-foreground);
@@ -105,9 +105,9 @@
 
   .text-price {
     font-size: 0.7rem;
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: 0.08em;
-    color: var(--color-muted);
+    color: #262626;
   }
 
   .btn-primary {

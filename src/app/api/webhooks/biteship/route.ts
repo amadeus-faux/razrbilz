@@ -27,9 +27,6 @@ export interface BiteshipWebhookPayload {
   updated_at?: string;
 }
 
-/**
- * Map Biteship status to internal Order status
- */
 export function mapBiteshipStatusToInternal(biteshipStatus: string): {
   orderStatus: "processing" | "shipped" | "delivered" | "cancelled";
   description: string;

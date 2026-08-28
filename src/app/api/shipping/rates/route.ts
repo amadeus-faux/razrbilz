@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getShippingRates } from "@/lib/biteship";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -14,19 +17,26 @@ export async function POST(request: Request) {
       country.toLowerCase() !== "id";
 
     if (isInternational) {
-      return NextResponse.json({
-        rates: [
-          {
-            courier_name: "DHL Express / FedEx",
-            courier_code: "intl_express",
-            courier_service_name: "International Priority",
-            courier_service_code: "intl_priority",
-            description: "International Express Tracked Shipping (Flat Rate)",
-            duration: "5-10 business days",
-            price: 820000,
+      return NextResponse.json(
+        {
+          rates: [
+            {
+              courier_name: "DHL Express / FedEx",
+              courier_code: "intl_express",
+              courier_service_name: "International Priority",
+              courier_service_code: "intl_priority",
+              description: "International Express Tracked Shipping (Flat Rate)",
+              duration: "5-10 business days",
+              price: 820000,
+            },
+          ],
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
           },
-        ],
-      });
+        }
+      );
     }
 
     if (!destinationPostalCode || destinationPostalCode.trim().length < 5) {
@@ -76,7 +86,14 @@ export async function POST(request: Request) {
         },
       ];
 
-      return NextResponse.json({ rates: fallbackRates });
+      return NextResponse.json(
+        { rates: fallbackRates },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          },
+        }
+      );
     }
 
     const rates = await getShippingRates({
@@ -86,7 +103,14 @@ export async function POST(request: Request) {
       couriers,
     });
 
-    return NextResponse.json({ rates });
+    return NextResponse.json(
+      { rates },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        },
+      }
+    );
   } catch (error) {
     console.error("Shipping rates error:", error);
     return NextResponse.json(

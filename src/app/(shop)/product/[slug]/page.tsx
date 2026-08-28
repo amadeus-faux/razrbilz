@@ -10,31 +10,16 @@ interface PageParams {
   params: Promise<{ slug: string }>;
 }
 
-async function getProduct(slug: string) {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { slug },
-      include: { sizes: true },
-    });
-    if (product && product.isActive) return product;
-  } catch (error) {
-    console.error("Error fetching product:", error);
-  }
-  return null;
-}
-
 async function getAllActiveProducts() {
   try {
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       where: { isActive: true },
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-        images: true,
+      include: {
+        sizes: true,
       },
       orderBy: { createdAt: "desc" },
     });
+    return products;
   } catch (error) {
     console.error("Error fetching active products:", error);
     return [];
@@ -45,7 +30,8 @@ export async function generateMetadata({
   params,
 }: PageParams): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const products = await getAllActiveProducts();
+  const product = products.find((p) => p.slug === slug);
 
   if (!product) {
     return { title: "Product Not Found | RAZRBILZ" };
@@ -64,34 +50,34 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: PageParams) {
   const { slug } = await params;
-  const [product, allProducts] = await Promise.all([
-    getProduct(slug),
-    getAllActiveProducts(),
-  ]);
+  const allProducts = await getAllActiveProducts();
 
-  if (!product) {
+  const currentProduct = allProducts.find((p) => p.slug === slug);
+
+  if (!currentProduct) {
     notFound();
   }
 
-  const currentIndex = allProducts.findIndex((p) => p.slug === slug);
+  const initialIndex = allProducts.findIndex((p) => p.slug === slug);
+
+  // Serialize product list for the client orchestrator
+  const serializedProducts = allProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    description: p.description,
+    price: p.price,
+    images: p.images,
+    sizes: p.sizes.map((s) => ({
+      size: s.size,
+      stock: s.stock,
+    })),
+  }));
 
   return (
     <ProductDetailClient
-      key={product.id}
-      product={{
-        id: product.id,
-        name: product.name,
-        slug: product.slug,
-        description: product.description,
-        price: product.price,
-        images: product.images,
-      }}
-      sizes={product.sizes.map((s) => ({
-        size: s.size,
-        stock: s.stock,
-      }))}
-      allProducts={allProducts}
-      currentIndex={currentIndex >= 0 ? currentIndex : 0}
+      products={serializedProducts}
+      initialIndex={initialIndex >= 0 ? initialIndex : 0}
     />
   );
 }
