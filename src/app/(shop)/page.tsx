@@ -8,14 +8,7 @@ export const metadata: Metadata = {
     "Find Your North.",
 };
 
-const mockProducts = [
-  {
-    id: "1",
-    name: "EQUATOR TEE",
-    slug: "equator-tee",
-    images: ["/products/equator-tee.svg"],
-  }
-];
+
 
 async function getProducts() {
   try {
@@ -29,9 +22,9 @@ async function getProducts() {
         images: true,
       },
     });
-    return products.length > 0 ? products : mockProducts;
+    return products;
   } catch {
-    return mockProducts;
+    return [];
   }
 }
 
