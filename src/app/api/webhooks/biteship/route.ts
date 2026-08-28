@@ -61,13 +61,10 @@ export function mapBiteshipStatusToInternal(biteshipStatus: string): {
   }
 }
 
-/**
- * Verify Webhook Secret / Signature Key from Biteship
- */
 function verifyWebhookSecret(request: Request): boolean {
   const secret = process.env.BITESHIP_WEBHOOK_SECRET;
   if (!secret) {
-    return true; // No secret configured -> allow
+    return true;
   }
 
   const headerSignature =
@@ -84,9 +81,6 @@ function verifyWebhookSecret(request: Request): boolean {
   return providedToken === secret;
 }
 
-/**
- * Core Webhook Handler for Biteship Events
- */
 export async function processBiteshipWebhook(
   request: Request,
   explicitEvent?: string
@@ -312,7 +306,6 @@ export async function processBiteshipWebhook(
     });
   } catch (error) {
     console.error("[Biteship Webhook] ❌ Error in processing event:", error);
-    // Selalu respon 200 OK agar Biteship tidak menganggap webhook dead / retry berlebihan
     return NextResponse.json(
       {
         ok: true,
@@ -324,9 +317,6 @@ export async function processBiteshipWebhook(
   }
 }
 
-/**
- * Handle GET requests (ping / health checks)
- */
 export async function GET() {
   return NextResponse.json(
     { ok: true, message: "Biteship Webhook Endpoint Active" },
@@ -334,17 +324,10 @@ export async function GET() {
   );
 }
 
-/**
- * Handle HEAD requests
- */
 export async function HEAD() {
   return new Response(null, { status: 200 });
 }
 
-/**
- * Handle POST requests
- * Endpoint: POST /api/webhooks/biteship
- */
 export async function POST(request: Request) {
   return processBiteshipWebhook(request);
 }

@@ -33,12 +33,11 @@ export default function BottomNav() {
         <LayoutGrid size={18} strokeWidth={1.5} />
       </Link>
 
-      {/* Center Logo (Cardinal Compass) */}
-      <Link
-        href="/"
-        className="flex items-center justify-center px-3 py-1 transition-transform hover:scale-105 active:scale-95 hover:opacity-75"
+      {/* Center Logo (Cardinal Compass) - static visual icon */}
+      <div
+        className="flex items-center justify-center px-3 py-1 select-none pointer-events-none"
         id="nav-logo"
-        aria-label="RAZRBILZ Home"
+        aria-hidden="true"
       >
         <Image
           src="/logo/cardinal-compass.svg"
@@ -48,7 +47,7 @@ export default function BottomNav() {
           className="h-6 w-6 object-contain"
           priority
         />
-      </Link>
+      </div>
 
       {/* Cart icon */}
       <Link

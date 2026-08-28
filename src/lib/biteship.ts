@@ -23,6 +23,8 @@ export interface BiteshipCourierRate {
   price: number;
 }
 
+import { isCourierServiceEnabled, ENABLED_COURIER_SERVICES } from "./enabled-couriers";
+
 export async function getShippingRates(
   request: BiteshipRateRequest
 ): Promise<BiteshipCourierRate[]> {
@@ -31,16 +33,13 @@ export async function getShippingRates(
     throw new Error("BITESHIP_API_KEY is not configured");
   }
 
-  // Calculate total package weight in grams
-  const totalWeight = request.items.reduce(
-    (acc, item) => acc + (item.weight || 350) * (item.quantity || 1),
-    0
-  );
+  // Active courier codes configured in enabled-couriers whitelist
+  const activeCourierCodes = Object.keys(ENABLED_COURIER_SERVICES).join(",");
 
   const body = {
     origin_postal_code: request.originPostalCode,
     destination_postal_code: request.destinationPostalCode,
-    couriers: request.couriers || process.env.BITESHIP_ENABLED_COURIERS || "jne,jnt,sicepat,anteraja",
+    couriers: request.couriers || activeCourierCodes || "jne,jnt,sicepat,anteraja,gojek,pos",
     items: request.items.map((item) => ({
       name: item.name,
       weight: item.weight,
@@ -68,43 +67,16 @@ export async function getShippingRates(
   const data = await response.json();
   const pricingList: any[] = data.pricing || [];
 
-  // Filter out services marked unavailable by Biteship or explicitly disabled
-  const disabledServices = (process.env.BITESHIP_DISABLED_SERVICES || "")
-    .toLowerCase()
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
+  // Filter strictly according to our enabled courier & service whitelist
   return pricingList
     .filter((rate: any) => {
-      // 1. Check availability status if provided
+      // 1. Check Biteship availability flag if present
       if (rate.available === false || rate.status === "unavailable") {
         return false;
       }
 
-      const serviceCode = (rate.courier_service_code || "").toLowerCase();
-      const serviceName = (rate.courier_service_name || "").toLowerCase();
-      const courierCode = (rate.courier_code || "").toLowerCase();
-
-      // 2. Filter out explicitly disabled services from env (e.g. "jtr,trucking")
-      if (disabledServices.some((ds) => serviceCode.includes(ds) || serviceName.includes(ds))) {
-        return false;
-      }
-
-      // 3. Exclude heavy cargo / trucking (like JNE JTR / Trucking which requires 10kg min) for regular lightweight orders (< 10kg)
-      if (totalWeight < 10000) {
-        if (
-          serviceCode === "jtr" ||
-          serviceCode === "trucking" ||
-          serviceName.includes("trucking") ||
-          serviceName.includes("cargo") ||
-          serviceName.includes("jtr")
-        ) {
-          return false;
-        }
-      }
-
-      return true;
+      // 2. Strict whitelist check on courier_code + courier_service_code
+      return isCourierServiceEnabled(rate.courier_code, rate.courier_service_code);
     })
     .map(
       (rate: {
