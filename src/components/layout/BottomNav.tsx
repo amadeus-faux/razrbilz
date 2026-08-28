@@ -22,7 +22,7 @@ export default function BottomNav() {
   const count = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   return (
-    <nav className="floating-nav" id="bottom-nav" style={{ boxShadow: "var(--shadow-nav)" }}>
+    <nav className="floating-nav" id="bottom-nav">
       {/* Shop icon */}
       <Link
         href="/"
