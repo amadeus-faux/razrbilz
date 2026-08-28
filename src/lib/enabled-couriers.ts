@@ -28,7 +28,7 @@
 
 export const ENABLED_COURIER_SERVICES: Record<string, string[]> = {
   gojek: ["instant", "same_day"],
-  anteraja: ["reg"],
+  anteraja: [],
   jnt: ["ez"],
   jne: ["reg"],
   sicepat: ["reg", "siunt"],

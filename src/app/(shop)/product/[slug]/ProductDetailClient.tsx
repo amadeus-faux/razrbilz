@@ -35,13 +35,16 @@ export default function ProductDetailClient({
   initialIndex,
 }: ProductDetailClientProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const productWrapperRef = useRef<HTMLDivElement>(null);
+  const currentWrapperRef = useRef<HTMLDivElement>(null);
+  const incomingWrapperRef = useRef<HTMLDivElement>(null);
   const isAnimatingRef = useRef(false);
   const sheetOpenRef = useRef(sheetOpen);
   const currentIndexRef = useRef(currentIndex);
+  const activeTimelineRef = useRef<gsap.core.Timeline | null>(null);
 
   sheetOpenRef.current = sheetOpen;
   currentIndexRef.current = currentIndex;
@@ -49,6 +52,7 @@ export default function ProductDetailClient({
   const totalProducts = products.length;
   const hasMultipleProducts = totalProducts > 1;
   const currentProduct = products[currentIndex] || products[0];
+  const incomingProduct = incomingIndex !== null ? products[incomingIndex] : null;
 
   // ─── 1. Aggressive Image & Resource Preloading ───────────────────────────
   useEffect(() => {
@@ -80,7 +84,7 @@ export default function ProductDetailClient({
     return () => window.removeEventListener("popstate", handlePopState);
   }, [products]);
 
-  // ─── 3. Fluid Vertical GSAP Product Transition Orchestration ─────────────
+  // ─── 3. Simultaneous Overlapping GSAP Product Transition ─────────────────
   const transitionToProduct = useCallback(
     (targetIndex: number, direction: "down" | "up") => {
       if (
@@ -93,61 +97,70 @@ export default function ProductDetailClient({
       }
 
       isAnimatingRef.current = true;
-      const wrapper = productWrapperRef.current;
       const targetProduct = products[targetIndex];
-
-      if (!wrapper || !targetProduct) {
-        setCurrentIndex(targetIndex);
+      if (!targetProduct) {
         isAnimatingRef.current = false;
         return;
       }
 
+      // Mount incoming product layer in React
+      setIncomingIndex(targetIndex);
+
       // direction "down" (scroll down -> next product):
-      // Current product exits UP (-60%), Next product enters from DOWN (60%)
-      // direction "up" (scroll up -> prev product):
-      // Current product exits DOWN (60%), Next product enters from UP (-60%)
-      const exitYPercent = direction === "down" ? -60 : 60;
-      const entryYPercent = direction === "down" ? 60 : -60;
+      // Outgoing exits UP (-50px / -40%), Incoming enters from DOWN (50px / 40%)
+      const exitYPercent = direction === "down" ? -40 : 40;
+      const entryYPercent = direction === "down" ? 40 : -40;
 
-      const tl = gsap.timeline({
-        onComplete: () => {
-          isAnimatingRef.current = false;
-        },
-      });
+      // Small tick for incoming layer ref to mount
+      requestAnimationFrame(() => {
+        const currentWrapper = currentWrapperRef.current;
+        const incomingWrapper = incomingWrapperRef.current;
 
-      // ── Step A: Fade-out & slide out the outgoing product
-      tl.to(wrapper, {
-        yPercent: exitYPercent,
-        autoAlpha: 0,
-        scale: 0.96,
-        duration: 0.28,
-        ease: "power2.in",
-        onComplete: () => {
-          // Immediately switch active product state in React
+        if (!currentWrapper || !incomingWrapper) {
           setCurrentIndex(targetIndex);
+          setIncomingIndex(null);
+          isAnimatingRef.current = false;
+          return;
+        }
 
-          // Update URL and browser title without triggering full page reload/fetch
-          if (typeof window !== "undefined") {
-            window.history.replaceState(null, "", `/product/${targetProduct.slug}`);
-            document.title = `${targetProduct.name} | RAZRBILZ`;
-          }
+        if (activeTimelineRef.current) {
+          activeTimelineRef.current.kill();
+        }
 
-          // Stage incoming product at starting transform
-          gsap.set(wrapper, {
-            yPercent: entryYPercent,
-            autoAlpha: 0,
-            scale: 0.96,
-          });
-        },
-      });
+        // Stage incoming layer off-screen
+        gsap.set(incomingWrapper, {
+          yPercent: entryYPercent,
+          autoAlpha: 0,
+          scale: 0.96,
+        });
 
-      // ── Step B: Fade-in & slide in the incoming product smoothly
-      tl.to(wrapper, {
-        yPercent: 0,
-        autoAlpha: 1,
-        scale: 1,
-        duration: 0.38,
-        ease: "power2.out",
+        // Create simultaneous overlapping timeline with identical duration (0.45s) and ease (power2.inOut)
+        const tl = gsap.timeline({
+          defaults: { duration: 0.45, ease: "power2.inOut" },
+          onComplete: () => {
+            setCurrentIndex(targetIndex);
+            setIncomingIndex(null);
+
+            if (typeof window !== "undefined") {
+              window.history.replaceState(null, "", `/product/${targetProduct.slug}`);
+              document.title = `${targetProduct.name} | RAZRBILZ`;
+            }
+
+            // Reset current wrapper to clean rest state
+            if (currentWrapper) {
+              gsap.set(currentWrapper, { yPercent: 0, autoAlpha: 1, scale: 1 });
+            }
+
+            isAnimatingRef.current = false;
+            activeTimelineRef.current = null;
+          },
+        });
+
+        // Animate BOTH outgoing and incoming SIMULTANEOUSLY at time 0 (true overlap)
+        tl.to(currentWrapper, { yPercent: exitYPercent, autoAlpha: 0, scale: 0.96 }, 0);
+        tl.to(incomingWrapper, { yPercent: 0, autoAlpha: 1, scale: 1 }, 0);
+
+        activeTimelineRef.current = tl;
       });
     },
     [hasMultipleProducts, products]
@@ -163,10 +176,10 @@ export default function ProductDetailClient({
     transitionToProduct(prevIdx, "up");
   }, [totalProducts, transitionToProduct]);
 
-  // ─── 4. Initial Entrance & GSAP Observer Setup ───────────────────────────
+  // ─── 4. Initial Entrance & GSAP Observer Setup with Directional Lock ─────
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const wrapper = productWrapperRef.current;
+      const wrapper = currentWrapperRef.current;
       if (wrapper) {
         gsap.fromTo(
           wrapper,
@@ -183,19 +196,30 @@ export default function ProductDetailClient({
         );
       }
 
-      // Setup GSAP Observer for mouse wheel & touch gestures
+      // Setup GSAP Observer with strict directional filtering
       if (hasMultipleProducts && containerRef.current) {
         Observer.create({
           target: containerRef.current,
           type: "wheel,touch,pointer",
           wheelSpeed: -1,
-          tolerance: 15,
+          tolerance: 20,
           preventDefault: false,
-          onDown: () => {
-            goToPrevProduct();
-          },
-          onUp: () => {
-            goToNextProduct();
+          onChangeY: (self) => {
+            if (isAnimatingRef.current || sheetOpenRef.current) return;
+            const isWheel = self.event.type === "wheel";
+            const deltaY = self.deltaY;
+            const deltaX = self.deltaX;
+
+            if (isWheel) {
+              if (deltaY > 0) goToNextProduct();
+              else if (deltaY < 0) goToPrevProduct();
+            } else {
+              // Touch/pointer gesture: require dominant vertical movement (> 25px and |deltaY| > 1.5 * |deltaX|)
+              if (Math.abs(deltaY) > 25 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
+                if (deltaY > 0) goToNextProduct();
+                else if (deltaY < 0) goToPrevProduct();
+              }
+            }
           },
         });
       }
@@ -203,6 +227,7 @@ export default function ProductDetailClient({
 
     return () => {
       ctx.revert();
+      activeTimelineRef.current?.kill();
     };
   }, [hasMultipleProducts, goToNextProduct, goToPrevProduct]);
 
@@ -217,63 +242,93 @@ export default function ProductDetailClient({
       {/* ─── Top Spacer for aesthetic balance ─── */}
       <div className="w-full h-4 sm:h-6 shrink-0" aria-hidden="true" />
 
-      {/* ─── Animated Center Product Content (Fit-to-Screen) ─── */}
-      <div
-        ref={productWrapperRef}
-        key={currentProduct.id}
-        className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col items-center justify-center my-auto will-change-transform"
-      >
-        {/* Horizontal GSAP Image Slider */}
-        <GsapImageSlider
-          images={currentProduct.images}
-          productName={currentProduct.name}
-        />
+      {/* ─── Center Product Stage with Overlapping Layer Support ─── */}
+      <div className="relative w-full max-w-sm sm:max-w-md mx-auto my-auto flex items-center justify-center min-h-[380px] sm:min-h-[420px]">
+        {/* Active / Current Product Layer */}
+        <div
+          ref={currentWrapperRef}
+          key={`product-${currentProduct.id}`}
+          className="w-full flex flex-col items-center justify-center will-change-transform"
+        >
+          {/* Horizontal GSAP Image Slider */}
+          <GsapImageSlider
+            images={currentProduct.images}
+            productName={currentProduct.name}
+          />
 
-        {/* Product Info */}
-        <div className="text-center mt-3 sm:mt-4 space-y-1">
-          <h1
-            className="text-product-name font-bold tracking-widest text-foreground"
-            style={{ fontSize: "0.68rem" }}
-          >
-            {currentProduct.name}
-          </h1>
-          <p className="text-price font-medium text-neutral-800">
-            {formatRupiah(currentProduct.price)}
-          </p>
+          {/* Product Info */}
+          <div className="text-center mt-3 sm:mt-4 space-y-1">
+            <h1
+              className="text-product-name font-bold tracking-widest text-foreground"
+              style={{ fontSize: "0.68rem" }}
+            >
+              {currentProduct.name}
+            </h1>
+            <p className="text-price font-medium text-neutral-800">
+              {formatRupiah(currentProduct.price)}
+            </p>
+          </div>
+
+          {/* Add to Cart CTA Button */}
+          <div className="flex justify-center mt-4 sm:mt-5">
+            <button
+              type="button"
+              onClick={() => setSheetOpen(!sheetOpen)}
+              className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-black/10 bg-white hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200"
+              style={{
+                boxShadow: sheetOpen
+                  ? "none"
+                  : "0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)",
+              }}
+              aria-label="Select size & add to cart"
+              id="btn-add-to-cart"
+            >
+              <Plus
+                size={18}
+                strokeWidth={1.5}
+                className={`transition-all duration-300 group-hover:text-white ${
+                  sheetOpen ? "rotate-45" : ""
+                }`}
+              />
+            </button>
+          </div>
         </div>
 
-        {/* Add to Cart CTA Button */}
-        <div className="flex justify-center mt-4 sm:mt-5">
-          <button
-            type="button"
-            onClick={() => setSheetOpen(!sheetOpen)}
-            className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-black/10 bg-white hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200"
-            style={{
-              boxShadow: sheetOpen
-                ? "none"
-                : "0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)",
-            }}
-            aria-label="Select size & add to cart"
-            id="btn-add-to-cart"
+        {/* Incoming Product Layer (Visible only during simultaneous overlapping transition) */}
+        {incomingProduct && (
+          <div
+            ref={incomingWrapperRef}
+            key={`incoming-${incomingProduct.id}`}
+            className="absolute inset-0 w-full flex flex-col items-center justify-center will-change-transform"
+            style={{ visibility: "visible" }}
           >
-            <Plus
-              size={18}
-              strokeWidth={1.5}
-              className={`transition-all duration-300 group-hover:text-white ${
-                sheetOpen ? "rotate-45" : ""
-              }`}
+            <GsapImageSlider
+              images={incomingProduct.images}
+              productName={incomingProduct.name}
             />
-          </button>
-        </div>
+
+            <div className="text-center mt-3 sm:mt-4 space-y-1">
+              <h1
+                className="text-product-name font-bold tracking-widest text-foreground"
+                style={{ fontSize: "0.68rem" }}
+              >
+                {incomingProduct.name}
+              </h1>
+              <p className="text-price font-medium text-neutral-800">
+                {formatRupiah(incomingProduct.price)}
+              </p>
+            </div>
+
+            <div className="flex justify-center mt-4 sm:mt-5">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-black/10 bg-white flex items-center justify-center">
+                <Plus size={18} strokeWidth={1.5} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ─── Bottom Area: Micro Scroll Hint ─── */}
-      {/*
-        Responsive adjustment:
-        pb-24 sm:pb-24 ensures the scroll hint text is positioned comfortably
-        ABOVE the floating bottom navigation on Mobile and Tablet without being obscured.
-        md:pb-14 preserves the desktop layout.
-      */}
       <div className="w-full flex flex-col items-center justify-end pb-24 sm:pb-24 md:pb-14 shrink-0 pointer-events-none">
         {hasMultipleProducts ? (
           <div className="flex flex-col items-center gap-0.5 scroll-hint select-none">

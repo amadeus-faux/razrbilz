@@ -20,6 +20,8 @@ export default function GsapImageSlider({
   const slidesRef = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
   /** Tracks the currently running slide timeline so we can kill it on rapid clicks */
   const activeTlRef = useRef<gsap.core.Timeline | null>(null);
 
@@ -166,18 +168,43 @@ export default function GsapImageSlider({
     [runSlide]
   );
 
-  // Touch swipe handlers for mobile
+  // Touch swipe handlers with directional locking for mobile/tablet
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = Math.abs(e.touches[0].clientX - touchStartXRef.current);
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+
+    if (isHorizontalSwipeRef.current === null && (deltaX > 6 || deltaY > 6)) {
+      isHorizontalSwipeRef.current = deltaX > deltaY * 1.5;
+    }
+
+    if (isHorizontalSwipeRef.current === true) {
+      e.stopPropagation();
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null) return;
-    const diff = touchStartXRef.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) {
-      diff > 0 ? goNext() : goPrev();
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const diffX = touchStartXRef.current - e.changedTouches[0].clientX;
+    const diffY = touchStartYRef.current - e.changedTouches[0].clientY;
+
+    if (
+      isHorizontalSwipeRef.current === true ||
+      (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY) * 1.5)
+    ) {
+      if (Math.abs(diffX) > 40) {
+        diffX > 0 ? goNext() : goPrev();
+      }
     }
     touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
   };
 
   if (images.length === 0) return null;
@@ -198,8 +225,9 @@ export default function GsapImageSlider({
         that sits below this container.
         ────────────────────────────────────────────────────────────────── */}
       <div
-        className="relative w-full aspect-[5/4] sm:aspect-[4/3] bg-white"
+        className="relative w-full aspect-[5/4] sm:aspect-[4/3] bg-white touch-pan-y"
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {images.map((src, index) => (
@@ -226,13 +254,13 @@ export default function GsapImageSlider({
         ))}
       </div>
 
-      {/* ── Arrow Navigation ─────────────────────────────────────────── */}
+      {/* ── Arrow Navigation (Desktop only) ─────────────────────────── */}
       {images.length > 1 && (
         <>
           <button
             type="button"
             onClick={goPrev}
-            className="absolute left-[-28px] sm:left-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
+            className="hidden lg:flex items-center justify-center absolute left-[-28px] sm:left-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
             aria-label="Previous image"
           >
             <ChevronLeft size={22} strokeWidth={1.25} />
@@ -240,7 +268,7 @@ export default function GsapImageSlider({
           <button
             type="button"
             onClick={goNext}
-            className="absolute right-[-28px] sm:right-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
+            className="hidden lg:flex items-center justify-center absolute right-[-28px] sm:right-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
             aria-label="Next image"
           >
             <ChevronRight size={22} strokeWidth={1.25} />

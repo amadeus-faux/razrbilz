@@ -26,6 +26,7 @@ export default function BottomNav() {
       {/* Shop icon */}
       <Link
         href="/"
+        prefetch={true}
         className="flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
         aria-label="Shop"
         id="nav-shop"
@@ -42,9 +43,9 @@ export default function BottomNav() {
         <Image
           src="/logo/cardinal-compass.svg"
           alt="RAZRBILZ logo"
-          width={24}
-          height={24}
-          className="h-6 w-6 object-contain"
+          width={32}
+          height={32}
+          className="h-8 w-8 object-contain"
           priority
         />
       </div>
@@ -52,6 +53,7 @@ export default function BottomNav() {
       {/* Cart icon */}
       <Link
         href="/cart"
+        prefetch={true}
         className="relative flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
         aria-label="Cart"
         id="nav-cart"

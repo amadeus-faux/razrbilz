@@ -1,9 +1,9 @@
 import ProductGrid from "@/components/product/ProductGrid";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
+import { cache } from "react";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: "RAZRBILZ",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Find Your North.",
 };
 
-async function getProducts() {
+const getProducts = cache(async () => {
   try {
     const products = await prisma.product.findMany({
       where: { isActive: true },
@@ -27,14 +27,16 @@ async function getProducts() {
   } catch {
     return [];
   }
-}
+});
 
 export default async function ShopPage() {
   const products = await getProducts();
 
   return (
-    <div className="container-shop pt-8 md:pt-16">
-      <ProductGrid products={products} />
+    <div className="container-shop flex-1 flex flex-col justify-center w-full !pb-0">
+      <div className="my-auto w-full py-10 md:py-16">
+        <ProductGrid products={products} />
+      </div>
     </div>
   );
 }

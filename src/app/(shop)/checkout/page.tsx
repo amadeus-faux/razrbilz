@@ -404,7 +404,7 @@ export default function CheckoutPage() {
   const totalCount = items.reduce((acc, it) => acc + it.quantity, 0);
 
   return (
-    <div className="container-shop pt-10 pb-36 min-h-screen">
+    <div className="container-shop pt-10 pb-10 min-h-screen">
       <div className="max-w-6xl mx-auto">
 
         {/* Page Header */}
@@ -438,12 +438,6 @@ export default function CheckoutPage() {
                       CONTACT INFORMATION
                     </h2>
                   </div>
-                  <Link
-                    href="/login"
-                    className="text-[10px] uppercase font-medium tracking-[0.14em] text-muted hover:text-foreground transition-colors"
-                  >
-                    Sign in
-                  </Link>
                 </div>
 
                 <div className="space-y-3 pt-1">
@@ -834,7 +828,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted leading-relaxed">
-                  After clicking <strong>PAY NOW</strong>, the Midtrans payment popup will appear.
+                  After clicking <strong>PRE-ORDER NOW</strong>, the Midtrans payment popup will appear.
                 </p>
               </div>
 
@@ -937,7 +931,7 @@ export default function CheckoutPage() {
                         PROCESSING ORDER...
                       </>
                     ) : (
-                      `PAY NOW`
+                      `PRE-ORDER NOW`
                     )}
                   </button>
 

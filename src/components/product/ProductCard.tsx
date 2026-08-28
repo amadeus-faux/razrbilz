@@ -1,7 +1,7 @@
-"use client";
-
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useProductTransition } from "@/context/ProductTransitionContext";
 
 interface ProductCardProps {
   name: string;
@@ -16,15 +16,29 @@ export default function ProductCard({
   image,
   index = 0,
 }: ProductCardProps) {
+  const { startTransition } = useProductTransition();
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = () => {
+    if (imageContainerRef.current) {
+      startTransition(slug, image, imageContainerRef.current);
+    }
+  };
+
   return (
     <Link
       href={`/product/${slug}`}
+      prefetch={true}
+      onClick={handleClick}
       className="group block"
       id={`product-card-${slug}`}
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Image container — 5:4 ratio, matches product detail page */}
-      <div className="relative w-full aspect-[5/4] overflow-hidden bg-white">
+      <div
+        ref={imageContainerRef}
+        className="relative w-full aspect-[5/4] overflow-hidden bg-white"
+      >
         <Image
           src={image}
           alt={name}

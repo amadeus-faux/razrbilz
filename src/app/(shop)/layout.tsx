@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import SmoothScroll from "@/components/animations/SmoothScroll";
+import { ProductTransitionProvider } from "@/context/ProductTransitionContext";
+import SharedElementOverlay from "@/components/animations/SharedElementOverlay";
 
 export default function ShopLayout({
   children,
@@ -19,19 +21,22 @@ export default function ShopLayout({
   const hideBottomNav = isCheckoutPage;
 
   return (
-    <SmoothScroll>
-      <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
-        <main className="flex-1 w-full">{children}</main>
+    <ProductTransitionProvider>
+      <SmoothScroll>
+        <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+          <main className="flex-1 w-full flex flex-col">{children}</main>
 
-        {!hideFooter && <Footer />}
+          {!hideFooter && <Footer />}
 
-        {!hideBottomNav && (
-          <>
-            {!isProductPage && <div className="h-32" aria-hidden="true" />}
-            <BottomNav />
-          </>
-        )}
-      </div>
-    </SmoothScroll>
+          {!hideBottomNav && (
+            <>
+              {!isProductPage && <div className="h-18" aria-hidden="true" />}
+              <BottomNav />
+            </>
+          )}
+        </div>
+      </SmoothScroll>
+      <SharedElementOverlay />
+    </ProductTransitionProvider>
   );
 }

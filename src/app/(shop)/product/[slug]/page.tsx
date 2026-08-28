@@ -2,15 +2,15 @@ import ProductDetailClient from "./ProductDetailClient";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { cache } from "react";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 30;
 
 interface PageParams {
   params: Promise<{ slug: string }>;
 }
 
-async function getAllActiveProducts() {
+const getAllActiveProducts = cache(async () => {
   try {
     const products = await prisma.product.findMany({
       where: { isActive: true },
@@ -24,6 +24,11 @@ async function getAllActiveProducts() {
     console.error("Error fetching active products:", error);
     return [];
   }
+});
+
+export async function generateStaticParams() {
+  const products = await getAllActiveProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -34,15 +39,15 @@ export async function generateMetadata({
   const product = products.find((p) => p.slug === slug);
 
   if (!product) {
-    return { title: "Product Not Found | RAZRBILZ" };
+    return { title: "RAZRBILZ" };
   }
 
   return {
-    title: `${product.name} | RAZRBILZ`,
-    description: product.description,
+    title: `RAZRBILZ`,
+    description: "Find Your North.",
     openGraph: {
-      title: `${product.name} | RAZRBILZ`,
-      description: product.description,
+      title: `RAZRBILZ`,
+      description: "Find Your North.",
       images: product.images[0] ? [product.images[0]] : [],
     },
   };

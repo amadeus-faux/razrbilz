@@ -16,7 +16,7 @@ export default function InfoLayout({
         </div>
       </div>
       <Footer />
-      <div className="h-28" aria-hidden="true" />
+      <div className="h-20" aria-hidden="true" />
       <BottomNav />
     </div>
   );

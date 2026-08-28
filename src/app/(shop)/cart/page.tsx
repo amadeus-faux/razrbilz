@@ -51,7 +51,7 @@ export default function CartPage() {
 
   // ── Filled cart ──────────────────────────────────────────────────────────────
   return (
-    <div className="container-shop pt-10 pb-32 min-h-screen">
+    <div className="container-shop pt-10 pb-10 min-h-screen">
       <div className="max-w-6xl mx-auto">
 
         {/* Page header */}
