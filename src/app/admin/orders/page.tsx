@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import OrdersTableClient from "./OrdersTableClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getOrders() {
   try {
     return await prisma.order.findMany({

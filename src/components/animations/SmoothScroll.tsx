@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
 export default function SmoothScroll({
@@ -8,7 +9,13 @@ export default function SmoothScroll({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isProductPage = pathname.startsWith("/product/");
+
   useEffect(() => {
+    // If on product page, do not initialize Lenis so GSAP Observer / wheel gestures work cleanly without interference
+    if (isProductPage) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -22,19 +29,19 @@ export default function SmoothScroll({
       requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    const rafId = requestAnimationFrame(raf);
 
-    // Pastikan Lenis tahu kalau tinggi konten berubah
     const resizeObserver = new ResizeObserver(() => {
       lenis.resize();
     });
     resizeObserver.observe(document.body);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [isProductPage]);
 
   return <>{children}</>;
 }

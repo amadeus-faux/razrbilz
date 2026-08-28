@@ -12,8 +12,11 @@ export default function ShopLayout({
 }) {
   const pathname = usePathname();
 
-  const hideFooter = pathname.startsWith("/product/") || pathname === "/checkout";
-  const hideBottomNav = pathname === "/checkout";
+  const isProductPage = pathname.startsWith("/product/");
+  const isCheckoutPage = pathname === "/checkout";
+
+  const hideFooter = isProductPage || isCheckoutPage;
+  const hideBottomNav = isCheckoutPage;
 
   return (
     <SmoothScroll>
@@ -24,7 +27,7 @@ export default function ShopLayout({
 
         {!hideBottomNav && (
           <>
-            <div className="h-32" aria-hidden="true" />
+            {!isProductPage && <div className="h-32" aria-hidden="true" />}
             <BottomNav />
           </>
         )}

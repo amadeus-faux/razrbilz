@@ -3,6 +3,9 @@ import { formatRupiah } from "@/lib/utils";
 import { Package, ShoppingBag, DollarSign, Clock } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getDashboardStats() {
   try {
     const totalOrders = await prisma.order.count();

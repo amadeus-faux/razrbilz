@@ -157,17 +157,17 @@ exports.Prisma.OrderScalarFieldEnum = {
   total: 'total',
   paymentStatus: 'paymentStatus',
   orderStatus: 'orderStatus',
-  biteshipStatus: 'biteshipStatus',
-  shippingOrderStatus: 'shippingOrderStatus',
-  shippingOrderError: 'shippingOrderError',
-  shippingRetryCount: 'shippingRetryCount',
   trackingNumber: 'trackingNumber',
-  biteshipOrderId: 'biteshipOrderId',
-  biteshipTrackingId: 'biteshipTrackingId',
   midtransOrderId: 'midtransOrderId',
   snapToken: 'snapToken',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  biteshipOrderId: 'biteshipOrderId',
+  biteshipTrackingId: 'biteshipTrackingId',
+  biteshipStatus: 'biteshipStatus',
+  shippingOrderError: 'shippingOrderError',
+  shippingOrderStatus: 'shippingOrderStatus',
+  shippingRetryCount: 'shippingRetryCount'
 };
 
 exports.Prisma.ShippingLogScalarFieldEnum = {

@@ -5,6 +5,9 @@ import { Plus } from "lucide-react";
 import Image from "next/image";
 import ProductActions from "./ProductActions";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getProducts() {
   try {
     return await prisma.product.findMany({

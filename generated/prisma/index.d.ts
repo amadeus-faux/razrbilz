@@ -1349,13 +1349,13 @@ export namespace Prisma {
    */
 
   export type ProductCountOutputType = {
-    sizes: number
     orderItems: number
+    sizes: number
   }
 
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sizes?: boolean | ProductCountOutputTypeCountSizesArgs
     orderItems?: boolean | ProductCountOutputTypeCountOrderItemsArgs
+    sizes?: boolean | ProductCountOutputTypeCountSizesArgs
   }
 
   // Custom InputTypes
@@ -1372,15 +1372,15 @@ export namespace Prisma {
   /**
    * ProductCountOutputType without action
    */
-  export type ProductCountOutputTypeCountSizesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProductSizeWhereInput
+  export type ProductCountOutputTypeCountOrderItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderItemWhereInput
   }
 
   /**
    * ProductCountOutputType without action
    */
-  export type ProductCountOutputTypeCountOrderItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: OrderItemWhereInput
+  export type ProductCountOutputTypeCountSizesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductSizeWhereInput
   }
 
 
@@ -1654,8 +1654,8 @@ export namespace Prisma {
     images?: boolean
     isActive?: boolean
     createdAt?: boolean
-    sizes?: boolean | Product$sizesArgs<ExtArgs>
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
+    sizes?: boolean | Product$sizesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -1697,8 +1697,8 @@ export namespace Prisma {
 
   export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "createdAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sizes?: boolean | Product$sizesArgs<ExtArgs>
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
+    sizes?: boolean | Product$sizesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1707,8 +1707,8 @@ export namespace Prisma {
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
-      sizes: Prisma.$ProductSizePayload<ExtArgs>[]
       orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
+      sizes: Prisma.$ProductSizePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2114,8 +2114,8 @@ export namespace Prisma {
    */
   export interface Prisma__ProductClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    sizes<T extends Product$sizesArgs<ExtArgs> = {}>(args?: Subset<T, Product$sizesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductSizePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orderItems<T extends Product$orderItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sizes<T extends Product$sizesArgs<ExtArgs> = {}>(args?: Subset<T, Product$sizesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductSizePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2547,30 +2547,6 @@ export namespace Prisma {
   }
 
   /**
-   * Product.sizes
-   */
-  export type Product$sizesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProductSize
-     */
-    select?: ProductSizeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProductSize
-     */
-    omit?: ProductSizeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProductSizeInclude<ExtArgs> | null
-    where?: ProductSizeWhereInput
-    orderBy?: ProductSizeOrderByWithRelationInput | ProductSizeOrderByWithRelationInput[]
-    cursor?: ProductSizeWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ProductSizeScalarFieldEnum | ProductSizeScalarFieldEnum[]
-  }
-
-  /**
    * Product.orderItems
    */
   export type Product$orderItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2592,6 +2568,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
+  }
+
+  /**
+   * Product.sizes
+   */
+  export type Product$sizesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProductSize
+     */
+    select?: ProductSizeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProductSize
+     */
+    omit?: ProductSizeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductSizeInclude<ExtArgs> | null
+    where?: ProductSizeWhereInput
+    orderBy?: ProductSizeOrderByWithRelationInput | ProductSizeOrderByWithRelationInput[]
+    cursor?: ProductSizeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProductSizeScalarFieldEnum | ProductSizeScalarFieldEnum[]
   }
 
   /**
@@ -3741,17 +3741,17 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
-    biteshipStatus: string | null
-    shippingOrderStatus: string | null
-    shippingOrderError: string | null
-    shippingRetryCount: number | null
     trackingNumber: string | null
-    biteshipOrderId: string | null
-    biteshipTrackingId: string | null
     midtransOrderId: string | null
     snapToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    biteshipOrderId: string | null
+    biteshipTrackingId: string | null
+    biteshipStatus: string | null
+    shippingOrderError: string | null
+    shippingOrderStatus: string | null
+    shippingRetryCount: number | null
   }
 
   export type OrderMaxAggregateOutputType = {
@@ -3772,17 +3772,17 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
-    biteshipStatus: string | null
-    shippingOrderStatus: string | null
-    shippingOrderError: string | null
-    shippingRetryCount: number | null
     trackingNumber: string | null
-    biteshipOrderId: string | null
-    biteshipTrackingId: string | null
     midtransOrderId: string | null
     snapToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    biteshipOrderId: string | null
+    biteshipTrackingId: string | null
+    biteshipStatus: string | null
+    shippingOrderError: string | null
+    shippingOrderStatus: string | null
+    shippingRetryCount: number | null
   }
 
   export type OrderCountAggregateOutputType = {
@@ -3803,17 +3803,17 @@ export namespace Prisma {
     total: number
     paymentStatus: number
     orderStatus: number
-    biteshipStatus: number
-    shippingOrderStatus: number
-    shippingOrderError: number
-    shippingRetryCount: number
     trackingNumber: number
-    biteshipOrderId: number
-    biteshipTrackingId: number
     midtransOrderId: number
     snapToken: number
     createdAt: number
     updatedAt: number
+    biteshipOrderId: number
+    biteshipTrackingId: number
+    biteshipStatus: number
+    shippingOrderError: number
+    shippingOrderStatus: number
+    shippingRetryCount: number
     _all: number
   }
 
@@ -3850,17 +3850,17 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
-    biteshipStatus?: true
-    shippingOrderStatus?: true
-    shippingOrderError?: true
-    shippingRetryCount?: true
     trackingNumber?: true
-    biteshipOrderId?: true
-    biteshipTrackingId?: true
     midtransOrderId?: true
     snapToken?: true
     createdAt?: true
     updatedAt?: true
+    biteshipOrderId?: true
+    biteshipTrackingId?: true
+    biteshipStatus?: true
+    shippingOrderError?: true
+    shippingOrderStatus?: true
+    shippingRetryCount?: true
   }
 
   export type OrderMaxAggregateInputType = {
@@ -3881,17 +3881,17 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
-    biteshipStatus?: true
-    shippingOrderStatus?: true
-    shippingOrderError?: true
-    shippingRetryCount?: true
     trackingNumber?: true
-    biteshipOrderId?: true
-    biteshipTrackingId?: true
     midtransOrderId?: true
     snapToken?: true
     createdAt?: true
     updatedAt?: true
+    biteshipOrderId?: true
+    biteshipTrackingId?: true
+    biteshipStatus?: true
+    shippingOrderError?: true
+    shippingOrderStatus?: true
+    shippingRetryCount?: true
   }
 
   export type OrderCountAggregateInputType = {
@@ -3912,17 +3912,17 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
-    biteshipStatus?: true
-    shippingOrderStatus?: true
-    shippingOrderError?: true
-    shippingRetryCount?: true
     trackingNumber?: true
-    biteshipOrderId?: true
-    biteshipTrackingId?: true
     midtransOrderId?: true
     snapToken?: true
     createdAt?: true
     updatedAt?: true
+    biteshipOrderId?: true
+    biteshipTrackingId?: true
+    biteshipStatus?: true
+    shippingOrderError?: true
+    shippingOrderStatus?: true
+    shippingRetryCount?: true
     _all?: true
   }
 
@@ -4030,17 +4030,17 @@ export namespace Prisma {
     total: number
     paymentStatus: string
     orderStatus: string
-    biteshipStatus: string | null
-    shippingOrderStatus: string
-    shippingOrderError: string | null
-    shippingRetryCount: number
     trackingNumber: string | null
-    biteshipOrderId: string | null
-    biteshipTrackingId: string | null
     midtransOrderId: string | null
     snapToken: string | null
     createdAt: Date
     updatedAt: Date
+    biteshipOrderId: string | null
+    biteshipTrackingId: string | null
+    biteshipStatus: string | null
+    shippingOrderError: string | null
+    shippingOrderStatus: string
+    shippingRetryCount: number
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -4080,17 +4080,17 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
-    biteshipStatus?: boolean
-    shippingOrderStatus?: boolean
-    shippingOrderError?: boolean
-    shippingRetryCount?: boolean
     trackingNumber?: boolean
-    biteshipOrderId?: boolean
-    biteshipTrackingId?: boolean
     midtransOrderId?: boolean
     snapToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    biteshipOrderId?: boolean
+    biteshipTrackingId?: boolean
+    biteshipStatus?: boolean
+    shippingOrderError?: boolean
+    shippingOrderStatus?: boolean
+    shippingRetryCount?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -4114,17 +4114,17 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
-    biteshipStatus?: boolean
-    shippingOrderStatus?: boolean
-    shippingOrderError?: boolean
-    shippingRetryCount?: boolean
     trackingNumber?: boolean
-    biteshipOrderId?: boolean
-    biteshipTrackingId?: boolean
     midtransOrderId?: boolean
     snapToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    biteshipOrderId?: boolean
+    biteshipTrackingId?: boolean
+    biteshipStatus?: boolean
+    shippingOrderError?: boolean
+    shippingOrderStatus?: boolean
+    shippingRetryCount?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4145,17 +4145,17 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
-    biteshipStatus?: boolean
-    shippingOrderStatus?: boolean
-    shippingOrderError?: boolean
-    shippingRetryCount?: boolean
     trackingNumber?: boolean
-    biteshipOrderId?: boolean
-    biteshipTrackingId?: boolean
     midtransOrderId?: boolean
     snapToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    biteshipOrderId?: boolean
+    biteshipTrackingId?: boolean
+    biteshipStatus?: boolean
+    shippingOrderError?: boolean
+    shippingOrderStatus?: boolean
+    shippingRetryCount?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -4176,20 +4176,20 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
-    biteshipStatus?: boolean
-    shippingOrderStatus?: boolean
-    shippingOrderError?: boolean
-    shippingRetryCount?: boolean
     trackingNumber?: boolean
-    biteshipOrderId?: boolean
-    biteshipTrackingId?: boolean
     midtransOrderId?: boolean
     snapToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    biteshipOrderId?: boolean
+    biteshipTrackingId?: boolean
+    biteshipStatus?: boolean
+    shippingOrderError?: boolean
+    shippingOrderStatus?: boolean
+    shippingRetryCount?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "biteshipStatus" | "shippingOrderStatus" | "shippingOrderError" | "shippingRetryCount" | "trackingNumber" | "biteshipOrderId" | "biteshipTrackingId" | "midtransOrderId" | "snapToken" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "trackingNumber" | "midtransOrderId" | "snapToken" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -4222,17 +4222,17 @@ export namespace Prisma {
       total: number
       paymentStatus: string
       orderStatus: string
-      biteshipStatus: string | null
-      shippingOrderStatus: string
-      shippingOrderError: string | null
-      shippingRetryCount: number
       trackingNumber: string | null
-      biteshipOrderId: string | null
-      biteshipTrackingId: string | null
       midtransOrderId: string | null
       snapToken: string | null
       createdAt: Date
       updatedAt: Date
+      biteshipOrderId: string | null
+      biteshipTrackingId: string | null
+      biteshipStatus: string | null
+      shippingOrderError: string | null
+      shippingOrderStatus: string
+      shippingRetryCount: number
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -4675,17 +4675,17 @@ export namespace Prisma {
     readonly total: FieldRef<"Order", 'Int'>
     readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly orderStatus: FieldRef<"Order", 'String'>
-    readonly biteshipStatus: FieldRef<"Order", 'String'>
-    readonly shippingOrderStatus: FieldRef<"Order", 'String'>
-    readonly shippingOrderError: FieldRef<"Order", 'String'>
-    readonly shippingRetryCount: FieldRef<"Order", 'Int'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
-    readonly biteshipOrderId: FieldRef<"Order", 'String'>
-    readonly biteshipTrackingId: FieldRef<"Order", 'String'>
     readonly midtransOrderId: FieldRef<"Order", 'String'>
     readonly snapToken: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
+    readonly biteshipOrderId: FieldRef<"Order", 'String'>
+    readonly biteshipTrackingId: FieldRef<"Order", 'String'>
+    readonly biteshipStatus: FieldRef<"Order", 'String'>
+    readonly shippingOrderError: FieldRef<"Order", 'String'>
+    readonly shippingOrderStatus: FieldRef<"Order", 'String'>
+    readonly shippingRetryCount: FieldRef<"Order", 'Int'>
   }
     
 
@@ -8387,17 +8387,17 @@ export namespace Prisma {
     total: 'total',
     paymentStatus: 'paymentStatus',
     orderStatus: 'orderStatus',
-    biteshipStatus: 'biteshipStatus',
-    shippingOrderStatus: 'shippingOrderStatus',
-    shippingOrderError: 'shippingOrderError',
-    shippingRetryCount: 'shippingRetryCount',
     trackingNumber: 'trackingNumber',
-    biteshipOrderId: 'biteshipOrderId',
-    biteshipTrackingId: 'biteshipTrackingId',
     midtransOrderId: 'midtransOrderId',
     snapToken: 'snapToken',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    biteshipOrderId: 'biteshipOrderId',
+    biteshipTrackingId: 'biteshipTrackingId',
+    biteshipStatus: 'biteshipStatus',
+    shippingOrderError: 'shippingOrderError',
+    shippingOrderStatus: 'shippingOrderStatus',
+    shippingRetryCount: 'shippingRetryCount'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -8545,8 +8545,8 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
-    sizes?: ProductSizeListRelationFilter
     orderItems?: OrderItemListRelationFilter
+    sizes?: ProductSizeListRelationFilter
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -8559,8 +8559,8 @@ export namespace Prisma {
     images?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
-    sizes?: ProductSizeOrderByRelationAggregateInput
     orderItems?: OrderItemOrderByRelationAggregateInput
+    sizes?: ProductSizeOrderByRelationAggregateInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -8576,8 +8576,8 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
-    sizes?: ProductSizeListRelationFilter
     orderItems?: OrderItemListRelationFilter
+    sizes?: ProductSizeListRelationFilter
   }, "id" | "slug">
 
   export type ProductOrderByWithAggregationInput = {
@@ -8686,17 +8686,17 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
-    biteshipStatus?: StringNullableFilter<"Order"> | string | null
-    shippingOrderStatus?: StringFilter<"Order"> | string
-    shippingOrderError?: StringNullableFilter<"Order"> | string | null
-    shippingRetryCount?: IntFilter<"Order"> | number
     trackingNumber?: StringNullableFilter<"Order"> | string | null
-    biteshipOrderId?: StringNullableFilter<"Order"> | string | null
-    biteshipTrackingId?: StringNullableFilter<"Order"> | string | null
     midtransOrderId?: StringNullableFilter<"Order"> | string | null
     snapToken?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    biteshipOrderId?: StringNullableFilter<"Order"> | string | null
+    biteshipTrackingId?: StringNullableFilter<"Order"> | string | null
+    biteshipStatus?: StringNullableFilter<"Order"> | string | null
+    shippingOrderError?: StringNullableFilter<"Order"> | string | null
+    shippingOrderStatus?: StringFilter<"Order"> | string
+    shippingRetryCount?: IntFilter<"Order"> | number
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
   }
@@ -8719,17 +8719,17 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
-    biteshipStatus?: SortOrderInput | SortOrder
-    shippingOrderStatus?: SortOrder
-    shippingOrderError?: SortOrderInput | SortOrder
-    shippingRetryCount?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
-    biteshipOrderId?: SortOrderInput | SortOrder
-    biteshipTrackingId?: SortOrderInput | SortOrder
     midtransOrderId?: SortOrderInput | SortOrder
     snapToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    biteshipOrderId?: SortOrderInput | SortOrder
+    biteshipTrackingId?: SortOrderInput | SortOrder
+    biteshipStatus?: SortOrderInput | SortOrder
+    shippingOrderError?: SortOrderInput | SortOrder
+    shippingOrderStatus?: SortOrder
+    shippingRetryCount?: SortOrder
     items?: OrderItemOrderByRelationAggregateInput
     shippingLogs?: ShippingLogOrderByRelationAggregateInput
   }
@@ -8756,16 +8756,16 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
-    biteshipStatus?: StringNullableFilter<"Order"> | string | null
-    shippingOrderStatus?: StringFilter<"Order"> | string
-    shippingOrderError?: StringNullableFilter<"Order"> | string | null
-    shippingRetryCount?: IntFilter<"Order"> | number
     trackingNumber?: StringNullableFilter<"Order"> | string | null
-    biteshipOrderId?: StringNullableFilter<"Order"> | string | null
-    biteshipTrackingId?: StringNullableFilter<"Order"> | string | null
     snapToken?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    biteshipOrderId?: StringNullableFilter<"Order"> | string | null
+    biteshipTrackingId?: StringNullableFilter<"Order"> | string | null
+    biteshipStatus?: StringNullableFilter<"Order"> | string | null
+    shippingOrderError?: StringNullableFilter<"Order"> | string | null
+    shippingOrderStatus?: StringFilter<"Order"> | string
+    shippingRetryCount?: IntFilter<"Order"> | number
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
   }, "id" | "orderNumber" | "midtransOrderId">
@@ -8788,17 +8788,17 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
-    biteshipStatus?: SortOrderInput | SortOrder
-    shippingOrderStatus?: SortOrder
-    shippingOrderError?: SortOrderInput | SortOrder
-    shippingRetryCount?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
-    biteshipOrderId?: SortOrderInput | SortOrder
-    biteshipTrackingId?: SortOrderInput | SortOrder
     midtransOrderId?: SortOrderInput | SortOrder
     snapToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    biteshipOrderId?: SortOrderInput | SortOrder
+    biteshipTrackingId?: SortOrderInput | SortOrder
+    biteshipStatus?: SortOrderInput | SortOrder
+    shippingOrderError?: SortOrderInput | SortOrder
+    shippingOrderStatus?: SortOrder
+    shippingRetryCount?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -8827,17 +8827,17 @@ export namespace Prisma {
     total?: IntWithAggregatesFilter<"Order"> | number
     paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     orderStatus?: StringWithAggregatesFilter<"Order"> | string
-    biteshipStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    shippingOrderStatus?: StringWithAggregatesFilter<"Order"> | string
-    shippingOrderError?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    shippingRetryCount?: IntWithAggregatesFilter<"Order"> | number
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    biteshipOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    biteshipTrackingId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     midtransOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     snapToken?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
+    biteshipOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    biteshipTrackingId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    biteshipStatus?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingOrderError?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    shippingOrderStatus?: StringWithAggregatesFilter<"Order"> | string
+    shippingRetryCount?: IntWithAggregatesFilter<"Order"> | number
   }
 
   export type ShippingLogWhereInput = {
@@ -9022,8 +9022,8 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     createdAt?: Date | string
-    sizes?: ProductSizeCreateNestedManyWithoutProductInput
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    sizes?: ProductSizeCreateNestedManyWithoutProductInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -9036,8 +9036,8 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     createdAt?: Date | string
-    sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type ProductUpdateInput = {
@@ -9050,8 +9050,8 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sizes?: ProductSizeUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    sizes?: ProductSizeUpdateManyWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -9064,8 +9064,8 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type ProductCreateManyInput = {
@@ -9170,17 +9170,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     items?: OrderItemCreateNestedManyWithoutOrderInput
     shippingLogs?: ShippingLogCreateNestedManyWithoutOrderInput
   }
@@ -9203,17 +9203,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
     shippingLogs?: ShippingLogUncheckedCreateNestedManyWithoutOrderInput
   }
@@ -9236,17 +9236,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     items?: OrderItemUpdateManyWithoutOrderNestedInput
     shippingLogs?: ShippingLogUpdateManyWithoutOrderNestedInput
   }
@@ -9269,17 +9269,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
     shippingLogs?: ShippingLogUncheckedUpdateManyWithoutOrderNestedInput
   }
@@ -9302,17 +9302,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
   }
 
   export type OrderUpdateManyMutationInput = {
@@ -9333,17 +9333,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderUncheckedUpdateManyInput = {
@@ -9364,17 +9364,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type ShippingLogCreateInput = {
@@ -9599,23 +9599,23 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type ProductSizeListRelationFilter = {
-    every?: ProductSizeWhereInput
-    some?: ProductSizeWhereInput
-    none?: ProductSizeWhereInput
-  }
-
   export type OrderItemListRelationFilter = {
     every?: OrderItemWhereInput
     some?: OrderItemWhereInput
     none?: OrderItemWhereInput
   }
 
-  export type ProductSizeOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type ProductSizeListRelationFilter = {
+    every?: ProductSizeWhereInput
+    some?: ProductSizeWhereInput
+    none?: ProductSizeWhereInput
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProductSizeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9804,17 +9804,17 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
-    biteshipStatus?: SortOrder
-    shippingOrderStatus?: SortOrder
-    shippingOrderError?: SortOrder
-    shippingRetryCount?: SortOrder
     trackingNumber?: SortOrder
-    biteshipOrderId?: SortOrder
-    biteshipTrackingId?: SortOrder
     midtransOrderId?: SortOrder
     snapToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    biteshipOrderId?: SortOrder
+    biteshipTrackingId?: SortOrder
+    biteshipStatus?: SortOrder
+    shippingOrderError?: SortOrder
+    shippingOrderStatus?: SortOrder
+    shippingRetryCount?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -9842,17 +9842,17 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
-    biteshipStatus?: SortOrder
-    shippingOrderStatus?: SortOrder
-    shippingOrderError?: SortOrder
-    shippingRetryCount?: SortOrder
     trackingNumber?: SortOrder
-    biteshipOrderId?: SortOrder
-    biteshipTrackingId?: SortOrder
     midtransOrderId?: SortOrder
     snapToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    biteshipOrderId?: SortOrder
+    biteshipTrackingId?: SortOrder
+    biteshipStatus?: SortOrder
+    shippingOrderError?: SortOrder
+    shippingOrderStatus?: SortOrder
+    shippingRetryCount?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
@@ -9873,17 +9873,17 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
-    biteshipStatus?: SortOrder
-    shippingOrderStatus?: SortOrder
-    shippingOrderError?: SortOrder
-    shippingRetryCount?: SortOrder
     trackingNumber?: SortOrder
-    biteshipOrderId?: SortOrder
-    biteshipTrackingId?: SortOrder
     midtransOrderId?: SortOrder
     snapToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    biteshipOrderId?: SortOrder
+    biteshipTrackingId?: SortOrder
+    biteshipStatus?: SortOrder
+    shippingOrderError?: SortOrder
+    shippingOrderStatus?: SortOrder
+    shippingRetryCount?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -10005,13 +10005,6 @@ export namespace Prisma {
     set: string[]
   }
 
-  export type ProductSizeCreateNestedManyWithoutProductInput = {
-    create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
-    connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
-    createMany?: ProductSizeCreateManyProductInputEnvelope
-    connect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
-  }
-
   export type OrderItemCreateNestedManyWithoutProductInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -10019,7 +10012,7 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
-  export type ProductSizeUncheckedCreateNestedManyWithoutProductInput = {
+  export type ProductSizeCreateNestedManyWithoutProductInput = {
     create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
     createMany?: ProductSizeCreateManyProductInputEnvelope
@@ -10031,6 +10024,13 @@ export namespace Prisma {
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
     createMany?: OrderItemCreateManyProductInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type ProductSizeUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
+    createMany?: ProductSizeCreateManyProductInputEnvelope
+    connect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -10058,20 +10058,6 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type ProductSizeUpdateManyWithoutProductNestedInput = {
-    create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
-    connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
-    upsert?: ProductSizeUpsertWithWhereUniqueWithoutProductInput | ProductSizeUpsertWithWhereUniqueWithoutProductInput[]
-    createMany?: ProductSizeCreateManyProductInputEnvelope
-    set?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
-    disconnect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
-    delete?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
-    connect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
-    update?: ProductSizeUpdateWithWhereUniqueWithoutProductInput | ProductSizeUpdateWithWhereUniqueWithoutProductInput[]
-    updateMany?: ProductSizeUpdateManyWithWhereWithoutProductInput | ProductSizeUpdateManyWithWhereWithoutProductInput[]
-    deleteMany?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
-  }
-
   export type OrderItemUpdateManyWithoutProductNestedInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -10086,7 +10072,7 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
-  export type ProductSizeUncheckedUpdateManyWithoutProductNestedInput = {
+  export type ProductSizeUpdateManyWithoutProductNestedInput = {
     create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
     upsert?: ProductSizeUpsertWithWhereUniqueWithoutProductInput | ProductSizeUpsertWithWhereUniqueWithoutProductInput[]
@@ -10112,6 +10098,20 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutProductInput | OrderItemUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutProductInput | OrderItemUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type ProductSizeUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput> | ProductSizeCreateWithoutProductInput[] | ProductSizeUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: ProductSizeCreateOrConnectWithoutProductInput | ProductSizeCreateOrConnectWithoutProductInput[]
+    upsert?: ProductSizeUpsertWithWhereUniqueWithoutProductInput | ProductSizeUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: ProductSizeCreateManyProductInputEnvelope
+    set?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
+    disconnect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
+    delete?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
+    connect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
+    update?: ProductSizeUpdateWithWhereUniqueWithoutProductInput | ProductSizeUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: ProductSizeUpdateManyWithWhereWithoutProductInput | ProductSizeUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
   }
 
   export type ProductCreateNestedOneWithoutSizesInput = {
@@ -10407,28 +10407,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type ProductSizeCreateWithoutProductInput = {
-    id?: string
-    size: string
-    stock?: number
-  }
-
-  export type ProductSizeUncheckedCreateWithoutProductInput = {
-    id?: string
-    size: string
-    stock?: number
-  }
-
-  export type ProductSizeCreateOrConnectWithoutProductInput = {
-    where: ProductSizeWhereUniqueInput
-    create: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput>
-  }
-
-  export type ProductSizeCreateManyProductInputEnvelope = {
-    data: ProductSizeCreateManyProductInput | ProductSizeCreateManyProductInput[]
-    skipDuplicates?: boolean
-  }
-
   export type OrderItemCreateWithoutProductInput = {
     id?: string
     size: string
@@ -10455,30 +10433,26 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ProductSizeUpsertWithWhereUniqueWithoutProductInput = {
+  export type ProductSizeCreateWithoutProductInput = {
+    id?: string
+    size: string
+    stock?: number
+  }
+
+  export type ProductSizeUncheckedCreateWithoutProductInput = {
+    id?: string
+    size: string
+    stock?: number
+  }
+
+  export type ProductSizeCreateOrConnectWithoutProductInput = {
     where: ProductSizeWhereUniqueInput
-    update: XOR<ProductSizeUpdateWithoutProductInput, ProductSizeUncheckedUpdateWithoutProductInput>
     create: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput>
   }
 
-  export type ProductSizeUpdateWithWhereUniqueWithoutProductInput = {
-    where: ProductSizeWhereUniqueInput
-    data: XOR<ProductSizeUpdateWithoutProductInput, ProductSizeUncheckedUpdateWithoutProductInput>
-  }
-
-  export type ProductSizeUpdateManyWithWhereWithoutProductInput = {
-    where: ProductSizeScalarWhereInput
-    data: XOR<ProductSizeUpdateManyMutationInput, ProductSizeUncheckedUpdateManyWithoutProductInput>
-  }
-
-  export type ProductSizeScalarWhereInput = {
-    AND?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
-    OR?: ProductSizeScalarWhereInput[]
-    NOT?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
-    id?: StringFilter<"ProductSize"> | string
-    productId?: StringFilter<"ProductSize"> | string
-    size?: StringFilter<"ProductSize"> | string
-    stock?: IntFilter<"ProductSize"> | number
+  export type ProductSizeCreateManyProductInputEnvelope = {
+    data: ProductSizeCreateManyProductInput | ProductSizeCreateManyProductInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrderItemUpsertWithWhereUniqueWithoutProductInput = {
@@ -10507,6 +10481,32 @@ export namespace Prisma {
     size?: StringFilter<"OrderItem"> | string
     quantity?: IntFilter<"OrderItem"> | number
     priceAtBuy?: IntFilter<"OrderItem"> | number
+  }
+
+  export type ProductSizeUpsertWithWhereUniqueWithoutProductInput = {
+    where: ProductSizeWhereUniqueInput
+    update: XOR<ProductSizeUpdateWithoutProductInput, ProductSizeUncheckedUpdateWithoutProductInput>
+    create: XOR<ProductSizeCreateWithoutProductInput, ProductSizeUncheckedCreateWithoutProductInput>
+  }
+
+  export type ProductSizeUpdateWithWhereUniqueWithoutProductInput = {
+    where: ProductSizeWhereUniqueInput
+    data: XOR<ProductSizeUpdateWithoutProductInput, ProductSizeUncheckedUpdateWithoutProductInput>
+  }
+
+  export type ProductSizeUpdateManyWithWhereWithoutProductInput = {
+    where: ProductSizeScalarWhereInput
+    data: XOR<ProductSizeUpdateManyMutationInput, ProductSizeUncheckedUpdateManyWithoutProductInput>
+  }
+
+  export type ProductSizeScalarWhereInput = {
+    AND?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
+    OR?: ProductSizeScalarWhereInput[]
+    NOT?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
+    id?: StringFilter<"ProductSize"> | string
+    productId?: StringFilter<"ProductSize"> | string
+    size?: StringFilter<"ProductSize"> | string
+    stock?: IntFilter<"ProductSize"> | number
   }
 
   export type ProductCreateWithoutSizesInput = {
@@ -10697,17 +10697,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -10729,17 +10729,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -10777,17 +10777,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -10809,17 +10809,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -10841,17 +10841,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     shippingLogs?: ShippingLogCreateNestedManyWithoutOrderInput
   }
 
@@ -10873,17 +10873,17 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
-    biteshipStatus?: string | null
-    shippingOrderStatus?: string
-    shippingOrderError?: string | null
-    shippingRetryCount?: number
     trackingNumber?: string | null
-    biteshipOrderId?: string | null
-    biteshipTrackingId?: string | null
     midtransOrderId?: string | null
     snapToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    biteshipOrderId?: string | null
+    biteshipTrackingId?: string | null
+    biteshipStatus?: string | null
+    shippingOrderError?: string | null
+    shippingOrderStatus?: string
+    shippingRetryCount?: number
     shippingLogs?: ShippingLogUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -10952,17 +10952,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     shippingLogs?: ShippingLogUpdateManyWithoutOrderNestedInput
   }
 
@@ -10984,17 +10984,17 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
-    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
-    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
-    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
     midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipTrackingId?: NullableStringFieldUpdateOperationsInput | string | null
+    biteshipStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
+    shippingOrderStatus?: StringFieldUpdateOperationsInput | string
+    shippingRetryCount?: IntFieldUpdateOperationsInput | number
     shippingLogs?: ShippingLogUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -11035,12 +11035,6 @@ export namespace Prisma {
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }
 
-  export type ProductSizeCreateManyProductInput = {
-    id?: string
-    size: string
-    stock?: number
-  }
-
   export type OrderItemCreateManyProductInput = {
     id?: string
     orderId: string
@@ -11049,22 +11043,10 @@ export namespace Prisma {
     priceAtBuy: number
   }
 
-  export type ProductSizeUpdateWithoutProductInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProductSizeUncheckedUpdateWithoutProductInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProductSizeUncheckedUpdateManyWithoutProductInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
+  export type ProductSizeCreateManyProductInput = {
+    id?: string
+    size: string
+    stock?: number
   }
 
   export type OrderItemUpdateWithoutProductInput = {
@@ -11089,6 +11071,24 @@ export namespace Prisma {
     size?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     priceAtBuy?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductSizeUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductSizeUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProductSizeUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderItemCreateManyOrderInput = {
