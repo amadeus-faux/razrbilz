@@ -196,30 +196,40 @@ export default function ProductDetailClient({
         );
       }
 
-      // Setup GSAP Observer with strict directional filtering
+      // Setup GSAP Observer using onUp/onDown which GSAP normalises
+      // consistently across wheel, touch and pointer on all devices.
+      // This avoids the wheelSpeed/-1 sign-flip that only applies to wheel
+      // events (not touch), which previously caused inverted swipe directions
+      // on mobile/tablet.
       if (hasMultipleProducts && containerRef.current) {
         Observer.create({
           target: containerRef.current,
           type: "wheel,touch,pointer",
-          wheelSpeed: -1,
           tolerance: 20,
           preventDefault: false,
-          onChangeY: (self) => {
+          // onDown fires when the user scrolls/swipes DOWN (next product)
+          onDown: (self) => {
             if (isAnimatingRef.current || sheetOpenRef.current) return;
-            const isWheel = self.event.type === "wheel";
-            const deltaY = self.deltaY;
-            const deltaX = self.deltaX;
-
-            if (isWheel) {
-              if (deltaY > 0) goToNextProduct();
-              else if (deltaY < 0) goToPrevProduct();
-            } else {
-              // Touch/pointer gesture: require dominant vertical movement (> 25px and |deltaY| > 1.5 * |deltaX|)
-              if (Math.abs(deltaY) > 25 && Math.abs(deltaY) > Math.abs(deltaX) * 1.5) {
-                if (deltaY > 0) goToNextProduct();
-                else if (deltaY < 0) goToPrevProduct();
-              }
+            // For touch/pointer require a dominant vertical gesture to avoid
+            // accidental triggers during horizontal swipes.
+            const isTouch = self.event.type.startsWith("touch") || self.event.type.startsWith("pointer");
+            if (isTouch) {
+              const absY = Math.abs(self.deltaY);
+              const absX = Math.abs(self.deltaX);
+              if (absY < 25 || absY <= absX * 1.5) return;
             }
+            goToNextProduct();
+          },
+          // onUp fires when the user scrolls/swipes UP (previous product)
+          onUp: (self) => {
+            if (isAnimatingRef.current || sheetOpenRef.current) return;
+            const isTouch = self.event.type.startsWith("touch") || self.event.type.startsWith("pointer");
+            if (isTouch) {
+              const absY = Math.abs(self.deltaY);
+              const absX = Math.abs(self.deltaX);
+              if (absY < 25 || absY <= absX * 1.5) return;
+            }
+            goToPrevProduct();
           },
         });
       }

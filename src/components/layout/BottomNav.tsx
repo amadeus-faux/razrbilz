@@ -5,6 +5,7 @@ import { ShoppingBag, LayoutGrid } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useCartStore } from "@/store/cart-store";
 import Image from "next/image";
+import { usePageTransition } from "@/context/PageTransitionContext";
 
 function subscribe(callback: () => void) {
   return useCartStore.subscribe(callback);
@@ -20,13 +21,32 @@ function getServerSnapshot() {
 
 export default function BottomNav() {
   const count = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const { navigateWithTransition } = usePageTransition();
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    // Intercept standard left-click without modifier keys
+    if (
+      e.button === 0 &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.altKey
+    ) {
+      e.preventDefault();
+      navigateWithTransition(href);
+    }
+  };
 
   return (
-    <nav className="floating-nav" id="bottom-nav">
+    <nav className="floating-nav navbar-liquid-glass" id="bottom-nav">
       {/* Shop icon */}
       <Link
         href="/"
         prefetch={true}
+        onClick={(e) => handleNavClick(e, "/")}
         className="flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
         aria-label="Shop"
         id="nav-shop"
@@ -54,6 +74,7 @@ export default function BottomNav() {
       <Link
         href="/cart"
         prefetch={true}
+        onClick={(e) => handleNavClick(e, "/cart")}
         className="relative flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
         aria-label="Cart"
         id="nav-cart"

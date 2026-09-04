@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
+import { PageTransitionProvider } from "@/context/PageTransitionContext";
+import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay";
 
 export const metadata: Metadata = {
   title: "RAZRBILZ",
@@ -29,7 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="id" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        {children}
+        <PageTransitionProvider>
+          {children}
+          <PageTransitionOverlay />
+        </PageTransitionProvider>
 
         {/* Midtrans Snap SDK — loaded globally so window.snap is available on checkout */}
         {MIDTRANS_CLIENT_KEY && (
