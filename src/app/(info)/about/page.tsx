@@ -21,7 +21,7 @@ export default function AboutPage() {
       {/* Body copy */}
       <div className="space-y-5 text-[13px] text-muted leading-[1.85] tracking-wide">
         <p>
-          <strong className="text-foreground font-semibold">RAZRBILZ</strong> adalah brand
+          <strong className="text-foreground">RAZRBILZ</strong> adalah brand
           pakaian unisex independen yang lahir dari perpaduan estetika utilitarian,
           arsitektur brutalist, dan siluet streetwear kontemporer.
         </p>
@@ -46,7 +46,7 @@ export default function AboutPage() {
           { label: "Design", value: "Gender-free, oversized silhouettes" },
         ].map(({ label, value }) => (
           <div key={label} className="p-4 bg-surface rounded-xl border border-border">
-            <p className="text-[9px] font-semibold tracking-[0.18em] uppercase text-muted mb-1">
+            <p className="text-[9px] tracking-[0.18em] uppercase text-muted mb-1">
               {label}
             </p>
             <p className="text-xs text-foreground leading-snug">{value}</p>

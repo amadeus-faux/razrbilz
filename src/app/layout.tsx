@@ -1,8 +1,29 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import { PageTransitionProvider } from "@/context/PageTransitionContext";
 import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay";
+
+// ── Tanker — single-weight display font (400/Regular only) ────────────────────
+const tanker = localFont({
+  src: [
+    {
+      path: "./fonts/Tanker-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Tanker-Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-tanker-var",
+  display: "swap",
+  preload: true,
+  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
+});
 
 export const metadata: Metadata = {
   title: "RAZRBILZ",
@@ -29,7 +50,7 @@ const MIDTRANS_SNAP_URL = MIDTRANS_IS_PRODUCTION
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className="h-full antialiased">
+    <html lang="id" className={`h-full antialiased ${tanker.variable}`}>
       <body className="min-h-full flex flex-col">
         <PageTransitionProvider>
           {children}

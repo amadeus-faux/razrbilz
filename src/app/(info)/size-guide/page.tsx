@@ -53,7 +53,7 @@ export default function SizeGuidePage() {
             <tbody className="divide-y divide-border">
               {tShirtSizes.map((row) => (
                 <tr key={row.size}>
-                  <td className="p-3 font-semibold">{row.size}</td>
+                  <td className="p-3 text-foreground">{row.size}</td>
                   <td className="p-3">{row.chest}</td>
                   <td className="p-3">{row.length}</td>
                   <td className="p-3">{row.shoulder}</td>
@@ -80,7 +80,7 @@ export default function SizeGuidePage() {
             <tbody className="divide-y divide-border">
               {hoodieSizes.map((row) => (
                 <tr key={row.size}>
-                  <td className="p-3 font-semibold">{row.size}</td>
+                  <td className="p-3 text-foreground">{row.size}</td>
                   <td className="p-3">{row.chest}</td>
                   <td className="p-3">{row.length}</td>
                   <td className="p-3">{row.sleeve}</td>
@@ -107,7 +107,7 @@ export default function SizeGuidePage() {
             <tbody className="divide-y divide-border">
               {pantsSizes.map((row) => (
                 <tr key={row.size}>
-                  <td className="p-3 font-semibold">{row.size}</td>
+                  <td className="p-3 text-foreground">{row.size}</td>
                   <td className="p-3">{row.waist}</td>
                   <td className="p-3">{row.hip}</td>
                   <td className="p-3">{row.length}</td>

@@ -36,7 +36,7 @@ function getServerSnapshot() {
   return emptyItems;
 }
 
-// ── Reusable Field Label & Error ─────────────────────────────────────────────
+// â”€â”€ Reusable Field Label & Error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <label className="block text-[10px] uppercase font-medium text-muted tracking-[0.14em] mb-1.5">
@@ -52,9 +52,9 @@ function FieldError({ message }: { message?: string }) {
 }
 
 const inputCls =
-  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all";
+  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all";
 const selectCls =
-  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all appearance-none pr-10 cursor-pointer";
+  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all appearance-none pr-10 cursor-pointer";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function CheckoutPage() {
   const subtotal = useCartStore((state) => state.subtotal);
   const clearCart = useCartStore((state) => state.clearCart);
 
-  // ── Cascading location states ──────────────────────────────────────────────
+  // â”€â”€ Cascading location states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [provinces, setProvinces] = useState<string[]>(INDONESIA_PROVINCES);
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
 
-  // ── Shipping & Order states ────────────────────────────────────────────────
+  // â”€â”€ Shipping & Order states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [shippingRates, setShippingRates] = useState<BiteshipCourierRate[]>([]);
   const [selectedCourier, setSelectedCourier] = useState<BiteshipCourierRate | null>(null);
   const [loadingRates, setLoadingRates] = useState(false);
@@ -108,7 +108,7 @@ export default function CheckoutPage() {
   const isIndonesia = selectedCountry === "ID" || selectedCountry === "Indonesia";
   const isInternational = isCountrySelected && !isIndonesia;
 
-  // ── 1. Load Provinces when country is Indonesia ─────────────────────────────
+  // â”€â”€ 1. Load Provinces when country is Indonesia â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     let isMounted = true;
     async function loadProvinces() {
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
     };
   }, [selectedCountry, isIndonesia, setValue]);
 
-  // ── 2. Load Cities when Province changes (Indonesia) ────────────────────────
+  // â”€â”€ 2. Load Cities when Province changes (Indonesia) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     let isMounted = true;
     async function loadCities() {
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
     };
   }, [selectedProvince, isIndonesia, setValue]);
 
-  // ── 3. Load Districts & Postal Codes when City changes (Indonesia) ──────────
+  // â”€â”€ 3. Load Districts & Postal Codes when City changes (Indonesia) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     let isMounted = true;
     async function loadDistricts() {
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
     };
   }, [selectedCity, selectedProvince, isIndonesia, setValue]);
 
-  // ── 4. Update available Postal Codes when District changes (Indonesia) ──────
+  // â”€â”€ 4. Update available Postal Codes when District changes (Indonesia) â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     if (isIndonesia && selectedDistrict) {
       const pCodes = postalCodesMap[selectedDistrict] || [];
@@ -249,7 +249,7 @@ export default function CheckoutPage() {
     }
   }, [selectedDistrict, postalCodesMap, isIndonesia, setValue]);
 
-  // ── 5. Fetch shipping rates ─────────────────────────────────────────────────
+  // â”€â”€ 5. Fetch shipping rates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchShippingRates = useCallback(
     async (countryCode: string, destPostalCode: string) => {
       setLoadingRates(true);
@@ -308,7 +308,7 @@ export default function CheckoutPage() {
     }
   }, [selectedCountry, postalCode, isInternational, isIndonesia, fetchShippingRates]);
 
-  // ── Submit Checkout ─────────────────────────────────────────────────────────
+  // â”€â”€ Submit Checkout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   async function onSubmit(data: CheckoutFormData) {
     if (!selectedCourier) {
       alert("Silakan pilih opsi pengiriman.");
@@ -326,7 +326,7 @@ export default function CheckoutPage() {
           ...data,
           customerName: fullName,
           address: fullAddress,
-          courier: `${selectedCourier.courier_name} — ${selectedCourier.courier_service_name}`,
+          courier: `${selectedCourier.courier_name} â€” ${selectedCourier.courier_service_name}`,
           shippingCost: selectedCourier.price,
           items: items.map((item) => ({
             productId: item.productId,
@@ -372,16 +372,16 @@ export default function CheckoutPage() {
     }
   }
 
-  // ── Empty Cart State ────────────────────────────────────────────────────────
+  // â”€â”€ Empty Cart State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (items.length === 0) {
     return (
       <div className="container-shop pt-20 pb-36 min-h-[80vh] flex flex-col items-center justify-center">
-        <div className="w-full max-w-sm bg-white border border-border p-10 text-center rounded-2xl shadow-sm space-y-6">
+        <div className="w-full max-w-sm bg-surface border border-border p-10 text-center rounded-2xl space-y-6">
           <div className="w-14 h-14 mx-auto rounded-full bg-surface flex items-center justify-center text-muted">
             <ShoppingBag size={22} strokeWidth={1.5} />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xs font-semibold tracking-widest uppercase text-foreground">
+            <h1 className="text-xs tracking-widest uppercase text-foreground">
               YOUR BAG IS EMPTY
             </h1>
             <p className="text-xs text-muted leading-relaxed">
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
           </div>
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-[11px] font-semibold tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-[11px] tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
           >
             RETURN TO SHOP
           </Link>
@@ -416,7 +416,7 @@ export default function CheckoutPage() {
             <ArrowLeft size={13} strokeWidth={2} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
             Back to Bag
           </Link>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+          <span className="text-[10px] uppercase tracking-[0.18em] text-foreground">
             Secure Checkout
           </span>
         </div>
@@ -428,13 +428,13 @@ export default function CheckoutPage() {
             <div className="lg:col-span-7 space-y-6">
 
               {/* 1. Contact Information */}
-              <div className="bg-white border border-border p-6 rounded-2xl shadow-sm space-y-4">
+              <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0 font-semibold">
+                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
                       1
                     </span>
-                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+                    <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
                       CONTACT INFORMATION
                     </h2>
                   </div>
@@ -467,12 +467,12 @@ export default function CheckoutPage() {
               </div>
 
               {/* 2. Delivery / Shipping Address */}
-              <div className="bg-white border border-border p-6 rounded-2xl shadow-sm space-y-4">
+              <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
                 <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0 font-semibold">
+                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
                     2
                   </span>
-                  <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+                  <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
                     DELIVERY ADDRESS
                   </h2>
                 </div>
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                         className={selectCls}
                         id="checkout-country"
                       >
-                        <option value="">— Pilih Negara —</option>
+                        <option value="">â€” Pilih Negara â€”</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>
                             {c.flag} {c.name} ({c.code})
@@ -552,7 +552,7 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  {/* ── Cascading Location Fields ──────────────────────────── */}
+                  {/* â”€â”€ Cascading Location Fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Province */}
                     <div>
@@ -570,7 +570,7 @@ export default function CheckoutPage() {
                                 ? "Pilih negara terlebih dahulu"
                                 : loadingProvinces
                                   ? "Memuat daftar provinsi..."
-                                  : "— Pilih Provinsi —"}
+                                  : "â€” Pilih Provinsi â€”"}
                             </option>
                             {provinces.map((p) => (
                               <option key={p} value={p}>
@@ -612,7 +612,7 @@ export default function CheckoutPage() {
                                 ? "Pilih provinsi terlebih dahulu"
                                 : loadingCities
                                   ? "Memuat daftar kota..."
-                                  : "— Pilih Kota / Kabupaten —"}
+                                  : "â€” Pilih Kota / Kabupaten â€”"}
                             </option>
                             {cities.map((c) => (
                               <option key={c} value={c}>
@@ -656,7 +656,7 @@ export default function CheckoutPage() {
                                 ? "Pilih kota terlebih dahulu"
                                 : loadingDistricts
                                   ? "Memuat daftar kecamatan..."
-                                  : "— Pilih Kecamatan —"}
+                                  : "â€” Pilih Kecamatan â€”"}
                             </option>
                             {districts.map((d) => (
                               <option key={d} value={d}>
@@ -693,7 +693,7 @@ export default function CheckoutPage() {
                             id="checkout-postal"
                             disabled={!selectedDistrict}
                           >
-                            <option value="">— Pilih Kode Pos —</option>
+                            <option value="">â€” Pilih Kode Pos â€”</option>
                             {availablePostalCodes.map((pc) => (
                               <option key={pc} value={pc}>
                                 {pc}
@@ -740,12 +740,12 @@ export default function CheckoutPage() {
               </div>
 
               {/* 3. Shipping Method */}
-              <div className="bg-white border border-border p-6 rounded-2xl shadow-sm space-y-4">
+              <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
                 <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0 font-semibold">
+                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
                     3
                   </span>
-                  <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+                  <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
                     SHIPPING METHOD
                   </h2>
                 </div>
@@ -756,7 +756,7 @@ export default function CheckoutPage() {
                     <span>Menghitung opsi kurir...</span>
                   </div>
                 ) : rateError ? (
-                  <div className="p-4 bg-surface text-red-500 text-xs rounded-xl flex items-center gap-2 border border-red-200">
+                  <div className="p-4 bg-surface text-red-400 text-xs rounded-xl flex items-center gap-2 border border-red-500/20">
                     <AlertCircle size={15} />
                     <span>{rateError}</span>
                   </div>
@@ -773,7 +773,7 @@ export default function CheckoutPage() {
                           onClick={() => setSelectedCourier(rate)}
                           className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer ${isSelected
                             ? "border-foreground bg-surface ring-1 ring-foreground"
-                            : "border-border hover:border-black/25 bg-white"
+                            : "border-border hover:border-foreground/30 bg-surface"
                             }`}
                           id={`courier-option-${idx}`}
                         >
@@ -781,7 +781,7 @@ export default function CheckoutPage() {
                             <div
                               className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isSelected
                                 ? "border-foreground bg-foreground"
-                                : "border-border bg-white"
+                                : "border-border bg-surface-hover"
                                 }`}
                             >
                               {isSelected && (
@@ -789,7 +789,7 @@ export default function CheckoutPage() {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-xs font-semibold uppercase tracking-wider text-foreground truncate">
+                              <p className="text-xs uppercase tracking-wider text-foreground truncate">
                                 {rate.courier_name} — {rate.courier_service_name}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
@@ -797,7 +797,7 @@ export default function CheckoutPage() {
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs font-bold text-foreground whitespace-nowrap ml-3">
+                          <span className="text-xs text-foreground whitespace-nowrap ml-3">
                             {formatRupiah(rate.price)}
                           </span>
                         </button>
@@ -816,13 +816,13 @@ export default function CheckoutPage() {
               </div>
 
               {/* 4. Payment Gateway Info */}
-              <div className="bg-white border border-border p-6 rounded-2xl shadow-sm space-y-3">
+              <div className="bg-surface border border-border p-6 rounded-2xl space-y-3">
                 <div className="flex items-center justify-between pb-3 border-b border-border">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0 font-semibold">
+                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
                       4
                     </span>
-                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+                    <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
                       PAYMENT METHOD
                     </h2>
                   </div>
@@ -834,13 +834,13 @@ export default function CheckoutPage() {
 
             </div>
 
-            {/* ── RIGHT COLUMN: Order Summary (5 cols sticky) ──────────────── */}
+            {/* ── RIGHT COLUMN: Order Summary (5 cols sticky) ─────────────── */}
             <div className="lg:col-span-5 lg:sticky lg:top-8">
-              <div className="bg-white border border-border rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-surface border border-border rounded-2xl overflow-hidden">
 
                 {/* Summary Header */}
                 <div className="px-6 py-5 border-b border-border">
-                  <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground">
+                  <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
                     ORDER SUMMARY ({totalCount})
                   </h2>
                 </div>
@@ -861,14 +861,14 @@ export default function CheckoutPage() {
                           className="object-contain p-1.5"
                           sizes="56px"
                         />
-                        <span className="absolute top-1 right-1 bg-foreground text-background text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="absolute top-1 right-1 bg-foreground text-background text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                           {it.quantity}
                         </span>
                       </div>
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-foreground truncate">
+                        <p className="text-xs uppercase tracking-wider text-foreground truncate">
                           {it.name}
                         </p>
                         <p className="text-[10px] text-muted mt-0.5">
@@ -877,7 +877,7 @@ export default function CheckoutPage() {
                       </div>
 
                       {/* Item Total */}
-                      <span className="text-xs font-bold text-foreground whitespace-nowrap">
+                      <span className="text-xs text-foreground whitespace-nowrap">
                         {formatRupiah(it.price * it.quantity)}
                       </span>
                     </div>
@@ -888,7 +888,7 @@ export default function CheckoutPage() {
                 <div className="px-6 py-5 space-y-3">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-muted">Subtotal ({totalCount} items)</span>
-                    <span className="font-semibold text-foreground">{formatRupiah(subtotal())}</span>
+                    <span className="text-foreground">{formatRupiah(subtotal())}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
@@ -896,22 +896,17 @@ export default function CheckoutPage() {
                       Shipping
                       <HelpCircle size={12} className="text-muted/80" />
                     </span>
-                    <span className="font-semibold text-foreground">
+                    <span className="text-foreground">
                       {selectedCourier ? formatRupiah(selectedCourier.price) : "Pilih kurir"}
                     </span>
                   </div>
 
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted">Taxes &amp; Duties</span>
-                    <span className="font-medium text-foreground">Included</span>
-                  </div>
-
                   {/* Total Due */}
                   <div className="pt-4 border-t border-border flex justify-between items-baseline">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-foreground">
+                    <span className="text-[11px] uppercase tracking-widest text-foreground">
                       TOTAL DUE
                     </span>
-                    <span className="text-lg font-bold text-foreground">
+                    <span className="text-lg text-foreground">
                       {formatRupiah(total)}
                     </span>
                   </div>
@@ -922,7 +917,7 @@ export default function CheckoutPage() {
                   <button
                     type="submit"
                     disabled={!selectedCourier || submitting}
-                    className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background text-[11px] font-semibold tracking-[0.15em] uppercase rounded-xl hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
+                    className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background text-[11px] tracking-[0.15em] uppercase rounded-xl hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
                     id="btn-pay"
                   >
                     {submitting ? (
@@ -974,3 +969,5 @@ declare global {
     };
   }
 }
+
+

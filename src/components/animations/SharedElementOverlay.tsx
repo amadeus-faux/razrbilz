@@ -82,7 +82,7 @@ export default function SharedElementOverlay() {
   return (
     <div
       ref={overlayRef}
-      className="fixed pointer-events-none z-[9999] overflow-hidden flex items-center justify-center bg-white"
+      className="fixed pointer-events-none z-[9999] overflow-hidden flex items-center justify-center bg-transparent"
       style={{
         top: transitionState.firstRect.top,
         left: transitionState.firstRect.left,

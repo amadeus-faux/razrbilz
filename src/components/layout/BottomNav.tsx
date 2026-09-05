@@ -47,7 +47,7 @@ export default function BottomNav() {
         href="/"
         prefetch={true}
         onClick={(e) => handleNavClick(e, "/")}
-        className="flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
+        className="flex items-center justify-center w-10 h-10 text-foreground transition-opacity hover:opacity-60"
         aria-label="Shop"
         id="nav-shop"
       >
@@ -61,7 +61,7 @@ export default function BottomNav() {
         aria-hidden="true"
       >
         <Image
-          src="/logo/cardinal-compass.svg"
+          src="/logo/Cardinal_Compass_White.png"
           alt="RAZRBILZ logo"
           width={32}
           height={32}
@@ -75,7 +75,7 @@ export default function BottomNav() {
         href="/cart"
         prefetch={true}
         onClick={(e) => handleNavClick(e, "/cart")}
-        className="relative flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-60"
+        className="relative flex items-center justify-center w-10 h-10 text-foreground transition-opacity hover:opacity-60"
         aria-label="Cart"
         id="nav-cart"
       >

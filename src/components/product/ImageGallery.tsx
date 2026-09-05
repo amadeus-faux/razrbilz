@@ -48,7 +48,7 @@ export default function ImageGallery({
     <div className="relative w-full max-w-[380px] mx-auto" id="image-gallery">
       {/* Main Image */}
       <div
-        className="relative w-full aspect-[5/4] flex items-center justify-center bg-white"
+        className="relative w-full aspect-[5/4] flex items-center justify-center bg-transparent"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >

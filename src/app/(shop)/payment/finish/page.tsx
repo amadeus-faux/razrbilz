@@ -32,16 +32,16 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
 
   return (
     <div className="container-shop pt-12 pb-24 min-h-[80vh] flex flex-col items-center justify-center">
-      <div className="w-full max-w-lg bg-white border border-border p-6 md:p-10 rounded-2xl shadow-sm text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto">
+      <div className="w-full max-w-lg bg-surface border border-border p-6 md:p-10 rounded-2xl text-center space-y-6">
+        <div className="w-16 h-16 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center mx-auto">
           <CheckCircle2 size={36} strokeWidth={1.8} />
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-[10px] tracking-widest text-muted uppercase font-semibold">
+          <span className="text-[10px] tracking-widest text-muted uppercase">
             PAYMENT SUCCESSFUL
           </span>
-          <h1 className="text-base font-semibold tracking-wider uppercase">
+          <h1 className="text-base tracking-wider uppercase">
             THANK YOU FOR YOUR ORDER
           </h1>
           <p className="text-xs text-muted leading-relaxed">
@@ -53,7 +53,7 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
         <div className="border border-border rounded-xl p-4 text-left space-y-3 bg-surface/50 text-xs">
           <div className="flex justify-between border-b border-border pb-2.5">
             <span className="text-muted">Nomor Pesanan</span>
-            <span className="font-mono font-semibold text-foreground">
+            <span className="font-mono text-foreground">
               {order ? order.orderNumber : targetId || "RZ-CONFIRMED"}
             </span>
           </div>
@@ -62,26 +62,26 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
             <>
               <div className="flex justify-between border-b border-border pb-2.5">
                 <span className="text-muted">Penerima</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground">
                   {order.customerName}
                 </span>
               </div>
 
               <div className="flex justify-between border-b border-border pb-2.5">
                 <span className="text-muted">Kurir Pengiriman</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground">
                   {order.courier}
                 </span>
               </div>
 
               <div className="flex justify-between border-b border-border pb-2.5">
                 <span className="text-muted">Status Pembayaran</span>
-                <span className="font-semibold text-green-700 uppercase">
+                <span className="text-green-400 uppercase">
                   PAID / VERIFIED
                 </span>
               </div>
 
-              <div className="flex justify-between pt-1 font-semibold text-sm">
+              <div className="flex justify-between pt-1 text-sm text-foreground">
                 <span>Total Pembayaran</span>
                 <span>{formatRupiah(order.total)}</span>
               </div>
@@ -89,7 +89,7 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-left text-[11px] text-muted p-3 bg-surface rounded-xl">
+        <div className="space-y-2 text-xs text-muted text-left bg-surface p-4 rounded-xl leading-relaxed">
           <div className="flex items-start gap-2">
             <Package size={14} className="mt-0.5 text-foreground flex-shrink-0" />
             <span>Pesanan diproses dalam 1-2 hari kerja</span>
@@ -102,7 +102,7 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
 
         <Link
           href="/"
-          className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-xs font-semibold tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
+          className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
         >
           KEMBALI KE STORE
           <ArrowRight size={14} />

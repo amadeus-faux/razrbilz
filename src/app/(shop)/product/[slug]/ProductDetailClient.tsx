@@ -138,17 +138,19 @@ export default function ProductDetailClient({
         const tl = gsap.timeline({
           defaults: { duration: 0.45, ease: "power2.inOut" },
           onComplete: () => {
+            // Hide the outgoing wrapper BEFORE React re-renders to prevent flicker.
+            // At this point currentWrapper still points to the old product's DOM node.
+            // Setting autoAlpha:0 here ensures it's invisible when React swaps it out.
+            if (currentWrapper) {
+              gsap.set(currentWrapper, { autoAlpha: 0 });
+            }
+
             setCurrentIndex(targetIndex);
             setIncomingIndex(null);
 
             if (typeof window !== "undefined") {
               window.history.replaceState(null, "", `/product/${targetProduct.slug}`);
               document.title = `${targetProduct.name} | RAZRBILZ`;
-            }
-
-            // Reset current wrapper to clean rest state
-            if (currentWrapper) {
-              gsap.set(currentWrapper, { yPercent: 0, autoAlpha: 1, scale: 1 });
             }
 
             isAnimatingRef.current = false;
@@ -207,20 +209,25 @@ export default function ProductDetailClient({
           type: "wheel,touch,pointer",
           tolerance: 20,
           preventDefault: false,
-          // onDown fires when the user scrolls/swipes DOWN (next product)
+          // onDown fires when:
+          //   • wheel: scrolled DOWN → next product
+          //   • touch: finger moved DOWN (swipe down) → previous product (inverted)
           onDown: (self) => {
             if (isAnimatingRef.current || sheetOpenRef.current) return;
-            // For touch/pointer require a dominant vertical gesture to avoid
-            // accidental triggers during horizontal swipes.
             const isTouch = self.event.type.startsWith("touch") || self.event.type.startsWith("pointer");
             if (isTouch) {
               const absY = Math.abs(self.deltaY);
               const absX = Math.abs(self.deltaX);
               if (absY < 25 || absY <= absX * 1.5) return;
+              // Touch swipe DOWN = pull content down = go to PREVIOUS
+              goToPrevProduct();
+            } else {
+              goToNextProduct();
             }
-            goToNextProduct();
           },
-          // onUp fires when the user scrolls/swipes UP (previous product)
+          // onUp fires when:
+          //   • wheel: scrolled UP → previous product
+          //   • touch: finger moved UP (swipe up) → next product (inverted)
           onUp: (self) => {
             if (isAnimatingRef.current || sheetOpenRef.current) return;
             const isTouch = self.event.type.startsWith("touch") || self.event.type.startsWith("pointer");
@@ -228,8 +235,11 @@ export default function ProductDetailClient({
               const absY = Math.abs(self.deltaY);
               const absX = Math.abs(self.deltaX);
               if (absY < 25 || absY <= absX * 1.5) return;
+              // Touch swipe UP = push content up = go to NEXT
+              goToNextProduct();
+            } else {
+              goToPrevProduct();
             }
-            goToPrevProduct();
           },
         });
       }
@@ -269,12 +279,12 @@ export default function ProductDetailClient({
           {/* Product Info */}
           <div className="text-center mt-3 sm:mt-4 space-y-1">
             <h1
-              className="text-product-name font-bold tracking-widest text-foreground"
+              className="text-product-name tracking-widest text-foreground"
               style={{ fontSize: "0.68rem" }}
             >
               {currentProduct.name}
             </h1>
-            <p className="text-price font-medium text-neutral-800">
+            <p className="text-price">
               {formatRupiah(currentProduct.price)}
             </p>
           </div>
@@ -284,11 +294,11 @@ export default function ProductDetailClient({
             <button
               type="button"
               onClick={() => setSheetOpen(!sheetOpen)}
-              className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-black/10 bg-white hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200"
+              className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200 text-foreground"
               style={{
                 boxShadow: sheetOpen
                   ? "none"
-                  : "0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)",
+                  : "0 4px 16px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2)",
               }}
               aria-label="Select size & add to cart"
               id="btn-add-to-cart"
@@ -296,7 +306,7 @@ export default function ProductDetailClient({
               <Plus
                 size={18}
                 strokeWidth={1.5}
-                className={`transition-all duration-300 group-hover:text-white ${
+                className={`transition-all duration-300 group-hover:text-background ${
                   sheetOpen ? "rotate-45" : ""
                 }`}
               />
@@ -319,18 +329,18 @@ export default function ProductDetailClient({
 
             <div className="text-center mt-3 sm:mt-4 space-y-1">
               <h1
-                className="text-product-name font-bold tracking-widest text-foreground"
+                className="text-product-name tracking-widest text-foreground"
                 style={{ fontSize: "0.68rem" }}
               >
                 {incomingProduct.name}
               </h1>
-              <p className="text-price font-medium text-neutral-800">
+              <p className="text-price">
                 {formatRupiah(incomingProduct.price)}
               </p>
             </div>
 
             <div className="flex justify-center mt-4 sm:mt-5">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-black/10 bg-white flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface flex items-center justify-center text-foreground">
                 <Plus size={18} strokeWidth={1.5} />
               </div>
             </div>

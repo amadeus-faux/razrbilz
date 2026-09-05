@@ -12,7 +12,7 @@ interface PolicySectionProps {
 function PolicySection({ title, children }: PolicySectionProps) {
   return (
     <div className="space-y-3">
-      <h2 className="text-[10px] font-semibold tracking-[0.18em] uppercase text-foreground">
+      <h2 className="text-[10px] tracking-[0.18em] uppercase text-foreground">
         {title}
       </h2>
       <div className="text-[13px] text-muted leading-[1.85] space-y-3">{children}</div>

@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
           <ul>
             <li>Process, verify, and fulfill your apparel orders.</li>
             <li>
-              Arrange package delivery with official logistics partners (JNE, SiCepat, J&T, DHL/FedEx).
+              Arrange package delivery with official logistics partners.
             </li>
             <li>Send payment status updates and shipping tracking numbers.</li>
             <li>

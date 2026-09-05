@@ -33,10 +33,10 @@ export default async function ShopPage() {
   const products = await getProducts();
 
   return (
-    <div className="container-shop flex-1 flex flex-col justify-center w-full !pb-0">
-      <div className="my-auto w-full py-10 md:py-16">
+    <section className="container-shop min-h-[100dvh] flex flex-col justify-center items-center w-full !pb-0 py-12 md:py-16">
+      <div className="w-full my-auto">
         <ProductGrid products={products} />
       </div>
-    </div>
+    </section>
   );
 }

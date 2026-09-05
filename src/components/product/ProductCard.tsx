@@ -37,7 +37,7 @@ export default function ProductCard({
       {/* Image container — 5:4 ratio, matches product detail page */}
       <div
         ref={imageContainerRef}
-        className="relative w-full aspect-[5/4] overflow-hidden bg-white"
+        className="relative w-full aspect-[5/4] overflow-hidden bg-transparent"
       >
         <Image
           src={image}

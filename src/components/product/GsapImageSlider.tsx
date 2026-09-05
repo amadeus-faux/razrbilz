@@ -225,7 +225,7 @@ export default function GsapImageSlider({
         that sits below this container.
         ────────────────────────────────────────────────────────────────── */}
       <div
-        className="relative w-full aspect-[5/4] sm:aspect-[4/3] bg-white touch-pan-y"
+        className="relative w-full aspect-[5/4] sm:aspect-[4/3] bg-transparent touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

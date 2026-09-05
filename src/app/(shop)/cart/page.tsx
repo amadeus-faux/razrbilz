@@ -78,7 +78,7 @@ export default function CartPage() {
                 {/* Remove — subtle, top-right corner */}
                 <button
                   onClick={() => removeItem(item.productId, item.size)}
-                  className="absolute top-3 right-3 p-1.5 text-disabled hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  className="absolute top-3 right-3 p-1.5 text-disabled hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                   aria-label={`Remove ${item.name}`}
                 >
                   <Trash2 size={13} strokeWidth={1.5} />
@@ -104,12 +104,12 @@ export default function CartPage() {
                   <div className="min-w-0">
                     <Link
                       href={`/product/${item.slug}`}
-                      className="block text-[11px] font-semibold uppercase tracking-widest text-foreground hover:opacity-60 transition-opacity truncate"
+                      className="block text-[11px] uppercase tracking-widest text-foreground hover:opacity-60 transition-opacity truncate"
                     >
                       {item.name}
                     </Link>
                     <div className="mt-2 flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center px-2 py-0.5 bg-surface border border-border text-[9px] font-semibold tracking-widest uppercase rounded-full text-muted">
+                      <span className="inline-flex items-center px-2 py-0.5 bg-surface border border-border text-[9px] tracking-widest uppercase rounded-full text-muted">
                         Size {item.size}
                       </span>
                       <span className="text-price">
@@ -123,24 +123,24 @@ export default function CartPage() {
                     <div className="flex items-center border border-border rounded-full bg-surface overflow-hidden">
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-black/5 transition-colors"
+                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
                         aria-label="Decrease quantity"
                       >
                         <Minus size={11} strokeWidth={2} />
                       </button>
-                      <span className="w-7 text-center text-xs font-semibold text-foreground tabular-nums select-none">
+                      <span className="w-7 text-center text-xs text-foreground tabular-nums select-none">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-black/5 transition-colors"
+                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
                         aria-label="Increase quantity"
                       >
                         <Plus size={11} strokeWidth={2} />
                       </button>
                     </div>
 
-                    <span className="text-xs font-bold text-foreground tabular-nums">
+                    <span className="text-xs text-foreground tabular-nums">
                       {formatRupiah(item.price * item.quantity)}
                     </span>
                   </div>
@@ -158,7 +158,7 @@ export default function CartPage() {
                 <div key={label} className="flex items-center gap-2.5 min-w-0">
                   <Icon size={15} className="text-disabled flex-shrink-0" strokeWidth={1.5} />
                   <div className="min-w-0">
-                    <p className="text-[10px] font-semibold text-foreground tracking-wide truncate">{label}</p>
+                    <p className="text-[10px] text-foreground tracking-wide truncate">{label}</p>
                     <p className="text-[9px] text-muted truncate">{sub}</p>
                   </div>
                 </div>
@@ -186,16 +186,12 @@ export default function CartPage() {
                   <span className="text-xs text-muted">Shipping</span>
                   <span className="text-xs text-muted italic">Calculated at checkout</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted">Taxes &amp; Duties</span>
-                  <span className="text-xs font-medium text-foreground">Included</span>
-                </div>
               </div>
 
               {/* Total — the hero of this card */}
               <div className="px-6 py-5 bg-surface border-y border-border flex items-baseline justify-between">
                 <span className="text-label text-muted">Estimated Total</span>
-                <span className="text-2xl font-bold text-foreground tabular-nums">
+                <span className="text-2xl text-foreground tabular-nums">
                   {formatRupiah(subtotal())}
                 </span>
               </div>

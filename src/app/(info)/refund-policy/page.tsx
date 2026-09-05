@@ -12,7 +12,7 @@ export default function RefundPolicyPage() {
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Refund &amp; Exchange Policy</h1>
         <p className="text-[11px] text-muted tracking-wide">
-          Last updated: 2026 · Applies to all purchases made through the official RAZRBILZ website.
+          Last updated: October 2026 · Applies to all purchases made through the official RAZRBILZ website.
         </p>
       </header>
 
@@ -20,49 +20,40 @@ export default function RefundPolicyPage() {
       <div className="space-y-10 prose-policy">
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            1. Size Exchange Policy
+            All Sales Are Final
           </h2>
           <p>
-            We accept size exchanges within a maximum of{" "}
-            <strong>3 (three) calendar days</strong> from the date the order is received, based on the courier's tracking status.
+            All products purchased from RAZRBILZ are <strong>final sale</strong>. We do not accept returns or refunds for reasons such as change of mind, incorrect size selection, or personal preference. Please review your order carefully, including size, product name, and quantity, before completing your purchase.
+          </p>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-policy-heading border-b border-border pb-2.5">
+            Size Exchange
+          </h2>
+          <p>
+            If you wish to exchange your item for a different size, we will accommodate your request <strong>subject to stock availability</strong>. Please note the following:
           </p>
           <ul>
-            <li>Products must be in brand-new condition, unworn outdoors, and unwashed.</li>
-            <li>Original hangtags, labels, and packaging must be intact and fully complete.</li>
-            <li>Replacement size availability is subject to our current stock.</li>
-            <li>Must include a clear unboxing video (un-cut and un-edited)</li>
+            <li>All shipping costs for sending the item back to us and reshipping the replacement, including any applicable taxes and customs duties for international customers, are <strong>entirely the customer&apos;s responsibility</strong>.</li>
+            <li>We strongly recommend contacting us before sending anything to confirm size availability.</li>
           </ul>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-policy-heading border-b border-border pb-2.5">
-            2. Refund Policy
+            Defects Caused by Our Error
           </h2>
           <p>
-            Refunds are only applicable if the item received has a proven major manufacturing defect or if RAZRBILZ sent the wrong model/size, and the replacement stock is no longer available.
+            If a product arrives with a defect or issue that is caused by our negligence such as a manufacturing defect or incorrect item shipped, we will take <strong>full responsibility</strong> and cover all associated costs, including return shipping and reshipping fees.
           </p>
           <p>
-            Refunds will be processed back to the original bank account or payment method via Midtrans within <strong>3–7 business days</strong> after the returned item is received and verified by our team.
+            To be eligible, you must provide a <strong>clear, uncut, and unedited unboxing video</strong> as proof of the defect at the time of opening the package. Claims submitted without a valid unboxing video cannot be processed.
           </p>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-policy-heading border-b border-border pb-2.5">
-            3. Shipping Costs for Returns
-          </h2>
           <p>
-            For size exchanges requested by the customer, all return and re-shipping costs are covered by the buyer. If the return or exchange is due to an error made by RAZRBILZ, we will cover all shipping expenses in full.
-          </p>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-policy-heading border-b border-border pb-2.5">
-            4. How to Request a Return
-          </h2>
-          <p>
-            Please contact our Customer Support via the{" "}
-            <a href="/contact">Contact Us</a> page or send an email to{" "}
-            <strong>razrbilz@gmail.com</strong> with the following details Order ID / Order Number, a clear unboxing video (un-cut and un-edited), and details of the requested size.
+            To submit a claim, please reach out to us via the{" "}
+            <a href="/contact">Contact Us</a> page or email us at{" "}
+            <strong>razrbilz@gmail.com</strong> with your Order ID and unboxing video attached.
           </p>
         </section>
       </div>

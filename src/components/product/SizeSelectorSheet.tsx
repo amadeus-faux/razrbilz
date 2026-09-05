@@ -93,13 +93,13 @@ export default function SizeSelectorPopover({
           aria-label="Select size"
         >
           <div
-            className="relative w-full max-w-[340px] bg-white/98 backdrop-blur-xl border border-black/8 rounded-2xl shadow-2xl p-5 pointer-events-auto animate-popInCenter"
+            className="relative w-full max-w-[340px] bg-surface backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-5 pointer-events-auto animate-popInCenter"
             id="size-selector-popover"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header row */}
             <div className="flex items-center justify-center pb-3 border-b border-border">
-              <span className="text-[11px] font-semibold tracking-widest uppercase">
+              <span className="text-[11px] tracking-widest uppercase">
                 SELECT SIZE
               </span>
             </div>
@@ -123,14 +123,14 @@ export default function SizeSelectorPopover({
                     onClick={() => !isOutOfStock && handleSizeSelect(size)}
                     disabled={isOutOfStock}
                     className={[
-                      "relative h-12 rounded-xl text-xs font-semibold uppercase tracking-wider",
+                      "relative h-12 rounded-xl text-xs uppercase tracking-wider",
                       "flex flex-col items-center justify-center gap-0.5",
                       "transition-all duration-200",
                       isSelected
-                        ? "bg-foreground text-background ring-2 ring-foreground ring-offset-2 scale-[0.96]"
+                        ? "bg-foreground text-background ring-2 ring-foreground ring-offset-2 ring-offset-surface scale-[0.96]"
                         : isOutOfStock
                           ? "bg-surface text-disabled cursor-not-allowed opacity-40 line-through"
-                          : "bg-surface hover:bg-black/8 text-foreground active:scale-95",
+                          : "bg-surface hover:bg-surface-hover text-foreground active:scale-95",
                     ].join(" ")}
                     id={`popover-size-${size.toLowerCase()}`}
                   >
@@ -182,7 +182,7 @@ export default function SizeSelectorPopover({
 
               {showShipping && (
                 <div className="mt-2.5 text-[11px] text-muted leading-relaxed space-y-1.5 animate-fadeIn">
-                  <p className="font-semibold text-foreground text-[10px] uppercase tracking-widest">
+                  <p className="text-foreground text-[10px] uppercase tracking-widest">
                     PRE-ORDER ITEM
                   </p>
                   <p>
@@ -204,7 +204,7 @@ export default function SizeSelectorPopover({
           aria-label="Size guide"
         >
           <div
-            className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-border p-6 pointer-events-auto animate-popInCenter"
+            className="relative w-full max-w-sm bg-surface rounded-2xl shadow-2xl border border-border p-6 pointer-events-auto animate-popInCenter"
             onClick={(e) => e.stopPropagation()}
             id="size-chart-modal"
           >
@@ -212,7 +212,7 @@ export default function SizeSelectorPopover({
             <div className="flex items-center justify-center pb-3 border-b border-border mb-5">
               <div className="flex items-center gap-2">
                 <Ruler size={14} strokeWidth={1.5} className="text-muted" />
-                <span className="text-[11px] font-semibold tracking-widest uppercase">
+                <span className="text-[11px] tracking-widest uppercase">
                   Size Guide
                 </span>
               </div>
@@ -222,13 +222,13 @@ export default function SizeSelectorPopover({
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left pb-2.5 text-[10px] font-semibold tracking-widest text-muted uppercase">
+                  <th className="text-left pb-2.5 text-[10px] tracking-widest text-muted uppercase">
                     SIZE
                   </th>
-                  <th className="text-center pb-2.5 text-[10px] font-semibold tracking-widest text-muted uppercase">
+                  <th className="text-center pb-2.5 text-[10px] tracking-widest text-muted uppercase">
                     CHEST WIDTH
                   </th>
-                  <th className="text-center pb-2.5 text-[10px] font-semibold tracking-widest text-muted uppercase">
+                  <th className="text-center pb-2.5 text-[10px] tracking-widest text-muted uppercase">
                     LENGTH
                   </th>
                 </tr>
@@ -236,7 +236,7 @@ export default function SizeSelectorPopover({
               <tbody>
                 {SIZE_CHART.map((row) => (
                   <tr key={row.size} className="border-b border-border/40 last:border-0">
-                    <td className="py-3 font-semibold text-foreground">{row.size}</td>
+                    <td className="py-3 text-foreground">{row.size}</td>
                     <td className="py-3 text-center text-muted">{row.chest}</td>
                     <td className="py-3 text-center text-muted">{row.length}</td>
                   </tr>
@@ -252,7 +252,7 @@ export default function SizeSelectorPopover({
             {/* Back to selector */}
             <button
               onClick={() => setShowSizeChart(false)}
-              className="mt-4 w-full py-2.5 text-[11px] font-semibold tracking-widest uppercase text-foreground bg-surface hover:bg-black/8 rounded-xl transition-colors"
+              className="mt-4 w-full py-2.5 text-[11px] tracking-widest uppercase text-foreground bg-surface hover:bg-surface-hover rounded-xl transition-colors"
             >
               ← BACK TO SIZE SELECTION
             </button>
