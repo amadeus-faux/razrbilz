@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import OrdersTableClient from "./OrdersTableClient";
+import { AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,7 +15,8 @@ async function getOrders() {
       },
       orderBy: { createdAt: "desc" },
     });
-  } catch {
+  } catch (error) {
+    console.error("Admin orders fetch error:", error);
     return [];
   }
 }
@@ -23,31 +25,34 @@ export default async function AdminOrdersPage() {
   const orders = await getOrders();
 
   const failedCount = orders.filter(
-    (o) => o.paymentStatus === "paid" && (o.shippingOrderStatus === "FAILED" || (!o.biteshipOrderId && o.shippingOrderError))
+    (o) =>
+      o.paymentStatus === "paid" &&
+      (o.shippingOrderStatus === "FAILED" || (!o.biteshipOrderId && o.shippingOrderError))
   ).length;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">Pesanan</h1>
-          <p className="text-xs text-muted mt-1">
-            Daftar pesanan masuk dan manajemen status pengiriman Biteship
+          <h1 className="text-2xl font-bold tracking-tight text-[#f4f2ee]">Pesanan Masuk</h1>
+          <p className="text-xs text-[#8c8680] mt-1">
+            Daftar pesanan customer dan status pembuatan pengiriman logistik Biteship
           </p>
         </div>
 
         {failedCount > 0 && (
-          <div className="px-3 py-2 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-medium flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            <span>Ada {failedCount} pesanan gagal kirim ke Biteship (perlu ditindaklanjuti)</span>
+          <div className="px-4 py-2.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-300 font-medium flex items-center gap-2.5 shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+            <span className="leading-snug">
+              Ada {failedCount} pesanan gagal kirim ke Biteship (perlu ditindaklanjuti)
+            </span>
           </div>
         )}
       </div>
 
-      <div className="bg-white border border-border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-[#141412] border border-[#242320] rounded-2xl shadow-sm overflow-hidden">
         <OrdersTableClient initialOrders={orders as any} />
       </div>
     </div>
   );
 }
-

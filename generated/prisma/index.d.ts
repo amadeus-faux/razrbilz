@@ -3742,8 +3742,13 @@ export namespace Prisma {
     paymentStatus: string | null
     orderStatus: string | null
     trackingNumber: string | null
-    midtransOrderId: string | null
-    snapToken: string | null
+    duitkuReference: string | null
+    duitkuPaymentMethod: string | null
+    duitkuPaymentUrl: string | null
+    duitkuVaNumber: string | null
+    duitkuQrString: string | null
+    duitkuFee: string | null
+    duitkuStatusMessage: string | null
     createdAt: Date | null
     updatedAt: Date | null
     biteshipOrderId: string | null
@@ -3773,8 +3778,13 @@ export namespace Prisma {
     paymentStatus: string | null
     orderStatus: string | null
     trackingNumber: string | null
-    midtransOrderId: string | null
-    snapToken: string | null
+    duitkuReference: string | null
+    duitkuPaymentMethod: string | null
+    duitkuPaymentUrl: string | null
+    duitkuVaNumber: string | null
+    duitkuQrString: string | null
+    duitkuFee: string | null
+    duitkuStatusMessage: string | null
     createdAt: Date | null
     updatedAt: Date | null
     biteshipOrderId: string | null
@@ -3804,8 +3814,13 @@ export namespace Prisma {
     paymentStatus: number
     orderStatus: number
     trackingNumber: number
-    midtransOrderId: number
-    snapToken: number
+    duitkuReference: number
+    duitkuPaymentMethod: number
+    duitkuPaymentUrl: number
+    duitkuVaNumber: number
+    duitkuQrString: number
+    duitkuFee: number
+    duitkuStatusMessage: number
     createdAt: number
     updatedAt: number
     biteshipOrderId: number
@@ -3851,8 +3866,13 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     trackingNumber?: true
-    midtransOrderId?: true
-    snapToken?: true
+    duitkuReference?: true
+    duitkuPaymentMethod?: true
+    duitkuPaymentUrl?: true
+    duitkuVaNumber?: true
+    duitkuQrString?: true
+    duitkuFee?: true
+    duitkuStatusMessage?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -3882,8 +3902,13 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     trackingNumber?: true
-    midtransOrderId?: true
-    snapToken?: true
+    duitkuReference?: true
+    duitkuPaymentMethod?: true
+    duitkuPaymentUrl?: true
+    duitkuVaNumber?: true
+    duitkuQrString?: true
+    duitkuFee?: true
+    duitkuStatusMessage?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -3913,8 +3938,13 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     trackingNumber?: true
-    midtransOrderId?: true
-    snapToken?: true
+    duitkuReference?: true
+    duitkuPaymentMethod?: true
+    duitkuPaymentUrl?: true
+    duitkuVaNumber?: true
+    duitkuQrString?: true
+    duitkuFee?: true
+    duitkuStatusMessage?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -4031,8 +4061,13 @@ export namespace Prisma {
     paymentStatus: string
     orderStatus: string
     trackingNumber: string | null
-    midtransOrderId: string | null
-    snapToken: string | null
+    duitkuReference: string | null
+    duitkuPaymentMethod: string | null
+    duitkuPaymentUrl: string | null
+    duitkuVaNumber: string | null
+    duitkuQrString: string | null
+    duitkuFee: string | null
+    duitkuStatusMessage: string | null
     createdAt: Date
     updatedAt: Date
     biteshipOrderId: string | null
@@ -4081,8 +4116,13 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     trackingNumber?: boolean
-    midtransOrderId?: boolean
-    snapToken?: boolean
+    duitkuReference?: boolean
+    duitkuPaymentMethod?: boolean
+    duitkuPaymentUrl?: boolean
+    duitkuVaNumber?: boolean
+    duitkuQrString?: boolean
+    duitkuFee?: boolean
+    duitkuStatusMessage?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -4115,8 +4155,13 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     trackingNumber?: boolean
-    midtransOrderId?: boolean
-    snapToken?: boolean
+    duitkuReference?: boolean
+    duitkuPaymentMethod?: boolean
+    duitkuPaymentUrl?: boolean
+    duitkuVaNumber?: boolean
+    duitkuQrString?: boolean
+    duitkuFee?: boolean
+    duitkuStatusMessage?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -4146,8 +4191,13 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     trackingNumber?: boolean
-    midtransOrderId?: boolean
-    snapToken?: boolean
+    duitkuReference?: boolean
+    duitkuPaymentMethod?: boolean
+    duitkuPaymentUrl?: boolean
+    duitkuVaNumber?: boolean
+    duitkuQrString?: boolean
+    duitkuFee?: boolean
+    duitkuStatusMessage?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -4177,8 +4227,13 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     trackingNumber?: boolean
-    midtransOrderId?: boolean
-    snapToken?: boolean
+    duitkuReference?: boolean
+    duitkuPaymentMethod?: boolean
+    duitkuPaymentUrl?: boolean
+    duitkuVaNumber?: boolean
+    duitkuQrString?: boolean
+    duitkuFee?: boolean
+    duitkuStatusMessage?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -4189,7 +4244,7 @@ export namespace Prisma {
     shippingRetryCount?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "trackingNumber" | "midtransOrderId" | "snapToken" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "trackingNumber" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -4223,8 +4278,13 @@ export namespace Prisma {
       paymentStatus: string
       orderStatus: string
       trackingNumber: string | null
-      midtransOrderId: string | null
-      snapToken: string | null
+      duitkuReference: string | null
+      duitkuPaymentMethod: string | null
+      duitkuPaymentUrl: string | null
+      duitkuVaNumber: string | null
+      duitkuQrString: string | null
+      duitkuFee: string | null
+      duitkuStatusMessage: string | null
       createdAt: Date
       updatedAt: Date
       biteshipOrderId: string | null
@@ -4676,8 +4736,13 @@ export namespace Prisma {
     readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly orderStatus: FieldRef<"Order", 'String'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
-    readonly midtransOrderId: FieldRef<"Order", 'String'>
-    readonly snapToken: FieldRef<"Order", 'String'>
+    readonly duitkuReference: FieldRef<"Order", 'String'>
+    readonly duitkuPaymentMethod: FieldRef<"Order", 'String'>
+    readonly duitkuPaymentUrl: FieldRef<"Order", 'String'>
+    readonly duitkuVaNumber: FieldRef<"Order", 'String'>
+    readonly duitkuQrString: FieldRef<"Order", 'String'>
+    readonly duitkuFee: FieldRef<"Order", 'String'>
+    readonly duitkuStatusMessage: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly biteshipOrderId: FieldRef<"Order", 'String'>
@@ -8388,8 +8453,13 @@ export namespace Prisma {
     paymentStatus: 'paymentStatus',
     orderStatus: 'orderStatus',
     trackingNumber: 'trackingNumber',
-    midtransOrderId: 'midtransOrderId',
-    snapToken: 'snapToken',
+    duitkuReference: 'duitkuReference',
+    duitkuPaymentMethod: 'duitkuPaymentMethod',
+    duitkuPaymentUrl: 'duitkuPaymentUrl',
+    duitkuVaNumber: 'duitkuVaNumber',
+    duitkuQrString: 'duitkuQrString',
+    duitkuFee: 'duitkuFee',
+    duitkuStatusMessage: 'duitkuStatusMessage',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     biteshipOrderId: 'biteshipOrderId',
@@ -8687,8 +8757,13 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
     trackingNumber?: StringNullableFilter<"Order"> | string | null
-    midtransOrderId?: StringNullableFilter<"Order"> | string | null
-    snapToken?: StringNullableFilter<"Order"> | string | null
+    duitkuReference?: StringNullableFilter<"Order"> | string | null
+    duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
+    duitkuPaymentUrl?: StringNullableFilter<"Order"> | string | null
+    duitkuVaNumber?: StringNullableFilter<"Order"> | string | null
+    duitkuQrString?: StringNullableFilter<"Order"> | string | null
+    duitkuFee?: StringNullableFilter<"Order"> | string | null
+    duitkuStatusMessage?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableFilter<"Order"> | string | null
@@ -8720,8 +8795,13 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
-    midtransOrderId?: SortOrderInput | SortOrder
-    snapToken?: SortOrderInput | SortOrder
+    duitkuReference?: SortOrderInput | SortOrder
+    duitkuPaymentMethod?: SortOrderInput | SortOrder
+    duitkuPaymentUrl?: SortOrderInput | SortOrder
+    duitkuVaNumber?: SortOrderInput | SortOrder
+    duitkuQrString?: SortOrderInput | SortOrder
+    duitkuFee?: SortOrderInput | SortOrder
+    duitkuStatusMessage?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrderInput | SortOrder
@@ -8737,7 +8817,7 @@ export namespace Prisma {
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     orderNumber?: string
-    midtransOrderId?: string
+    duitkuReference?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -8757,7 +8837,12 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
     trackingNumber?: StringNullableFilter<"Order"> | string | null
-    snapToken?: StringNullableFilter<"Order"> | string | null
+    duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
+    duitkuPaymentUrl?: StringNullableFilter<"Order"> | string | null
+    duitkuVaNumber?: StringNullableFilter<"Order"> | string | null
+    duitkuQrString?: StringNullableFilter<"Order"> | string | null
+    duitkuFee?: StringNullableFilter<"Order"> | string | null
+    duitkuStatusMessage?: StringNullableFilter<"Order"> | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableFilter<"Order"> | string | null
@@ -8768,7 +8853,7 @@ export namespace Prisma {
     shippingRetryCount?: IntFilter<"Order"> | number
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
-  }, "id" | "orderNumber" | "midtransOrderId">
+  }, "id" | "orderNumber" | "duitkuReference">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
@@ -8789,8 +8874,13 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
-    midtransOrderId?: SortOrderInput | SortOrder
-    snapToken?: SortOrderInput | SortOrder
+    duitkuReference?: SortOrderInput | SortOrder
+    duitkuPaymentMethod?: SortOrderInput | SortOrder
+    duitkuPaymentUrl?: SortOrderInput | SortOrder
+    duitkuVaNumber?: SortOrderInput | SortOrder
+    duitkuQrString?: SortOrderInput | SortOrder
+    duitkuFee?: SortOrderInput | SortOrder
+    duitkuStatusMessage?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrderInput | SortOrder
@@ -8828,8 +8918,13 @@ export namespace Prisma {
     paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     orderStatus?: StringWithAggregatesFilter<"Order"> | string
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    midtransOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
-    snapToken?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuReference?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuPaymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuPaymentUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuVaNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuQrString?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuFee?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    duitkuStatusMessage?: StringNullableWithAggregatesFilter<"Order"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -9171,8 +9266,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -9204,8 +9304,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -9237,8 +9342,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9270,8 +9380,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9303,8 +9418,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -9334,8 +9454,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9365,8 +9490,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9805,8 +9935,13 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     trackingNumber?: SortOrder
-    midtransOrderId?: SortOrder
-    snapToken?: SortOrder
+    duitkuReference?: SortOrder
+    duitkuPaymentMethod?: SortOrder
+    duitkuPaymentUrl?: SortOrder
+    duitkuVaNumber?: SortOrder
+    duitkuQrString?: SortOrder
+    duitkuFee?: SortOrder
+    duitkuStatusMessage?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -9843,8 +9978,13 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     trackingNumber?: SortOrder
-    midtransOrderId?: SortOrder
-    snapToken?: SortOrder
+    duitkuReference?: SortOrder
+    duitkuPaymentMethod?: SortOrder
+    duitkuPaymentUrl?: SortOrder
+    duitkuVaNumber?: SortOrder
+    duitkuQrString?: SortOrder
+    duitkuFee?: SortOrder
+    duitkuStatusMessage?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -9874,8 +10014,13 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     trackingNumber?: SortOrder
-    midtransOrderId?: SortOrder
-    snapToken?: SortOrder
+    duitkuReference?: SortOrder
+    duitkuPaymentMethod?: SortOrder
+    duitkuPaymentUrl?: SortOrder
+    duitkuVaNumber?: SortOrder
+    duitkuQrString?: SortOrder
+    duitkuFee?: SortOrder
+    duitkuStatusMessage?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -10698,8 +10843,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -10730,8 +10880,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -10778,8 +10933,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10810,8 +10970,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10842,8 +11007,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -10874,8 +11044,13 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     trackingNumber?: string | null
-    midtransOrderId?: string | null
-    snapToken?: string | null
+    duitkuReference?: string | null
+    duitkuPaymentMethod?: string | null
+    duitkuPaymentUrl?: string | null
+    duitkuVaNumber?: string | null
+    duitkuQrString?: string | null
+    duitkuFee?: string | null
+    duitkuStatusMessage?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -10953,8 +11128,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10985,8 +11165,13 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    midtransOrderId?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuVaNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuQrString?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
+    duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null

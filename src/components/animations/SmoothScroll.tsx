@@ -22,6 +22,7 @@ export default function SmoothScroll({
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
+      prevent: (node) => Boolean((node as HTMLElement)?.closest?.("[data-lenis-prevent]")),
     });
 
     function raf(time: number) {

@@ -12,6 +12,7 @@ import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
 import type { BiteshipCourierRate } from "@/lib/biteship";
 import Link from "next/link";
 import Image from "next/image";
+import { PaymentModal, type PaymentModalData } from "@/components/checkout/PaymentModal";
 import {
   ArrowLeft,
   Loader2,
@@ -26,6 +27,13 @@ import {
 
 const emptyItems: CartItem[] = [];
 
+interface PaymentMethodOption {
+  paymentMethod: string;
+  paymentName: string;
+  paymentImage: string;
+  totalFee: string;
+}
+
 function subscribe(callback: () => void) {
   return useCartStore.subscribe(callback);
 }
@@ -36,7 +44,7 @@ function getServerSnapshot() {
   return emptyItems;
 }
 
-// â”€â”€ Reusable Field Label & Error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Reusable Field Label & Error ─────────────────────────────────────────────
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <label className="block text-[10px] uppercase font-medium text-muted tracking-[0.14em] mb-1.5">
@@ -56,13 +64,52 @@ const inputCls =
 const selectCls =
   "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all appearance-none pr-10 cursor-pointer";
 
+function getMethodCategory(m: PaymentMethodOption): string {
+  const code = m.paymentMethod.toUpperCase();
+  const name = m.paymentName.toUpperCase();
+
+  if (code === "VC" || name.includes("CREDIT CARD") || name.includes("KARTU KREDIT")) return "cc";
+  if (name.includes("QRIS") || code === "NQ" || code === "SP" || code === "LQ" || code === "GQ") return "qris";
+  if (code === "DA" || code === "OV" || code === "SA" || code === "LA" || name.includes("OVO") || name.includes("DANA") || name.includes("SHOPEEPAY") || name.includes("LINKAJA")) return "ewallet";
+  if (name.includes("VA") || name.includes("VIRTUAL") || code === "BC" || code === "M2" || code === "I1" || code === "BR" || code === "BT" || code === "B1" || code === "BV" || code === "VA" || code === "A1" || code === "NC" || code === "AG" || code === "S1") return "va";
+  return "other";
+}
+
+const PAYMENT_CATEGORIES = [
+  {
+    id: "va",
+    title: "Virtual Account",
+    badge: "BCA, Mandiri, BNI, BRI, Permata, dll",
+  },
+  {
+    id: "ewallet",
+    title: "E-Wallet",
+    badge: "DANA, OVO, ShopeePay App, LinkAja",
+  },
+  {
+    id: "qris",
+    title: "QRIS",
+    badge: "BCA Mobile, Livin, GoPay, OVO, DANA, dll",
+  },
+  {
+    id: "cc",
+    title: "Kartu Kredit",
+    badge: "Visa, Mastercard, JCB",
+  },
+  {
+    id: "other",
+    title: "Pembayaran Lainnya",
+    badge: "Indomaret, Retail, Paylater",
+  },
+];
+
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useSyncExternalStore(subscribe, getItemsSnapshot, getServerSnapshot);
   const subtotal = useCartStore((state) => state.subtotal);
   const clearCart = useCartStore((state) => state.clearCart);
 
-  // â”€â”€ Cascading location states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Cascading location states ──────────────────────────────────────────────
   const [provinces, setProvinces] = useState<string[]>(INDONESIA_PROVINCES);
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -73,12 +120,19 @@ export default function CheckoutPage() {
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
 
-  // â”€â”€ Shipping & Order states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Shipping & Order states ────────────────────────────────────────────────
   const [shippingRates, setShippingRates] = useState<BiteshipCourierRate[]>([]);
   const [selectedCourier, setSelectedCourier] = useState<BiteshipCourierRate | null>(null);
   const [loadingRates, setLoadingRates] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [rateError, setRateError] = useState("");
+
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodOption[]>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodOption | null>(null);
+  const [loadingMethods, setLoadingMethods] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("va");
+  const [modalData, setModalData] = useState<PaymentModalData | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const {
     register,
@@ -108,7 +162,7 @@ export default function CheckoutPage() {
   const isIndonesia = selectedCountry === "ID" || selectedCountry === "Indonesia";
   const isInternational = isCountrySelected && !isIndonesia;
 
-  // â”€â”€ 1. Load Provinces when country is Indonesia â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── 1. Load Provinces when country is Indonesia ─────────────────────────────
   useEffect(() => {
     let isMounted = true;
     async function loadProvinces() {
@@ -123,35 +177,20 @@ export default function CheckoutPage() {
         }
       } catch (err) {
         console.error("Failed to load provinces:", err);
-        if (isMounted) setProvinces(INDONESIA_PROVINCES);
       } finally {
         if (isMounted) setLoadingProvinces(false);
       }
     }
 
-    // Reset subordinate fields on country change
-    setValue("province", "");
-    setValue("city", "");
-    setValue("district", "");
-    setValue("postalCode", "");
-    setCities([]);
-    setDistricts([]);
-    setPostalCodesMap({});
-    setAvailablePostalCodes([]);
-    setSelectedCourier(null);
-    setShippingRates([]);
-
     if (isIndonesia) {
       loadProvinces();
-    } else {
-      setProvinces([]);
     }
     return () => {
       isMounted = false;
     };
-  }, [selectedCountry, isIndonesia, setValue]);
+  }, [isIndonesia]);
 
-  // â”€â”€ 2. Load Cities when Province changes (Indonesia) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── 2. Load Cities when Province changes (Indonesia) ───────────────────────
   useEffect(() => {
     let isMounted = true;
     async function loadCities() {
@@ -162,13 +201,13 @@ export default function CheckoutPage() {
       setLoadingCities(true);
       try {
         const res = await fetch(
-          `/api/shipping/areas?type=cities&province=${encodeURIComponent(selectedProvince)}`
+          `/api/shipping/areas?type=cities&province=${encodeURIComponent(
+            selectedProvince
+          )}`
         );
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.cities) {
-            setCities(data.cities);
-          }
+          if (isMounted) setCities(data.cities || []);
         }
       } catch (err) {
         console.error("Failed to load cities:", err);
@@ -182,7 +221,6 @@ export default function CheckoutPage() {
       setValue("district", "");
       setValue("postalCode", "");
       setDistricts([]);
-      setPostalCodesMap({});
       setAvailablePostalCodes([]);
       setSelectedCourier(null);
       setShippingRates([]);
@@ -193,7 +231,7 @@ export default function CheckoutPage() {
     };
   }, [selectedProvince, isIndonesia, setValue]);
 
-  // â”€â”€ 3. Load Districts & Postal Codes when City changes (Indonesia) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── 3. Load Districts & Postal Codes when City changes (Indonesia) ──────────
   useEffect(() => {
     let isMounted = true;
     async function loadDistricts() {
@@ -236,7 +274,7 @@ export default function CheckoutPage() {
     };
   }, [selectedCity, selectedProvince, isIndonesia, setValue]);
 
-  // â”€â”€ 4. Update available Postal Codes when District changes (Indonesia) â”€â”€â”€â”€â”€â”€
+  // ── 4. Update available Postal Codes when District changes (Indonesia) ──────
   useEffect(() => {
     if (isIndonesia && selectedDistrict) {
       const pCodes = postalCodesMap[selectedDistrict] || [];
@@ -249,7 +287,7 @@ export default function CheckoutPage() {
     }
   }, [selectedDistrict, postalCodesMap, isIndonesia, setValue]);
 
-  // â”€â”€ 5. Fetch shipping rates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── 5. Fetch shipping rates ─────────────────────────────────────────────────
   const fetchShippingRates = useCallback(
     async (countryCode: string, destPostalCode: string) => {
       setLoadingRates(true);
@@ -308,7 +346,45 @@ export default function CheckoutPage() {
     }
   }, [selectedCountry, postalCode, isInternational, isIndonesia, fetchShippingRates]);
 
-  // â”€â”€ Submit Checkout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── 6. Load Payment Methods from Duitku ─────────────────────────────────────
+  useEffect(() => {
+    let isMounted = true;
+    async function loadPaymentMethods() {
+      setLoadingMethods(true);
+      try {
+        const amount = subtotal() + (selectedCourier?.price || 0);
+        const res = await fetch(`/api/payments/duitku/methods?amount=${amount}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.methods && data.methods.length > 0) {
+            setPaymentMethods(data.methods);
+            setSelectedPaymentMethod((prev) => {
+              if (prev) {
+                const found = data.methods.find((m: PaymentMethodOption) => m.paymentMethod === prev.paymentMethod);
+                if (found) return found;
+              }
+              return (
+                data.methods.find((m: PaymentMethodOption) => m.paymentMethod === "BC") ||
+                data.methods.find((m: PaymentMethodOption) => m.paymentMethod === "VA") ||
+                data.methods[0]
+              );
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load payment methods:", err);
+      } finally {
+        if (isMounted) setLoadingMethods(false);
+      }
+    }
+
+    loadPaymentMethods();
+    return () => {
+      isMounted = false;
+    };
+  }, [subtotal, selectedCourier]);
+
+  // ── Submit Checkout ────────────────────────────────────────────────────────
   async function onSubmit(data: CheckoutFormData) {
     if (!selectedCourier) {
       alert("Silakan pilih opsi pengiriman.");
@@ -326,8 +402,9 @@ export default function CheckoutPage() {
           ...data,
           customerName: fullName,
           address: fullAddress,
-          courier: `${selectedCourier.courier_name} â€” ${selectedCourier.courier_service_name}`,
+          courier: `${selectedCourier.courier_name} - ${selectedCourier.courier_service_name}`,
           shippingCost: selectedCourier.price,
+          paymentMethod: selectedPaymentMethod?.paymentMethod || "VA",
           items: items.map((item) => ({
             productId: item.productId,
             size: item.size,
@@ -342,28 +419,34 @@ export default function CheckoutPage() {
         throw new Error(errData.error || "Checkout gagal diproses");
       }
 
-      const { snapToken, orderId } = await res.json();
+      const result = await res.json();
+      clearCart();
 
-      if (snapToken && typeof window !== "undefined" && window.snap) {
-        window.snap.pay(snapToken, {
-          onSuccess: () => {
-            clearCart();
-            router.push(`/payment/finish?order_id=${orderId}`);
-          },
-          onPending: () => {
-            clearCart();
-            router.push(`/payment/unfinish?order_id=${orderId}`);
-          },
-          onError: () => {
-            router.push(`/payment/error?order_id=${orderId}`);
-          },
-          onClose: () => {
-            // User closed payment dialog
-          },
+      // If method is VA or QRIS (or returns vaNumber / qrString), show modal on-page!
+      if (
+        result.vaNumber ||
+        result.qrString ||
+        selectedCategory === "va" ||
+        selectedCategory === "qris"
+      ) {
+        setModalData({
+          orderNumber: result.orderNumber,
+          total:
+            result.amount ||
+            total + (selectedPaymentMethod ? Number(selectedPaymentMethod.totalFee) : 0),
+          paymentMethod:
+            result.paymentMethod || selectedPaymentMethod?.paymentMethod || "VA",
+          paymentName: selectedPaymentMethod?.paymentName || "Virtual Account",
+          paymentImage: selectedPaymentMethod?.paymentImage,
+          vaNumber: result.vaNumber || null,
+          qrString: result.qrString || null,
+          paymentUrl: result.paymentUrl || null,
+          reference: result.reference || null,
+          instructionsUrl: result.paymentInstructionsUrl,
         });
+        setShowModal(true);
       } else {
-        clearCart();
-        router.push(`/payment/finish?order_id=${orderId}`);
+        router.push(result.paymentInstructionsUrl);
       }
     } catch (err) {
       alert(err instanceof Error ? err.message : "Terjadi kesalahan pada sistem.");
@@ -372,8 +455,8 @@ export default function CheckoutPage() {
     }
   }
 
-  // â”€â”€ Empty Cart State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (items.length === 0) {
+  // ── Empty Cart State ───────────────────────────────────────────────────────
+  if (items.length === 0 && !showModal) {
     return (
       <div className="container-shop pt-20 pb-36 min-h-[80vh] flex flex-col items-center justify-center">
         <div className="w-full max-w-sm bg-surface border border-border p-10 text-center rounded-2xl space-y-6">
@@ -448,338 +531,343 @@ export default function CheckoutPage() {
                       type="email"
                       placeholder="alex@example.com"
                       className={inputCls}
-                      id="checkout-email"
                     />
                     <FieldError message={errors.email?.message} />
                   </div>
 
-                  <label className="flex items-center gap-2.5 pt-1 cursor-pointer select-none">
+                  <div>
+                    <FieldLabel>Phone Number *</FieldLabel>
+                    <input
+                      {...register("phone")}
+                      type="tel"
+                      placeholder="08123456789"
+                      className={inputCls}
+                    />
+                    <FieldError message={errors.phone?.message} />
+                  </div>
+
+                  <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
                     <input
                       {...register("newsOffers")}
                       type="checkbox"
-                      className="w-4 h-4 rounded border-border text-foreground accent-foreground focus:ring-0 cursor-pointer"
+                      className="rounded border-border bg-surface text-foreground focus:ring-foreground"
                     />
-                    <span className="text-xs text-muted">
-                      Email me with news and exclusive RAZRBILZ drops
+                    <span className="text-[11px] text-muted">
+                      Email me with news and exclusive offers
                     </span>
                   </label>
                 </div>
               </div>
 
-              {/* 2. Delivery / Shipping Address */}
+              {/* 2. Delivery Address */}
               <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
-                <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
-                    2
-                  </span>
-                  <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                    DELIVERY ADDRESS
-                  </h2>
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
+                      2
+                    </span>
+                    <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
+                      DELIVERY ADDRESS
+                    </h2>
+                  </div>
                 </div>
 
                 <div className="space-y-3 pt-1">
-                  {/* Country Selection */}
+                  {/* Country Selector */}
                   <div>
                     <FieldLabel>Country / Region *</FieldLabel>
                     <div className="relative">
-                      <select
-                        {...register("country")}
-                        className={selectCls}
-                        id="checkout-country"
-                      >
-                        <option value="">â€” Pilih Negara â€”</option>
+                      <select {...register("country")} className={selectCls}>
+                        <option value="">Pilih Negara</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>
-                            {c.flag} {c.name} ({c.code})
+                            {c.name}
                           </option>
                         ))}
                       </select>
                       <ChevronDown
                         size={14}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                       />
                     </div>
                     <FieldError message={errors.country?.message} />
                   </div>
 
-                  {/* First name & Last name */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <FieldLabel>{isIndonesia ? "Nama Depan *" : "First Name *"}</FieldLabel>
+                      <FieldLabel>First Name *</FieldLabel>
                       <input
                         {...register("firstName")}
                         type="text"
-                        placeholder="E.g., John / Jane"
+                        placeholder="Alex"
                         className={inputCls}
-                        id="checkout-firstname"
                       />
                       <FieldError message={errors.firstName?.message} />
                     </div>
                     <div>
-                      <FieldLabel>{isIndonesia ? "Nama Belakang *" : "Last Name *"}</FieldLabel>
+                      <FieldLabel>Last Name</FieldLabel>
                       <input
                         {...register("lastName")}
                         type="text"
-                        placeholder="E.g., Doe"
+                        placeholder="Doe"
                         className={inputCls}
-                        id="checkout-lastname"
                       />
                     </div>
                   </div>
 
                   {/* Street Address */}
                   <div>
-                    <FieldLabel>{isIndonesia ? "Alamat Lengkap *" : "Address *"}</FieldLabel>
+                    <FieldLabel>Street Address *</FieldLabel>
                     <input
                       {...register("address")}
                       type="text"
-                      placeholder="Street address, house/building number"
+                      placeholder="Nama jalan, nomor rumah / gedung"
                       className={inputCls}
-                      id="checkout-address"
                     />
                     <FieldError message={errors.address?.message} />
                   </div>
 
-                  {/* Apartment, suite, etc. */}
+                  {/* Apartment / Suite */}
                   <div>
-                    <FieldLabel>Apartment, suite, etc. (optional)</FieldLabel>
+                    <FieldLabel>Apartment, suite, unit (optional)</FieldLabel>
                     <input
                       {...register("apartment")}
                       type="text"
-                      placeholder="Unit, suite, floor (optional)"
+                      placeholder="Lantai, blok, atau unit (opsional)"
                       className={inputCls}
-                      id="checkout-apartment"
                     />
                   </div>
 
-                  {/* â”€â”€ Cascading Location Fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Province */}
-                    <div>
-                      <FieldLabel>{isIndonesia ? "Provinsi *" : "State / Province *"}</FieldLabel>
-                      {isIndonesia ? (
+                  {/* ── Indonesia Cascading Location Fields ────────────── */}
+                  {isIndonesia && (
+                    <>
+                      {/* Province */}
+                      <div>
+                        <FieldLabel>Province *</FieldLabel>
                         <div className="relative">
                           <select
                             {...register("province")}
                             className={selectCls}
-                            id="checkout-province"
-                            disabled={!isCountrySelected || loadingProvinces}
+                            disabled={loadingProvinces}
                           >
                             <option value="">
-                              {!isCountrySelected
-                                ? "Pilih negara terlebih dahulu"
-                                : loadingProvinces
-                                  ? "Memuat daftar provinsi..."
-                                  : "â€” Pilih Provinsi â€”"}
+                              {loadingProvinces ? "Memuat Provinsi..." : "Pilih Provinsi"}
                             </option>
-                            {provinces.map((p) => (
-                              <option key={p} value={p}>
-                                {p}
+                            {provinces.map((prov) => (
+                              <option key={prov} value={prov}>
+                                {prov}
                               </option>
                             ))}
                           </select>
                           <ChevronDown
                             size={14}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                           />
                         </div>
-                      ) : (
-                        <input
-                          {...register("province")}
-                          type="text"
-                          placeholder="State / Province"
-                          className={inputCls}
-                          id="checkout-province"
-                          disabled={!isCountrySelected}
-                        />
-                      )}
-                      <FieldError message={errors.province?.message} />
-                    </div>
+                        <FieldError message={errors.province?.message} />
+                      </div>
 
-                    {/* City */}
-                    <div>
-                      <FieldLabel>{isIndonesia ? "Kota / Kabupaten *" : "City *"}</FieldLabel>
-                      {isIndonesia ? (
+                      {/* City */}
+                      <div>
+                        <FieldLabel>City / Regency *</FieldLabel>
                         <div className="relative">
                           <select
                             {...register("city")}
                             className={selectCls}
-                            id="checkout-city"
                             disabled={!selectedProvince || loadingCities}
                           >
                             <option value="">
                               {!selectedProvince
                                 ? "Pilih provinsi terlebih dahulu"
                                 : loadingCities
-                                  ? "Memuat daftar kota..."
-                                  : "â€” Pilih Kota / Kabupaten â€”"}
+                                  ? "Memuat Kota/Kabupaten..."
+                                  : "Pilih Kota / Kabupaten"}
                             </option>
-                            {cities.map((c) => (
-                              <option key={c} value={c}>
-                                {c}
+                            {cities.map((city) => (
+                              <option key={city} value={city}>
+                                {city}
                               </option>
                             ))}
                           </select>
                           <ChevronDown
                             size={14}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                           />
                         </div>
-                      ) : (
-                        <input
-                          {...register("city")}
-                          type="text"
-                          placeholder="City"
-                          className={inputCls}
-                          id="checkout-city"
-                          disabled={!isCountrySelected}
-                        />
-                      )}
-                      <FieldError message={errors.city?.message} />
-                    </div>
-                  </div>
+                        <FieldError message={errors.city?.message} />
+                      </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* District / Area */}
-                    <div>
-                      <FieldLabel>{isIndonesia ? "Kecamatan *" : "District / Area *"}</FieldLabel>
-                      {isIndonesia ? (
-                        <div className="relative">
-                          <select
-                            {...register("district")}
-                            className={selectCls}
-                            id="checkout-district"
-                            disabled={!selectedCity || loadingDistricts}
-                          >
-                            <option value="">
-                              {!selectedCity
-                                ? "Pilih kota terlebih dahulu"
-                                : loadingDistricts
-                                  ? "Memuat daftar kecamatan..."
-                                  : "â€” Pilih Kecamatan â€”"}
-                            </option>
-                            {districts.map((d) => (
-                              <option key={d} value={d}>
-                                {d}
+                      {/* District & Postal Code */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* District */}
+                        <div>
+                          <FieldLabel>District (Kecamatan) *</FieldLabel>
+                          <div className="relative">
+                            <select
+                              {...register("district")}
+                              className={selectCls}
+                              disabled={!selectedCity || loadingDistricts}
+                            >
+                              <option value="">
+                                {!selectedCity
+                                  ? "Pilih kota dulu"
+                                  : loadingDistricts
+                                    ? "Memuat..."
+                                    : "Pilih Kecamatan"}
                               </option>
-                            ))}
-                          </select>
-                          <ChevronDown
-                            size={14}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
-                          />
+                              {districts.map((dist) => (
+                                <option key={dist} value={dist}>
+                                  {dist}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown
+                              size={14}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                            />
+                          </div>
+                          <FieldError message={errors.district?.message} />
                         </div>
-                      ) : (
-                        <input
-                          {...register("district")}
-                          type="text"
-                          placeholder="District / Area"
-                          className={inputCls}
-                          id="checkout-district"
-                          disabled={!isCountrySelected}
-                        />
-                      )}
-                      <FieldError message={errors.district?.message} />
-                    </div>
 
-                    {/* Postal Code / Kode Pos */}
-                    <div>
-                      <FieldLabel>{isIndonesia ? "Kode Pos *" : "Postal Code *"}</FieldLabel>
-                      {isIndonesia && availablePostalCodes.length > 1 ? (
-                        <div className="relative">
-                          <select
+                        {/* Postal Code */}
+                        <div>
+                          <FieldLabel>Postal Code *</FieldLabel>
+                          {availablePostalCodes.length > 1 ? (
+                            <div className="relative">
+                              <select {...register("postalCode")} className={selectCls}>
+                                <option value="">Pilih Kode Pos</option>
+                                {availablePostalCodes.map((code) => (
+                                  <option key={code} value={code}>
+                                    {code}
+                                  </option>
+                                ))}
+                              </select>
+                              <ChevronDown
+                                size={14}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                              />
+                            </div>
+                          ) : (
+                            <input
+                              {...register("postalCode")}
+                              type="text"
+                              maxLength={5}
+                              placeholder={
+                                availablePostalCodes.length === 1
+                                  ? availablePostalCodes[0]
+                                  : "Contoh: 12345"
+                              }
+                              className={inputCls}
+                            />
+                          )}
+                          <FieldError message={errors.postalCode?.message} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* ── International Address Fields ─────────────────────── */}
+                  {isInternational && (
+                    <>
+                      <div>
+                        <FieldLabel>State / Province / Region</FieldLabel>
+                        <input
+                          {...register("province")}
+                          type="text"
+                          placeholder="e.g. California, Ontario, NSW"
+                          className={inputCls}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <FieldLabel>City *</FieldLabel>
+                          <input
+                            {...register("city")}
+                            type="text"
+                            placeholder="e.g. Los Angeles"
+                            className={inputCls}
+                          />
+                          <FieldError message={errors.city?.message} />
+                        </div>
+                        <div>
+                          <FieldLabel>Postal / ZIP Code *</FieldLabel>
+                          <input
                             {...register("postalCode")}
-                            className={selectCls}
-                            id="checkout-postal"
-                            disabled={!selectedDistrict}
-                          >
-                            <option value="">â€” Pilih Kode Pos â€”</option>
-                            {availablePostalCodes.map((pc) => (
-                              <option key={pc} value={pc}>
-                                {pc}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown
-                            size={14}
-                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+                            type="text"
+                            placeholder="e.g. 90001"
+                            className={inputCls}
                           />
+                          <FieldError message={errors.postalCode?.message} />
                         </div>
-                      ) : (
-                        <input
-                          {...register("postalCode")}
-                          type="text"
-                          placeholder={
-                            isIndonesia && !selectedDistrict
-                              ? "Pilih kecamatan dahulu"
-                              : "40123"
-                          }
-                          maxLength={10}
-                          className={inputCls}
-                          id="checkout-postal"
-                          disabled={isIndonesia ? !selectedDistrict : !isCountrySelected}
-                        />
-                      )}
-                      <FieldError message={errors.postalCode?.message} />
-                    </div>
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <FieldLabel>Phone Number *</FieldLabel>
-                    <input
-                      {...register("phone")}
-                      type="tel"
-                      placeholder="+62 812 3456 7890"
-                      className={inputCls}
-                      id="checkout-phone"
-                    />
-                    <FieldError message={errors.phone?.message} />
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* 3. Shipping Method */}
+              {/* 3. Shipping Options */}
               <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
-                <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
-                    3
-                  </span>
-                  <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                    SHIPPING METHOD
-                  </h2>
+                <div className="flex items-center justify-between pb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
+                      3
+                    </span>
+                    <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
+                      SHIPPING METHOD
+                    </h2>
+                  </div>
+                  {shippingRates.length > 0 && (
+                    <span className="text-[10px] text-muted uppercase tracking-wider">
+                      {shippingRates.length} opsi tersedia
+                    </span>
+                  )}
                 </div>
 
-                {loadingRates ? (
-                  <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2.5 text-xs text-muted border border-border">
-                    <Loader2 size={15} className="animate-spin text-foreground" />
-                    <span>Menghitung opsi kurir...</span>
+                {/* Shipping rates loading indicator */}
+                {loadingRates && (
+                  <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted">
+                    <Loader2 size={16} className="animate-spin text-foreground" />
+                    <span>Menghitung tarif pengiriman Biteship...</span>
                   </div>
-                ) : rateError ? (
-                  <div className="p-4 bg-surface text-red-400 text-xs rounded-xl flex items-center gap-2 border border-red-500/20">
-                    <AlertCircle size={15} />
-                    <span>{rateError}</span>
+                )}
+
+                {/* Rate error state */}
+                {!loadingRates && rateError && (
+                  <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-xl flex items-start gap-3">
+                    <AlertCircle size={15} className="text-red-400 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-400 leading-relaxed">{rateError}</p>
                   </div>
-                ) : shippingRates.length > 0 ? (
+                )}
+
+                {/* Empty state: location not completed yet */}
+                {!loadingRates && !rateError && shippingRates.length === 0 && (
+                  <div className="py-6 text-center text-xs text-muted space-y-1">
+                    <Truck size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
+                    <p>Lengkapi alamat pengiriman di atas untuk melihat opsi kurir.</p>
+                  </div>
+                )}
+
+                {/* Rates list */}
+                {!loadingRates && shippingRates.length > 0 && (
                   <div className="space-y-2 pt-1">
-                    {shippingRates.map((rate, idx) => {
+                    {shippingRates.map((rate) => {
                       const isSelected =
                         selectedCourier?.courier_code === rate.courier_code &&
                         selectedCourier?.courier_service_code === rate.courier_service_code;
                       return (
                         <button
-                          key={`${rate.courier_code}-${rate.courier_service_code}-${idx}`}
+                          key={`${rate.courier_code}-${rate.courier_service_code}`}
                           type="button"
                           onClick={() => setSelectedCourier(rate)}
                           className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer ${isSelected
                             ? "border-foreground bg-surface ring-1 ring-foreground"
                             : "border-border hover:border-foreground/30 bg-surface"
                             }`}
-                          id={`courier-option-${idx}`}
                         >
-                          <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="flex items-center gap-3">
                             <div
-                              className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isSelected
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${isSelected
                                 ? "border-foreground bg-foreground"
                                 : "border-border bg-surface-hover"
                                 }`}
@@ -788,35 +876,27 @@ export default function CheckoutPage() {
                                 <div className="w-1.5 h-1.5 rounded-full bg-background" />
                               )}
                             </div>
-                            <div className="min-w-0">
-                              <p className="text-xs uppercase tracking-wider text-foreground truncate">
+                            <div>
+                              <p className="text-xs uppercase tracking-wider text-foreground">
                                 {rate.courier_name} — {rate.courier_service_name}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
-                                {rate.duration} ({rate.description})
+                                Estimasi tiba: {rate.duration || "2-4 hari kerja"}
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs text-foreground whitespace-nowrap ml-3">
+                          <span className="text-xs text-foreground font-mono">
                             {formatRupiah(rate.price)}
                           </span>
                         </button>
                       );
                     })}
                   </div>
-                ) : (
-                  <div className="p-6 bg-surface rounded-xl text-center text-xs text-muted border border-border leading-relaxed">
-                    {!isCountrySelected
-                      ? "Pilih negara pengiriman di atas untuk melihat metode pengiriman."
-                      : isIndonesia && (!postalCode || postalCode.length < 4)
-                        ? "Lengkapi pemilihan provinsi, kota, kecamatan, dan kode pos untuk memuat opsi kurir."
-                        : "Tidak ada opsi pengiriman yang tersedia."}
-                  </div>
                 )}
               </div>
 
               {/* 4. Payment Gateway Info */}
-              <div className="bg-surface border border-border p-6 rounded-2xl space-y-3">
+              <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-border">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center flex-shrink-0">
@@ -826,10 +906,154 @@ export default function CheckoutPage() {
                       PAYMENT METHOD
                     </h2>
                   </div>
+                  <div className="flex items-center gap-1.5 text-muted">
+                    <ShieldCheck size={14} className="text-foreground" />
+                    <span className="text-[10px] uppercase tracking-wider">Tersertifikasi BI</span>
+                  </div>
                 </div>
-                <p className="text-xs text-muted leading-relaxed">
-                  After clicking <strong>PRE-ORDER NOW</strong>, the Midtrans payment popup will appear.
-                </p>
+
+                <div className="p-3 bg-surface/50 border border-border/80 rounded-xl text-[11px] text-muted flex items-start gap-2.5">
+                  <CreditCard size={14} className="mt-0.5 text-foreground flex-shrink-0" />
+                  <p className="leading-relaxed">
+                    Sistem pembayaran resmi RAZRBILZ didukung oleh Duitku. Sesuai ketentuan,
+                    <strong className="text-foreground font-medium"> biaya layanan transaksi dibebankan ke pembeli</strong> dan ditambahkan otomatis pada Total Due.
+                  </p>
+                </div>
+
+                {loadingMethods ? (
+                  <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2 text-xs text-muted border border-border">
+                    <Loader2 size={15} className="animate-spin text-foreground" />
+                    <span>Memuat pilihan metode pembayaran...</span>
+                  </div>
+                ) : paymentMethods.length > 0 ? (
+                  <div className="space-y-2.5 pt-1">
+                    {PAYMENT_CATEGORIES.map((cat) => {
+                      const categoryMethods = paymentMethods.filter(
+                        (m) => getMethodCategory(m) === cat.id
+                      );
+                      if (categoryMethods.length === 0) return null;
+
+                      const isExpanded = selectedCategory === cat.id;
+                      const isCategoryActive =
+                        selectedPaymentMethod &&
+                        getMethodCategory(selectedPaymentMethod) === cat.id;
+
+                      return (
+                        <div
+                          key={cat.id}
+                          className={`border rounded-xl transition-all overflow-hidden ${isCategoryActive
+                            ? "border-foreground/80 bg-surface/80 shadow-sm"
+                            : "border-border bg-surface hover:border-foreground/30"
+                            }`}
+                        >
+                          {/* Accordion Category Header */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedCategory(cat.id);
+                              if (!isCategoryActive && categoryMethods.length > 0) {
+                                setSelectedPaymentMethod(categoryMethods[0]);
+                              }
+                            }}
+                            className="w-full flex items-center justify-between p-3.5 text-left cursor-pointer transition-colors"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div
+                                className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isCategoryActive
+                                  ? "border-foreground bg-foreground"
+                                  : "border-border bg-surface-hover"
+                                  }`}
+                              >
+                                {isCategoryActive && (
+                                  <div className="w-1.5 h-1.5 rounded-full bg-background" />
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-xs uppercase tracking-wider text-foreground font-semibold">
+                                    {cat.title}
+                                  </p>
+                                  {isCategoryActive && selectedPaymentMethod && (
+                                    <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-foreground text-background font-medium tracking-wide">
+                                      {selectedPaymentMethod.paymentName}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-muted mt-0.5 truncate">
+                                  {cat.badge}
+                                </p>
+                              </div>
+                            </div>
+                            <ChevronDown
+                              size={15}
+                              className={`text-muted transition-transform duration-200 flex-shrink-0 ml-2 ${isExpanded ? "rotate-180 text-foreground" : ""
+                                }`}
+                            />
+                          </button>
+
+                          {/* Expanded Sub-Methods List */}
+                          {isExpanded && (
+                            <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
+                              <p className="text-[10px] uppercase text-muted tracking-wider pt-2 pb-1 font-medium">
+                                Pilih {cat.title}:
+                              </p>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                {categoryMethods.map((method) => {
+                                  const isSelected =
+                                    selectedPaymentMethod?.paymentMethod === method.paymentMethod;
+                                  const feeNumber = Number(method.totalFee);
+                                  return (
+                                    <button
+                                      key={method.paymentMethod}
+                                      type="button"
+                                      onClick={() => setSelectedPaymentMethod(method)}
+                                      className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${isSelected
+                                        ? "border-foreground bg-surface-hover ring-1 ring-foreground"
+                                        : "border-border hover:border-foreground/30 bg-surface/60"
+                                        }`}
+                                    >
+                                      <div className="flex items-center gap-3 min-w-0">
+                                        <div
+                                          className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isSelected
+                                            ? "border-foreground bg-foreground"
+                                            : "border-border bg-surface"
+                                            }`}
+                                        >
+                                          {isSelected && (
+                                            <div className="w-1.5 h-1.5 rounded-full bg-background" />
+                                          )}
+                                        </div>
+                                        {method.paymentImage && (
+                                          <div className="relative w-10 h-5 flex-shrink-0 bg-white rounded p-0.5 flex items-center justify-center">
+                                            <img
+                                              src={method.paymentImage}
+                                              alt={method.paymentName}
+                                              className="max-h-full max-w-full object-contain"
+                                            />
+                                          </div>
+                                        )}
+                                        <p className="text-xs text-foreground truncate font-medium">
+                                          {method.paymentName}
+                                        </p>
+                                      </div>
+                                      <span className="text-[10px] text-muted whitespace-nowrap ml-2">
+                                        {feeNumber > 0 ? `+ ${formatRupiah(feeNumber)}` : "Bebas Biaya"}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted leading-relaxed">
+                    Setelah menekan <strong>PRE-ORDER NOW</strong>, instruksi pembayaran Duitku akan ditampilkan di halaman selanjutnya.
+                  </p>
+                )}
               </div>
 
             </div>
@@ -901,47 +1125,55 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted">Biaya Layanan Duitku</span>
+                    <span className="text-foreground">
+                      {selectedPaymentMethod
+                        ? Number(selectedPaymentMethod.totalFee) > 0
+                          ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
+                          : "Bebas Biaya"
+                        : "Ditanggung Pembeli"}
+                    </span>
+                  </div>
+
                   {/* Total Due */}
                   <div className="pt-4 border-t border-border flex justify-between items-baseline">
-                    <span className="text-[11px] uppercase tracking-widest text-foreground">
-                      TOTAL DUE
-                    </span>
+                    <div>
+                      <span className="text-[11px] uppercase tracking-widest text-foreground block">
+                        TOTAL DUE
+                      </span>
+                      {selectedPaymentMethod && Number(selectedPaymentMethod.totalFee) > 0 && (
+                        <span className="text-[10px] text-muted block mt-0.5">
+                          Termasuk ongkir & biaya layanan
+                        </span>
+                      )}
+                    </div>
                     <span className="text-lg text-foreground">
-                      {formatRupiah(total)}
+                      {formatRupiah(total + (selectedPaymentMethod ? Number(selectedPaymentMethod.totalFee) : 0))}
                     </span>
                   </div>
                 </div>
 
-                {/* Submit / Pay CTA */}
-                <div className="px-6 pb-6 space-y-3">
+                {/* Action Button */}
+                <div className="px-6 pb-6">
                   <button
                     type="submit"
-                    disabled={!selectedCourier || submitting}
-                    className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background text-[11px] tracking-[0.15em] uppercase rounded-xl hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md"
-                    id="btn-pay"
+                    disabled={submitting || !selectedCourier}
+                    className="w-full py-4 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer font-medium shadow-sm"
                   >
                     {submitting ? (
                       <>
-                        <Loader2 size={14} className="animate-spin" />
-                        PROCESSING ORDER...
+                        <Loader2 size={16} className="animate-spin" />
+                        <span>MEMPROSES PESANAN...</span>
                       </>
                     ) : (
-                      `PRE-ORDER NOW`
+                      <span>PRE-ORDER NOW</span>
                     )}
                   </button>
-
-                  <div className="flex items-center justify-center gap-4 text-[9px] text-muted">
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck size={11} strokeWidth={1.5} />
-                      SSL Encrypted
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Truck size={11} strokeWidth={1.5} />
-                      Insured Delivery
-                    </span>
-                  </div>
+                  <p className="text-[10px] text-muted text-center mt-3 tracking-wide">
+                    Taxes calculated at next step &bull; Guaranteed safe checkout
+                  </p>
                 </div>
-
               </div>
             </div>
 
@@ -949,25 +1181,18 @@ export default function CheckoutPage() {
         </form>
 
       </div>
+
+      {/* On-Page Payment Modal for Direct VA & QRIS settlement */}
+      <PaymentModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          if (modalData?.instructionsUrl) {
+            router.push(modalData.instructionsUrl);
+          }
+        }}
+        data={modalData}
+      />
     </div>
   );
 }
-
-// Declare Midtrans Snap global type
-declare global {
-  interface Window {
-    snap?: {
-      pay: (
-        token: string,
-        options: {
-          onSuccess?: () => void;
-          onPending?: () => void;
-          onError?: () => void;
-          onClose?: () => void;
-        }
-      ) => void;
-    };
-  }
-}
-
-

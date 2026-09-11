@@ -2,10 +2,12 @@
 
 import ProductCard from "./ProductCard";
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   slug: string;
+  description?: string;
+  price?: number;
   images: string[];
 }
 
@@ -42,6 +44,16 @@ function getColStarts(count: number, cols: number): number[] {
 export default function ProductGrid({ products }: ProductGridProps) {
   const count = products.length;
 
+  if (count === 0) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-xs uppercase tracking-[0.18em] text-muted">
+          No products currently available
+        </p>
+      </div>
+    );
+  }
+
   const mobileCols = getMaxCols(count, false);
   const desktopCols = getMaxCols(count, true);
 
@@ -76,6 +88,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
             <ProductCard
               name={product.name}
               slug={product.slug}
+              description={product.description}
+              price={product.price}
               image={product.images[0] || "/placeholder-product.svg"}
               index={index}
             />

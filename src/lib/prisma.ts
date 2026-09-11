@@ -20,7 +20,7 @@ function createPrismaClient() {
   const pool = new Pool({
     connectionString,
     ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-    max: 10,
+    max: 5,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
   });
@@ -31,4 +31,4 @@ function createPrismaClient() {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;

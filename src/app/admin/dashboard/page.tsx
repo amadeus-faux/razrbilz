@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
-import { Package, ShoppingBag, DollarSign, Clock } from "lucide-react";
+import { Package, ShoppingBag, DollarSign, Clock, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ async function getDashboardStats() {
     });
     const totalProducts = await prisma.product.count();
     const recentOrders = await prisma.order.findMany({
-      take: 5,
+      take: 6,
       orderBy: { createdAt: "desc" },
     });
 
@@ -30,12 +30,13 @@ async function getDashboardStats() {
       totalProducts,
       recentOrders,
     };
-  } catch {
+  } catch (error) {
+    console.error("Dashboard stats error:", error);
     return {
       totalOrders: 0,
       revenue: 0,
       pendingOrders: 0,
-      totalProducts: 8,
+      totalProducts: 0,
       recentOrders: [],
     };
   }
@@ -44,90 +45,135 @@ async function getDashboardStats() {
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
 
+  const statCards = [
+    {
+      label: "Total Pendapatan",
+      value: formatRupiah(stats.revenue),
+      icon: DollarSign,
+      sub: "Dari pesanan terverifikasi",
+    },
+    {
+      label: "Total Pesanan",
+      value: stats.totalOrders.toLocaleString("id-ID"),
+      icon: ShoppingBag,
+      sub: "Semua status pesanan",
+    },
+    {
+      label: "Pesanan Menunggu",
+      value: stats.pendingOrders.toLocaleString("id-ID"),
+      icon: Clock,
+      sub: "Menunggu pembayaran",
+    },
+    {
+      label: "Total Produk",
+      value: stats.totalProducts.toLocaleString("id-ID"),
+      icon: Package,
+      sub: "Katalog aktif di toko",
+    },
+  ];
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-xl font-semibold">Dashboard</h1>
-        <p className="text-xs text-muted mt-1">Ringkasan performa toko RAZRBILZ</p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#f4f2ee]">Dashboard</h1>
+          <p className="text-xs text-[#8c8680] mt-1">Ringkasan performa dan aktivitas toko RAZRBILZ</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/products/new"
+            className="px-4 py-2 bg-white text-black text-xs font-semibold uppercase tracking-wider rounded-xl hover:bg-neutral-200 transition-colors inline-flex items-center gap-1.5 shadow-sm"
+          >
+            <span>+ Tambah Produk</span>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 border border-border">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted">Total Pendapatan</span>
-            <DollarSign size={16} className="text-muted" />
+        {statCards.map(({ label, value, icon: Icon, sub }) => (
+          <div
+            key={label}
+            className="bg-[#141412] border border-[#242320] rounded-2xl p-5 hover:border-[#383530] transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-[#9c968f]">{label}</span>
+              <div className="w-8 h-8 rounded-xl bg-[#1c1b18] border border-white/5 flex items-center justify-center text-[#dedad3]">
+                <Icon size={16} strokeWidth={1.75} />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-[#f4f2ee] tracking-tight mt-3">
+              {value}
+            </p>
+            <p className="text-[11px] text-[#736e67] mt-1">{sub}</p>
           </div>
-          <p className="text-lg font-semibold mt-2">
-            {formatRupiah(stats.revenue)}
-          </p>
-        </div>
-
-        <div className="bg-white p-5 border border-border">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted">Total Pesanan</span>
-            <ShoppingBag size={16} className="text-muted" />
-          </div>
-          <p className="text-lg font-semibold mt-2">{stats.totalOrders}</p>
-        </div>
-
-        <div className="bg-white p-5 border border-border">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted">Pesanan Pending</span>
-            <Clock size={16} className="text-muted" />
-          </div>
-          <p className="text-lg font-semibold mt-2">{stats.pendingOrders}</p>
-        </div>
-
-        <div className="bg-white p-5 border border-border">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted">Total Produk</span>
-            <Package size={16} className="text-muted" />
-          </div>
-          <p className="text-lg font-semibold mt-2">{stats.totalProducts}</p>
-        </div>
+        ))}
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white border border-border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold">Pesanan Terbaru</h2>
+      <div className="bg-[#141412] border border-[#242320] rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="text-base font-semibold text-[#f4f2ee]">Pesanan Terbaru</h2>
+            <p className="text-xs text-[#8c8680] mt-0.5">Daftar transaksi yang baru saja masuk</p>
+          </div>
           <Link
             href="/admin/orders"
-            className="text-xs text-muted hover:text-foreground transition-colors"
+            className="text-xs text-[#9c968f] hover:text-[#f4f2ee] inline-flex items-center gap-1 transition-colors group"
           >
-            Lihat Semua →
+            <span>Lihat Semua</span>
+            <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>
 
         {stats.recentOrders.length === 0 ? (
-          <p className="text-xs text-muted py-4 text-center">
+          <div className="py-12 text-center text-xs text-[#8c8680] bg-[#1a1917]/40 rounded-xl border border-dashed border-[#282623]">
             Belum ada pesanan masuk.
-          </p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border text-muted">
-                  <th className="pb-3">No. Pesanan</th>
-                  <th className="pb-3">Customer</th>
-                  <th className="pb-3">Total</th>
-                  <th className="pb-3">Status Bayar</th>
-                  <th className="pb-3">Status Order</th>
+                <tr className="border-b border-[#242320] text-[#8c8680] uppercase tracking-wider font-semibold text-[11px]">
+                  <th className="pb-3.5 pr-4">No. Pesanan</th>
+                  <th className="pb-3.5 px-4">Customer</th>
+                  <th className="pb-3.5 px-4">Total</th>
+                  <th className="pb-3.5 px-4">Status Pembayaran</th>
+                  <th className="pb-3.5 pl-4">Status Pengiriman</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
-                {stats.recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-surface">
-                    <td className="py-3 font-mono">{order.orderNumber}</td>
-                    <td className="py-3">{order.customerName}</td>
-                    <td className="py-3">{formatRupiah(order.total)}</td>
-                    <td className="py-3 uppercase font-medium">
-                      {order.paymentStatus}
-                    </td>
-                    <td className="py-3 capitalize">{order.orderStatus}</td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-[#201f1c]">
+                {stats.recentOrders.map((order) => {
+                  const isPaid = order.paymentStatus === "paid";
+                  return (
+                    <tr key={order.id} className="hover:bg-[#1a1917]/60 transition-colors">
+                      <td className="py-3.5 pr-4 font-mono font-medium text-[#f4f2ee]">
+                        {order.orderNumber}
+                      </td>
+                      <td className="py-3.5 px-4 text-[#dedad3] font-medium">
+                        {order.customerName}
+                      </td>
+                      <td className="py-3.5 px-4 font-semibold text-[#f4f2ee]">
+                        {formatRupiah(order.total)}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 text-[10px] uppercase font-semibold tracking-wider rounded-full border ${
+                            isPaid
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          }`}
+                        >
+                          {order.paymentStatus}
+                        </span>
+                      </td>
+                      <td className="py-3.5 pl-4 capitalize text-[#9c968f]">
+                        {order.orderStatus}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

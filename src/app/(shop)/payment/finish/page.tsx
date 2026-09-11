@@ -3,6 +3,10 @@ import { formatRupiah } from "@/lib/utils";
 import { CheckCircle2, ArrowRight, Package, Truck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
+import { syncOrderPaymentStatus } from "@/lib/order-fulfillment";
+
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   searchParams: Promise<{ order_id?: string; id?: string }>;
 }
@@ -10,7 +14,7 @@ interface PageProps {
 async function getOrder(orderId?: string) {
   if (!orderId) return null;
   try {
-    return await prisma.order.findFirst({
+    let order = await prisma.order.findFirst({
       where: {
         OR: [{ orderNumber: orderId }, { id: orderId }],
       },
@@ -20,6 +24,13 @@ async function getOrder(orderId?: string) {
         },
       },
     });
+
+    if (order && order.paymentStatus !== "paid") {
+      const synced = await syncOrderPaymentStatus(order.orderNumber);
+      if (synced) order = synced;
+    }
+
+    return order;
   } catch {
     return null;
   }

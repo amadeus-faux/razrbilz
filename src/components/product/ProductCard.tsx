@@ -2,10 +2,13 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useProductTransition } from "@/context/ProductTransitionContext";
+import { formatRupiah } from "@/lib/utils";
 
 interface ProductCardProps {
   name: string;
   slug: string;
+  description?: string;
+  price?: number;
   image: string;
   index?: number;
 }
@@ -13,6 +16,8 @@ interface ProductCardProps {
 export default function ProductCard({
   name,
   slug,
+  description,
+  price,
   image,
   index = 0,
 }: ProductCardProps) {
@@ -49,10 +54,20 @@ export default function ProductCard({
       </div>
 
       {/* Product info */}
-      <div className="mt-2.5 text-center space-y-0.5">
+      <div className="mt-3 text-center space-y-1">
         <span className="text-product-name block transition-opacity duration-200 group-hover:opacity-60">
           {name}
         </span>
+        {description && (
+          <p className="text-[11px] text-muted line-clamp-2 max-w-[260px] mx-auto font-light leading-relaxed">
+            {description}
+          </p>
+        )}
+        {typeof price === "number" && (
+          <span className="text-price block font-medium">
+            {formatRupiah(price)}
+          </span>
+        )}
       </div>
     </Link>
   );

@@ -471,43 +471,57 @@ export function parseCourierString(courierStr: string): {
   company: string;
   type: string;
 } {
-  const parts = courierStr.split("—").map((s) => s.trim());
+  // Support multiple delimiters: —, –, -, â€”, Â€“
+  const parts = courierStr.split(/—|–|-|â€”|Â€“/).map((s) => s.trim());
   let companyRaw = (parts[0] || "sicepat").toLowerCase().replace(/[^a-z0-9]/g, "");
-  let serviceRaw = (parts[1] || "reg").toLowerCase().trim();
+  let serviceRaw = (parts[1] || "").toLowerCase().trim();
 
   // Normalize company names for Biteship
-  if (companyRaw.includes("sicepat")) companyRaw = "sicepat";
-  else if (companyRaw.includes("jne")) companyRaw = "jne";
-  else if (companyRaw.includes("jnt") || companyRaw.includes("jt")) companyRaw = "jnt";
-  else if (companyRaw.includes("anteraja")) companyRaw = "anteraja";
-  else if (companyRaw.includes("tiki")) companyRaw = "tiki";
-  else if (companyRaw.includes("pos")) companyRaw = "pos";
-  else if (companyRaw.includes("ninja")) companyRaw = "ninja";
-  else if (companyRaw.includes("lion")) companyRaw = "lion";
+  let company = "sicepat";
+  if (companyRaw.includes("sicepat")) company = "sicepat";
+  else if (companyRaw.includes("jne")) company = "jne";
+  else if (companyRaw.includes("jnt") || companyRaw.includes("jt")) company = "jnt";
+  else if (companyRaw.includes("anteraja")) company = "anteraja";
+  else if (companyRaw.includes("tiki")) company = "tiki";
+  else if (companyRaw.includes("pos")) company = "pos";
+  else if (companyRaw.includes("ninja")) company = "ninja";
+  else if (companyRaw.includes("lion")) company = "lion";
 
-  // Normalize service types
+  // Normalize service types specifically per company
   let type = "reg";
-  if (serviceRaw.includes("reguler") || serviceRaw.includes("regular") || serviceRaw.includes("reg")) {
-    type = "reg";
-  } else if (serviceRaw.includes("oke")) {
-    type = "oke";
-  } else if (serviceRaw.includes("yes")) {
-    type = "yes";
-  } else if (serviceRaw.includes("ez")) {
-    type = "ez";
-  } else if (serviceRaw.includes("standard") || serviceRaw.includes("standar")) {
-    type = "standard";
-  } else if (serviceRaw.includes("cargo") || serviceRaw.includes("kargo")) {
-    type = "cargo";
-  } else if (serviceRaw.includes("sameday") || serviceRaw.includes("same day")) {
-    type = "same_day";
-  } else if (serviceRaw.includes("instant")) {
-    type = "instant";
+
+  if (company === "jnt") {
+    // J&T in Biteship: 'ez', 'super', 'jnt_jemari'
+    // J&T has NO 'reg' in Biteship. Its regular service is 'ez'.
+    if (serviceRaw.includes("super")) type = "super";
+    else if (serviceRaw.includes("jemari")) type = "jnt_jemari";
+    else type = "ez";
+  } else if (company === "jne") {
+    // JNE in Biteship: 'reg', 'yes', 'oke', 'jtr'
+    if (serviceRaw.includes("yes")) type = "yes";
+    else if (serviceRaw.includes("oke")) type = "oke";
+    else if (serviceRaw.includes("jtr")) type = "jtr";
+    else type = "reg";
+  } else if (company === "sicepat") {
+    // SiCepat: 'reg', 'siunt', 'best', 'gokil'
+    if (serviceRaw.includes("siunt")) type = "siunt";
+    else if (serviceRaw.includes("best")) type = "best";
+    else if (serviceRaw.includes("gokil")) type = "gokil";
+    else type = "reg";
+  } else if (company === "anteraja") {
+    if (serviceRaw.includes("next")) type = "next_day";
+    else if (serviceRaw.includes("same")) type = "same_day";
+    else if (serviceRaw.includes("cargo")) type = "cargo";
+    else type = "reg";
   } else {
-    type = serviceRaw.split(" ")[0].toLowerCase() || "reg";
+    if (serviceRaw.includes("ez")) type = "ez";
+    else if (serviceRaw.includes("instant")) type = "instant";
+    else if (serviceRaw.includes("sameday") || serviceRaw.includes("same day")) type = "same_day";
+    else if (serviceRaw.includes("cargo") || serviceRaw.includes("kargo")) type = "cargo";
+    else type = "reg";
   }
 
-  return { company: companyRaw || "sicepat", type };
+  return { company, type };
 }
 
 export async function createBiteshipOrder(

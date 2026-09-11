@@ -166,7 +166,7 @@ export default function ImageUploader({ images, onChange }: ImageUploaderProps) 
             <button
               type="button"
               onClick={() => handleRemove(url)}
-              className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="absolute top-1.5 right-1.5 p-1 bg-black/80 text-white rounded-full hover:bg-rose-600 transition-colors shadow-sm cursor-pointer"
               aria-label="Hapus foto"
             >
               <X size={12} />

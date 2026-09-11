@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createSnapTransaction } from "@/lib/midtrans";
+import { createDuitkuTransaction } from "@/lib/duitku";
 import { generateOrderNumber } from "@/lib/utils";
 
 interface CheckoutItem {
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       courier,
       shippingCost,
       items,
+      paymentMethod,
     } = body as {
       customerName: string;
       email: string;
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
       courier: string;
       shippingCost: number;
       items: CheckoutItem[];
+      paymentMethod?: string;
     };
 
     if (!items || items.length === 0) {
@@ -56,11 +58,10 @@ export async function POST(request: Request) {
     const total = subtotal + (shippingCost || 0);
 
     let orderId = orderNumber;
-    let snapToken: string | null = null;
 
-    // 1. Validate stock and create order in Database
+    // 1. Verify stock availability before proceeding
     for (const item of items) {
-      const productSize = await prisma.productSize.findUnique({
+      const sizeRecord = await prisma.productSize.findUnique({
         where: {
           productId_size: {
             productId: item.productId,
@@ -69,10 +70,12 @@ export async function POST(request: Request) {
         },
       });
 
-      if (productSize && productSize.stock < item.quantity) {
+      if (!sizeRecord || sizeRecord.stock < item.quantity) {
         return NextResponse.json(
           {
-            error: `Stok untuk ukuran ${item.size} tidak mencukupi (sisa: ${productSize.stock})`,
+            error: `Stok untuk ukuran ${item.size} tidak mencukupi (tersedia: ${
+              sizeRecord?.stock || 0
+            })`,
           },
           { status: 400 }
         );
@@ -80,7 +83,7 @@ export async function POST(request: Request) {
     }
 
     console.log(`[Checkout] Creating order ${orderNumber} in database...`);
-    const createdOrder = await prisma.order.create({
+    const order = await prisma.order.create({
       data: {
         orderNumber,
         customerName,
@@ -88,12 +91,12 @@ export async function POST(request: Request) {
         phone,
         country: country || "ID",
         province: province || "",
-        shippingAddress: address,
+        city,
         district: district || "",
-        city: city || "",
-        postalCode: postalCode || "",
+        shippingAddress: address,
+        postalCode,
         courier,
-        shippingCost,
+        shippingCost: shippingCost || 0,
         subtotal,
         total,
         paymentStatus: "pending",
@@ -109,56 +112,78 @@ export async function POST(request: Request) {
       },
     });
 
-    orderId = createdOrder.id;
-    console.log(`[Checkout] Order ${orderNumber} (ID: ${orderId}) created successfully in Supabase.`);
+    orderId = order.id;
+    console.log(`[Checkout] Order ${orderNumber} (ID: ${order.id}) created successfully in Supabase.`);
 
-    // 2. Request Midtrans Snap Token if configured
-    if (process.env.MIDTRANS_SERVER_KEY) {
-      try {
-        const midtransItems = items.map((item) => ({
-          id: `${item.productId}-${item.size}`.slice(0, 50),
-          name: `Product (${item.size})`.slice(0, 50),
-          price: item.priceAtBuy,
-          quantity: item.quantity,
-        }));
+    const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_BASE_URL;
+    if (!appUrl) {
+      throw new Error("APP_URL atau NEXT_PUBLIC_BASE_URL wajib diisi untuk callback Duitku.");
+    }
 
-        if (shippingCost > 0) {
-          midtransItems.push({
-            id: "SHIPPING",
-            name: `Ongkir (${courier})`.slice(0, 50),
-            price: shippingCost,
-            quantity: 1,
-          });
-        }
+    const chosenMethod = paymentMethod || process.env.DUITKU_PAYMENT_METHOD || "VA";
+    let transaction: Awaited<ReturnType<typeof createDuitkuTransaction>> | null = null;
 
-        const transaction = await createSnapTransaction({
-          orderId: orderNumber,
-          grossAmount: total,
-          customerName,
-          customerEmail: email,
-          customerPhone: phone,
-          items: midtransItems,
+    try {
+      const duitkuItems = items.map((item) => ({
+        name: `Produk RAZRBILZ (${item.size})`,
+        price: item.priceAtBuy,
+        quantity: item.quantity,
+      }));
+
+      if (shippingCost > 0) {
+        duitkuItems.push({
+          name: `Ongkir ${courier}`.slice(0, 255),
+          price: shippingCost,
+          quantity: 1,
         });
-
-        snapToken = transaction.token;
-
-        // Save snapToken & midtransOrderId to order in Supabase
-        await prisma.order.update({
-          where: { orderNumber },
-          data: { snapToken, midtransOrderId: orderNumber },
-        });
-        console.log(`[Checkout] Snap token generated and attached to order ${orderNumber}`);
-      } catch (midtransErr) {
-        console.error(`[Checkout] ❌ Midtrans Snap error for order ${orderNumber}:`, midtransErr);
-        throw new Error("Gagal menghubungkan dengan payment gateway Midtrans");
       }
+
+      transaction = await createDuitkuTransaction({
+        merchantOrderId: orderNumber,
+        paymentAmount: total,
+        paymentMethod: chosenMethod,
+        productDetails: `Pembayaran pesanan RAZRBILZ ${orderNumber}`,
+        customerName,
+        email,
+        phoneNumber: phone,
+        address,
+        city,
+        postalCode,
+        countryCode: country || "ID",
+        items: duitkuItems,
+        callbackUrl: `${appUrl}/api/payments/duitku/callback`,
+        returnUrl: `${appUrl}/payment/instructions/${encodeURIComponent(orderNumber)}`,
+      });
+
+      await prisma.order.update({
+        where: { orderNumber },
+        data: {
+          duitkuReference: transaction.reference,
+          duitkuPaymentMethod: chosenMethod,
+          duitkuPaymentUrl: transaction.paymentUrl || null,
+          duitkuVaNumber: transaction.vaNumber || null,
+          duitkuQrString: transaction.qrString || null,
+          duitkuStatusMessage: transaction.statusMessage,
+        },
+      });
+      console.log(`[Checkout] Duitku reference saved for order ${orderNumber}`);
+    } catch (duitkuError) {
+      console.error(`[Checkout] Duitku V2 error for ${orderNumber}:`, duitkuError);
+      throw new Error(duitkuError instanceof Error ? duitkuError.message : "Gagal menghubungkan ke Duitku.");
     }
 
     return NextResponse.json({
       success: true,
       orderId,
       orderNumber,
-      snapToken,
+      paymentStatus: "pending",
+      paymentInstructionsUrl: `/payment/instructions/${orderNumber}`,
+      reference: transaction?.reference || null,
+      paymentMethod: chosenMethod,
+      paymentUrl: transaction?.paymentUrl || null,
+      vaNumber: transaction?.vaNumber || null,
+      qrString: transaction?.qrString || null,
+      amount: total,
     });
   } catch (error) {
     console.error("Checkout error:", error);

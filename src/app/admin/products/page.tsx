@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Package } from "lucide-react";
 import Image from "next/image";
 import ProductActions from "./ProductActions";
 
@@ -14,7 +14,8 @@ async function getProducts() {
       include: { sizes: true },
       orderBy: { createdAt: "desc" },
     });
-  } catch {
+  } catch (error) {
+    console.error("Admin products fetch error:", error);
     return [];
   }
 }
@@ -24,83 +25,107 @@ export default async function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">Produk</h1>
-          <p className="text-xs text-muted mt-1">Kelola katalog produk dan stok ukuran</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#f4f2ee]">Katalog Produk</h1>
+          <p className="text-xs text-[#8c8680] mt-1">
+            Kelola daftar produk, foto, harga, dan ketersediaan stok ukuran
+          </p>
         </div>
         <Link
           href="/admin/products/new"
-          className="flex items-center gap-2 px-4 py-2 bg-foreground text-background text-xs uppercase tracking-wider font-medium hover:opacity-90 transition-opacity"
+          className="px-4 py-2.5 bg-white text-black text-xs font-semibold uppercase tracking-wider rounded-xl hover:bg-neutral-200 transition-all inline-flex items-center gap-2 shadow-sm self-start sm:self-auto cursor-pointer"
         >
-          <Plus size={14} />
-          Tambah Produk
+          <Plus size={15} strokeWidth={2.5} />
+          <span>Tambah Produk</span>
         </Link>
       </div>
 
-      <div className="bg-white border border-border">
+      {/* Table Card */}
+      <div className="bg-[#141412] border border-[#242320] rounded-2xl overflow-hidden shadow-sm">
         {products.length === 0 ? (
-          <div className="p-8 text-center text-xs text-muted">
-            Belum ada produk di database. Jalankan seed database atau tambah produk baru.
+          <div className="py-16 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[#1c1b18] border border-white/5 flex items-center justify-center mx-auto text-[#8c8680]">
+              <Package size={22} strokeWidth={1.5} />
+            </div>
+            <p className="text-sm text-[#dedad3] font-medium">Belum ada produk di database</p>
+            <p className="text-xs text-[#8c8680] max-w-sm mx-auto">
+              Silakan klik tombol &quot;Tambah Produk&quot; di atas untuk memasukkan produk baru.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border text-muted bg-surface/50">
-                  <th className="p-4">Foto</th>
-                  <th className="p-4">Nama</th>
-                  <th className="p-4">Kategori</th>
-                  <th className="p-4">Harga</th>
-                  <th className="p-4">Stok Ukuran</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Aksi</th>
+                <tr className="bg-[#181715] border-b border-[#242320] text-[#8c8680] uppercase tracking-wider font-semibold text-[11px]">
+                  <th className="py-3.5 px-4">Foto</th>
+                  <th className="py-3.5 px-4">Nama Produk</th>
+                  <th className="py-3.5 px-4">Kategori</th>
+                  <th className="py-3.5 px-4">Harga</th>
+                  <th className="py-3.5 px-4">Stok Ukuran</th>
+                  <th className="py-3.5 px-4">Status</th>
+                  <th className="py-3.5 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-[#201f1c]">
                 {products.map((p) => {
                   const totalStock = p.sizes.reduce((sum, s) => sum + s.stock, 0);
                   return (
-                    <tr key={p.id} className="hover:bg-surface/50">
-                      <td className="p-4">
-                        <div className="relative w-12 h-12 bg-surface">
+                    <tr key={p.id} className="hover:bg-[#1a1917]/60 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="relative w-12 h-12 rounded-xl bg-[#1c1b18] border border-[#2a2825] overflow-hidden">
                           <Image
                             src={p.images[0] || "/placeholder-product.svg"}
                             alt={p.name}
                             fill
-                            className="object-contain p-1"
+                            className="object-contain p-1.5"
                           />
                         </div>
                       </td>
-                      <td className="p-4 font-medium">{p.name}</td>
-                      <td className="p-4">{p.category}</td>
-                      <td className="p-4">{formatRupiah(p.price)}</td>
-                      <td className="p-4">
-                        <div className="flex gap-2">
-                          {p.sizes.map((s) => (
-                            <span
-                              key={s.size}
-                              className={`px-1.5 py-0.5 border text-[10px] ${s.stock === 0
-                                ? "border-red-200 text-red-500 line-through"
-                                : "border-border text-muted"
-                                }`}
-                            >
-                              {s.size}: {s.stock}
-                            </span>
-                          ))}
-                        </div>
+                      <td className="py-3.5 px-4">
+                        <p className="font-semibold text-sm text-[#f4f2ee]">{p.name}</p>
+                        <p className="text-[11px] text-[#736e67] font-mono mt-0.5">/{p.slug}</p>
                       </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-block px-2 py-0.5 text-[10px] uppercase font-medium rounded-full ${p.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-500"
-                            }`}
-                        >
-                          {p.isActive ? "Aktif" : "Non-aktif"}
+                      <td className="py-3.5 px-4 text-[#dedad3]">
+                        <span className="px-2.5 py-1 rounded-md bg-[#1c1b18] border border-white/5 text-[11px] font-medium text-[#c4c0b8]">
+                          {p.category}
                         </span>
                       </td>
-                      <td className="p-4 text-right">
+                      <td className="py-3.5 px-4 font-semibold text-sm text-[#f4f2ee]">
+                        {formatRupiah(p.price)}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex flex-wrap gap-1.5 max-w-xs">
+                          {p.sizes.map((s) => (
+                            <span
+                              key={s.id}
+                              className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
+                                s.stock > 0
+                                  ? "bg-[#1c1b18] border-[#2e2c28] text-[#dedad3]"
+                                  : "bg-red-500/10 border-red-500/20 text-red-400"
+                              }`}
+                            >
+                              {s.size}: <strong className="text-white">{s.stock}</strong>
+                            </span>
+                          ))}
+                          <span className="text-[10px] text-[#736e67] self-center ml-1">
+                            (Total: {totalStock})
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full border ${
+                            p.isActive
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-neutral-500/10 text-neutral-400 border-neutral-500/20"
+                          }`}
+                        >
+                          {p.isActive ? "Aktif" : "Non-Aktif"}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
                         <ProductActions productId={p.id} />
                       </td>
                     </tr>

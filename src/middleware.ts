@@ -4,8 +4,8 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin routes, allow /admin/login
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  // Handle /admin routes
+  if (pathname.startsWith("/admin")) {
     const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -42,10 +42,21 @@ export async function middleware(request: NextRequest) {
     });
 
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session) {
+    // Jika sudah login dan mencoba buka /admin/login -> arahkan ke /admin/dashboard
+    if (pathname === "/admin/login") {
+      if (user) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/admin/dashboard";
+        return NextResponse.redirect(url);
+      }
+      return response;
+    }
+
+    // Jika belum login dan buka halaman admin lainnya -> arahkan ke /admin/login
+    if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       return NextResponse.redirect(url);

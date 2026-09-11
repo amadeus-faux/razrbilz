@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
-import { verifySignature } from "../src/lib/midtrans";
-import { POST } from "../src/app/api/payments/midtrans-notification/route";
+import { POST } from "../src/app/api/payments/duitku/callback/route";
+import crypto from "crypto";
 
 async function main() {
   console.log("--- 1. Checking Pending Orders in Supabase ---");
@@ -23,28 +23,27 @@ async function main() {
     courier: pendingOrder.courier,
   });
 
-  const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
-  const statusCode = "200";
-  const grossAmount = `${pendingOrder.total}.00`;
-  const signatureKey = verifySignature(
-    pendingOrder.orderNumber,
-    statusCode,
-    grossAmount,
-    serverKey
-  );
+  const merchantCode = process.env.DUITKU_MERCHANT_CODE || "DS25330";
+  const apiKey = process.env.DUITKU_API_KEY || "73d198fa25321a06365dcc9263f3fdfa";
+  const amount = String(pendingOrder.total);
+  const signature = crypto
+    .createHash("md5")
+    .update(`${merchantCode}${amount}${pendingOrder.orderNumber}${apiKey}`)
+    .digest("hex");
 
-  console.log("\n--- 2. Simulating Midtrans Webhook Callback ---");
+  console.log("\n--- 2. Simulating Duitku Webhook Callback ---");
   const payload = {
-    order_id: pendingOrder.orderNumber,
-    status_code: statusCode,
-    gross_amount: grossAmount,
-    signature_key: signatureKey,
-    transaction_status: "settlement",
-    fraud_status: "accept",
-    payment_type: "qris",
+    merchantCode,
+    amount,
+    merchantOrderId: pendingOrder.orderNumber,
+    signature,
+    statusCode: "00",
+    statusMessage: "SUCCESS",
+    reference: `DUITKU-${Date.now()}`,
+    paymentCode: "VA",
   };
 
-  const req = new Request("http://localhost:3000/api/payments/midtrans-notification", {
+  const req = new Request("http://localhost:3000/api/payments/duitku/callback", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -66,9 +65,9 @@ async function main() {
     orderNumber: verifiedOrder?.orderNumber,
     paymentStatus: verifiedOrder?.paymentStatus,
     orderStatus: verifiedOrder?.orderStatus,
+    duitkuReference: verifiedOrder?.duitkuReference,
     biteshipOrderId: verifiedOrder?.biteshipOrderId,
     trackingNumber: verifiedOrder?.trackingNumber,
-    biteshipTrackingId: verifiedOrder?.biteshipTrackingId,
   });
 
   process.exit(0);

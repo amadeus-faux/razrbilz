@@ -50,8 +50,13 @@ model Order {
   paymentStatus       String        @default("pending")
   orderStatus         String        @default("processing")
   trackingNumber      String?
-  midtransOrderId     String?       @unique
-  snapToken           String?
+  duitkuReference     String?       @unique
+  duitkuPaymentMethod String?
+  duitkuPaymentUrl    String?
+  duitkuVaNumber      String?
+  duitkuQrString      String?
+  duitkuFee           String?
+  duitkuStatusMessage String?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   biteshipOrderId     String?

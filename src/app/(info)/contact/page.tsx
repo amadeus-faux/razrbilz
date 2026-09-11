@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Send, CheckCircle2, AlertCircle, Mail, MapPin, Clock, Loader2 } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Mail, MapPin, Clock, Loader2, Phone } from "lucide-react";
 
 const inputCls =
   "w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover transition-all placeholder:text-muted/40";
@@ -57,39 +57,55 @@ export default function ContactPage() {
       </header>
 
       {/* Info cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             Icon: Mail,
             label: "Email",
             value: "razrbilz@gmail.com",
+            href: "mailto:razrbilz@gmail.com",
           },
           {
-            Icon: Clock,
-            label: "Response Time",
-            value: "Monday â€“ Friday, 09:00 â€“ 17:00",
+            Icon: Phone,
+            label: "Call Support",
+            value: "087763997856",
+            href: "tel:087763997856",
           },
           {
             Icon: MapPin,
-            label: "Studio",
-            value: "Bandung, Indonesia",
+            label: "Studio Address",
+            value: "Bandung Barat, Indonesia",
           },
-        ].map(({ Icon, label, value }) => (
-          <div
-            key={label}
-            className="flex flex-col gap-3 p-5 bg-surface border border-border rounded-2xl"
-          >
-            <div className="w-8 h-8 rounded-xl bg-surface flex items-center justify-center">
-              <Icon size={15} className="text-muted" strokeWidth={1.5} />
+          {
+            Icon: Clock,
+            label: "Operational Hours",
+            value: "Senin – Jumat, 09:00 – 17:00 WIB",
+          },
+        ].map(({ Icon, label, value, href }) => {
+          const CardContent = (
+            <div className="flex flex-col gap-3 p-5 bg-surface border border-border rounded-2xl h-full transition-all duration-200 hover:border-foreground/30">
+              <div className="w-8 h-8 rounded-xl bg-surface-hover flex items-center justify-center">
+                <Icon size={15} className="text-muted" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.14em] text-muted mb-0.5">
+                  {label}
+                </p>
+                <p className="text-xs font-medium text-foreground leading-snug">{value}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-muted mb-0.5">
-                {label}
-              </p>
-              <p className="text-xs font-medium text-foreground leading-snug">{value}</p>
+          );
+
+          return href ? (
+            <a key={label} href={href} className="block h-full focus:outline-none">
+              {CardContent}
+            </a>
+          ) : (
+            <div key={label} className="h-full">
+              {CardContent}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Contact form */}
