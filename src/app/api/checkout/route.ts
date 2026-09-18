@@ -82,7 +82,15 @@ export async function POST(request: Request) {
       }
     }
 
-    console.log(`[Checkout] Creating order ${orderNumber} in database...`);
+    // Check if any item in cart is pre-order
+    const productIds = Array.from(new Set(items.map((i) => i.productId)));
+    const productsInOrder = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, isPreOrder: true },
+    });
+    const isPreOrder = productsInOrder.some((p) => p.isPreOrder) || productsInOrder.length === 0;
+
+    console.log(`[Checkout] Creating order ${orderNumber} in database (Pre-Order: ${isPreOrder})...`);
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -100,7 +108,8 @@ export async function POST(request: Request) {
         subtotal,
         total,
         paymentStatus: "pending",
-        orderStatus: "processing",
+        orderStatus: "order_received",
+        isPreOrder,
         items: {
           create: items.map((item) => ({
             productId: item.productId,

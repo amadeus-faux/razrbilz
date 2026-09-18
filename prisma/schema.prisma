@@ -16,6 +16,7 @@ model Product {
   category    String
   images      String[]
   isActive    Boolean       @default(true)
+  isPreOrder  Boolean       @default(true)
   createdAt   DateTime      @default(now())
   orderItems  OrderItem[]
   sizes       ProductSize[]
@@ -49,6 +50,7 @@ model Order {
   total               Int
   paymentStatus       String        @default("pending")
   orderStatus         String        @default("processing")
+  isPreOrder          Boolean       @default(true)
   trackingNumber      String?
   duitkuReference     String?       @unique
   duitkuPaymentMethod String?

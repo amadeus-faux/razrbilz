@@ -16,6 +16,7 @@ export default function NewProductPage() {
   const [category, setCategory] = useState("T-Shirts");
   const [images, setImages] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
+  const [isPreOrder, setIsPreOrder] = useState(true);
   const [sizes, setSizes] = useState([
     { size: "S", stock: 10 },
     { size: "M", stock: 20 },
@@ -52,6 +53,7 @@ export default function NewProductPage() {
           images,
           sizes,
           isActive,
+          isPreOrder,
         }),
       });
 
@@ -180,18 +182,38 @@ export default function NewProductPage() {
           <ImageUploader images={images} onChange={setImages} />
         </div>
 
-        {/* Status Aktif */}
-        <div className="flex items-center gap-3 pt-2">
-          <input
-            type="checkbox"
-            id="isActive"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
-            className="w-4 h-4 rounded border-[#2e2c28] bg-[#1c1b18] text-white focus:ring-0 cursor-pointer"
-          />
-          <label htmlFor="isActive" className="text-xs font-medium text-[#dedad3] cursor-pointer">
-            Tampilkan produk di etalase toko (Aktif)
-          </label>
+        {/* Status Aktif & Pre-Order */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="isActive"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="w-4 h-4 rounded border-[#2e2c28] bg-[#1c1b18] text-white focus:ring-0 cursor-pointer"
+            />
+            <label htmlFor="isActive" className="text-xs font-medium text-[#dedad3] cursor-pointer">
+              Tampilkan produk di etalase toko (Aktif)
+            </label>
+          </div>
+
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+            <input
+              type="checkbox"
+              id="isPreOrder"
+              checked={isPreOrder}
+              onChange={(e) => setIsPreOrder(e.target.checked)}
+              className="w-4 h-4 mt-0.5 rounded border-[#2e2c28] bg-[#1c1b18] text-purple-600 focus:ring-0 cursor-pointer"
+            />
+            <div>
+              <label htmlFor="isPreOrder" className="text-xs font-semibold text-purple-200 cursor-pointer">
+                Produk Pre-Order (Estimasi Produksi 14–21 Hari)
+              </label>
+              <p className="text-[11px] text-[#8c8680] mt-0.5">
+                Pengiriman kurir Biteship akan ditunda otomatis sampai admin menekan tombol &quot;Tandai Siap Kirim&quot;.
+              </p>
+            </div>
+          </div>
         </div>
 
         <button

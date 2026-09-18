@@ -84,7 +84,14 @@ export default async function AdminProductsPage() {
                         </div>
                       </td>
                       <td className="py-3.5 px-4">
-                        <p className="font-semibold text-sm text-[#f4f2ee]">{p.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-sm text-[#f4f2ee]">{p.name}</p>
+                          {p.isPreOrder && (
+                            <span className="px-1.5 py-0.5 text-[9.5px] uppercase font-bold tracking-wider rounded bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                              PO
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[11px] text-[#736e67] font-mono mt-0.5">/{p.slug}</p>
                       </td>
                       <td className="py-3.5 px-4 text-[#dedad3]">

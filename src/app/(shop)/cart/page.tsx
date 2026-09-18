@@ -215,7 +215,7 @@ export default function CartPage() {
                 </div>
 
                 <p className="text-[9px] text-muted text-center leading-relaxed">
-                  Prices in IDR. Secure checkout via Midtrans.
+                  Prices in IDR. Secure checkout.
                 </p>
               </div>
             </div>

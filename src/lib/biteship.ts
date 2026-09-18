@@ -536,15 +536,15 @@ export async function createBiteshipOrder(
   const { company, type } = parseCourierString(params.courier);
 
   const originName = process.env.BITESHIP_ORIGIN_NAME || "RAZRBILZ Studio";
-  const originPhone = process.env.BITESHIP_ORIGIN_PHONE || "081321840161";
-  const originEmail = process.env.BITESHIP_ORIGIN_EMAIL || "tcukimay2st@gmail.com";
+  const originPhone = process.env.BITESHIP_ORIGIN_PHONE || "087763997856";
+  const originEmail = process.env.BITESHIP_ORIGIN_EMAIL || "razrbilz@gmail.com";
   const originAddress =
     process.env.BITESHIP_ORIGIN_ADDRESS ||
-    "Bandung Barat, Jawa Barat";
+    "Bandung, Jawa Barat";
   const originPostalCode = parseInt(
     process.env.BITESHIP_ORIGIN_POSTAL_CODE ||
-      process.env.ORIGIN_POSTAL_CODE ||
-      "40393",
+    process.env.ORIGIN_POSTAL_CODE ||
+    "40625",
     10
   );
   const originNote = process.env.BITESHIP_ORIGIN_NOTE || "RAZRBILZ Official Warehouse";
@@ -581,7 +581,7 @@ export async function createBiteshipOrder(
       description: "Apparel / Clothing",
       value: item.value,
       quantity: item.quantity,
-      weight: item.weight || 500, // default 500g
+      weight: item.weight || 500,
     })),
   };
 
@@ -637,4 +637,60 @@ export async function createBiteshipOrder(
     raw: responseData,
   };
 }
+
+/**
+ * Fetches real-time order details from Biteship API by Biteship Order ID
+ */
+export async function getBiteshipOrder(biteshipOrderId: string): Promise<{
+  success: boolean;
+  id?: string;
+  status?: string;
+  waybillId?: string;
+  trackingId?: string;
+  courierCompany?: string;
+  error?: string;
+  raw?: any;
+}> {
+  const apiKey = process.env.BITESHIP_API_KEY;
+  if (!apiKey) {
+    return { success: false, error: "BITESHIP_API_KEY is not configured" };
+  }
+
+  try {
+    const response = await fetch(`${BITESHIP_BASE_URL}/orders/${biteshipOrderId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success === false) {
+      return {
+        success: false,
+        error: data.error || data.message || `HTTP ${response.status}`,
+        raw: data,
+      };
+    }
+
+    return {
+      success: true,
+      id: data.id,
+      status: data.status,
+      waybillId: data.courier?.waybill_id,
+      trackingId: data.courier?.tracking_id,
+      courierCompany: data.courier?.company,
+      raw: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Gagal menghubungi API Biteship",
+    };
+  }
+}
+
 

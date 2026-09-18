@@ -68,8 +68,8 @@ export default function ContactPage() {
           {
             Icon: Phone,
             label: "Call Support",
-            value: "087763997856",
-            href: "tel:087763997856",
+            value: "(+62) 87763997856",
+            href: "tel:+6287763997856",
           },
           {
             Icon: MapPin,
@@ -79,7 +79,7 @@ export default function ContactPage() {
           {
             Icon: Clock,
             label: "Operational Hours",
-            value: "Senin – Jumat, 09:00 – 17:00 WIB",
+            value: "Monday – Friday, 09:00 – 17:00 WIB",
           },
         ].map(({ Icon, label, value, href }) => {
           const CardContent = (

@@ -33,12 +33,16 @@ export async function markOrderPaid({
     return order;
   }
 
+  const nextOrderStatus = order.isPreOrder ? "in_production" : "processing";
+  const initialShippingStatus = order.isPreOrder ? "WAITING_PRODUCTION" : "PENDING";
+
   // 1. Update order status to paid
   const updatedOrder = await prisma.order.update({
     where: { id: order.id },
     data: {
       paymentStatus: "paid",
-      orderStatus: "processing",
+      orderStatus: nextOrderStatus,
+      shippingOrderStatus: initialShippingStatus,
       duitkuReference: reference || order.duitkuReference,
       duitkuFee: fee !== undefined ? String(fee) : order.duitkuFee,
       duitkuPaymentMethod: paymentMethod || order.duitkuPaymentMethod,
@@ -55,7 +59,22 @@ export async function markOrderPaid({
     });
   }
 
-  // 3. Create Biteship shipment if not yet created
+  // 3. For Pre-Order: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
+  if (order.isPreOrder) {
+    await prisma.shippingLog.create({
+      data: {
+        orderId: order.id,
+        event: "order.in_production",
+        previousValue: order.orderStatus,
+        newValue: "in_production",
+        note: "Pembayaran terkonfirmasi. Pesanan masuk masa produksi (Pre-Order 14-21 hari). Pengiriman ke Biteship ditunda.",
+      },
+    });
+    console.log(`[OrderFulfillment] Order ${order.orderNumber} is PRE-ORDER. Status set to 'in_production'. Biteship dispatch deferred.`);
+    return updatedOrder;
+  }
+
+  // 4. For Ready-Stock: Create Biteship shipment immediately if not yet created
   if (!order.biteshipOrderId) {
     try {
       const shipping = await createBiteshipOrder({

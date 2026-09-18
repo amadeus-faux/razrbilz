@@ -129,6 +129,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   category: 'category',
   images: 'images',
   isActive: 'isActive',
+  isPreOrder: 'isPreOrder',
   createdAt: 'createdAt'
 };
 
@@ -157,6 +158,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   total: 'total',
   paymentStatus: 'paymentStatus',
   orderStatus: 'orderStatus',
+  isPreOrder: 'isPreOrder',
   trackingNumber: 'trackingNumber',
   duitkuReference: 'duitkuReference',
   duitkuPaymentMethod: 'duitkuPaymentMethod',

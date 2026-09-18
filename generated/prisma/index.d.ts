@@ -1456,6 +1456,7 @@ export namespace Prisma {
     price: number | null
     category: string | null
     isActive: boolean | null
+    isPreOrder: boolean | null
     createdAt: Date | null
   }
 
@@ -1467,6 +1468,7 @@ export namespace Prisma {
     price: number | null
     category: string | null
     isActive: boolean | null
+    isPreOrder: boolean | null
     createdAt: Date | null
   }
 
@@ -1479,6 +1481,7 @@ export namespace Prisma {
     category: number
     images: number
     isActive: number
+    isPreOrder: number
     createdAt: number
     _all: number
   }
@@ -1500,6 +1503,7 @@ export namespace Prisma {
     price?: true
     category?: true
     isActive?: true
+    isPreOrder?: true
     createdAt?: true
   }
 
@@ -1511,6 +1515,7 @@ export namespace Prisma {
     price?: true
     category?: true
     isActive?: true
+    isPreOrder?: true
     createdAt?: true
   }
 
@@ -1523,6 +1528,7 @@ export namespace Prisma {
     category?: true
     images?: true
     isActive?: true
+    isPreOrder?: true
     createdAt?: true
     _all?: true
   }
@@ -1622,6 +1628,7 @@ export namespace Prisma {
     category: string
     images: string[]
     isActive: boolean
+    isPreOrder: boolean
     createdAt: Date
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
@@ -1653,6 +1660,7 @@ export namespace Prisma {
     category?: boolean
     images?: boolean
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
@@ -1668,6 +1676,7 @@ export namespace Prisma {
     category?: boolean
     images?: boolean
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["product"]>
 
@@ -1680,6 +1689,7 @@ export namespace Prisma {
     category?: boolean
     images?: boolean
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["product"]>
 
@@ -1692,10 +1702,11 @@ export namespace Prisma {
     category?: boolean
     images?: boolean
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "createdAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "createdAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
@@ -1719,6 +1730,7 @@ export namespace Prisma {
       category: string
       images: string[]
       isActive: boolean
+      isPreOrder: boolean
       createdAt: Date
     }, ExtArgs["result"]["product"]>
     composites: {}
@@ -2153,6 +2165,7 @@ export namespace Prisma {
     readonly category: FieldRef<"Product", 'String'>
     readonly images: FieldRef<"Product", 'String[]'>
     readonly isActive: FieldRef<"Product", 'Boolean'>
+    readonly isPreOrder: FieldRef<"Product", 'Boolean'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
   }
     
@@ -3741,6 +3754,7 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
+    isPreOrder: boolean | null
     trackingNumber: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
@@ -3777,6 +3791,7 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
+    isPreOrder: boolean | null
     trackingNumber: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
@@ -3813,6 +3828,7 @@ export namespace Prisma {
     total: number
     paymentStatus: number
     orderStatus: number
+    isPreOrder: number
     trackingNumber: number
     duitkuReference: number
     duitkuPaymentMethod: number
@@ -3865,6 +3881,7 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    isPreOrder?: true
     trackingNumber?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
@@ -3901,6 +3918,7 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    isPreOrder?: true
     trackingNumber?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
@@ -3937,6 +3955,7 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    isPreOrder?: true
     trackingNumber?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
@@ -4060,6 +4079,7 @@ export namespace Prisma {
     total: number
     paymentStatus: string
     orderStatus: string
+    isPreOrder: boolean
     trackingNumber: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
@@ -4115,6 +4135,7 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    isPreOrder?: boolean
     trackingNumber?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
@@ -4154,6 +4175,7 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    isPreOrder?: boolean
     trackingNumber?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
@@ -4190,6 +4212,7 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    isPreOrder?: boolean
     trackingNumber?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
@@ -4226,6 +4249,7 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    isPreOrder?: boolean
     trackingNumber?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
@@ -4244,7 +4268,7 @@ export namespace Prisma {
     shippingRetryCount?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "trackingNumber" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "isPreOrder" | "trackingNumber" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -4277,6 +4301,7 @@ export namespace Prisma {
       total: number
       paymentStatus: string
       orderStatus: string
+      isPreOrder: boolean
       trackingNumber: string | null
       duitkuReference: string | null
       duitkuPaymentMethod: string | null
@@ -4735,6 +4760,7 @@ export namespace Prisma {
     readonly total: FieldRef<"Order", 'Int'>
     readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly orderStatus: FieldRef<"Order", 'String'>
+    readonly isPreOrder: FieldRef<"Order", 'Boolean'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
     readonly duitkuReference: FieldRef<"Order", 'String'>
     readonly duitkuPaymentMethod: FieldRef<"Order", 'String'>
@@ -8418,6 +8444,7 @@ export namespace Prisma {
     category: 'category',
     images: 'images',
     isActive: 'isActive',
+    isPreOrder: 'isPreOrder',
     createdAt: 'createdAt'
   };
 
@@ -8452,6 +8479,7 @@ export namespace Prisma {
     total: 'total',
     paymentStatus: 'paymentStatus',
     orderStatus: 'orderStatus',
+    isPreOrder: 'isPreOrder',
     trackingNumber: 'trackingNumber',
     duitkuReference: 'duitkuReference',
     duitkuPaymentMethod: 'duitkuPaymentMethod',
@@ -8614,6 +8642,7 @@ export namespace Prisma {
     category?: StringFilter<"Product"> | string
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
+    isPreOrder?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
@@ -8628,6 +8657,7 @@ export namespace Prisma {
     category?: SortOrder
     images?: SortOrder
     isActive?: SortOrder
+    isPreOrder?: SortOrder
     createdAt?: SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
     sizes?: ProductSizeOrderByRelationAggregateInput
@@ -8645,6 +8675,7 @@ export namespace Prisma {
     category?: StringFilter<"Product"> | string
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
+    isPreOrder?: BoolFilter<"Product"> | boolean
     createdAt?: DateTimeFilter<"Product"> | Date | string
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
@@ -8659,6 +8690,7 @@ export namespace Prisma {
     category?: SortOrder
     images?: SortOrder
     isActive?: SortOrder
+    isPreOrder?: SortOrder
     createdAt?: SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
@@ -8679,6 +8711,7 @@ export namespace Prisma {
     category?: StringWithAggregatesFilter<"Product"> | string
     images?: StringNullableListFilter<"Product">
     isActive?: BoolWithAggregatesFilter<"Product"> | boolean
+    isPreOrder?: BoolWithAggregatesFilter<"Product"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
   }
 
@@ -8756,6 +8789,7 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
+    isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     duitkuReference?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
@@ -8794,6 +8828,7 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     duitkuReference?: SortOrderInput | SortOrder
     duitkuPaymentMethod?: SortOrderInput | SortOrder
@@ -8836,6 +8871,7 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
+    isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentUrl?: StringNullableFilter<"Order"> | string | null
@@ -8873,6 +8909,7 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     duitkuReference?: SortOrderInput | SortOrder
     duitkuPaymentMethod?: SortOrderInput | SortOrder
@@ -8917,6 +8954,7 @@ export namespace Prisma {
     total?: IntWithAggregatesFilter<"Order"> | number
     paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     orderStatus?: StringWithAggregatesFilter<"Order"> | string
+    isPreOrder?: BoolWithAggregatesFilter<"Order"> | boolean
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuReference?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -9116,6 +9154,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
@@ -9130,6 +9169,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
@@ -9144,6 +9184,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
@@ -9158,6 +9199,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
@@ -9172,6 +9214,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
   }
 
@@ -9184,6 +9227,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9196,6 +9240,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9265,6 +9310,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -9303,6 +9349,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -9341,6 +9388,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9379,6 +9427,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9417,6 +9466,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -9453,6 +9503,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9489,6 +9540,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9758,6 +9810,7 @@ export namespace Prisma {
     category?: SortOrder
     images?: SortOrder
     isActive?: SortOrder
+    isPreOrder?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9773,6 +9826,7 @@ export namespace Prisma {
     price?: SortOrder
     category?: SortOrder
     isActive?: SortOrder
+    isPreOrder?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9784,6 +9838,7 @@ export namespace Prisma {
     price?: SortOrder
     category?: SortOrder
     isActive?: SortOrder
+    isPreOrder?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9934,6 +9989,7 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
@@ -9977,6 +10033,7 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
@@ -10013,6 +10070,7 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
@@ -10663,6 +10721,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
   }
@@ -10676,6 +10735,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
@@ -10705,6 +10765,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
   }
@@ -10718,6 +10779,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -10842,6 +10904,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -10879,6 +10942,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -10932,6 +10996,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10969,6 +11034,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11006,6 +11072,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -11043,6 +11110,7 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    isPreOrder?: boolean
     trackingNumber?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
@@ -11076,6 +11144,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
   }
@@ -11089,6 +11158,7 @@ export namespace Prisma {
     category: string
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
+    isPreOrder?: boolean
     createdAt?: Date | string
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
   }
@@ -11127,6 +11197,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11164,6 +11235,7 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11203,6 +11275,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
   }
@@ -11216,6 +11289,7 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }

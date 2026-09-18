@@ -65,6 +65,21 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                 </span>
               </div>
 
+              <div className="flex justify-between border-b border-border pb-3">
+                <span className="text-xs text-muted">Status Pesanan</span>
+                <span className="text-xs font-medium">
+                  {order.orderStatus === "in_production"
+                    ? "DALAM PRODUKSI (PRE-ORDER 14-21 HARI)"
+                    : order.orderStatus === "ready_to_ship"
+                    ? "SIAP DIKIRIM (MENUNGGU KURIR)"
+                    : order.orderStatus === "shipped"
+                    ? "SEDANG DIKIRIM"
+                    : order.orderStatus === "delivered"
+                    ? "SELESAI (DITERIMA)"
+                    : order.orderStatus.toUpperCase()}
+                </span>
+              </div>
+
               {order.trackingNumber && (
                 <div className="flex justify-between border-b border-border pb-3">
                   <span className="text-xs text-muted">No. Resi</span>

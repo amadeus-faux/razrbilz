@@ -28,7 +28,7 @@ export interface BiteshipWebhookPayload {
 }
 
 export function mapBiteshipStatusToInternal(biteshipStatus: string): {
-  orderStatus: "processing" | "shipped" | "delivered" | "cancelled";
+  orderStatus: "processing" | "ready_to_ship" | "shipped" | "delivered" | "cancelled";
   description: string;
 } {
   const normalized = (biteshipStatus || "").toLowerCase().trim();
@@ -37,11 +37,11 @@ export function mapBiteshipStatusToInternal(biteshipStatus: string): {
     case "allocated":
     case "confirmed":
     case "scheduled":
-      return { orderStatus: "processing", description: "Kurir ditugaskan / pesanan terkonfirmasi" };
+      return { orderStatus: "ready_to_ship", description: "Kurir ditugaskan / pesanan terkonfirmasi" };
     case "picking_up":
-      return { orderStatus: "processing", description: "Kurir dalam perjalanan menjemput paket" };
+      return { orderStatus: "ready_to_ship", description: "Kurir dalam perjalanan menjemput paket" };
     case "picked":
-      return { orderStatus: "processing", description: "Paket berhasil di-pickup oleh kurir" };
+      return { orderStatus: "shipped", description: "Paket berhasil di-pickup oleh kurir" };
     case "dropping_off":
     case "in_transit":
     case "delivered_to_courier":
@@ -57,7 +57,7 @@ export function mapBiteshipStatusToInternal(biteshipStatus: string): {
     case "disposed":
       return { orderStatus: "cancelled", description: "Paket dikembalikan ke pengirim" };
     default:
-      return { orderStatus: "processing", description: `Status Biteship: ${biteshipStatus}` };
+      return { orderStatus: "ready_to_ship", description: `Status Biteship: ${biteshipStatus}` };
   }
 }
 
