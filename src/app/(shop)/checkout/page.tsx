@@ -1162,7 +1162,7 @@ export default function CheckoutPage() {
                           ? Number(selectedPaymentMethod.totalFee) > 0
                             ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
                             : "Bebas Biaya"
-                          : "Ditanggung Merchant"
+                          : "-"
                         : "—"}
                     </span>
                   </div>
