@@ -75,6 +75,21 @@ function getMethodCategory(m: PaymentMethodOption): string {
   return "other";
 }
 
+/**
+ * Returns true for payment methods where the service fee is borne by the customer
+ * (OVO, ShopeePay e-wallet, and Credit Card).
+ */
+function isCustomerBearsFee(method: PaymentMethodOption | null): boolean {
+  if (!method) return false;
+  const code = method.paymentMethod.toUpperCase();
+  const name = method.paymentName.toUpperCase();
+  return (
+    code === "VC" || name.includes("CREDIT CARD") || name.includes("KARTU KREDIT") ||
+    code === "OV" || name.includes("OVO") ||
+    code === "SA" || name.includes("SHOPEEPAY")
+  );
+}
+
 const PAYMENT_CATEGORIES = [
   {
     id: "va",
@@ -93,12 +108,12 @@ const PAYMENT_CATEGORIES = [
   },
   {
     id: "cc",
-    title: "Kartu Kredit",
+    title: "Credit Card",
     badge: "Visa, Mastercard, JCB",
   },
   {
     id: "other",
-    title: "Pembayaran Lainnya",
+    title: "Other Payments",
     badge: "Indomaret, Retail, Paylater",
   },
 ];
@@ -878,10 +893,14 @@ export default function CheckoutPage() {
                             </div>
                             <div>
                               <p className="text-xs uppercase tracking-wider text-foreground">
-                                {rate.courier_name} — {rate.courier_service_name}
+                                {isInternational
+                                  ? "POS INDONESIA — INTERNATIONAL SHIPPING"
+                                  : `${rate.courier_name} — ${rate.courier_service_name}`}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
-                                Estimasi tiba: {rate.duration || "2-4 hari kerja"}
+                                {isInternational
+                                  ? "Estimated arrival: 10–14 business days"
+                                  : `Estimasi tiba: ${rate.duration || "2-4 hari kerja"}`}
                               </p>
                             </div>
                           </div>
@@ -891,6 +910,26 @@ export default function CheckoutPage() {
                         </button>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Pre-order shipping notice */}
+                {shippingRates.length > 0 && (
+                  <div className="mt-3 flex items-start gap-2 px-1">
+                    <span className="text-muted mt-0.5 flex-shrink-0 text-[11px]">⏱</span>
+                    <p className="text-[10px] text-muted leading-relaxed">
+                      {isInternational ? (
+                        <>
+                          Shipping estimate is counted <strong className="text-foreground/70">from when your order is ready to ship</strong>.
+                          {" "}As all items are <strong className="text-foreground/70">pre-order (14–21 days production)</strong>, total delivery time = production + shipping duration above.
+                        </>
+                      ) : (
+                        <>
+                          Estimasi tiba dihitung <strong className="text-foreground/70">sejak produk siap dikirimkan</strong>.
+                          {" "}Karena semua produk bersifat <strong className="text-foreground/70">pre-order (produksi 14–21 hari)</strong>, total waktu pengiriman = produksi + durasi pengiriman di atas.
+                        </>
+                      )}
+                    </p>
                   </div>
                 )}
               </div>
@@ -910,14 +949,6 @@ export default function CheckoutPage() {
                     <ShieldCheck size={14} className="text-foreground" />
                     <span className="text-[10px] uppercase tracking-wider">Tersertifikasi BI</span>
                   </div>
-                </div>
-
-                <div className="p-3 bg-surface/50 border border-border/80 rounded-xl text-[11px] text-muted flex items-start gap-2.5">
-                  <CreditCard size={14} className="mt-0.5 text-foreground flex-shrink-0" />
-                  <p className="leading-relaxed">
-                    Sistem pembayaran resmi RAZRBILZ didukung oleh Duitku. Sesuai ketentuan,
-                    <strong className="text-foreground font-medium"> biaya layanan transaksi dibebankan ke pembeli</strong> dan ditambahkan otomatis pada Total Due.
-                  </p>
                 </div>
 
                 {loadingMethods ? (
@@ -979,9 +1010,7 @@ export default function CheckoutPage() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-[10px] text-muted mt-0.5 truncate">
-                                  {cat.badge}
-                                </p>
+
                               </div>
                             </div>
                             <ChevronDown
@@ -1126,13 +1155,15 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted">Biaya Layanan Duitku</span>
+                    <span className="text-muted">Service Fee</span>
                     <span className="text-foreground">
                       {selectedPaymentMethod
-                        ? Number(selectedPaymentMethod.totalFee) > 0
-                          ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
-                          : "Bebas Biaya"
-                        : "Ditanggung Pembeli"}
+                        ? isCustomerBearsFee(selectedPaymentMethod)
+                          ? Number(selectedPaymentMethod.totalFee) > 0
+                            ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
+                            : "Bebas Biaya"
+                          : "Ditanggung Merchant"
+                        : "—"}
                     </span>
                   </div>
 
