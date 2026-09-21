@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyDuitkuCallbackSignature } from "@/lib/duitku";
-import { markOrderPaid } from "@/lib/order-fulfillment";
+import { markOrderPaid, returnOrderStock } from "@/lib/order-fulfillment";
 
 type CallbackPayload = {
   merchantCode?: string;
@@ -72,6 +72,9 @@ export async function POST(request: Request) {
 
       // Never downgrade an already paid order
       if (order.paymentStatus !== "paid") {
+        if (nextStatus === "failed" && order.paymentStatus !== "failed" && order.orderStatus !== "cancelled") {
+          await returnOrderStock(order.id);
+        }
         await prisma.order.update({
           where: { id: order.id },
           data: {

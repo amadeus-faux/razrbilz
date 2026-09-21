@@ -65,9 +65,35 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  return NextResponse.next();
+  // Shop & general routes: handle regional detection & cookie
+  const response = NextResponse.next();
+  const existingCookie = request.cookies.get("user_country")?.value;
+
+  if (!existingCookie) {
+    const detectedCountry =
+      request.headers.get("x-vercel-ip-country") ||
+      request.headers.get("cf-ipcountry") ||
+      "ID";
+    const countryCode = detectedCountry.trim().toUpperCase().slice(0, 2) || "ID";
+
+    response.cookies.set("user_country", countryCode, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+  }
+
+  response.headers.set("Vary", "Cookie");
+  return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/",
+    "/product/:path*",
+    "/cart/:path*",
+    "/checkout/:path*",
+    "/payment/:path*",
+  ],
 };

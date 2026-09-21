@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { cache } from "react";
+import { cookies } from "next/headers";
+import { getActiveExchangeRate } from "@/lib/exchange-rate";
+import { resolveDisplayPrice } from "@/lib/pricing";
 
-export const revalidate = 30;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageParams {
   params: Promise<{ slug: string }>;
@@ -55,7 +59,13 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: PageParams) {
   const { slug } = await params;
-  const allProducts = await getAllActiveProducts();
+  const cookieStore = await cookies();
+  const userCountry = cookieStore.get("user_country")?.value || "ID";
+
+  const [allProducts, exchangeRate] = await Promise.all([
+    getAllActiveProducts(),
+    getActiveExchangeRate(),
+  ]);
 
   const currentProduct = allProducts.find((p) => p.slug === slug);
 
@@ -65,17 +75,18 @@ export default async function ProductDetailPage({ params }: PageParams) {
 
   const initialIndex = allProducts.findIndex((p) => p.slug === slug);
 
-  // Serialize product list for the client orchestrator
+  // Serialize product list for the client orchestrator with localized prices
   const serializedProducts = allProducts.map((p) => ({
     id: p.id,
     name: p.name,
     slug: p.slug,
     description: p.description,
-    price: p.price,
+    price: resolveDisplayPrice(p.price, userCountry, exchangeRate),
+    basePrice: p.price,
+    stock: p.stock,
     images: p.images,
     sizes: p.sizes.map((s) => ({
       size: s.size,
-      stock: s.stock,
     })),
   }));
 

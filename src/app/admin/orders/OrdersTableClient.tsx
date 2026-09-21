@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { formatRupiah } from "@/lib/utils";
 import {
   RefreshCw,
@@ -15,8 +15,15 @@ import {
   Check,
   XCircle,
   Sparkles,
+  RotateCcw,
+  ChevronDown,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import ManualShippingCard from "./ManualShippingCard";
 
 export interface OrderItemType {
   id: string;
@@ -32,14 +39,20 @@ export interface OrderType {
   id: string;
   orderNumber: string;
   customerName: string;
+  email?: string | null;
   phone: string;
   shippingAddress: string;
+  apartment?: string | null;
   district: string | null;
   city: string;
   province: string | null;
+  stateProvince?: string | null;
   postalCode: string;
+  country?: string;
   courier: string;
   total: number;
+  priceRegion?: string;
+  exchangeRate?: number | null;
   paymentStatus: string;
   orderStatus: string;
   isPreOrder?: boolean | null;
@@ -49,6 +62,10 @@ export interface OrderType {
   shippingRetryCount?: number;
   biteshipOrderId?: string | null;
   trackingNumber?: string | null;
+  manualCourier?: string | null;
+  manualService?: string | null;
+  manualShippedAt?: any;
+  manualTrackingNote?: string | null;
   createdAt: any;
   items: OrderItemType[];
 }
@@ -56,11 +73,13 @@ export interface OrderType {
 export default function OrdersTableClient({ initialOrders }: { initialOrders: OrderType[] }) {
   const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [actionType, setActionType] = useState<"ready" | "retry" | "sync" | null>(null);
+  const [actionType, setActionType] = useState<"ready" | "retry" | "sync" | "return" | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [copiedResi, setCopiedResi] = useState<string | null>(null);
+  const [copiedAddr, setCopiedAddr] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isSyncingAll, setIsSyncingAll] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   async function handleMarkReadyToShip(order: OrderType) {
     if (
@@ -167,6 +186,87 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     }
   }
 
+  async function handleMarkReturned(order: OrderType) {
+    if (
+      !confirm(
+        `Tandai order ${order.orderNumber} sebagai RETUR?\n\nIni menandakan barang dikembalikan ke merchant. Tindakan ini tidak bisa dibatalkan.`
+      )
+    ) {
+      return;
+    }
+
+    setProcessingId(order.id);
+    setActionType("return");
+    setActionMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderStatus: "returned" }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Gagal mengubah status ke retur");
+      }
+
+      setActionMessage({
+        type: "success",
+        text: `✅ Order ${order.orderNumber} berhasil ditandai sebagai Retur.`,
+      });
+      router.refresh();
+    } catch (err) {
+      setActionMessage({
+        type: "error",
+        text: `❌ Gagal: ${err instanceof Error ? err.message : "Terjadi kesalahan"}`,
+      });
+    } finally {
+      setProcessingId(null);
+      setActionType(null);
+    }
+  }
+
+  async function handleMarkDeliveredManual(order: OrderType) {
+    if (
+      !confirm(
+        `Tandai pesanan internasional ${order.orderNumber} sebagai SELESAI (DELIVERED)?\n\nPesanan akan dihitung sebagai pesanan sukses selesai pada dashboard.`
+      )
+    ) {
+      return;
+    }
+
+    setProcessingId(order.id);
+    setActionType("sync");
+    setActionMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderStatus: "delivered" }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Gagal menandai pesanan selesai");
+      }
+
+      setActionMessage({
+        type: "success",
+        text: `✅ Pesanan ${order.orderNumber} telah ditandai Selesai (Delivered).`,
+      });
+      router.refresh();
+    } catch (err) {
+      setActionMessage({
+        type: "error",
+        text: `❌ Gagal: ${err instanceof Error ? err.message : "Terjadi kesalahan"}`,
+      });
+    } finally {
+      setProcessingId(null);
+      setActionType(null);
+    }
+  }
+
   async function handleSyncAllOrders() {
     const ordersWithBiteship = initialOrders.filter((o) => !!o.biteshipOrderId);
     if (ordersWithBiteship.length === 0) {
@@ -203,6 +303,56 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     setTimeout(() => setCopiedResi(null), 2000);
   }
 
+  // Helper: resolve country name from code
+  const COUNTRY_NAMES: Record<string, string> = {
+    ID: "Indonesia", US: "United States", GB: "United Kingdom", AU: "Australia",
+    CA: "Canada", SG: "Singapore", MY: "Malaysia", JP: "Japan", KR: "South Korea",
+    DE: "Germany", FR: "France", NL: "Netherlands", IT: "Italy", ES: "Spain",
+    NZ: "New Zealand", PH: "Philippines", TH: "Thailand", VN: "Vietnam",
+  };
+  function getCountryName(code?: string | null) {
+    if (!code) return "Indonesia";
+    return COUNTRY_NAMES[code.toUpperCase()] || code;
+  }
+
+  // Build copy-ready address string
+  function buildCopyAddress(order: OrderType): string {
+    const isID = !order.country || order.country.toUpperCase() === "ID";
+    const countryName = getCountryName(order.country);
+    if (isID) {
+      const parts: string[] = [
+        order.customerName,
+        order.phone,
+        [order.shippingAddress, order.apartment].filter(Boolean).join(", "),
+        order.district ? `Kec. ${order.district}` : "",
+        order.city,
+        [order.province, order.postalCode].filter(Boolean).join(" "),
+        "Indonesia",
+      ].filter(Boolean);
+      return parts.join("\n");
+    } else {
+      const parts: string[] = [
+        order.customerName,
+        order.phone,
+        [order.shippingAddress, order.apartment].filter(Boolean).join(", "),
+        [order.city, order.stateProvince, order.postalCode].filter(Boolean).join(", "),
+        countryName,
+      ].filter(Boolean);
+      return parts.join("\n");
+    }
+  }
+
+  function handleCopyAddress(order: OrderType) {
+    const text = buildCopyAddress(order);
+    navigator.clipboard.writeText(text);
+    setCopiedAddr(order.id);
+    setTimeout(() => setCopiedAddr(null), 2500);
+  }
+
+  function toggleExpand(orderId: string) {
+    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
+  }
+
   // Filter orders
   const filteredOrders = initialOrders.filter((order) => {
     if (activeFilter === "all") return true;
@@ -231,8 +381,21 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     if (activeFilter === "cancelled") {
       return (
         order.orderStatus === "cancelled" ||
-        order.biteshipStatus?.toLowerCase() === "cancelled" ||
+        order.biteshipStatus?.toLowerCase() === "cancelled"
+      );
+    }
+    if (activeFilter === "returned") {
+      return (
+        order.orderStatus === "returned" ||
         order.biteshipStatus?.toLowerCase() === "returned"
+      );
+    }
+    if (activeFilter === "needs_manual_resi") {
+      return (
+        order.country &&
+        order.country.toUpperCase() !== "ID" &&
+        order.paymentStatus === "paid" &&
+        !order.trackingNumber
       );
     }
     if (activeFilter === "failed") {
@@ -243,6 +406,14 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     }
     return true;
   });
+
+  const countNeedsManualResi = initialOrders.filter(
+    (o) =>
+      o.country &&
+      o.country.toUpperCase() !== "ID" &&
+      o.paymentStatus === "paid" &&
+      !o.trackingNumber
+  ).length;
 
   const countInProduction = initialOrders.filter(
     (o) =>
@@ -260,7 +431,12 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
   const countCancelled = initialOrders.filter(
     (o) =>
       o.orderStatus === "cancelled" ||
-      o.biteshipStatus?.toLowerCase() === "cancelled" ||
+      o.biteshipStatus?.toLowerCase() === "cancelled"
+  ).length;
+
+  const countReturned = initialOrders.filter(
+    (o) =>
+      o.orderStatus === "returned" ||
       o.biteshipStatus?.toLowerCase() === "returned"
   ).length;
 
@@ -306,6 +482,20 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
           >
             Semua ({initialOrders.length})
           </button>
+
+          {countNeedsManualResi > 0 && (
+            <button
+              onClick={() => setActiveFilter("needs_manual_resi")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+                activeFilter === "needs_manual_resi"
+                  ? "bg-amber-500 text-black font-semibold shadow-sm"
+                  : "bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20"
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              Perlu Input Resi ({countNeedsManualResi})
+            </button>
+          )}
 
           <button
             onClick={() => setActiveFilter("in_production")}
@@ -363,6 +553,20 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
             >
               <XCircle size={12} />
               Dibatalkan ({countCancelled})
+            </button>
+          )}
+
+          {countReturned > 0 && (
+            <button
+              onClick={() => setActiveFilter("returned")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+                activeFilter === "returned"
+                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/30 font-semibold"
+                  : "text-rose-300/80 hover:bg-rose-950/30"
+              }`}
+            >
+              <RotateCcw size={12} />
+              Retur ({countReturned})
             </button>
           )}
 
@@ -430,9 +634,12 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                 const isProcessing = processingId === order.id;
 
                 const rawBStatus = (order.biteshipStatus || "").toLowerCase().trim();
+                const isIntl = order.country && order.country.toUpperCase() !== "ID";
+                const isIntlNeedsResi = isIntl && isPaid && !order.trackingNumber;
 
                 return (
-                  <tr key={order.id} className="hover:bg-[#1a1917]/60 transition-colors">
+                  <Fragment key={order.id}>
+                  <tr className="hover:bg-[#1a1917]/60 transition-colors">
                     {/* No. Pesanan */}
                     <td className="py-3.5 px-4">
                       <p className="font-mono font-semibold text-[#f4f2ee]">{order.orderNumber}</p>
@@ -456,11 +663,27 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
 
                     {/* Customer */}
                     <td className="py-3.5 px-4">
-                      <p className="font-semibold text-[#f4f2ee]">{order.customerName}</p>
-                      <p className="text-[11px] text-[#8c8680] mt-0.5">{order.phone}</p>
-                      <p className="text-[10px] text-[#78736d] truncate max-w-[180px]">
-                        {[order.city, order.province].filter(Boolean).join(", ")}
-                      </p>
+                      <button
+                        onClick={() => toggleExpand(order.id)}
+                        className="text-left group cursor-pointer"
+                        title="Klik untuk lihat detail alamat"
+                      >
+                        <p className="font-semibold text-[#f4f2ee] group-hover:text-white transition-colors flex items-center gap-1">
+                          {order.customerName}
+                          <ChevronDown
+                            size={12}
+                            className={`text-[#8c8680] transition-transform duration-200 ${
+                              expandedOrderId === order.id ? "rotate-180" : ""
+                            }`}
+                          />
+                        </p>
+                        <p className="text-[11px] text-[#8c8680] mt-0.5">{order.phone}</p>
+                        <p className="text-[10px] text-[#78736d] truncate max-w-[180px]">
+                          {order.country && order.country !== "ID"
+                            ? [order.city, order.country].filter(Boolean).join(" · ")
+                            : [order.city, order.province].filter(Boolean).join(", ")}
+                        </p>
+                      </button>
                     </td>
 
                     {/* Items */}
@@ -508,6 +731,33 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                             <Clock size={12} strokeWidth={2} />
                             Menunggu Pembayaran
                           </span>
+                        ) : isIntl ? (
+                          <div className="space-y-1">
+                            {order.orderStatus === "delivered" ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-lg">
+                                <CheckCircle2 size={12} />
+                                Selesai (Delivered)
+                              </span>
+                            ) : order.orderStatus === "shipped" || order.trackingNumber ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-sky-500/10 text-sky-300 border border-sky-500/30 rounded-lg">
+                                <Truck size={12} />
+                                Dikirim ({order.manualCourier || "POS Indonesia"})
+                              </span>
+                            ) : isIntlNeedsResi ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-lg animate-pulse">
+                                <AlertCircle size={12} />
+                                Perlu diinput resi
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-lg">
+                                <Clock size={12} strokeWidth={2} />
+                                Menunggu Proses
+                              </span>
+                            )}
+                            <p className="text-[10px] text-[#8c8680]">
+                              {order.manualService || "Pengiriman Luar Negeri"}
+                            </p>
+                          </div>
                         ) : isWaitingProduction ? (
                           <div className="space-y-1">
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30 rounded-lg">
@@ -534,6 +784,16 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                                 Percobaan: {order.shippingRetryCount}x
                               </p>
                             )}
+                          </div>
+                        ) : order.orderStatus === "returned" ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 rounded-lg">
+                              <RotateCcw size={12} className="text-rose-400" />
+                              Pesanan Diretur
+                            </span>
+                            <p className="text-[10px] text-[#8c8680]">
+                              Barang diretur ke merchant
+                            </p>
                           </div>
                         ) : rawBStatus === "cancelled" || rawBStatus === "returned" || rawBStatus === "rejected" ? (
                           <div className="space-y-1">
@@ -643,6 +903,15 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                             )}
                           </button>
                         </div>
+                      ) : isIntlNeedsResi ? (
+                        <button
+                          onClick={() => toggleExpand(order.id)}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 text-[10px] font-semibold hover:bg-amber-500/25 transition-colors cursor-pointer"
+                          title="Klik untuk buka form input resi"
+                        >
+                          <AlertCircle size={10} />
+                          <span>Input Resi</span>
+                        </button>
                       ) : (
                         <span className="text-[#6a6660]">—</span>
                       )}
@@ -692,8 +961,179 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                           </span>
                         </button>
                       )}
+                      {/* Tombol Tandai Selesai Manual (Internasional) */}
+                      {isIntl && isPaid && order.orderStatus === "shipped" && (
+                        <button
+                          onClick={() => handleMarkDeliveredManual(order)}
+                          disabled={isProcessing}
+                          title="Tandai pesanan internasional ini telah sampai di tujuan"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-emerald-600/90 hover:bg-emerald-500 text-white transition-all cursor-pointer shadow-sm disabled:opacity-50 ml-1.5"
+                        >
+                          <PackageCheck size={12} />
+                          <span>Tandai Selesai</span>
+                        </button>
+                      )}
+
+                      {/* Tombol Retur & status retur */}
+                      {order.orderStatus === "returned" ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                          <RotateCcw size={11} />
+                          Diretur
+                        </span>
+                      ) : (
+                        isPaid &&
+                        order.orderStatus !== "cancelled" && (
+                          <button
+                            onClick={() => handleMarkReturned(order)}
+                            disabled={isProcessing}
+                            title="Tandai pesanan ini diretur oleh pelanggan"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-xl text-rose-300 hover:text-white bg-rose-500/10 hover:bg-rose-600/30 border border-rose-500/30 transition-all cursor-pointer disabled:opacity-50 ml-2"
+                          >
+                            {isProcessing && actionType === "return" ? (
+                              <RefreshCw size={12} className="animate-spin" />
+                            ) : (
+                              <RotateCcw size={12} />
+                            )}
+                            <span>
+                              {isProcessing && actionType === "return"
+                                ? "Memproses..."
+                                : "Retur"}
+                            </span>
+                          </button>
+                        )
+                      )}
                     </td>
                   </tr>
+
+                  {/* ── Expandable Detail Row ─────────────────────────────── */}
+                  {expandedOrderId === order.id && (
+                    <tr key={`${order.id}-detail`} className="bg-[#111110]">
+                      <td colSpan={10} className="px-6 py-5">
+                        {(() => {
+                          const isID = !order.country || order.country.toUpperCase() === "ID";
+                          const countryName = getCountryName(order.country);
+                          return (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                              {/* Kontak */}
+                              <div className="space-y-3">
+                                <p className="text-[10px] uppercase tracking-widest text-[#6a6660] font-semibold pb-1 border-b border-[#242320]">Informasi Customer</p>
+                                <div className="space-y-2">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[#6a6660] mt-0.5 shrink-0"><Globe size={12} /></span>
+                                    <div>
+                                      <p className="text-[10px] text-[#6a6660] uppercase tracking-wider">Nama Lengkap</p>
+                                      <p className="text-xs text-[#f4f2ee] font-medium mt-0.5">{order.customerName}</p>
+                                    </div>
+                                  </div>
+                                  {order.email && (
+                                    <div className="flex items-start gap-2">
+                                      <span className="text-[#6a6660] mt-0.5 shrink-0"><Mail size={12} /></span>
+                                      <div>
+                                        <p className="text-[10px] text-[#6a6660] uppercase tracking-wider">Email</p>
+                                        <a
+                                          href={`mailto:${order.email}`}
+                                          className="text-xs text-sky-400 hover:text-sky-300 transition-colors mt-0.5 block"
+                                        >
+                                          {order.email}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-[#6a6660] mt-0.5 shrink-0"><Phone size={12} /></span>
+                                    <div>
+                                      <p className="text-[10px] text-[#6a6660] uppercase tracking-wider">Telepon</p>
+                                      <div className="flex items-center gap-2 mt-0.5">
+                                        <a
+                                          href={`tel:${order.phone}`}
+                                          className="text-xs text-[#f4f2ee] hover:text-white transition-colors"
+                                        >
+                                          {order.phone}
+                                        </a>
+                                        <a
+                                          href={`https://wa.me/${order.phone.replace(/[^0-9]/g, "").replace(/^0/, "62")}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors border border-emerald-500/25"
+                                        >
+                                          WA
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Alamat Pengiriman */}
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between pb-1 border-b border-[#242320]">
+                                  <p className="text-[10px] uppercase tracking-widest text-[#6a6660] font-semibold">Alamat Pengiriman</p>
+                                  <button
+                                    onClick={() => handleCopyAddress(order)}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-medium border transition-all cursor-pointer bg-[#1e1d1a] hover:bg-[#2a2826] border-[#33312c] text-[#dedad3] hover:text-white"
+                                    title="Salin alamat dalam format siap tempel"
+                                  >
+                                    {copiedAddr === order.id ? (
+                                      <><Check size={11} className="text-emerald-400" /><span className="text-emerald-400">Tersalin!</span></>
+                                    ) : (
+                                      <><Copy size={11} /><span>Salin Alamat</span></>
+                                    )}
+                                  </button>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                  <span className="text-[#6a6660] mt-0.5 shrink-0"><MapPin size={12} /></span>
+                                  <div className="space-y-1">
+                                    <p className="text-xs text-[#f4f2ee]">
+                                      {order.shippingAddress}
+                                      {order.apartment && (
+                                        <span className="text-[#9c968f]">, {order.apartment}</span>
+                                      )}
+                                    </p>
+                                    {isID ? (
+                                      <>
+                                        {order.district && <p className="text-[11px] text-[#9c968f]">Kec. {order.district}</p>}
+                                        <p className="text-[11px] text-[#9c968f]">{order.city}</p>
+                                        {order.province && <p className="text-[11px] text-[#9c968f]">{order.province}</p>}
+                                        <p className="text-[11px] text-[#9c968f]">
+                                          {order.postalCode && <span>Kode Pos: {order.postalCode} · </span>}
+                                          <span className="font-medium">Indonesia</span>
+                                        </p>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <p className="text-[11px] text-[#9c968f]">{order.city}</p>
+                                        {order.stateProvince && <p className="text-[11px] text-[#9c968f]">{order.stateProvince}</p>}
+                                        <p className="text-[11px] text-[#9c968f]">
+                                          {order.postalCode && <span>{order.postalCode} · </span>}
+                                          <span className="font-medium">{countryName}</span>
+                                          {order.country && (
+                                            <span className="ml-1 px-1 py-0.5 bg-amber-500/10 text-amber-400 text-[9px] rounded border border-amber-500/20 uppercase font-bold">{order.country}</span>
+                                          )}
+                                        </p>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Pengiriman Manual POS Indonesia (Internasional Paid) */}
+                              {isIntl && isPaid && (
+                                <div className="col-span-1 md:col-span-2 pt-2">
+                                  <ManualShippingCard
+                                    order={order}
+                                    onSuccess={() => router.refresh()}
+                                  />
+                                </div>
+                              )}
+
+                            </div>
+                          );
+                        })()}
+                      </td>
+                    </tr>
+                  )}
+                  </Fragment>
                 );
               })
             )}

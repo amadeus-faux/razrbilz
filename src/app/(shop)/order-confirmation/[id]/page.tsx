@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatRupiah } from "@/lib/utils";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { CheckCircle2, ArrowRight, Truck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 interface PageProps {
@@ -80,19 +80,61 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                 </span>
               </div>
 
-              {order.trackingNumber && (
+              {order.trackingNumber ? (
+                <div className="border border-border/80 bg-surface/60 rounded-xl p-3.5 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-muted block">
+                        Kurir & Layanan
+                      </span>
+                      <span className="text-xs font-medium text-foreground">
+                        {order.manualCourier || order.courier}
+                        {order.manualService && ` (${order.manualService})`}
+                      </span>
+                    </div>
+                    <a
+                      href="https://www.posindonesia.co.id/en/tracking"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-opacity"
+                    >
+                      <Truck size={12} />
+                      <span>Lacak Paket</span>
+                    </a>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-1 border-t border-border/40">
+                    <span className="text-xs text-muted">Nomor Resi</span>
+                    <span className="text-xs font-mono font-bold tracking-wider text-foreground">
+                      {order.trackingNumber}
+                    </span>
+                  </div>
+
+                  {order.manualShippedAt && (
+                    <div className="flex justify-between items-center text-[11px] text-muted">
+                      <span>Tanggal Dikirim</span>
+                      <span>
+                        {new Date(order.manualShippedAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  )}
+
+                  {order.country && order.country !== "ID" && (
+                    <p className="text-[10.5px] text-muted/80 pt-1 border-t border-border/40 leading-relaxed italic">
+                      * Catatan: Status pelacakan di sistem pos negara tujuan terkadang membutuhkan beberapa hari kerja untuk diperbarui setelah paket keluar dari Indonesia.
+                    </p>
+                  )}
+                </div>
+              ) : (
                 <div className="flex justify-between border-b border-border pb-3">
-                  <span className="text-xs text-muted">No. Resi</span>
-                  <span className="text-xs font-mono font-medium">
-                    {order.trackingNumber}
-                  </span>
+                  <span className="text-xs text-muted">Kurir</span>
+                  <span className="text-xs font-medium">{order.courier}</span>
                 </div>
               )}
-
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-xs text-muted">Kurir</span>
-                <span className="text-xs font-medium">{order.courier}</span>
-              </div>
 
               <div className="flex justify-between pt-2">
                 <span className="text-label">TOTAL</span>

@@ -63,14 +63,14 @@ export default async function AdminProductsPage() {
                   <th className="py-3.5 px-4">Nama Produk</th>
                   <th className="py-3.5 px-4">Kategori</th>
                   <th className="py-3.5 px-4">Harga</th>
-                  <th className="py-3.5 px-4">Stok Ukuran</th>
+                  <th className="py-3.5 px-4">Stok & Ukuran</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#201f1c]">
                 {products.map((p) => {
-                  const totalStock = p.sizes.reduce((sum, s) => sum + s.stock, 0);
+                  const isSoldOut = p.stock <= 0;
                   return (
                     <tr key={p.id} className="hover:bg-[#1a1917]/60 transition-colors">
                       <td className="py-3.5 px-4">
@@ -103,22 +103,30 @@ export default async function AdminProductsPage() {
                         {formatRupiah(p.price)}
                       </td>
                       <td className="py-3.5 px-4">
-                        <div className="flex flex-wrap gap-1.5 max-w-xs">
-                          {p.sizes.map((s) => (
-                            <span
-                              key={s.id}
-                              className={`px-2 py-0.5 rounded text-[11px] font-medium border ${
-                                s.stock > 0
-                                  ? "bg-[#1c1b18] border-[#2e2c28] text-[#dedad3]"
-                                  : "bg-red-500/10 border-red-500/20 text-red-400"
-                              }`}
-                            >
-                              {s.size}: <strong className="text-white">{s.stock}</strong>
-                            </span>
-                          ))}
-                          <span className="text-[10px] text-[#736e67] self-center ml-1">
-                            (Total: {totalStock})
-                          </span>
+                        <div className="space-y-1.5 max-w-xs">
+                          <div className="flex items-center gap-2">
+                            {isSoldOut ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                                Sold Out (0)
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#1c1b18] border border-[#2e2c28] text-emerald-400">
+                                {p.stock} <span className="text-[10px] text-[#8c8680] font-normal">pcs</span>
+                              </span>
+                            )}
+                          </div>
+                          {p.sizes.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {p.sizes.map((s) => (
+                                <span
+                                  key={s.id}
+                                  className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#1c1b18] border border-[#2a2825] text-[#9c968f]"
+                                >
+                                  {s.size}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="py-3.5 px-4">

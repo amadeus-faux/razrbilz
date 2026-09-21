@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
@@ -176,6 +177,41 @@ export default function CheckoutPage() {
   const isCountrySelected = Boolean(selectedCountry);
   const isIndonesia = selectedCountry === "ID" || selectedCountry === "Indonesia";
   const isInternational = isCountrySelected && !isIndonesia;
+
+  const [exchangeRate, setExchangeRate] = useState<number>(17500);
+
+  // Sync pricing when country changes
+  useEffect(() => {
+    let isMounted = true;
+    async function updatePricing() {
+      try {
+        const country = selectedCountry || "ID";
+        if (typeof document !== "undefined") {
+          document.cookie = `user_country=${country}; path=/; max-age=31536000; SameSite=Lax`;
+        }
+        const res = await fetch(`/api/pricing?country=${encodeURIComponent(country)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.usdToIdr) {
+            setExchangeRate(data.usdToIdr);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch regional pricing:", err);
+      }
+    }
+    updatePricing();
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedCountry]);
+
+  const getItemPrice = useCallback(
+    (it: CartItem) => {
+      return resolveDisplayPrice(it.basePrice ?? it.price, selectedCountry, exchangeRate);
+    },
+    [selectedCountry, exchangeRate]
+  );
 
   // ── 1. Load Provinces when country is Indonesia ─────────────────────────────
   useEffect(() => {
@@ -407,7 +443,6 @@ export default function CheckoutPage() {
     }
     setSubmitting(true);
     const fullName = `${data.firstName} ${data.lastName || ""}`.trim();
-    const fullAddress = data.apartment ? `${data.address}, ${data.apartment}` : data.address;
 
     try {
       const res = await fetch("/api/checkout", {
@@ -416,7 +451,10 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           ...data,
           customerName: fullName,
-          address: fullAddress,
+          address: data.address,
+          apartment: data.apartment || null,
+          stateProvince: isInternational ? (data.province || null) : null,
+          province: isIndonesia ? data.province : "",
           courier: `${selectedCourier.courier_name} - ${selectedCourier.courier_service_name}`,
           shippingCost: selectedCourier.price,
           paymentMethod: selectedPaymentMethod?.paymentMethod || "VA",
@@ -424,7 +462,7 @@ export default function CheckoutPage() {
             productId: item.productId,
             size: item.size,
             quantity: item.quantity,
-            priceAtBuy: item.price,
+            priceAtBuy: getItemPrice(item),
           })),
         }),
       });
@@ -498,7 +536,11 @@ export default function CheckoutPage() {
   }
 
   const shippingCost = selectedCourier?.price || 0;
-  const total = subtotal() + shippingCost;
+  const calculatedSubtotal = items.reduce(
+    (sum, it) => sum + getItemPrice(it) * it.quantity,
+    0
+  );
+  const total = calculatedSubtotal + shippingCost;
   const totalCount = items.reduce((acc, it) => acc + it.quantity, 0);
 
   return (
@@ -1131,17 +1173,23 @@ export default function CheckoutPage() {
 
                       {/* Item Total */}
                       <span className="text-xs text-foreground whitespace-nowrap">
-                        {formatRupiah(it.price * it.quantity)}
+                        {formatRupiah(getItemPrice(it) * it.quantity)}
                       </span>
                     </div>
                   ))}
                 </div>
 
+                {isInternational && (
+                  <div className="mx-6 mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
+                    Product prices are adjusted for international buyers ({selectedCountry}) based on live USD/IDR exchange rates.
+                  </div>
+                )}
+
                 {/* Price Breakdown */}
                 <div className="px-6 py-5 space-y-3">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-muted">Subtotal ({totalCount} items)</span>
-                    <span className="text-foreground">{formatRupiah(subtotal())}</span>
+                    <span className="text-foreground">{formatRupiah(calculatedSubtotal)}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">

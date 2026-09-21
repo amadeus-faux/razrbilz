@@ -13,21 +13,25 @@ export default function NewProductPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(350000);
+  const [stock, setStock] = useState<number>(50);
   const [category, setCategory] = useState("T-Shirts");
   const [images, setImages] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isPreOrder, setIsPreOrder] = useState(true);
-  const [sizes, setSizes] = useState([
-    { size: "S", stock: 10 },
-    { size: "M", stock: 20 },
-    { size: "L", stock: 15 },
-    { size: "XL", stock: 5 },
-  ]);
+  const [availableSizes, setAvailableSizes] = useState<string[]>(["S", "M", "L", "XL"]);
 
-  function handleStockChange(size: string, stock: number) {
-    setSizes(
-      sizes.map((s) => (s.size === size ? { ...s, stock: Math.max(0, stock) } : s))
-    );
+  const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+  function toggleSize(size: string) {
+    if (availableSizes.includes(size)) {
+      if (availableSizes.length === 1) {
+        alert("Produk minimal harus memiliki 1 ukuran tersedia.");
+        return;
+      }
+      setAvailableSizes(availableSizes.filter((s) => s !== size));
+    } else {
+      setAvailableSizes([...availableSizes, size]);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -36,6 +40,12 @@ export default function NewProductPage() {
 
     if (images.length === 0) {
       alert("Tambahkan minimal 1 foto produk.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (availableSizes.length === 0) {
+      alert("Pilih minimal 1 ukuran yang tersedia.");
       setSubmitting(false);
       return;
     }
@@ -49,9 +59,10 @@ export default function NewProductPage() {
           slug: slugify(name),
           description,
           price: Number(price),
+          stock: Math.max(0, Number(stock) || 0),
           category,
           images,
-          sizes,
+          sizes: availableSizes.map((s) => ({ size: s })),
           isActive,
           isPreOrder,
         }),
@@ -153,25 +164,52 @@ export default function NewProductPage() {
           />
         </div>
 
-        {/* Stok Ukuran */}
+        {/* Total Stok Produk */}
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-[#9c968f] mb-2">
-            Stok per Ukuran
+            Total Stok Produk (Pre-Order) <span className="text-rose-400">*</span>
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {sizes.map(({ size, stock }) => (
-              <div key={size} className="p-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl space-y-1.5">
-                <span className="text-xs font-semibold text-[#dedad3] block">{size}</span>
-                <input
-                  type="number"
-                  min={0}
-                  value={stock}
-                  onChange={(e) => handleStockChange(size, Number(e.target.value))}
-                  className="w-full px-2.5 py-1.5 bg-[#141412] border border-[#2e2c28] rounded-lg text-xs text-[#f4f2ee] focus:outline-none focus:border-white/40"
-                />
-              </div>
-            ))}
+          <input
+            type="number"
+            required
+            min={0}
+            value={stock}
+            onChange={(e) => setStock(Math.max(0, Number(e.target.value)))}
+            placeholder="misal: 50"
+            className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-[#5a5650]"
+          />
+          <p className="text-[11px] text-[#736e67] mt-1.5">
+            Stok berlaku untuk keseluruhan produk (gabungan semua ukuran). Pembeli dapat memilih ukuran mana pun selama total stok masih tersedia.
+          </p>
+        </div>
+
+        {/* Pilihan Ukuran Tersedia */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#9c968f] mb-2">
+            Pilihan Ukuran yang Tersedia
+          </label>
+          <div className="flex flex-wrap gap-2.5">
+            {ALL_SIZES.map((size) => {
+              const isSelected = availableSizes.includes(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => toggleSize(size)}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer border ${
+                    isSelected
+                      ? "bg-white text-black border-white shadow-sm"
+                      : "bg-[#1c1b18] text-[#8c8680] border-[#2e2c28] hover:text-[#dedad3] hover:border-[#3e3c38]"
+                  }`}
+                >
+                  {size}
+                </button>
+              );
+            })}
           </div>
+          <p className="text-[11px] text-[#736e67] mt-1.5">
+            Klik untuk mengaktifkan atau menonaktifkan ukuran yang dapat dipilih pembeli.
+          </p>
         </div>
 
         {/* Foto Produk */}

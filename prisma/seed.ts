@@ -10,12 +10,8 @@ const dummyProducts = [
     category: "T-Shirts",
     images: ["/products/equator-tee.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 15 },
-      { size: "M", stock: 25 },
-      { size: "L", stock: 20 },
-      { size: "XL", stock: 10 },
-    ],
+    stock: 70,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "VOID HOODIE",
@@ -26,12 +22,8 @@ const dummyProducts = [
     category: "Hoodies",
     images: ["/products/void-hoodie.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 10 },
-      { size: "M", stock: 18 },
-      { size: "L", stock: 12 },
-      { size: "XL", stock: 6 },
-    ],
+    stock: 46,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "DRIFT PANT",
@@ -42,12 +34,8 @@ const dummyProducts = [
     category: "Pants",
     images: ["/products/drift-pant.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 8 },
-      { size: "M", stock: 14 },
-      { size: "L", stock: 12 },
-      { size: "XL", stock: 5 },
-    ],
+    stock: 39,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "SIGNAL TEE",
@@ -58,12 +46,8 @@ const dummyProducts = [
     category: "T-Shirts",
     images: ["/products/signal-tee.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 20 },
-      { size: "M", stock: 30 },
-      { size: "L", stock: 15 },
-      { size: "XL", stock: 0 },
-    ],
+    stock: 65,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "STATIC HOODIE",
@@ -74,12 +58,8 @@ const dummyProducts = [
     category: "Hoodies",
     images: ["/products/static-hoodie.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 6 },
-      { size: "M", stock: 10 },
-      { size: "L", stock: 8 },
-      { size: "XL", stock: 4 },
-    ],
+    stock: 28,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "ORBIT PANT",
@@ -90,12 +70,8 @@ const dummyProducts = [
     category: "Pants",
     images: ["/products/orbit-pant.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 12 },
-      { size: "M", stock: 20 },
-      { size: "L", stock: 16 },
-      { size: "XL", stock: 8 },
-    ],
+    stock: 56,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "APEX TEE",
@@ -106,12 +82,8 @@ const dummyProducts = [
     category: "T-Shirts",
     images: ["/products/apex-tee.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 25 },
-      { size: "M", stock: 35 },
-      { size: "L", stock: 22 },
-      { size: "XL", stock: 14 },
-    ],
+    stock: 96,
+    sizes: ["S", "M", "L", "XL"],
   },
   {
     name: "ZERO HOODIE",
@@ -122,12 +94,8 @@ const dummyProducts = [
     category: "Hoodies",
     images: ["/products/zero-hoodie.svg"],
     isActive: true,
-    sizes: [
-      { size: "S", stock: 8 },
-      { size: "M", stock: 15 },
-      { size: "L", stock: 0 },
-      { size: "XL", stock: 5 },
-    ],
+    stock: 28,
+    sizes: ["S", "M", "L", "XL"],
   },
 ];
 
@@ -143,19 +111,18 @@ async function main() {
       create: productData,
     });
 
-    for (const s of sizes) {
+    for (const size of sizes) {
       await prisma.productSize.upsert({
         where: {
           productId_size: {
             productId: product.id,
-            size: s.size,
+            size,
           },
         },
-        update: { stock: s.stock },
+        update: {},
         create: {
           productId: product.id,
-          size: s.size,
-          stock: s.stock,
+          size,
         },
       });
     }

@@ -8,6 +8,7 @@ export interface Product {
   slug: string;
   description?: string;
   price?: number;
+  stock?: number;
   images: string[];
 }
 
@@ -90,6 +91,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
               slug={product.slug}
               description={product.description}
               price={product.price}
+              stock={product.stock}
               image={product.images[0] || "/placeholder-product.svg"}
               index={index}
             />

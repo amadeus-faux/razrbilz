@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore, type CartItem as CartItemType } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import { Minus, Plus, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, useState, useEffect, useCallback } from "react";
 
 const emptyItems: CartItemType[] = [];
 
@@ -23,8 +24,32 @@ export default function CartPage() {
   const items = useSyncExternalStore(subscribe, getItemsSnapshot, getServerSnapshot);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
-  const subtotal = useCartStore((state) => state.subtotal);
   const totalCount = items.reduce((acc, it) => acc + it.quantity, 0);
+
+  const [country, setCountry] = useState<string>("ID");
+  const [exchangeRate, setExchangeRate] = useState<number>(17500);
+
+  useEffect(() => {
+    fetch("/api/pricing")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.region) setCountry(data.region);
+        if (data.usdToIdr) setExchangeRate(data.usdToIdr);
+      })
+      .catch((err) => console.error("Error fetching cart pricing:", err));
+  }, []);
+
+  const getItemPrice = useCallback(
+    (it: CartItemType) => {
+      return resolveDisplayPrice(it.basePrice ?? it.price, country, exchangeRate);
+    },
+    [country, exchangeRate]
+  );
+
+  const calculatedSubtotal = items.reduce(
+    (sum, it) => sum + getItemPrice(it) * it.quantity,
+    0
+  );
 
   // ── Empty state ──────────────────────────────────────────────────────────────
   if (items.length === 0) {
@@ -113,7 +138,7 @@ export default function CartPage() {
                         Size {item.size}
                       </span>
                       <span className="text-price">
-                        {formatRupiah(item.price)} / pcs
+                        {formatRupiah(getItemPrice(item))} / pcs
                       </span>
                     </div>
                   </div>
@@ -141,7 +166,7 @@ export default function CartPage() {
                     </div>
 
                     <span className="text-xs text-foreground tabular-nums">
-                      {formatRupiah(item.price * item.quantity)}
+                      {formatRupiah(getItemPrice(item) * item.quantity)}
                     </span>
                   </div>
                 </div>
@@ -174,13 +199,18 @@ export default function CartPage() {
                 <h2 className="text-section-heading">
                   Order Summary ({totalCount})
                 </h2>
+                {country && country !== "ID" && (
+                  <p className="text-[10px] text-amber-300/80 mt-1">
+                    Harga disesuaikan untuk region {country}
+                  </p>
+                )}
               </div>
 
               {/* Price breakdown */}
               <div className="px-6 py-5 space-y-2.5">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-muted">Subtotal ({totalCount} {totalCount === 1 ? "item" : "items"})</span>
-                  <span className="text-xs font-medium text-foreground tabular-nums">{formatRupiah(subtotal())}</span>
+                  <span className="text-xs font-medium text-foreground tabular-nums">{formatRupiah(calculatedSubtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-muted">Shipping</span>
@@ -192,7 +222,7 @@ export default function CartPage() {
               <div className="px-6 py-5 bg-surface border-y border-border flex items-baseline justify-between">
                 <span className="text-label text-muted">Estimated Total</span>
                 <span className="text-2xl text-foreground tabular-nums">
-                  {formatRupiah(subtotal())}
+                  {formatRupiah(calculatedSubtotal)}
                 </span>
               </div>
 

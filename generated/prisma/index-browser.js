@@ -130,14 +130,14 @@ exports.Prisma.ProductScalarFieldEnum = {
   images: 'images',
   isActive: 'isActive',
   isPreOrder: 'isPreOrder',
+  stock: 'stock',
   createdAt: 'createdAt'
 };
 
 exports.Prisma.ProductSizeScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
-  size: 'size',
-  stock: 'stock'
+  size: 'size'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
@@ -148,7 +148,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   phone: 'phone',
   country: 'country',
   province: 'province',
+  stateProvince: 'stateProvince',
   shippingAddress: 'shippingAddress',
+  apartment: 'apartment',
   district: 'district',
   city: 'city',
   postalCode: 'postalCode',
@@ -158,8 +160,13 @@ exports.Prisma.OrderScalarFieldEnum = {
   total: 'total',
   paymentStatus: 'paymentStatus',
   orderStatus: 'orderStatus',
+  paidAt: 'paidAt',
   isPreOrder: 'isPreOrder',
   trackingNumber: 'trackingNumber',
+  manualCourier: 'manualCourier',
+  manualService: 'manualService',
+  manualShippedAt: 'manualShippedAt',
+  manualTrackingNote: 'manualTrackingNote',
   duitkuReference: 'duitkuReference',
   duitkuPaymentMethod: 'duitkuPaymentMethod',
   duitkuPaymentUrl: 'duitkuPaymentUrl',
@@ -174,7 +181,18 @@ exports.Prisma.OrderScalarFieldEnum = {
   biteshipStatus: 'biteshipStatus',
   shippingOrderError: 'shippingOrderError',
   shippingOrderStatus: 'shippingOrderStatus',
-  shippingRetryCount: 'shippingRetryCount'
+  shippingRetryCount: 'shippingRetryCount',
+  priceRegion: 'priceRegion',
+  exchangeRate: 'exchangeRate'
+};
+
+exports.Prisma.ExchangeRateScalarFieldEnum = {
+  id: 'id',
+  usdToIdr: 'usdToIdr',
+  source: 'source',
+  isOverride: 'isOverride',
+  updatedAt: 'updatedAt',
+  expiresAt: 'expiresAt'
 };
 
 exports.Prisma.ShippingLogScalarFieldEnum = {
@@ -222,6 +240,7 @@ exports.Prisma.ModelName = {
   Product: 'Product',
   ProductSize: 'ProductSize',
   Order: 'Order',
+  ExchangeRate: 'ExchangeRate',
   ShippingLog: 'ShippingLog',
   OrderItem: 'OrderItem',
   Admin: 'Admin'

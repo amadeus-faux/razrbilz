@@ -81,9 +81,35 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
               <div className="flex justify-between border-b border-border pb-2.5">
                 <span className="text-muted">Kurir Pengiriman</span>
                 <span className="text-foreground">
-                  {order.courier}
+                  {order.manualCourier || order.courier}
+                  {order.manualService && ` (${order.manualService})`}
                 </span>
               </div>
+
+              {order.trackingNumber && (
+                <div className="border border-border/80 bg-surface/80 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted">Nomor Resi</span>
+                    <span className="font-mono text-xs font-bold text-foreground">
+                      {order.trackingNumber}
+                    </span>
+                  </div>
+                  <a
+                    href="https://www.posindonesia.co.id/en/tracking"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-opacity"
+                  >
+                    <Truck size={12} />
+                    <span>Lacak Paket (POS Indonesia)</span>
+                  </a>
+                  {order.country && order.country !== "ID" && (
+                    <p className="text-[10px] text-muted leading-relaxed italic pt-1 border-t border-border/40">
+                      * Catatan: Pelacakan di negara tujuan mungkin memerlukan beberapa hari kerja untuk diperbarui setelah paket meninggalkan Indonesia.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div className="flex justify-between border-b border-border pb-2.5">
                 <span className="text-muted">Status Pembayaran</span>

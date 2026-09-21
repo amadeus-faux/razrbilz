@@ -18,10 +18,11 @@ export interface ClientProduct {
   slug: string;
   description: string;
   price: number;
+  basePrice?: number;
+  stock: number;
   images: string[];
   sizes: {
     size: string;
-    stock: number;
   }[];
 }
 
@@ -277,7 +278,7 @@ export default function ProductDetailClient({
           />
 
           {/* Product Info */}
-          <div className="text-center mt-3 sm:mt-4 space-y-1">
+          <div className="text-center mt-3 sm:mt-4 space-y-1.5">
             <h1
               className="text-product-name tracking-widest text-foreground"
               style={{ fontSize: "0.68rem" }}
@@ -287,30 +288,49 @@ export default function ProductDetailClient({
             <p className="text-price">
               {formatRupiah(currentProduct.price)}
             </p>
+            {currentProduct.stock <= 0 && (
+              <div className="pt-0.5">
+                <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-sm">
+                  Sold Out
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Add to Cart CTA Button */}
           <div className="flex justify-center mt-4 sm:mt-5">
-            <button
-              type="button"
-              onClick={() => setSheetOpen(!sheetOpen)}
-              className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200 text-foreground"
-              style={{
-                boxShadow: sheetOpen
-                  ? "none"
-                  : "0 4px 16px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2)",
-              }}
-              aria-label="Select size & add to cart"
-              id="btn-add-to-cart"
-            >
-              <Plus
-                size={18}
-                strokeWidth={1.5}
-                className={`transition-all duration-300 group-hover:text-background ${
-                  sheetOpen ? "rotate-45" : ""
-                }`}
-              />
-            </button>
+            {currentProduct.stock <= 0 ? (
+              <button
+                type="button"
+                disabled
+                className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-[#8c8680] cursor-not-allowed opacity-60 text-xs font-bold uppercase tracking-widest shadow-sm"
+                aria-label="Product is sold out"
+                id="btn-add-to-cart"
+              >
+                SOLD OUT
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSheetOpen(!sheetOpen)}
+                className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200 text-foreground cursor-pointer"
+                style={{
+                  boxShadow: sheetOpen
+                    ? "none"
+                    : "0 4px 16px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2)",
+                }}
+                aria-label="Select size & add to cart"
+                id="btn-add-to-cart"
+              >
+                <Plus
+                  size={18}
+                  strokeWidth={1.5}
+                  className={`transition-all duration-300 group-hover:text-background ${
+                    sheetOpen ? "rotate-45" : ""
+                  }`}
+                />
+              </button>
+            )}
           </div>
         </div>
 
@@ -327,7 +347,7 @@ export default function ProductDetailClient({
               productName={incomingProduct.name}
             />
 
-            <div className="text-center mt-3 sm:mt-4 space-y-1">
+            <div className="text-center mt-3 sm:mt-4 space-y-1.5">
               <h1
                 className="text-product-name tracking-widest text-foreground"
                 style={{ fontSize: "0.68rem" }}
@@ -337,12 +357,25 @@ export default function ProductDetailClient({
               <p className="text-price">
                 {formatRupiah(incomingProduct.price)}
               </p>
+              {incomingProduct.stock <= 0 && (
+                <div className="pt-0.5">
+                  <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                    Sold Out
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center mt-4 sm:mt-5">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface flex items-center justify-center text-foreground">
-                <Plus size={18} strokeWidth={1.5} />
-              </div>
+              {incomingProduct.stock <= 0 ? (
+                <div className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-[#8c8680] opacity-60 text-xs font-bold uppercase tracking-widest">
+                  SOLD OUT
+                </div>
+              ) : (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface flex items-center justify-center text-foreground">
+                  <Plus size={18} strokeWidth={1.5} />
+                </div>
+              )}
             </div>
           </div>
         )}

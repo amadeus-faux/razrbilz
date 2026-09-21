@@ -36,13 +36,14 @@ export async function markOrderPaid({
   const nextOrderStatus = order.isPreOrder ? "in_production" : "processing";
   const initialShippingStatus = order.isPreOrder ? "WAITING_PRODUCTION" : "PENDING";
 
-  // 1. Update order status to paid
+  // 1. Update order status to paid (paidAt = now, only set once)
   const updatedOrder = await prisma.order.update({
     where: { id: order.id },
     data: {
       paymentStatus: "paid",
       orderStatus: nextOrderStatus,
       shippingOrderStatus: initialShippingStatus,
+      paidAt: order.paidAt ?? new Date(),
       duitkuReference: reference || order.duitkuReference,
       duitkuFee: fee !== undefined ? String(fee) : order.duitkuFee,
       duitkuPaymentMethod: paymentMethod || order.duitkuPaymentMethod,
@@ -51,15 +52,7 @@ export async function markOrderPaid({
     include: { items: { include: { product: true } } },
   });
 
-  // 2. Decrement stock
-  for (const item of order.items) {
-    await prisma.productSize.updateMany({
-      where: { productId: item.productId, size: item.size },
-      data: { stock: { decrement: item.quantity } },
-    });
-  }
-
-  // 3. For Pre-Order: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
+  // 2. Pre-Order status check: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
   if (order.isPreOrder) {
     await prisma.shippingLog.create({
       data: {
@@ -154,6 +147,10 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
         statusMessage: result.statusMessage,
       });
     } else if (result.statusCode === "02") {
+      // Revert product stock if transitioning to failed/cancelled
+      if (order.paymentStatus !== "failed" && order.orderStatus !== "cancelled") {
+        await returnOrderStock(order.id);
+      }
       return await prisma.order.update({
         where: { id: order.id },
         data: {
@@ -169,5 +166,36 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
   } catch (error) {
     console.error("[OrderFulfillment] syncOrderPaymentStatus error:", error);
     return null;
+  }
+}
+
+/**
+ * Restores product stock for each item in an order.
+ * Safe and idempotent: ensures stock is returned when an order expires or is cancelled.
+ */
+export async function returnOrderStock(orderId: string) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+    if (!order || !order.items || order.items.length === 0) return;
+
+    for (const item of order.items) {
+      await prisma.product
+        .update({
+          where: { id: item.productId },
+          data: { stock: { increment: item.quantity } },
+        })
+        .catch((err) => {
+          console.error(
+            `[OrderFulfillment] Failed to return stock for product ${item.productId}:`,
+            err
+          );
+        });
+    }
+    console.log(`[OrderFulfillment] Stock restored successfully for order ${order.orderNumber}`);
+  } catch (error) {
+    console.error("[OrderFulfillment] returnOrderStock error:", error);
   }
 }

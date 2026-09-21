@@ -7,7 +7,6 @@ import { formatRupiah } from "@/lib/utils";
 
 interface SizeOption {
   size: string;
-  stock: number;
 }
 
 interface SizeSelectorPopoverProps {
@@ -18,10 +17,12 @@ interface SizeSelectorPopoverProps {
     name: string;
     slug: string;
     price: number;
+    basePrice?: number;
     description: string;
     images: string[];
+    stock?: number;
   };
-  sizes: SizeOption[];
+  sizes: (SizeOption | string)[];
 }
 
 // Static size chart data
@@ -47,7 +48,10 @@ export default function SizeSelectorPopover({
 
   if (!isOpen) return null;
 
+  const isSoldOut = (product.stock ?? 1) <= 0;
+
   const handleSizeSelect = (size: string) => {
+    if (isSoldOut) return;
     setSelectedSize(size);
     addItem({
       productId: product.id,
@@ -55,6 +59,7 @@ export default function SizeSelectorPopover({
       name: product.name,
       size,
       price: product.price,
+      basePrice: product.basePrice ?? product.price,
       image: product.images[0] || "/placeholder-product.svg",
     });
     setTimeout(() => {
@@ -65,8 +70,9 @@ export default function SizeSelectorPopover({
     }, 350);
   };
 
-  const sortedSizes = [...sizes].sort(
-    (a, b) => SIZE_ORDER.indexOf(a.size) - SIZE_ORDER.indexOf(b.size)
+  const normalizedSizes = sizes.map((s) => (typeof s === "string" ? s : s.size));
+  const sortedSizes = [...normalizedSizes].sort(
+    (a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b)
   );
 
   return (
@@ -98,10 +104,19 @@ export default function SizeSelectorPopover({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header row */}
-            <div className="flex items-center justify-center pb-3 border-b border-border">
-              <span className="text-[11px] tracking-widest uppercase">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <span className="text-[11px] tracking-widest uppercase text-foreground">
                 SELECT SIZE
               </span>
+              {isSoldOut ? (
+                <span className="text-[10px] tracking-widest uppercase font-bold text-rose-400">
+                  SOLD OUT
+                </span>
+              ) : (
+                <span className="text-[10px] tracking-widest uppercase text-muted">
+                  PRE-ORDER
+                </span>
+              )}
             </div>
 
             {/* Price */}
@@ -113,30 +128,29 @@ export default function SizeSelectorPopover({
 
             {/* Size grid — 4 cols */}
             <div className="grid grid-cols-4 gap-2">
-              {sortedSizes.map(({ size, stock }) => {
-                const isOutOfStock = stock === 0;
+              {sortedSizes.map((size) => {
                 const isSelected = selectedSize === size;
                 return (
                   <button
                     key={size}
                     type="button"
-                    onClick={() => !isOutOfStock && handleSizeSelect(size)}
-                    disabled={isOutOfStock}
+                    onClick={() => !isSoldOut && handleSizeSelect(size)}
+                    disabled={isSoldOut}
                     className={[
                       "relative h-12 rounded-xl text-xs uppercase tracking-wider",
                       "flex flex-col items-center justify-center gap-0.5",
                       "transition-all duration-200",
                       isSelected
                         ? "bg-foreground text-background ring-2 ring-foreground ring-offset-2 ring-offset-surface scale-[0.96]"
-                        : isOutOfStock
+                        : isSoldOut
                           ? "bg-surface text-disabled cursor-not-allowed opacity-40 line-through"
-                          : "bg-surface hover:bg-surface-hover text-foreground active:scale-95",
+                          : "bg-surface hover:bg-surface-hover text-foreground active:scale-95 cursor-pointer",
                     ].join(" ")}
                     id={`popover-size-${size.toLowerCase()}`}
                   >
                     <span>{size}</span>
                     <span className="text-[8px] font-normal opacity-60">
-                      {isOutOfStock ? "SOLD" : `${stock} left`}
+                      {isSoldOut ? "SOLD" : "SELECT"}
                     </span>
                     {isSelected && (
                       <Check

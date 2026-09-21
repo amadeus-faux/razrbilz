@@ -29,6 +29,11 @@ export type ProductSize = $Result.DefaultSelection<Prisma.$ProductSizePayload>
  */
 export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
 /**
+ * Model ExchangeRate
+ * 
+ */
+export type ExchangeRate = $Result.DefaultSelection<Prisma.$ExchangeRatePayload>
+/**
  * Model ShippingLog
  * 
  */
@@ -194,6 +199,16 @@ export class PrismaClient<
     * ```
     */
   get order(): Prisma.OrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.exchangeRate`: Exposes CRUD operations for the **ExchangeRate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExchangeRates
+    * const exchangeRates = await prisma.exchangeRate.findMany()
+    * ```
+    */
+  get exchangeRate(): Prisma.ExchangeRateDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.shippingLog`: Exposes CRUD operations for the **ShippingLog** model.
@@ -674,6 +689,7 @@ export namespace Prisma {
     Product: 'Product',
     ProductSize: 'ProductSize',
     Order: 'Order',
+    ExchangeRate: 'ExchangeRate',
     ShippingLog: 'ShippingLog',
     OrderItem: 'OrderItem',
     Admin: 'Admin'
@@ -692,7 +708,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "product" | "productSize" | "order" | "shippingLog" | "orderItem" | "admin"
+      modelProps: "product" | "productSize" | "order" | "exchangeRate" | "shippingLog" | "orderItem" | "admin"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -915,6 +931,80 @@ export namespace Prisma {
           count: {
             args: Prisma.OrderCountArgs<ExtArgs>
             result: $Utils.Optional<OrderCountAggregateOutputType> | number
+          }
+        }
+      }
+      ExchangeRate: {
+        payload: Prisma.$ExchangeRatePayload<ExtArgs>
+        fields: Prisma.ExchangeRateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExchangeRateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExchangeRateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          findFirst: {
+            args: Prisma.ExchangeRateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExchangeRateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          findMany: {
+            args: Prisma.ExchangeRateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+          }
+          create: {
+            args: Prisma.ExchangeRateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          createMany: {
+            args: Prisma.ExchangeRateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExchangeRateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+          }
+          delete: {
+            args: Prisma.ExchangeRateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          update: {
+            args: Prisma.ExchangeRateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          deleteMany: {
+            args: Prisma.ExchangeRateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExchangeRateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExchangeRateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>[]
+          }
+          upsert: {
+            args: Prisma.ExchangeRateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExchangeRatePayload>
+          }
+          aggregate: {
+            args: Prisma.ExchangeRateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExchangeRate>
+          }
+          groupBy: {
+            args: Prisma.ExchangeRateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExchangeRateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExchangeRateCountArgs<ExtArgs>
+            result: $Utils.Optional<ExchangeRateCountAggregateOutputType> | number
           }
         }
       }
@@ -1266,6 +1356,7 @@ export namespace Prisma {
     product?: ProductOmit
     productSize?: ProductSizeOmit
     order?: OrderOmit
+    exchangeRate?: ExchangeRateOmit
     shippingLog?: ShippingLogOmit
     orderItem?: OrderItemOmit
     admin?: AdminOmit
@@ -1442,10 +1533,12 @@ export namespace Prisma {
 
   export type ProductAvgAggregateOutputType = {
     price: number | null
+    stock: number | null
   }
 
   export type ProductSumAggregateOutputType = {
     price: number | null
+    stock: number | null
   }
 
   export type ProductMinAggregateOutputType = {
@@ -1457,6 +1550,7 @@ export namespace Prisma {
     category: string | null
     isActive: boolean | null
     isPreOrder: boolean | null
+    stock: number | null
     createdAt: Date | null
   }
 
@@ -1469,6 +1563,7 @@ export namespace Prisma {
     category: string | null
     isActive: boolean | null
     isPreOrder: boolean | null
+    stock: number | null
     createdAt: Date | null
   }
 
@@ -1482,6 +1577,7 @@ export namespace Prisma {
     images: number
     isActive: number
     isPreOrder: number
+    stock: number
     createdAt: number
     _all: number
   }
@@ -1489,10 +1585,12 @@ export namespace Prisma {
 
   export type ProductAvgAggregateInputType = {
     price?: true
+    stock?: true
   }
 
   export type ProductSumAggregateInputType = {
     price?: true
+    stock?: true
   }
 
   export type ProductMinAggregateInputType = {
@@ -1504,6 +1602,7 @@ export namespace Prisma {
     category?: true
     isActive?: true
     isPreOrder?: true
+    stock?: true
     createdAt?: true
   }
 
@@ -1516,6 +1615,7 @@ export namespace Prisma {
     category?: true
     isActive?: true
     isPreOrder?: true
+    stock?: true
     createdAt?: true
   }
 
@@ -1529,6 +1629,7 @@ export namespace Prisma {
     images?: true
     isActive?: true
     isPreOrder?: true
+    stock?: true
     createdAt?: true
     _all?: true
   }
@@ -1629,6 +1730,7 @@ export namespace Prisma {
     images: string[]
     isActive: boolean
     isPreOrder: boolean
+    stock: number
     createdAt: Date
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
@@ -1661,6 +1763,7 @@ export namespace Prisma {
     images?: boolean
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: boolean
     createdAt?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
@@ -1677,6 +1780,7 @@ export namespace Prisma {
     images?: boolean
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["product"]>
 
@@ -1690,6 +1794,7 @@ export namespace Prisma {
     images?: boolean
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["product"]>
 
@@ -1703,10 +1808,11 @@ export namespace Prisma {
     images?: boolean
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: boolean
     createdAt?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "createdAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "stock" | "createdAt", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
@@ -1731,6 +1837,7 @@ export namespace Prisma {
       images: string[]
       isActive: boolean
       isPreOrder: boolean
+      stock: number
       createdAt: Date
     }, ExtArgs["result"]["product"]>
     composites: {}
@@ -2166,6 +2273,7 @@ export namespace Prisma {
     readonly images: FieldRef<"Product", 'String[]'>
     readonly isActive: FieldRef<"Product", 'Boolean'>
     readonly isPreOrder: FieldRef<"Product", 'Boolean'>
+    readonly stock: FieldRef<"Product", 'Int'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
   }
     
@@ -2632,70 +2740,46 @@ export namespace Prisma {
 
   export type AggregateProductSize = {
     _count: ProductSizeCountAggregateOutputType | null
-    _avg: ProductSizeAvgAggregateOutputType | null
-    _sum: ProductSizeSumAggregateOutputType | null
     _min: ProductSizeMinAggregateOutputType | null
     _max: ProductSizeMaxAggregateOutputType | null
-  }
-
-  export type ProductSizeAvgAggregateOutputType = {
-    stock: number | null
-  }
-
-  export type ProductSizeSumAggregateOutputType = {
-    stock: number | null
   }
 
   export type ProductSizeMinAggregateOutputType = {
     id: string | null
     productId: string | null
     size: string | null
-    stock: number | null
   }
 
   export type ProductSizeMaxAggregateOutputType = {
     id: string | null
     productId: string | null
     size: string | null
-    stock: number | null
   }
 
   export type ProductSizeCountAggregateOutputType = {
     id: number
     productId: number
     size: number
-    stock: number
     _all: number
   }
 
-
-  export type ProductSizeAvgAggregateInputType = {
-    stock?: true
-  }
-
-  export type ProductSizeSumAggregateInputType = {
-    stock?: true
-  }
 
   export type ProductSizeMinAggregateInputType = {
     id?: true
     productId?: true
     size?: true
-    stock?: true
   }
 
   export type ProductSizeMaxAggregateInputType = {
     id?: true
     productId?: true
     size?: true
-    stock?: true
   }
 
   export type ProductSizeCountAggregateInputType = {
     id?: true
     productId?: true
     size?: true
-    stock?: true
     _all?: true
   }
 
@@ -2737,18 +2821,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: ProductSizeAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: ProductSizeSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: ProductSizeMinAggregateInputType
@@ -2779,8 +2851,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ProductSizeCountAggregateInputType | true
-    _avg?: ProductSizeAvgAggregateInputType
-    _sum?: ProductSizeSumAggregateInputType
     _min?: ProductSizeMinAggregateInputType
     _max?: ProductSizeMaxAggregateInputType
   }
@@ -2789,10 +2859,7 @@ export namespace Prisma {
     id: string
     productId: string
     size: string
-    stock: number
     _count: ProductSizeCountAggregateOutputType | null
-    _avg: ProductSizeAvgAggregateOutputType | null
-    _sum: ProductSizeSumAggregateOutputType | null
     _min: ProductSizeMinAggregateOutputType | null
     _max: ProductSizeMaxAggregateOutputType | null
   }
@@ -2815,7 +2882,6 @@ export namespace Prisma {
     id?: boolean
     productId?: boolean
     size?: boolean
-    stock?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["productSize"]>
 
@@ -2823,7 +2889,6 @@ export namespace Prisma {
     id?: boolean
     productId?: boolean
     size?: boolean
-    stock?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["productSize"]>
 
@@ -2831,7 +2896,6 @@ export namespace Prisma {
     id?: boolean
     productId?: boolean
     size?: boolean
-    stock?: boolean
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["productSize"]>
 
@@ -2839,10 +2903,9 @@ export namespace Prisma {
     id?: boolean
     productId?: boolean
     size?: boolean
-    stock?: boolean
   }
 
-  export type ProductSizeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "size" | "stock", ExtArgs["result"]["productSize"]>
+  export type ProductSizeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "productId" | "size", ExtArgs["result"]["productSize"]>
   export type ProductSizeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     product?: boolean | ProductDefaultArgs<ExtArgs>
   }
@@ -2862,7 +2925,6 @@ export namespace Prisma {
       id: string
       productId: string
       size: string
-      stock: number
     }, ExtArgs["result"]["productSize"]>
     composites: {}
   }
@@ -3290,7 +3352,6 @@ export namespace Prisma {
     readonly id: FieldRef<"ProductSize", 'String'>
     readonly productId: FieldRef<"ProductSize", 'String'>
     readonly size: FieldRef<"ProductSize", 'String'>
-    readonly stock: FieldRef<"ProductSize", 'Int'>
   }
     
 
@@ -3727,6 +3788,7 @@ export namespace Prisma {
     subtotal: number | null
     total: number | null
     shippingRetryCount: number | null
+    exchangeRate: number | null
   }
 
   export type OrderSumAggregateOutputType = {
@@ -3734,6 +3796,7 @@ export namespace Prisma {
     subtotal: number | null
     total: number | null
     shippingRetryCount: number | null
+    exchangeRate: number | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -3744,7 +3807,9 @@ export namespace Prisma {
     phone: string | null
     country: string | null
     province: string | null
+    stateProvince: string | null
     shippingAddress: string | null
+    apartment: string | null
     district: string | null
     city: string | null
     postalCode: string | null
@@ -3754,8 +3819,13 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
+    paidAt: Date | null
     isPreOrder: boolean | null
     trackingNumber: string | null
+    manualCourier: string | null
+    manualService: string | null
+    manualShippedAt: Date | null
+    manualTrackingNote: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
     duitkuPaymentUrl: string | null
@@ -3771,6 +3841,8 @@ export namespace Prisma {
     shippingOrderError: string | null
     shippingOrderStatus: string | null
     shippingRetryCount: number | null
+    priceRegion: string | null
+    exchangeRate: number | null
   }
 
   export type OrderMaxAggregateOutputType = {
@@ -3781,7 +3853,9 @@ export namespace Prisma {
     phone: string | null
     country: string | null
     province: string | null
+    stateProvince: string | null
     shippingAddress: string | null
+    apartment: string | null
     district: string | null
     city: string | null
     postalCode: string | null
@@ -3791,8 +3865,13 @@ export namespace Prisma {
     total: number | null
     paymentStatus: string | null
     orderStatus: string | null
+    paidAt: Date | null
     isPreOrder: boolean | null
     trackingNumber: string | null
+    manualCourier: string | null
+    manualService: string | null
+    manualShippedAt: Date | null
+    manualTrackingNote: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
     duitkuPaymentUrl: string | null
@@ -3808,6 +3887,8 @@ export namespace Prisma {
     shippingOrderError: string | null
     shippingOrderStatus: string | null
     shippingRetryCount: number | null
+    priceRegion: string | null
+    exchangeRate: number | null
   }
 
   export type OrderCountAggregateOutputType = {
@@ -3818,7 +3899,9 @@ export namespace Prisma {
     phone: number
     country: number
     province: number
+    stateProvince: number
     shippingAddress: number
+    apartment: number
     district: number
     city: number
     postalCode: number
@@ -3828,8 +3911,13 @@ export namespace Prisma {
     total: number
     paymentStatus: number
     orderStatus: number
+    paidAt: number
     isPreOrder: number
     trackingNumber: number
+    manualCourier: number
+    manualService: number
+    manualShippedAt: number
+    manualTrackingNote: number
     duitkuReference: number
     duitkuPaymentMethod: number
     duitkuPaymentUrl: number
@@ -3845,6 +3933,8 @@ export namespace Prisma {
     shippingOrderError: number
     shippingOrderStatus: number
     shippingRetryCount: number
+    priceRegion: number
+    exchangeRate: number
     _all: number
   }
 
@@ -3854,6 +3944,7 @@ export namespace Prisma {
     subtotal?: true
     total?: true
     shippingRetryCount?: true
+    exchangeRate?: true
   }
 
   export type OrderSumAggregateInputType = {
@@ -3861,6 +3952,7 @@ export namespace Prisma {
     subtotal?: true
     total?: true
     shippingRetryCount?: true
+    exchangeRate?: true
   }
 
   export type OrderMinAggregateInputType = {
@@ -3871,7 +3963,9 @@ export namespace Prisma {
     phone?: true
     country?: true
     province?: true
+    stateProvince?: true
     shippingAddress?: true
+    apartment?: true
     district?: true
     city?: true
     postalCode?: true
@@ -3881,8 +3975,13 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    paidAt?: true
     isPreOrder?: true
     trackingNumber?: true
+    manualCourier?: true
+    manualService?: true
+    manualShippedAt?: true
+    manualTrackingNote?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
     duitkuPaymentUrl?: true
@@ -3898,6 +3997,8 @@ export namespace Prisma {
     shippingOrderError?: true
     shippingOrderStatus?: true
     shippingRetryCount?: true
+    priceRegion?: true
+    exchangeRate?: true
   }
 
   export type OrderMaxAggregateInputType = {
@@ -3908,7 +4009,9 @@ export namespace Prisma {
     phone?: true
     country?: true
     province?: true
+    stateProvince?: true
     shippingAddress?: true
+    apartment?: true
     district?: true
     city?: true
     postalCode?: true
@@ -3918,8 +4021,13 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    paidAt?: true
     isPreOrder?: true
     trackingNumber?: true
+    manualCourier?: true
+    manualService?: true
+    manualShippedAt?: true
+    manualTrackingNote?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
     duitkuPaymentUrl?: true
@@ -3935,6 +4043,8 @@ export namespace Prisma {
     shippingOrderError?: true
     shippingOrderStatus?: true
     shippingRetryCount?: true
+    priceRegion?: true
+    exchangeRate?: true
   }
 
   export type OrderCountAggregateInputType = {
@@ -3945,7 +4055,9 @@ export namespace Prisma {
     phone?: true
     country?: true
     province?: true
+    stateProvince?: true
     shippingAddress?: true
+    apartment?: true
     district?: true
     city?: true
     postalCode?: true
@@ -3955,8 +4067,13 @@ export namespace Prisma {
     total?: true
     paymentStatus?: true
     orderStatus?: true
+    paidAt?: true
     isPreOrder?: true
     trackingNumber?: true
+    manualCourier?: true
+    manualService?: true
+    manualShippedAt?: true
+    manualTrackingNote?: true
     duitkuReference?: true
     duitkuPaymentMethod?: true
     duitkuPaymentUrl?: true
@@ -3972,6 +4089,8 @@ export namespace Prisma {
     shippingOrderError?: true
     shippingOrderStatus?: true
     shippingRetryCount?: true
+    priceRegion?: true
+    exchangeRate?: true
     _all?: true
   }
 
@@ -4069,7 +4188,9 @@ export namespace Prisma {
     phone: string
     country: string
     province: string | null
+    stateProvince: string | null
     shippingAddress: string
+    apartment: string | null
     district: string | null
     city: string
     postalCode: string
@@ -4079,8 +4200,13 @@ export namespace Prisma {
     total: number
     paymentStatus: string
     orderStatus: string
+    paidAt: Date | null
     isPreOrder: boolean
     trackingNumber: string | null
+    manualCourier: string | null
+    manualService: string | null
+    manualShippedAt: Date | null
+    manualTrackingNote: string | null
     duitkuReference: string | null
     duitkuPaymentMethod: string | null
     duitkuPaymentUrl: string | null
@@ -4096,6 +4222,8 @@ export namespace Prisma {
     shippingOrderError: string | null
     shippingOrderStatus: string
     shippingRetryCount: number
+    priceRegion: string
+    exchangeRate: number | null
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -4125,7 +4253,9 @@ export namespace Prisma {
     phone?: boolean
     country?: boolean
     province?: boolean
+    stateProvince?: boolean
     shippingAddress?: boolean
+    apartment?: boolean
     district?: boolean
     city?: boolean
     postalCode?: boolean
@@ -4135,8 +4265,13 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    paidAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
+    manualCourier?: boolean
+    manualService?: boolean
+    manualShippedAt?: boolean
+    manualTrackingNote?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
     duitkuPaymentUrl?: boolean
@@ -4152,6 +4287,8 @@ export namespace Prisma {
     shippingOrderError?: boolean
     shippingOrderStatus?: boolean
     shippingRetryCount?: boolean
+    priceRegion?: boolean
+    exchangeRate?: boolean
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -4165,7 +4302,9 @@ export namespace Prisma {
     phone?: boolean
     country?: boolean
     province?: boolean
+    stateProvince?: boolean
     shippingAddress?: boolean
+    apartment?: boolean
     district?: boolean
     city?: boolean
     postalCode?: boolean
@@ -4175,8 +4314,13 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    paidAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
+    manualCourier?: boolean
+    manualService?: boolean
+    manualShippedAt?: boolean
+    manualTrackingNote?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
     duitkuPaymentUrl?: boolean
@@ -4192,6 +4336,8 @@ export namespace Prisma {
     shippingOrderError?: boolean
     shippingOrderStatus?: boolean
     shippingRetryCount?: boolean
+    priceRegion?: boolean
+    exchangeRate?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4202,7 +4348,9 @@ export namespace Prisma {
     phone?: boolean
     country?: boolean
     province?: boolean
+    stateProvince?: boolean
     shippingAddress?: boolean
+    apartment?: boolean
     district?: boolean
     city?: boolean
     postalCode?: boolean
@@ -4212,8 +4360,13 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    paidAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
+    manualCourier?: boolean
+    manualService?: boolean
+    manualShippedAt?: boolean
+    manualTrackingNote?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
     duitkuPaymentUrl?: boolean
@@ -4229,6 +4382,8 @@ export namespace Prisma {
     shippingOrderError?: boolean
     shippingOrderStatus?: boolean
     shippingRetryCount?: boolean
+    priceRegion?: boolean
+    exchangeRate?: boolean
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
@@ -4239,7 +4394,9 @@ export namespace Prisma {
     phone?: boolean
     country?: boolean
     province?: boolean
+    stateProvince?: boolean
     shippingAddress?: boolean
+    apartment?: boolean
     district?: boolean
     city?: boolean
     postalCode?: boolean
@@ -4249,8 +4406,13 @@ export namespace Prisma {
     total?: boolean
     paymentStatus?: boolean
     orderStatus?: boolean
+    paidAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
+    manualCourier?: boolean
+    manualService?: boolean
+    manualShippedAt?: boolean
+    manualTrackingNote?: boolean
     duitkuReference?: boolean
     duitkuPaymentMethod?: boolean
     duitkuPaymentUrl?: boolean
@@ -4266,9 +4428,11 @@ export namespace Prisma {
     shippingOrderError?: boolean
     shippingOrderStatus?: boolean
     shippingRetryCount?: boolean
+    priceRegion?: boolean
+    exchangeRate?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "shippingAddress" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "isPreOrder" | "trackingNumber" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "stateProvince" | "shippingAddress" | "apartment" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "paidAt" | "isPreOrder" | "trackingNumber" | "manualCourier" | "manualService" | "manualShippedAt" | "manualTrackingNote" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount" | "priceRegion" | "exchangeRate", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -4291,7 +4455,9 @@ export namespace Prisma {
       phone: string
       country: string
       province: string | null
+      stateProvince: string | null
       shippingAddress: string
+      apartment: string | null
       district: string | null
       city: string
       postalCode: string
@@ -4301,8 +4467,13 @@ export namespace Prisma {
       total: number
       paymentStatus: string
       orderStatus: string
+      paidAt: Date | null
       isPreOrder: boolean
       trackingNumber: string | null
+      manualCourier: string | null
+      manualService: string | null
+      manualShippedAt: Date | null
+      manualTrackingNote: string | null
       duitkuReference: string | null
       duitkuPaymentMethod: string | null
       duitkuPaymentUrl: string | null
@@ -4318,6 +4489,8 @@ export namespace Prisma {
       shippingOrderError: string | null
       shippingOrderStatus: string
       shippingRetryCount: number
+      priceRegion: string
+      exchangeRate: number | null
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -4750,7 +4923,9 @@ export namespace Prisma {
     readonly phone: FieldRef<"Order", 'String'>
     readonly country: FieldRef<"Order", 'String'>
     readonly province: FieldRef<"Order", 'String'>
+    readonly stateProvince: FieldRef<"Order", 'String'>
     readonly shippingAddress: FieldRef<"Order", 'String'>
+    readonly apartment: FieldRef<"Order", 'String'>
     readonly district: FieldRef<"Order", 'String'>
     readonly city: FieldRef<"Order", 'String'>
     readonly postalCode: FieldRef<"Order", 'String'>
@@ -4760,8 +4935,13 @@ export namespace Prisma {
     readonly total: FieldRef<"Order", 'Int'>
     readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly orderStatus: FieldRef<"Order", 'String'>
+    readonly paidAt: FieldRef<"Order", 'DateTime'>
     readonly isPreOrder: FieldRef<"Order", 'Boolean'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
+    readonly manualCourier: FieldRef<"Order", 'String'>
+    readonly manualService: FieldRef<"Order", 'String'>
+    readonly manualShippedAt: FieldRef<"Order", 'DateTime'>
+    readonly manualTrackingNote: FieldRef<"Order", 'String'>
     readonly duitkuReference: FieldRef<"Order", 'String'>
     readonly duitkuPaymentMethod: FieldRef<"Order", 'String'>
     readonly duitkuPaymentUrl: FieldRef<"Order", 'String'>
@@ -4777,6 +4957,8 @@ export namespace Prisma {
     readonly shippingOrderError: FieldRef<"Order", 'String'>
     readonly shippingOrderStatus: FieldRef<"Order", 'String'>
     readonly shippingRetryCount: FieldRef<"Order", 'Int'>
+    readonly priceRegion: FieldRef<"Order", 'String'>
+    readonly exchangeRate: FieldRef<"Order", 'Float'>
   }
     
 
@@ -5233,6 +5415,1053 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: OrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ExchangeRate
+   */
+
+  export type AggregateExchangeRate = {
+    _count: ExchangeRateCountAggregateOutputType | null
+    _avg: ExchangeRateAvgAggregateOutputType | null
+    _sum: ExchangeRateSumAggregateOutputType | null
+    _min: ExchangeRateMinAggregateOutputType | null
+    _max: ExchangeRateMaxAggregateOutputType | null
+  }
+
+  export type ExchangeRateAvgAggregateOutputType = {
+    usdToIdr: number | null
+  }
+
+  export type ExchangeRateSumAggregateOutputType = {
+    usdToIdr: number | null
+  }
+
+  export type ExchangeRateMinAggregateOutputType = {
+    id: string | null
+    usdToIdr: number | null
+    source: string | null
+    isOverride: boolean | null
+    updatedAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type ExchangeRateMaxAggregateOutputType = {
+    id: string | null
+    usdToIdr: number | null
+    source: string | null
+    isOverride: boolean | null
+    updatedAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type ExchangeRateCountAggregateOutputType = {
+    id: number
+    usdToIdr: number
+    source: number
+    isOverride: number
+    updatedAt: number
+    expiresAt: number
+    _all: number
+  }
+
+
+  export type ExchangeRateAvgAggregateInputType = {
+    usdToIdr?: true
+  }
+
+  export type ExchangeRateSumAggregateInputType = {
+    usdToIdr?: true
+  }
+
+  export type ExchangeRateMinAggregateInputType = {
+    id?: true
+    usdToIdr?: true
+    source?: true
+    isOverride?: true
+    updatedAt?: true
+    expiresAt?: true
+  }
+
+  export type ExchangeRateMaxAggregateInputType = {
+    id?: true
+    usdToIdr?: true
+    source?: true
+    isOverride?: true
+    updatedAt?: true
+    expiresAt?: true
+  }
+
+  export type ExchangeRateCountAggregateInputType = {
+    id?: true
+    usdToIdr?: true
+    source?: true
+    isOverride?: true
+    updatedAt?: true
+    expiresAt?: true
+    _all?: true
+  }
+
+  export type ExchangeRateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExchangeRate to aggregate.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExchangeRates
+    **/
+    _count?: true | ExchangeRateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExchangeRateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExchangeRateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExchangeRateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExchangeRateMaxAggregateInputType
+  }
+
+  export type GetExchangeRateAggregateType<T extends ExchangeRateAggregateArgs> = {
+        [P in keyof T & keyof AggregateExchangeRate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExchangeRate[P]>
+      : GetScalarType<T[P], AggregateExchangeRate[P]>
+  }
+
+
+
+
+  export type ExchangeRateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExchangeRateWhereInput
+    orderBy?: ExchangeRateOrderByWithAggregationInput | ExchangeRateOrderByWithAggregationInput[]
+    by: ExchangeRateScalarFieldEnum[] | ExchangeRateScalarFieldEnum
+    having?: ExchangeRateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExchangeRateCountAggregateInputType | true
+    _avg?: ExchangeRateAvgAggregateInputType
+    _sum?: ExchangeRateSumAggregateInputType
+    _min?: ExchangeRateMinAggregateInputType
+    _max?: ExchangeRateMaxAggregateInputType
+  }
+
+  export type ExchangeRateGroupByOutputType = {
+    id: string
+    usdToIdr: number
+    source: string
+    isOverride: boolean
+    updatedAt: Date
+    expiresAt: Date | null
+    _count: ExchangeRateCountAggregateOutputType | null
+    _avg: ExchangeRateAvgAggregateOutputType | null
+    _sum: ExchangeRateSumAggregateOutputType | null
+    _min: ExchangeRateMinAggregateOutputType | null
+    _max: ExchangeRateMaxAggregateOutputType | null
+  }
+
+  type GetExchangeRateGroupByPayload<T extends ExchangeRateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExchangeRateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExchangeRateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExchangeRateGroupByOutputType[P]>
+            : GetScalarType<T[P], ExchangeRateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExchangeRateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    usdToIdr?: boolean
+    source?: boolean
+    isOverride?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["exchangeRate"]>
+
+  export type ExchangeRateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    usdToIdr?: boolean
+    source?: boolean
+    isOverride?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["exchangeRate"]>
+
+  export type ExchangeRateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    usdToIdr?: boolean
+    source?: boolean
+    isOverride?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["exchangeRate"]>
+
+  export type ExchangeRateSelectScalar = {
+    id?: boolean
+    usdToIdr?: boolean
+    source?: boolean
+    isOverride?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+  }
+
+  export type ExchangeRateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "usdToIdr" | "source" | "isOverride" | "updatedAt" | "expiresAt", ExtArgs["result"]["exchangeRate"]>
+
+  export type $ExchangeRatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExchangeRate"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      usdToIdr: number
+      source: string
+      isOverride: boolean
+      updatedAt: Date
+      expiresAt: Date | null
+    }, ExtArgs["result"]["exchangeRate"]>
+    composites: {}
+  }
+
+  type ExchangeRateGetPayload<S extends boolean | null | undefined | ExchangeRateDefaultArgs> = $Result.GetResult<Prisma.$ExchangeRatePayload, S>
+
+  type ExchangeRateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExchangeRateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExchangeRateCountAggregateInputType | true
+    }
+
+  export interface ExchangeRateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExchangeRate'], meta: { name: 'ExchangeRate' } }
+    /**
+     * Find zero or one ExchangeRate that matches the filter.
+     * @param {ExchangeRateFindUniqueArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExchangeRateFindUniqueArgs>(args: SelectSubset<T, ExchangeRateFindUniqueArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExchangeRate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExchangeRateFindUniqueOrThrowArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExchangeRateFindUniqueOrThrowArgs>(args: SelectSubset<T, ExchangeRateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExchangeRate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindFirstArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExchangeRateFindFirstArgs>(args?: SelectSubset<T, ExchangeRateFindFirstArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExchangeRate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindFirstOrThrowArgs} args - Arguments to find a ExchangeRate
+     * @example
+     * // Get one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExchangeRateFindFirstOrThrowArgs>(args?: SelectSubset<T, ExchangeRateFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExchangeRates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExchangeRates
+     * const exchangeRates = await prisma.exchangeRate.findMany()
+     * 
+     * // Get first 10 ExchangeRates
+     * const exchangeRates = await prisma.exchangeRate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const exchangeRateWithIdOnly = await prisma.exchangeRate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExchangeRateFindManyArgs>(args?: SelectSubset<T, ExchangeRateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExchangeRate.
+     * @param {ExchangeRateCreateArgs} args - Arguments to create a ExchangeRate.
+     * @example
+     * // Create one ExchangeRate
+     * const ExchangeRate = await prisma.exchangeRate.create({
+     *   data: {
+     *     // ... data to create a ExchangeRate
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExchangeRateCreateArgs>(args: SelectSubset<T, ExchangeRateCreateArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExchangeRates.
+     * @param {ExchangeRateCreateManyArgs} args - Arguments to create many ExchangeRates.
+     * @example
+     * // Create many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExchangeRateCreateManyArgs>(args?: SelectSubset<T, ExchangeRateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExchangeRates and returns the data saved in the database.
+     * @param {ExchangeRateCreateManyAndReturnArgs} args - Arguments to create many ExchangeRates.
+     * @example
+     * // Create many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExchangeRates and only return the `id`
+     * const exchangeRateWithIdOnly = await prisma.exchangeRate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExchangeRateCreateManyAndReturnArgs>(args?: SelectSubset<T, ExchangeRateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExchangeRate.
+     * @param {ExchangeRateDeleteArgs} args - Arguments to delete one ExchangeRate.
+     * @example
+     * // Delete one ExchangeRate
+     * const ExchangeRate = await prisma.exchangeRate.delete({
+     *   where: {
+     *     // ... filter to delete one ExchangeRate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExchangeRateDeleteArgs>(args: SelectSubset<T, ExchangeRateDeleteArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExchangeRate.
+     * @param {ExchangeRateUpdateArgs} args - Arguments to update one ExchangeRate.
+     * @example
+     * // Update one ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExchangeRateUpdateArgs>(args: SelectSubset<T, ExchangeRateUpdateArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExchangeRates.
+     * @param {ExchangeRateDeleteManyArgs} args - Arguments to filter ExchangeRates to delete.
+     * @example
+     * // Delete a few ExchangeRates
+     * const { count } = await prisma.exchangeRate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExchangeRateDeleteManyArgs>(args?: SelectSubset<T, ExchangeRateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExchangeRates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExchangeRateUpdateManyArgs>(args: SelectSubset<T, ExchangeRateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExchangeRates and returns the data updated in the database.
+     * @param {ExchangeRateUpdateManyAndReturnArgs} args - Arguments to update many ExchangeRates.
+     * @example
+     * // Update many ExchangeRates
+     * const exchangeRate = await prisma.exchangeRate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExchangeRates and only return the `id`
+     * const exchangeRateWithIdOnly = await prisma.exchangeRate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExchangeRateUpdateManyAndReturnArgs>(args: SelectSubset<T, ExchangeRateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExchangeRate.
+     * @param {ExchangeRateUpsertArgs} args - Arguments to update or create a ExchangeRate.
+     * @example
+     * // Update or create a ExchangeRate
+     * const exchangeRate = await prisma.exchangeRate.upsert({
+     *   create: {
+     *     // ... data to create a ExchangeRate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExchangeRate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExchangeRateUpsertArgs>(args: SelectSubset<T, ExchangeRateUpsertArgs<ExtArgs>>): Prisma__ExchangeRateClient<$Result.GetResult<Prisma.$ExchangeRatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExchangeRates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateCountArgs} args - Arguments to filter ExchangeRates to count.
+     * @example
+     * // Count the number of ExchangeRates
+     * const count = await prisma.exchangeRate.count({
+     *   where: {
+     *     // ... the filter for the ExchangeRates we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExchangeRateCountArgs>(
+      args?: Subset<T, ExchangeRateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExchangeRateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExchangeRate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExchangeRateAggregateArgs>(args: Subset<T, ExchangeRateAggregateArgs>): Prisma.PrismaPromise<GetExchangeRateAggregateType<T>>
+
+    /**
+     * Group by ExchangeRate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExchangeRateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExchangeRateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExchangeRateGroupByArgs['orderBy'] }
+        : { orderBy?: ExchangeRateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExchangeRateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExchangeRateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExchangeRate model
+   */
+  readonly fields: ExchangeRateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExchangeRate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExchangeRateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExchangeRate model
+   */
+  interface ExchangeRateFieldRefs {
+    readonly id: FieldRef<"ExchangeRate", 'String'>
+    readonly usdToIdr: FieldRef<"ExchangeRate", 'Float'>
+    readonly source: FieldRef<"ExchangeRate", 'String'>
+    readonly isOverride: FieldRef<"ExchangeRate", 'Boolean'>
+    readonly updatedAt: FieldRef<"ExchangeRate", 'DateTime'>
+    readonly expiresAt: FieldRef<"ExchangeRate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExchangeRate findUnique
+   */
+  export type ExchangeRateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate findUniqueOrThrow
+   */
+  export type ExchangeRateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate findFirst
+   */
+  export type ExchangeRateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExchangeRates.
+     */
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate findFirstOrThrow
+   */
+  export type ExchangeRateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRate to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExchangeRates.
+     */
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate findMany
+   */
+  export type ExchangeRateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter, which ExchangeRates to fetch.
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExchangeRates to fetch.
+     */
+    orderBy?: ExchangeRateOrderByWithRelationInput | ExchangeRateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExchangeRates.
+     */
+    cursor?: ExchangeRateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExchangeRates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExchangeRates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExchangeRates.
+     */
+    distinct?: ExchangeRateScalarFieldEnum | ExchangeRateScalarFieldEnum[]
+  }
+
+  /**
+   * ExchangeRate create
+   */
+  export type ExchangeRateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ExchangeRate.
+     */
+    data: XOR<ExchangeRateCreateInput, ExchangeRateUncheckedCreateInput>
+  }
+
+  /**
+   * ExchangeRate createMany
+   */
+  export type ExchangeRateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExchangeRates.
+     */
+    data: ExchangeRateCreateManyInput | ExchangeRateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExchangeRate createManyAndReturn
+   */
+  export type ExchangeRateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExchangeRates.
+     */
+    data: ExchangeRateCreateManyInput | ExchangeRateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExchangeRate update
+   */
+  export type ExchangeRateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ExchangeRate.
+     */
+    data: XOR<ExchangeRateUpdateInput, ExchangeRateUncheckedUpdateInput>
+    /**
+     * Choose, which ExchangeRate to update.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate updateMany
+   */
+  export type ExchangeRateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExchangeRates.
+     */
+    data: XOR<ExchangeRateUpdateManyMutationInput, ExchangeRateUncheckedUpdateManyInput>
+    /**
+     * Filter which ExchangeRates to update
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * Limit how many ExchangeRates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExchangeRate updateManyAndReturn
+   */
+  export type ExchangeRateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * The data used to update ExchangeRates.
+     */
+    data: XOR<ExchangeRateUpdateManyMutationInput, ExchangeRateUncheckedUpdateManyInput>
+    /**
+     * Filter which ExchangeRates to update
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * Limit how many ExchangeRates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExchangeRate upsert
+   */
+  export type ExchangeRateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ExchangeRate to update in case it exists.
+     */
+    where: ExchangeRateWhereUniqueInput
+    /**
+     * In case the ExchangeRate found by the `where` argument doesn't exist, create a new ExchangeRate with this data.
+     */
+    create: XOR<ExchangeRateCreateInput, ExchangeRateUncheckedCreateInput>
+    /**
+     * In case the ExchangeRate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExchangeRateUpdateInput, ExchangeRateUncheckedUpdateInput>
+  }
+
+  /**
+   * ExchangeRate delete
+   */
+  export type ExchangeRateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
+    /**
+     * Filter which ExchangeRate to delete.
+     */
+    where: ExchangeRateWhereUniqueInput
+  }
+
+  /**
+   * ExchangeRate deleteMany
+   */
+  export type ExchangeRateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExchangeRates to delete
+     */
+    where?: ExchangeRateWhereInput
+    /**
+     * Limit how many ExchangeRates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExchangeRate without action
+   */
+  export type ExchangeRateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExchangeRate
+     */
+    select?: ExchangeRateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExchangeRate
+     */
+    omit?: ExchangeRateOmit<ExtArgs> | null
   }
 
 
@@ -8445,6 +9674,7 @@ export namespace Prisma {
     images: 'images',
     isActive: 'isActive',
     isPreOrder: 'isPreOrder',
+    stock: 'stock',
     createdAt: 'createdAt'
   };
 
@@ -8454,8 +9684,7 @@ export namespace Prisma {
   export const ProductSizeScalarFieldEnum: {
     id: 'id',
     productId: 'productId',
-    size: 'size',
-    stock: 'stock'
+    size: 'size'
   };
 
   export type ProductSizeScalarFieldEnum = (typeof ProductSizeScalarFieldEnum)[keyof typeof ProductSizeScalarFieldEnum]
@@ -8469,7 +9698,9 @@ export namespace Prisma {
     phone: 'phone',
     country: 'country',
     province: 'province',
+    stateProvince: 'stateProvince',
     shippingAddress: 'shippingAddress',
+    apartment: 'apartment',
     district: 'district',
     city: 'city',
     postalCode: 'postalCode',
@@ -8479,8 +9710,13 @@ export namespace Prisma {
     total: 'total',
     paymentStatus: 'paymentStatus',
     orderStatus: 'orderStatus',
+    paidAt: 'paidAt',
     isPreOrder: 'isPreOrder',
     trackingNumber: 'trackingNumber',
+    manualCourier: 'manualCourier',
+    manualService: 'manualService',
+    manualShippedAt: 'manualShippedAt',
+    manualTrackingNote: 'manualTrackingNote',
     duitkuReference: 'duitkuReference',
     duitkuPaymentMethod: 'duitkuPaymentMethod',
     duitkuPaymentUrl: 'duitkuPaymentUrl',
@@ -8495,10 +9731,24 @@ export namespace Prisma {
     biteshipStatus: 'biteshipStatus',
     shippingOrderError: 'shippingOrderError',
     shippingOrderStatus: 'shippingOrderStatus',
-    shippingRetryCount: 'shippingRetryCount'
+    shippingRetryCount: 'shippingRetryCount',
+    priceRegion: 'priceRegion',
+    exchangeRate: 'exchangeRate'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+  export const ExchangeRateScalarFieldEnum: {
+    id: 'id',
+    usdToIdr: 'usdToIdr',
+    source: 'source',
+    isOverride: 'isOverride',
+    updatedAt: 'updatedAt',
+    expiresAt: 'expiresAt'
+  };
+
+  export type ExchangeRateScalarFieldEnum = (typeof ExchangeRateScalarFieldEnum)[keyof typeof ExchangeRateScalarFieldEnum]
 
 
   export const ShippingLogScalarFieldEnum: {
@@ -8643,6 +9893,7 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
     isPreOrder?: BoolFilter<"Product"> | boolean
+    stock?: IntFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
@@ -8658,6 +9909,7 @@ export namespace Prisma {
     images?: SortOrder
     isActive?: SortOrder
     isPreOrder?: SortOrder
+    stock?: SortOrder
     createdAt?: SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
     sizes?: ProductSizeOrderByRelationAggregateInput
@@ -8676,6 +9928,7 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     isActive?: BoolFilter<"Product"> | boolean
     isPreOrder?: BoolFilter<"Product"> | boolean
+    stock?: IntFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
@@ -8691,6 +9944,7 @@ export namespace Prisma {
     images?: SortOrder
     isActive?: SortOrder
     isPreOrder?: SortOrder
+    stock?: SortOrder
     createdAt?: SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
@@ -8712,6 +9966,7 @@ export namespace Prisma {
     images?: StringNullableListFilter<"Product">
     isActive?: BoolWithAggregatesFilter<"Product"> | boolean
     isPreOrder?: BoolWithAggregatesFilter<"Product"> | boolean
+    stock?: IntWithAggregatesFilter<"Product"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
   }
 
@@ -8722,7 +9977,6 @@ export namespace Prisma {
     id?: StringFilter<"ProductSize"> | string
     productId?: StringFilter<"ProductSize"> | string
     size?: StringFilter<"ProductSize"> | string
-    stock?: IntFilter<"ProductSize"> | number
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
   }
 
@@ -8730,7 +9984,6 @@ export namespace Prisma {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-    stock?: SortOrder
     product?: ProductOrderByWithRelationInput
   }
 
@@ -8742,7 +9995,6 @@ export namespace Prisma {
     NOT?: ProductSizeWhereInput | ProductSizeWhereInput[]
     productId?: StringFilter<"ProductSize"> | string
     size?: StringFilter<"ProductSize"> | string
-    stock?: IntFilter<"ProductSize"> | number
     product?: XOR<ProductScalarRelationFilter, ProductWhereInput>
   }, "id" | "productId_size">
 
@@ -8750,12 +10002,9 @@ export namespace Prisma {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-    stock?: SortOrder
     _count?: ProductSizeCountOrderByAggregateInput
-    _avg?: ProductSizeAvgOrderByAggregateInput
     _max?: ProductSizeMaxOrderByAggregateInput
     _min?: ProductSizeMinOrderByAggregateInput
-    _sum?: ProductSizeSumOrderByAggregateInput
   }
 
   export type ProductSizeScalarWhereWithAggregatesInput = {
@@ -8765,7 +10014,6 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"ProductSize"> | string
     productId?: StringWithAggregatesFilter<"ProductSize"> | string
     size?: StringWithAggregatesFilter<"ProductSize"> | string
-    stock?: IntWithAggregatesFilter<"ProductSize"> | number
   }
 
   export type OrderWhereInput = {
@@ -8779,7 +10027,9 @@ export namespace Prisma {
     phone?: StringFilter<"Order"> | string
     country?: StringFilter<"Order"> | string
     province?: StringNullableFilter<"Order"> | string | null
+    stateProvince?: StringNullableFilter<"Order"> | string | null
     shippingAddress?: StringFilter<"Order"> | string
+    apartment?: StringNullableFilter<"Order"> | string | null
     district?: StringNullableFilter<"Order"> | string | null
     city?: StringFilter<"Order"> | string
     postalCode?: StringFilter<"Order"> | string
@@ -8789,8 +10039,13 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
+    paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
+    manualCourier?: StringNullableFilter<"Order"> | string | null
+    manualService?: StringNullableFilter<"Order"> | string | null
+    manualShippedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    manualTrackingNote?: StringNullableFilter<"Order"> | string | null
     duitkuReference?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentUrl?: StringNullableFilter<"Order"> | string | null
@@ -8806,6 +10061,8 @@ export namespace Prisma {
     shippingOrderError?: StringNullableFilter<"Order"> | string | null
     shippingOrderStatus?: StringFilter<"Order"> | string
     shippingRetryCount?: IntFilter<"Order"> | number
+    priceRegion?: StringFilter<"Order"> | string
+    exchangeRate?: FloatNullableFilter<"Order"> | number | null
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
   }
@@ -8818,7 +10075,9 @@ export namespace Prisma {
     phone?: SortOrder
     country?: SortOrder
     province?: SortOrderInput | SortOrder
+    stateProvince?: SortOrderInput | SortOrder
     shippingAddress?: SortOrder
+    apartment?: SortOrderInput | SortOrder
     district?: SortOrderInput | SortOrder
     city?: SortOrder
     postalCode?: SortOrder
@@ -8828,8 +10087,13 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    paidAt?: SortOrderInput | SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
+    manualCourier?: SortOrderInput | SortOrder
+    manualService?: SortOrderInput | SortOrder
+    manualShippedAt?: SortOrderInput | SortOrder
+    manualTrackingNote?: SortOrderInput | SortOrder
     duitkuReference?: SortOrderInput | SortOrder
     duitkuPaymentMethod?: SortOrderInput | SortOrder
     duitkuPaymentUrl?: SortOrderInput | SortOrder
@@ -8845,6 +10109,8 @@ export namespace Prisma {
     shippingOrderError?: SortOrderInput | SortOrder
     shippingOrderStatus?: SortOrder
     shippingRetryCount?: SortOrder
+    priceRegion?: SortOrder
+    exchangeRate?: SortOrderInput | SortOrder
     items?: OrderItemOrderByRelationAggregateInput
     shippingLogs?: ShippingLogOrderByRelationAggregateInput
   }
@@ -8861,7 +10127,9 @@ export namespace Prisma {
     phone?: StringFilter<"Order"> | string
     country?: StringFilter<"Order"> | string
     province?: StringNullableFilter<"Order"> | string | null
+    stateProvince?: StringNullableFilter<"Order"> | string | null
     shippingAddress?: StringFilter<"Order"> | string
+    apartment?: StringNullableFilter<"Order"> | string | null
     district?: StringNullableFilter<"Order"> | string | null
     city?: StringFilter<"Order"> | string
     postalCode?: StringFilter<"Order"> | string
@@ -8871,8 +10139,13 @@ export namespace Prisma {
     total?: IntFilter<"Order"> | number
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
+    paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
+    manualCourier?: StringNullableFilter<"Order"> | string | null
+    manualService?: StringNullableFilter<"Order"> | string | null
+    manualShippedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    manualTrackingNote?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableFilter<"Order"> | string | null
     duitkuPaymentUrl?: StringNullableFilter<"Order"> | string | null
     duitkuVaNumber?: StringNullableFilter<"Order"> | string | null
@@ -8887,6 +10160,8 @@ export namespace Prisma {
     shippingOrderError?: StringNullableFilter<"Order"> | string | null
     shippingOrderStatus?: StringFilter<"Order"> | string
     shippingRetryCount?: IntFilter<"Order"> | number
+    priceRegion?: StringFilter<"Order"> | string
+    exchangeRate?: FloatNullableFilter<"Order"> | number | null
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
   }, "id" | "orderNumber" | "duitkuReference">
@@ -8899,7 +10174,9 @@ export namespace Prisma {
     phone?: SortOrder
     country?: SortOrder
     province?: SortOrderInput | SortOrder
+    stateProvince?: SortOrderInput | SortOrder
     shippingAddress?: SortOrder
+    apartment?: SortOrderInput | SortOrder
     district?: SortOrderInput | SortOrder
     city?: SortOrder
     postalCode?: SortOrder
@@ -8909,8 +10186,13 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    paidAt?: SortOrderInput | SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
+    manualCourier?: SortOrderInput | SortOrder
+    manualService?: SortOrderInput | SortOrder
+    manualShippedAt?: SortOrderInput | SortOrder
+    manualTrackingNote?: SortOrderInput | SortOrder
     duitkuReference?: SortOrderInput | SortOrder
     duitkuPaymentMethod?: SortOrderInput | SortOrder
     duitkuPaymentUrl?: SortOrderInput | SortOrder
@@ -8926,6 +10208,8 @@ export namespace Prisma {
     shippingOrderError?: SortOrderInput | SortOrder
     shippingOrderStatus?: SortOrder
     shippingRetryCount?: SortOrder
+    priceRegion?: SortOrder
+    exchangeRate?: SortOrderInput | SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -8944,7 +10228,9 @@ export namespace Prisma {
     phone?: StringWithAggregatesFilter<"Order"> | string
     country?: StringWithAggregatesFilter<"Order"> | string
     province?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    stateProvince?: StringNullableWithAggregatesFilter<"Order"> | string | null
     shippingAddress?: StringWithAggregatesFilter<"Order"> | string
+    apartment?: StringNullableWithAggregatesFilter<"Order"> | string | null
     district?: StringNullableWithAggregatesFilter<"Order"> | string | null
     city?: StringWithAggregatesFilter<"Order"> | string
     postalCode?: StringWithAggregatesFilter<"Order"> | string
@@ -8954,8 +10240,13 @@ export namespace Prisma {
     total?: IntWithAggregatesFilter<"Order"> | number
     paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     orderStatus?: StringWithAggregatesFilter<"Order"> | string
+    paidAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     isPreOrder?: BoolWithAggregatesFilter<"Order"> | boolean
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    manualCourier?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    manualService?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    manualShippedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    manualTrackingNote?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuReference?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuPaymentMethod?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuPaymentUrl?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -8971,6 +10262,67 @@ export namespace Prisma {
     shippingOrderError?: StringNullableWithAggregatesFilter<"Order"> | string | null
     shippingOrderStatus?: StringWithAggregatesFilter<"Order"> | string
     shippingRetryCount?: IntWithAggregatesFilter<"Order"> | number
+    priceRegion?: StringWithAggregatesFilter<"Order"> | string
+    exchangeRate?: FloatNullableWithAggregatesFilter<"Order"> | number | null
+  }
+
+  export type ExchangeRateWhereInput = {
+    AND?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    OR?: ExchangeRateWhereInput[]
+    NOT?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    id?: StringFilter<"ExchangeRate"> | string
+    usdToIdr?: FloatFilter<"ExchangeRate"> | number
+    source?: StringFilter<"ExchangeRate"> | string
+    isOverride?: BoolFilter<"ExchangeRate"> | boolean
+    updatedAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"ExchangeRate"> | Date | string | null
+  }
+
+  export type ExchangeRateOrderByWithRelationInput = {
+    id?: SortOrder
+    usdToIdr?: SortOrder
+    source?: SortOrder
+    isOverride?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+  }
+
+  export type ExchangeRateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    OR?: ExchangeRateWhereInput[]
+    NOT?: ExchangeRateWhereInput | ExchangeRateWhereInput[]
+    usdToIdr?: FloatFilter<"ExchangeRate"> | number
+    source?: StringFilter<"ExchangeRate"> | string
+    isOverride?: BoolFilter<"ExchangeRate"> | boolean
+    updatedAt?: DateTimeFilter<"ExchangeRate"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"ExchangeRate"> | Date | string | null
+  }, "id">
+
+  export type ExchangeRateOrderByWithAggregationInput = {
+    id?: SortOrder
+    usdToIdr?: SortOrder
+    source?: SortOrder
+    isOverride?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    _count?: ExchangeRateCountOrderByAggregateInput
+    _avg?: ExchangeRateAvgOrderByAggregateInput
+    _max?: ExchangeRateMaxOrderByAggregateInput
+    _min?: ExchangeRateMinOrderByAggregateInput
+    _sum?: ExchangeRateSumOrderByAggregateInput
+  }
+
+  export type ExchangeRateScalarWhereWithAggregatesInput = {
+    AND?: ExchangeRateScalarWhereWithAggregatesInput | ExchangeRateScalarWhereWithAggregatesInput[]
+    OR?: ExchangeRateScalarWhereWithAggregatesInput[]
+    NOT?: ExchangeRateScalarWhereWithAggregatesInput | ExchangeRateScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    usdToIdr?: FloatWithAggregatesFilter<"ExchangeRate"> | number
+    source?: StringWithAggregatesFilter<"ExchangeRate"> | string
+    isOverride?: BoolWithAggregatesFilter<"ExchangeRate"> | boolean
+    updatedAt?: DateTimeWithAggregatesFilter<"ExchangeRate"> | Date | string
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"ExchangeRate"> | Date | string | null
   }
 
   export type ShippingLogWhereInput = {
@@ -9155,6 +10507,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
@@ -9170,6 +10523,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
@@ -9185,6 +10539,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
@@ -9200,6 +10555,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
@@ -9215,6 +10571,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
   }
 
@@ -9228,6 +10585,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -9241,13 +10599,13 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductSizeCreateInput = {
     id?: string
     size: string
-    stock?: number
     product: ProductCreateNestedOneWithoutSizesInput
   }
 
@@ -9255,13 +10613,11 @@ export namespace Prisma {
     id?: string
     productId: string
     size: string
-    stock?: number
   }
 
   export type ProductSizeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
     product?: ProductUpdateOneRequiredWithoutSizesNestedInput
   }
 
@@ -9269,27 +10625,23 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductSizeCreateManyInput = {
     id?: string
     productId: string
     size: string
-    stock?: number
   }
 
   export type ProductSizeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductSizeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderCreateInput = {
@@ -9300,7 +10652,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -9310,8 +10664,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -9327,6 +10686,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     items?: OrderItemCreateNestedManyWithoutOrderInput
     shippingLogs?: ShippingLogCreateNestedManyWithoutOrderInput
   }
@@ -9339,7 +10700,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -9349,8 +10712,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -9366,6 +10734,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
     shippingLogs?: ShippingLogUncheckedCreateNestedManyWithoutOrderInput
   }
@@ -9378,7 +10748,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -9388,8 +10760,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9405,6 +10782,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     items?: OrderItemUpdateManyWithoutOrderNestedInput
     shippingLogs?: ShippingLogUpdateManyWithoutOrderNestedInput
   }
@@ -9417,7 +10796,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -9427,8 +10808,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9444,6 +10830,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
     shippingLogs?: ShippingLogUncheckedUpdateManyWithoutOrderNestedInput
   }
@@ -9456,7 +10844,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -9466,8 +10856,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -9483,6 +10878,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
   }
 
   export type OrderUpdateManyMutationInput = {
@@ -9493,7 +10890,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -9503,8 +10902,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9520,6 +10924,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type OrderUncheckedUpdateManyInput = {
@@ -9530,7 +10936,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -9540,8 +10948,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9557,6 +10970,71 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type ExchangeRateCreateInput = {
+    id?: string
+    usdToIdr: number
+    source?: string
+    isOverride?: boolean
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type ExchangeRateUncheckedCreateInput = {
+    id?: string
+    usdToIdr: number
+    source?: string
+    isOverride?: boolean
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type ExchangeRateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usdToIdr?: FloatFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    isOverride?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExchangeRateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usdToIdr?: FloatFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    isOverride?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExchangeRateCreateManyInput = {
+    id?: string
+    usdToIdr: number
+    source?: string
+    isOverride?: boolean
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+  }
+
+  export type ExchangeRateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usdToIdr?: FloatFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    isOverride?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExchangeRateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usdToIdr?: FloatFieldUpdateOperationsInput | number
+    source?: StringFieldUpdateOperationsInput | string
+    isOverride?: BoolFieldUpdateOperationsInput | boolean
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ShippingLogCreateInput = {
@@ -9811,11 +11289,13 @@ export namespace Prisma {
     images?: SortOrder
     isActive?: SortOrder
     isPreOrder?: SortOrder
+    stock?: SortOrder
     createdAt?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
     price?: SortOrder
+    stock?: SortOrder
   }
 
   export type ProductMaxOrderByAggregateInput = {
@@ -9827,6 +11307,7 @@ export namespace Prisma {
     category?: SortOrder
     isActive?: SortOrder
     isPreOrder?: SortOrder
+    stock?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -9839,11 +11320,13 @@ export namespace Prisma {
     category?: SortOrder
     isActive?: SortOrder
     isPreOrder?: SortOrder
+    stock?: SortOrder
     createdAt?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
     price?: SortOrder
+    stock?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -9916,29 +11399,18 @@ export namespace Prisma {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-    stock?: SortOrder
-  }
-
-  export type ProductSizeAvgOrderByAggregateInput = {
-    stock?: SortOrder
   }
 
   export type ProductSizeMaxOrderByAggregateInput = {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-    stock?: SortOrder
   }
 
   export type ProductSizeMinOrderByAggregateInput = {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-    stock?: SortOrder
-  }
-
-  export type ProductSizeSumOrderByAggregateInput = {
-    stock?: SortOrder
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -9954,6 +11426,28 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type ShippingLogListRelationFilter = {
@@ -9979,7 +11473,9 @@ export namespace Prisma {
     phone?: SortOrder
     country?: SortOrder
     province?: SortOrder
+    stateProvince?: SortOrder
     shippingAddress?: SortOrder
+    apartment?: SortOrder
     district?: SortOrder
     city?: SortOrder
     postalCode?: SortOrder
@@ -9989,8 +11485,13 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    paidAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
+    manualCourier?: SortOrder
+    manualService?: SortOrder
+    manualShippedAt?: SortOrder
+    manualTrackingNote?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
     duitkuPaymentUrl?: SortOrder
@@ -10006,6 +11507,8 @@ export namespace Prisma {
     shippingOrderError?: SortOrder
     shippingOrderStatus?: SortOrder
     shippingRetryCount?: SortOrder
+    priceRegion?: SortOrder
+    exchangeRate?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
@@ -10013,6 +11516,7 @@ export namespace Prisma {
     subtotal?: SortOrder
     total?: SortOrder
     shippingRetryCount?: SortOrder
+    exchangeRate?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -10023,7 +11527,9 @@ export namespace Prisma {
     phone?: SortOrder
     country?: SortOrder
     province?: SortOrder
+    stateProvince?: SortOrder
     shippingAddress?: SortOrder
+    apartment?: SortOrder
     district?: SortOrder
     city?: SortOrder
     postalCode?: SortOrder
@@ -10033,8 +11539,13 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    paidAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
+    manualCourier?: SortOrder
+    manualService?: SortOrder
+    manualShippedAt?: SortOrder
+    manualTrackingNote?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
     duitkuPaymentUrl?: SortOrder
@@ -10050,6 +11561,8 @@ export namespace Prisma {
     shippingOrderError?: SortOrder
     shippingOrderStatus?: SortOrder
     shippingRetryCount?: SortOrder
+    priceRegion?: SortOrder
+    exchangeRate?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
@@ -10060,7 +11573,9 @@ export namespace Prisma {
     phone?: SortOrder
     country?: SortOrder
     province?: SortOrder
+    stateProvince?: SortOrder
     shippingAddress?: SortOrder
+    apartment?: SortOrder
     district?: SortOrder
     city?: SortOrder
     postalCode?: SortOrder
@@ -10070,8 +11585,13 @@ export namespace Prisma {
     total?: SortOrder
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
+    paidAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
+    manualCourier?: SortOrder
+    manualService?: SortOrder
+    manualShippedAt?: SortOrder
+    manualTrackingNote?: SortOrder
     duitkuReference?: SortOrder
     duitkuPaymentMethod?: SortOrder
     duitkuPaymentUrl?: SortOrder
@@ -10087,6 +11607,8 @@ export namespace Prisma {
     shippingOrderError?: SortOrder
     shippingOrderStatus?: SortOrder
     shippingRetryCount?: SortOrder
+    priceRegion?: SortOrder
+    exchangeRate?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
@@ -10094,6 +11616,7 @@ export namespace Prisma {
     subtotal?: SortOrder
     total?: SortOrder
     shippingRetryCount?: SortOrder
+    exchangeRate?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -10112,6 +11635,98 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type ExchangeRateCountOrderByAggregateInput = {
+    id?: SortOrder
+    usdToIdr?: SortOrder
+    source?: SortOrder
+    isOverride?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type ExchangeRateAvgOrderByAggregateInput = {
+    usdToIdr?: SortOrder
+  }
+
+  export type ExchangeRateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    usdToIdr?: SortOrder
+    source?: SortOrder
+    isOverride?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type ExchangeRateMinOrderByAggregateInput = {
+    id?: SortOrder
+    usdToIdr?: SortOrder
+    source?: SortOrder
+    isOverride?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type ExchangeRateSumOrderByAggregateInput = {
+    usdToIdr?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type OrderScalarRelationFilter = {
@@ -10363,6 +11978,18 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type OrderItemUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10417,6 +12044,14 @@ export namespace Prisma {
     update?: ShippingLogUpdateWithWhereUniqueWithoutOrderInput | ShippingLogUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: ShippingLogUpdateManyWithWhereWithoutOrderInput | ShippingLogUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: ShippingLogScalarWhereInput | ShippingLogScalarWhereInput[]
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type OrderCreateNestedOneWithoutShippingLogsInput = {
@@ -10582,6 +12217,28 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -10608,6 +12265,52 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type OrderItemCreateWithoutProductInput = {
@@ -10639,13 +12342,11 @@ export namespace Prisma {
   export type ProductSizeCreateWithoutProductInput = {
     id?: string
     size: string
-    stock?: number
   }
 
   export type ProductSizeUncheckedCreateWithoutProductInput = {
     id?: string
     size: string
-    stock?: number
   }
 
   export type ProductSizeCreateOrConnectWithoutProductInput = {
@@ -10709,7 +12410,6 @@ export namespace Prisma {
     id?: StringFilter<"ProductSize"> | string
     productId?: StringFilter<"ProductSize"> | string
     size?: StringFilter<"ProductSize"> | string
-    stock?: IntFilter<"ProductSize"> | number
   }
 
   export type ProductCreateWithoutSizesInput = {
@@ -10722,6 +12422,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
   }
@@ -10736,6 +12437,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
@@ -10766,6 +12468,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
   }
@@ -10780,6 +12483,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -10894,7 +12598,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -10904,8 +12610,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -10921,6 +12632,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     items?: OrderItemCreateNestedManyWithoutOrderInput
   }
 
@@ -10932,7 +12645,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -10942,8 +12657,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -10959,6 +12679,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -10986,7 +12708,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -10996,8 +12720,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11013,6 +12742,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     items?: OrderItemUpdateManyWithoutOrderNestedInput
   }
 
@@ -11024,7 +12755,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -11034,8 +12767,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11051,6 +12789,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -11062,7 +12802,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -11072,8 +12814,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -11089,6 +12836,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     shippingLogs?: ShippingLogCreateNestedManyWithoutOrderInput
   }
 
@@ -11100,7 +12849,9 @@ export namespace Prisma {
     phone: string
     country?: string
     province?: string | null
+    stateProvince?: string | null
     shippingAddress: string
+    apartment?: string | null
     district?: string | null
     city?: string
     postalCode?: string
@@ -11110,8 +12861,13 @@ export namespace Prisma {
     total: number
     paymentStatus?: string
     orderStatus?: string
+    paidAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
+    manualCourier?: string | null
+    manualService?: string | null
+    manualShippedAt?: Date | string | null
+    manualTrackingNote?: string | null
     duitkuReference?: string | null
     duitkuPaymentMethod?: string | null
     duitkuPaymentUrl?: string | null
@@ -11127,6 +12883,8 @@ export namespace Prisma {
     shippingOrderError?: string | null
     shippingOrderStatus?: string
     shippingRetryCount?: number
+    priceRegion?: string
+    exchangeRate?: number | null
     shippingLogs?: ShippingLogUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -11145,6 +12903,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
   }
@@ -11159,6 +12918,7 @@ export namespace Prisma {
     images?: ProductCreateimagesInput | string[]
     isActive?: boolean
     isPreOrder?: boolean
+    stock?: number
     createdAt?: Date | string
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
   }
@@ -11187,7 +12947,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -11197,8 +12959,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11214,6 +12981,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     shippingLogs?: ShippingLogUpdateManyWithoutOrderNestedInput
   }
 
@@ -11225,7 +12994,9 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     province?: NullableStringFieldUpdateOperationsInput | string | null
+    stateProvince?: NullableStringFieldUpdateOperationsInput | string | null
     shippingAddress?: StringFieldUpdateOperationsInput | string
+    apartment?: NullableStringFieldUpdateOperationsInput | string | null
     district?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
@@ -11235,8 +13006,13 @@ export namespace Prisma {
     total?: IntFieldUpdateOperationsInput | number
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
+    manualService?: NullableStringFieldUpdateOperationsInput | string | null
+    manualShippedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    manualTrackingNote?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuReference?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuPaymentUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11252,6 +13028,8 @@ export namespace Prisma {
     shippingOrderError?: NullableStringFieldUpdateOperationsInput | string | null
     shippingOrderStatus?: StringFieldUpdateOperationsInput | string
     shippingRetryCount?: IntFieldUpdateOperationsInput | number
+    priceRegion?: StringFieldUpdateOperationsInput | string
+    exchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     shippingLogs?: ShippingLogUncheckedUpdateManyWithoutOrderNestedInput
   }
 
@@ -11276,6 +13054,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
   }
@@ -11290,6 +13069,7 @@ export namespace Prisma {
     images?: ProductUpdateimagesInput | string[]
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -11305,7 +13085,6 @@ export namespace Prisma {
   export type ProductSizeCreateManyProductInput = {
     id?: string
     size: string
-    stock?: number
   }
 
   export type OrderItemUpdateWithoutProductInput = {
@@ -11335,19 +13114,16 @@ export namespace Prisma {
   export type ProductSizeUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductSizeUncheckedUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProductSizeUncheckedUpdateManyWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
-    stock?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderItemCreateManyOrderInput = {
