@@ -131,7 +131,17 @@ exports.Prisma.ProductScalarFieldEnum = {
   isActive: 'isActive',
   isPreOrder: 'isPreOrder',
   stock: 'stock',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  sizeGuideId: 'sizeGuideId'
+};
+
+exports.Prisma.SizeGuideScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  measurements: 'measurements',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.ProductSizeScalarFieldEnum = {
@@ -161,6 +171,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   orderStatus: 'orderStatus',
   paidAt: 'paidAt',
+  expiredAt: 'expiredAt',
   isPreOrder: 'isPreOrder',
   trackingNumber: 'trackingNumber',
   manualCourier: 'manualCourier',
@@ -225,6 +236,10 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -235,9 +250,16 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   Product: 'Product',
+  SizeGuide: 'SizeGuide',
   ProductSize: 'ProductSize',
   Order: 'Order',
   ExchangeRate: 'ExchangeRate',

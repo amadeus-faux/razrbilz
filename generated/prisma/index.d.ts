@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Product = $Result.DefaultSelection<Prisma.$ProductPayload>
 /**
+ * Model SizeGuide
+ * 
+ */
+export type SizeGuide = $Result.DefaultSelection<Prisma.$SizeGuidePayload>
+/**
  * Model ProductSize
  * 
  */
@@ -179,6 +184,16 @@ export class PrismaClient<
     * ```
     */
   get product(): Prisma.ProductDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.sizeGuide`: Exposes CRUD operations for the **SizeGuide** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SizeGuides
+    * const sizeGuides = await prisma.sizeGuide.findMany()
+    * ```
+    */
+  get sizeGuide(): Prisma.SizeGuideDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.productSize`: Exposes CRUD operations for the **ProductSize** model.
@@ -687,6 +702,7 @@ export namespace Prisma {
 
   export const ModelName: {
     Product: 'Product',
+    SizeGuide: 'SizeGuide',
     ProductSize: 'ProductSize',
     Order: 'Order',
     ExchangeRate: 'ExchangeRate',
@@ -708,7 +724,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "product" | "productSize" | "order" | "exchangeRate" | "shippingLog" | "orderItem" | "admin"
+      modelProps: "product" | "sizeGuide" | "productSize" | "order" | "exchangeRate" | "shippingLog" | "orderItem" | "admin"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -783,6 +799,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ProductCountArgs<ExtArgs>
             result: $Utils.Optional<ProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      SizeGuide: {
+        payload: Prisma.$SizeGuidePayload<ExtArgs>
+        fields: Prisma.SizeGuideFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SizeGuideFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SizeGuideFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          findFirst: {
+            args: Prisma.SizeGuideFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SizeGuideFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          findMany: {
+            args: Prisma.SizeGuideFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>[]
+          }
+          create: {
+            args: Prisma.SizeGuideCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          createMany: {
+            args: Prisma.SizeGuideCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SizeGuideCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>[]
+          }
+          delete: {
+            args: Prisma.SizeGuideDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          update: {
+            args: Prisma.SizeGuideUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          deleteMany: {
+            args: Prisma.SizeGuideDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SizeGuideUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SizeGuideUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>[]
+          }
+          upsert: {
+            args: Prisma.SizeGuideUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SizeGuidePayload>
+          }
+          aggregate: {
+            args: Prisma.SizeGuideAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSizeGuide>
+          }
+          groupBy: {
+            args: Prisma.SizeGuideGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SizeGuideGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SizeGuideCountArgs<ExtArgs>
+            result: $Utils.Optional<SizeGuideCountAggregateOutputType> | number
           }
         }
       }
@@ -1354,6 +1444,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     product?: ProductOmit
+    sizeGuide?: SizeGuideOmit
     productSize?: ProductSizeOmit
     order?: OrderOmit
     exchangeRate?: ExchangeRateOmit
@@ -1476,6 +1567,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type SizeGuideCountOutputType
+   */
+
+  export type SizeGuideCountOutputType = {
+    products: number
+  }
+
+  export type SizeGuideCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    products?: boolean | SizeGuideCountOutputTypeCountProductsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * SizeGuideCountOutputType without action
+   */
+  export type SizeGuideCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuideCountOutputType
+     */
+    select?: SizeGuideCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * SizeGuideCountOutputType without action
+   */
+  export type SizeGuideCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProductWhereInput
+  }
+
+
+  /**
    * Count Type OrderCountOutputType
    */
 
@@ -1552,6 +1674,7 @@ export namespace Prisma {
     isPreOrder: boolean | null
     stock: number | null
     createdAt: Date | null
+    sizeGuideId: string | null
   }
 
   export type ProductMaxAggregateOutputType = {
@@ -1565,6 +1688,7 @@ export namespace Prisma {
     isPreOrder: boolean | null
     stock: number | null
     createdAt: Date | null
+    sizeGuideId: string | null
   }
 
   export type ProductCountAggregateOutputType = {
@@ -1579,6 +1703,7 @@ export namespace Prisma {
     isPreOrder: number
     stock: number
     createdAt: number
+    sizeGuideId: number
     _all: number
   }
 
@@ -1604,6 +1729,7 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     createdAt?: true
+    sizeGuideId?: true
   }
 
   export type ProductMaxAggregateInputType = {
@@ -1617,6 +1743,7 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     createdAt?: true
+    sizeGuideId?: true
   }
 
   export type ProductCountAggregateInputType = {
@@ -1631,6 +1758,7 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     createdAt?: true
+    sizeGuideId?: true
     _all?: true
   }
 
@@ -1732,6 +1860,7 @@ export namespace Prisma {
     isPreOrder: boolean
     stock: number
     createdAt: Date
+    sizeGuideId: string | null
     _count: ProductCountAggregateOutputType | null
     _avg: ProductAvgAggregateOutputType | null
     _sum: ProductSumAggregateOutputType | null
@@ -1765,8 +1894,10 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     createdAt?: boolean
+    sizeGuideId?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -1782,6 +1913,8 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     createdAt?: boolean
+    sizeGuideId?: boolean
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1796,6 +1929,8 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     createdAt?: boolean
+    sizeGuideId?: boolean
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
   export type ProductSelectScalar = {
@@ -1810,22 +1945,29 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     createdAt?: boolean
+    sizeGuideId?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "stock" | "createdAt", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "stock" | "createdAt" | "sizeGuideId", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type ProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
+  }
+  export type ProductIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
+  }
 
   export type $ProductPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Product"
     objects: {
       orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
       sizes: Prisma.$ProductSizePayload<ExtArgs>[]
+      sizeGuide: Prisma.$SizeGuidePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1839,6 +1981,7 @@ export namespace Prisma {
       isPreOrder: boolean
       stock: number
       createdAt: Date
+      sizeGuideId: string | null
     }, ExtArgs["result"]["product"]>
     composites: {}
   }
@@ -2235,6 +2378,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     orderItems<T extends Product$orderItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sizes<T extends Product$sizesArgs<ExtArgs> = {}>(args?: Subset<T, Product$sizesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductSizePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sizeGuide<T extends Product$sizeGuideArgs<ExtArgs> = {}>(args?: Subset<T, Product$sizeGuideArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2275,6 +2419,7 @@ export namespace Prisma {
     readonly isPreOrder: FieldRef<"Product", 'Boolean'>
     readonly stock: FieldRef<"Product", 'Int'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
+    readonly sizeGuideId: FieldRef<"Product", 'String'>
   }
     
 
@@ -2529,6 +2674,10 @@ export namespace Prisma {
      */
     data: ProductCreateManyInput | ProductCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2599,6 +2748,10 @@ export namespace Prisma {
      * Limit how many Products to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2716,6 +2869,25 @@ export namespace Prisma {
   }
 
   /**
+   * Product.sizeGuide
+   */
+  export type Product$sizeGuideArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    where?: SizeGuideWhereInput
+  }
+
+  /**
    * Product without action
    */
   export type ProductDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2731,6 +2903,1090 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SizeGuide
+   */
+
+  export type AggregateSizeGuide = {
+    _count: SizeGuideCountAggregateOutputType | null
+    _min: SizeGuideMinAggregateOutputType | null
+    _max: SizeGuideMaxAggregateOutputType | null
+  }
+
+  export type SizeGuideMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    description: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SizeGuideMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    description: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SizeGuideCountAggregateOutputType = {
+    id: number
+    name: number
+    description: number
+    measurements: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SizeGuideMinAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SizeGuideMaxAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SizeGuideCountAggregateInputType = {
+    id?: true
+    name?: true
+    description?: true
+    measurements?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SizeGuideAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SizeGuide to aggregate.
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SizeGuides to fetch.
+     */
+    orderBy?: SizeGuideOrderByWithRelationInput | SizeGuideOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SizeGuideWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SizeGuides from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SizeGuides.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SizeGuides
+    **/
+    _count?: true | SizeGuideCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SizeGuideMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SizeGuideMaxAggregateInputType
+  }
+
+  export type GetSizeGuideAggregateType<T extends SizeGuideAggregateArgs> = {
+        [P in keyof T & keyof AggregateSizeGuide]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSizeGuide[P]>
+      : GetScalarType<T[P], AggregateSizeGuide[P]>
+  }
+
+
+
+
+  export type SizeGuideGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SizeGuideWhereInput
+    orderBy?: SizeGuideOrderByWithAggregationInput | SizeGuideOrderByWithAggregationInput[]
+    by: SizeGuideScalarFieldEnum[] | SizeGuideScalarFieldEnum
+    having?: SizeGuideScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SizeGuideCountAggregateInputType | true
+    _min?: SizeGuideMinAggregateInputType
+    _max?: SizeGuideMaxAggregateInputType
+  }
+
+  export type SizeGuideGroupByOutputType = {
+    id: string
+    name: string
+    description: string | null
+    measurements: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: SizeGuideCountAggregateOutputType | null
+    _min: SizeGuideMinAggregateOutputType | null
+    _max: SizeGuideMaxAggregateOutputType | null
+  }
+
+  type GetSizeGuideGroupByPayload<T extends SizeGuideGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SizeGuideGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SizeGuideGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SizeGuideGroupByOutputType[P]>
+            : GetScalarType<T[P], SizeGuideGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SizeGuideSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    measurements?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    products?: boolean | SizeGuide$productsArgs<ExtArgs>
+    _count?: boolean | SizeGuideCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["sizeGuide"]>
+
+  export type SizeGuideSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    measurements?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["sizeGuide"]>
+
+  export type SizeGuideSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    measurements?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["sizeGuide"]>
+
+  export type SizeGuideSelectScalar = {
+    id?: boolean
+    name?: boolean
+    description?: boolean
+    measurements?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type SizeGuideOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "measurements" | "createdAt" | "updatedAt", ExtArgs["result"]["sizeGuide"]>
+  export type SizeGuideInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    products?: boolean | SizeGuide$productsArgs<ExtArgs>
+    _count?: boolean | SizeGuideCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type SizeGuideIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type SizeGuideIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $SizeGuidePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SizeGuide"
+    objects: {
+      products: Prisma.$ProductPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      description: string | null
+      measurements: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["sizeGuide"]>
+    composites: {}
+  }
+
+  type SizeGuideGetPayload<S extends boolean | null | undefined | SizeGuideDefaultArgs> = $Result.GetResult<Prisma.$SizeGuidePayload, S>
+
+  type SizeGuideCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SizeGuideFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SizeGuideCountAggregateInputType | true
+    }
+
+  export interface SizeGuideDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SizeGuide'], meta: { name: 'SizeGuide' } }
+    /**
+     * Find zero or one SizeGuide that matches the filter.
+     * @param {SizeGuideFindUniqueArgs} args - Arguments to find a SizeGuide
+     * @example
+     * // Get one SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SizeGuideFindUniqueArgs>(args: SelectSubset<T, SizeGuideFindUniqueArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SizeGuide that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SizeGuideFindUniqueOrThrowArgs} args - Arguments to find a SizeGuide
+     * @example
+     * // Get one SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SizeGuideFindUniqueOrThrowArgs>(args: SelectSubset<T, SizeGuideFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SizeGuide that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideFindFirstArgs} args - Arguments to find a SizeGuide
+     * @example
+     * // Get one SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SizeGuideFindFirstArgs>(args?: SelectSubset<T, SizeGuideFindFirstArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SizeGuide that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideFindFirstOrThrowArgs} args - Arguments to find a SizeGuide
+     * @example
+     * // Get one SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SizeGuideFindFirstOrThrowArgs>(args?: SelectSubset<T, SizeGuideFindFirstOrThrowArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SizeGuides that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SizeGuides
+     * const sizeGuides = await prisma.sizeGuide.findMany()
+     * 
+     * // Get first 10 SizeGuides
+     * const sizeGuides = await prisma.sizeGuide.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const sizeGuideWithIdOnly = await prisma.sizeGuide.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SizeGuideFindManyArgs>(args?: SelectSubset<T, SizeGuideFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SizeGuide.
+     * @param {SizeGuideCreateArgs} args - Arguments to create a SizeGuide.
+     * @example
+     * // Create one SizeGuide
+     * const SizeGuide = await prisma.sizeGuide.create({
+     *   data: {
+     *     // ... data to create a SizeGuide
+     *   }
+     * })
+     * 
+     */
+    create<T extends SizeGuideCreateArgs>(args: SelectSubset<T, SizeGuideCreateArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SizeGuides.
+     * @param {SizeGuideCreateManyArgs} args - Arguments to create many SizeGuides.
+     * @example
+     * // Create many SizeGuides
+     * const sizeGuide = await prisma.sizeGuide.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SizeGuideCreateManyArgs>(args?: SelectSubset<T, SizeGuideCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SizeGuides and returns the data saved in the database.
+     * @param {SizeGuideCreateManyAndReturnArgs} args - Arguments to create many SizeGuides.
+     * @example
+     * // Create many SizeGuides
+     * const sizeGuide = await prisma.sizeGuide.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SizeGuides and only return the `id`
+     * const sizeGuideWithIdOnly = await prisma.sizeGuide.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SizeGuideCreateManyAndReturnArgs>(args?: SelectSubset<T, SizeGuideCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a SizeGuide.
+     * @param {SizeGuideDeleteArgs} args - Arguments to delete one SizeGuide.
+     * @example
+     * // Delete one SizeGuide
+     * const SizeGuide = await prisma.sizeGuide.delete({
+     *   where: {
+     *     // ... filter to delete one SizeGuide
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SizeGuideDeleteArgs>(args: SelectSubset<T, SizeGuideDeleteArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SizeGuide.
+     * @param {SizeGuideUpdateArgs} args - Arguments to update one SizeGuide.
+     * @example
+     * // Update one SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SizeGuideUpdateArgs>(args: SelectSubset<T, SizeGuideUpdateArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SizeGuides.
+     * @param {SizeGuideDeleteManyArgs} args - Arguments to filter SizeGuides to delete.
+     * @example
+     * // Delete a few SizeGuides
+     * const { count } = await prisma.sizeGuide.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SizeGuideDeleteManyArgs>(args?: SelectSubset<T, SizeGuideDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SizeGuides.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SizeGuides
+     * const sizeGuide = await prisma.sizeGuide.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SizeGuideUpdateManyArgs>(args: SelectSubset<T, SizeGuideUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SizeGuides and returns the data updated in the database.
+     * @param {SizeGuideUpdateManyAndReturnArgs} args - Arguments to update many SizeGuides.
+     * @example
+     * // Update many SizeGuides
+     * const sizeGuide = await prisma.sizeGuide.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SizeGuides and only return the `id`
+     * const sizeGuideWithIdOnly = await prisma.sizeGuide.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SizeGuideUpdateManyAndReturnArgs>(args: SelectSubset<T, SizeGuideUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one SizeGuide.
+     * @param {SizeGuideUpsertArgs} args - Arguments to update or create a SizeGuide.
+     * @example
+     * // Update or create a SizeGuide
+     * const sizeGuide = await prisma.sizeGuide.upsert({
+     *   create: {
+     *     // ... data to create a SizeGuide
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SizeGuide we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SizeGuideUpsertArgs>(args: SelectSubset<T, SizeGuideUpsertArgs<ExtArgs>>): Prisma__SizeGuideClient<$Result.GetResult<Prisma.$SizeGuidePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SizeGuides.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideCountArgs} args - Arguments to filter SizeGuides to count.
+     * @example
+     * // Count the number of SizeGuides
+     * const count = await prisma.sizeGuide.count({
+     *   where: {
+     *     // ... the filter for the SizeGuides we want to count
+     *   }
+     * })
+    **/
+    count<T extends SizeGuideCountArgs>(
+      args?: Subset<T, SizeGuideCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SizeGuideCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SizeGuide.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SizeGuideAggregateArgs>(args: Subset<T, SizeGuideAggregateArgs>): Prisma.PrismaPromise<GetSizeGuideAggregateType<T>>
+
+    /**
+     * Group by SizeGuide.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SizeGuideGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SizeGuideGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SizeGuideGroupByArgs['orderBy'] }
+        : { orderBy?: SizeGuideGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SizeGuideGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSizeGuideGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SizeGuide model
+   */
+  readonly fields: SizeGuideFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SizeGuide.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SizeGuideClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    products<T extends SizeGuide$productsArgs<ExtArgs> = {}>(args?: Subset<T, SizeGuide$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SizeGuide model
+   */
+  interface SizeGuideFieldRefs {
+    readonly id: FieldRef<"SizeGuide", 'String'>
+    readonly name: FieldRef<"SizeGuide", 'String'>
+    readonly description: FieldRef<"SizeGuide", 'String'>
+    readonly measurements: FieldRef<"SizeGuide", 'Json'>
+    readonly createdAt: FieldRef<"SizeGuide", 'DateTime'>
+    readonly updatedAt: FieldRef<"SizeGuide", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SizeGuide findUnique
+   */
+  export type SizeGuideFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter, which SizeGuide to fetch.
+     */
+    where: SizeGuideWhereUniqueInput
+  }
+
+  /**
+   * SizeGuide findUniqueOrThrow
+   */
+  export type SizeGuideFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter, which SizeGuide to fetch.
+     */
+    where: SizeGuideWhereUniqueInput
+  }
+
+  /**
+   * SizeGuide findFirst
+   */
+  export type SizeGuideFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter, which SizeGuide to fetch.
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SizeGuides to fetch.
+     */
+    orderBy?: SizeGuideOrderByWithRelationInput | SizeGuideOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SizeGuides.
+     */
+    cursor?: SizeGuideWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SizeGuides from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SizeGuides.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SizeGuides.
+     */
+    distinct?: SizeGuideScalarFieldEnum | SizeGuideScalarFieldEnum[]
+  }
+
+  /**
+   * SizeGuide findFirstOrThrow
+   */
+  export type SizeGuideFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter, which SizeGuide to fetch.
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SizeGuides to fetch.
+     */
+    orderBy?: SizeGuideOrderByWithRelationInput | SizeGuideOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SizeGuides.
+     */
+    cursor?: SizeGuideWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SizeGuides from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SizeGuides.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SizeGuides.
+     */
+    distinct?: SizeGuideScalarFieldEnum | SizeGuideScalarFieldEnum[]
+  }
+
+  /**
+   * SizeGuide findMany
+   */
+  export type SizeGuideFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter, which SizeGuides to fetch.
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SizeGuides to fetch.
+     */
+    orderBy?: SizeGuideOrderByWithRelationInput | SizeGuideOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SizeGuides.
+     */
+    cursor?: SizeGuideWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SizeGuides from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SizeGuides.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SizeGuides.
+     */
+    distinct?: SizeGuideScalarFieldEnum | SizeGuideScalarFieldEnum[]
+  }
+
+  /**
+   * SizeGuide create
+   */
+  export type SizeGuideCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * The data needed to create a SizeGuide.
+     */
+    data: XOR<SizeGuideCreateInput, SizeGuideUncheckedCreateInput>
+  }
+
+  /**
+   * SizeGuide createMany
+   */
+  export type SizeGuideCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SizeGuides.
+     */
+    data: SizeGuideCreateManyInput | SizeGuideCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SizeGuide createManyAndReturn
+   */
+  export type SizeGuideCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * The data used to create many SizeGuides.
+     */
+    data: SizeGuideCreateManyInput | SizeGuideCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SizeGuide update
+   */
+  export type SizeGuideUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * The data needed to update a SizeGuide.
+     */
+    data: XOR<SizeGuideUpdateInput, SizeGuideUncheckedUpdateInput>
+    /**
+     * Choose, which SizeGuide to update.
+     */
+    where: SizeGuideWhereUniqueInput
+  }
+
+  /**
+   * SizeGuide updateMany
+   */
+  export type SizeGuideUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SizeGuides.
+     */
+    data: XOR<SizeGuideUpdateManyMutationInput, SizeGuideUncheckedUpdateManyInput>
+    /**
+     * Filter which SizeGuides to update
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * Limit how many SizeGuides to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SizeGuide updateManyAndReturn
+   */
+  export type SizeGuideUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * The data used to update SizeGuides.
+     */
+    data: XOR<SizeGuideUpdateManyMutationInput, SizeGuideUncheckedUpdateManyInput>
+    /**
+     * Filter which SizeGuides to update
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * Limit how many SizeGuides to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SizeGuide upsert
+   */
+  export type SizeGuideUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * The filter to search for the SizeGuide to update in case it exists.
+     */
+    where: SizeGuideWhereUniqueInput
+    /**
+     * In case the SizeGuide found by the `where` argument doesn't exist, create a new SizeGuide with this data.
+     */
+    create: XOR<SizeGuideCreateInput, SizeGuideUncheckedCreateInput>
+    /**
+     * In case the SizeGuide was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SizeGuideUpdateInput, SizeGuideUncheckedUpdateInput>
+  }
+
+  /**
+   * SizeGuide delete
+   */
+  export type SizeGuideDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
+    /**
+     * Filter which SizeGuide to delete.
+     */
+    where: SizeGuideWhereUniqueInput
+  }
+
+  /**
+   * SizeGuide deleteMany
+   */
+  export type SizeGuideDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SizeGuides to delete
+     */
+    where?: SizeGuideWhereInput
+    /**
+     * Limit how many SizeGuides to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SizeGuide.products
+   */
+  export type SizeGuide$productsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Product
+     */
+    select?: ProductSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Product
+     */
+    omit?: ProductOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProductInclude<ExtArgs> | null
+    where?: ProductWhereInput
+    orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[]
+    cursor?: ProductWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
+  }
+
+  /**
+   * SizeGuide without action
+   */
+  export type SizeGuideDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SizeGuide
+     */
+    select?: SizeGuideSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SizeGuide
+     */
+    omit?: SizeGuideOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SizeGuideInclude<ExtArgs> | null
   }
 
 
@@ -3820,6 +5076,7 @@ export namespace Prisma {
     paymentStatus: string | null
     orderStatus: string | null
     paidAt: Date | null
+    expiredAt: Date | null
     isPreOrder: boolean | null
     trackingNumber: string | null
     manualCourier: string | null
@@ -3866,6 +5123,7 @@ export namespace Prisma {
     paymentStatus: string | null
     orderStatus: string | null
     paidAt: Date | null
+    expiredAt: Date | null
     isPreOrder: boolean | null
     trackingNumber: string | null
     manualCourier: string | null
@@ -3912,6 +5170,7 @@ export namespace Prisma {
     paymentStatus: number
     orderStatus: number
     paidAt: number
+    expiredAt: number
     isPreOrder: number
     trackingNumber: number
     manualCourier: number
@@ -3976,6 +5235,7 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     paidAt?: true
+    expiredAt?: true
     isPreOrder?: true
     trackingNumber?: true
     manualCourier?: true
@@ -4022,6 +5282,7 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     paidAt?: true
+    expiredAt?: true
     isPreOrder?: true
     trackingNumber?: true
     manualCourier?: true
@@ -4068,6 +5329,7 @@ export namespace Prisma {
     paymentStatus?: true
     orderStatus?: true
     paidAt?: true
+    expiredAt?: true
     isPreOrder?: true
     trackingNumber?: true
     manualCourier?: true
@@ -4201,6 +5463,7 @@ export namespace Prisma {
     paymentStatus: string
     orderStatus: string
     paidAt: Date | null
+    expiredAt: Date | null
     isPreOrder: boolean
     trackingNumber: string | null
     manualCourier: string | null
@@ -4266,6 +5529,7 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     paidAt?: boolean
+    expiredAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
     manualCourier?: boolean
@@ -4315,6 +5579,7 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     paidAt?: boolean
+    expiredAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
     manualCourier?: boolean
@@ -4361,6 +5626,7 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     paidAt?: boolean
+    expiredAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
     manualCourier?: boolean
@@ -4407,6 +5673,7 @@ export namespace Prisma {
     paymentStatus?: boolean
     orderStatus?: boolean
     paidAt?: boolean
+    expiredAt?: boolean
     isPreOrder?: boolean
     trackingNumber?: boolean
     manualCourier?: boolean
@@ -4432,7 +5699,7 @@ export namespace Prisma {
     exchangeRate?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "stateProvince" | "shippingAddress" | "apartment" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "paidAt" | "isPreOrder" | "trackingNumber" | "manualCourier" | "manualService" | "manualShippedAt" | "manualTrackingNote" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount" | "priceRegion" | "exchangeRate", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "stateProvince" | "shippingAddress" | "apartment" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "paidAt" | "expiredAt" | "isPreOrder" | "trackingNumber" | "manualCourier" | "manualService" | "manualShippedAt" | "manualTrackingNote" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount" | "priceRegion" | "exchangeRate", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -4468,6 +5735,7 @@ export namespace Prisma {
       paymentStatus: string
       orderStatus: string
       paidAt: Date | null
+      expiredAt: Date | null
       isPreOrder: boolean
       trackingNumber: string | null
       manualCourier: string | null
@@ -4936,6 +6204,7 @@ export namespace Prisma {
     readonly paymentStatus: FieldRef<"Order", 'String'>
     readonly orderStatus: FieldRef<"Order", 'String'>
     readonly paidAt: FieldRef<"Order", 'DateTime'>
+    readonly expiredAt: FieldRef<"Order", 'DateTime'>
     readonly isPreOrder: FieldRef<"Order", 'Boolean'>
     readonly trackingNumber: FieldRef<"Order", 'String'>
     readonly manualCourier: FieldRef<"Order", 'String'>
@@ -9675,10 +10944,23 @@ export namespace Prisma {
     isActive: 'isActive',
     isPreOrder: 'isPreOrder',
     stock: 'stock',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    sizeGuideId: 'sizeGuideId'
   };
 
   export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+  export const SizeGuideScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    description: 'description',
+    measurements: 'measurements',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SizeGuideScalarFieldEnum = (typeof SizeGuideScalarFieldEnum)[keyof typeof SizeGuideScalarFieldEnum]
 
 
   export const ProductSizeScalarFieldEnum: {
@@ -9711,6 +10993,7 @@ export namespace Prisma {
     paymentStatus: 'paymentStatus',
     orderStatus: 'orderStatus',
     paidAt: 'paidAt',
+    expiredAt: 'expiredAt',
     isPreOrder: 'isPreOrder',
     trackingNumber: 'trackingNumber',
     manualCourier: 'manualCourier',
@@ -9793,6 +11076,13 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -9807,6 +11097,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -9864,6 +11163,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9895,8 +11208,10 @@ export namespace Prisma {
     isPreOrder?: BoolFilter<"Product"> | boolean
     stock?: IntFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
+    sizeGuideId?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
+    sizeGuide?: XOR<SizeGuideNullableScalarRelationFilter, SizeGuideWhereInput> | null
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -9911,8 +11226,10 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     createdAt?: SortOrder
+    sizeGuideId?: SortOrderInput | SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
     sizes?: ProductSizeOrderByRelationAggregateInput
+    sizeGuide?: SizeGuideOrderByWithRelationInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -9930,8 +11247,10 @@ export namespace Prisma {
     isPreOrder?: BoolFilter<"Product"> | boolean
     stock?: IntFilter<"Product"> | number
     createdAt?: DateTimeFilter<"Product"> | Date | string
+    sizeGuideId?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
     sizes?: ProductSizeListRelationFilter
+    sizeGuide?: XOR<SizeGuideNullableScalarRelationFilter, SizeGuideWhereInput> | null
   }, "id" | "slug">
 
   export type ProductOrderByWithAggregationInput = {
@@ -9946,6 +11265,7 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     createdAt?: SortOrder
+    sizeGuideId?: SortOrderInput | SortOrder
     _count?: ProductCountOrderByAggregateInput
     _avg?: ProductAvgOrderByAggregateInput
     _max?: ProductMaxOrderByAggregateInput
@@ -9968,6 +11288,67 @@ export namespace Prisma {
     isPreOrder?: BoolWithAggregatesFilter<"Product"> | boolean
     stock?: IntWithAggregatesFilter<"Product"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
+    sizeGuideId?: StringNullableWithAggregatesFilter<"Product"> | string | null
+  }
+
+  export type SizeGuideWhereInput = {
+    AND?: SizeGuideWhereInput | SizeGuideWhereInput[]
+    OR?: SizeGuideWhereInput[]
+    NOT?: SizeGuideWhereInput | SizeGuideWhereInput[]
+    id?: StringFilter<"SizeGuide"> | string
+    name?: StringFilter<"SizeGuide"> | string
+    description?: StringNullableFilter<"SizeGuide"> | string | null
+    measurements?: JsonFilter<"SizeGuide">
+    createdAt?: DateTimeFilter<"SizeGuide"> | Date | string
+    updatedAt?: DateTimeFilter<"SizeGuide"> | Date | string
+    products?: ProductListRelationFilter
+  }
+
+  export type SizeGuideOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    measurements?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    products?: ProductOrderByRelationAggregateInput
+  }
+
+  export type SizeGuideWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: SizeGuideWhereInput | SizeGuideWhereInput[]
+    OR?: SizeGuideWhereInput[]
+    NOT?: SizeGuideWhereInput | SizeGuideWhereInput[]
+    name?: StringFilter<"SizeGuide"> | string
+    description?: StringNullableFilter<"SizeGuide"> | string | null
+    measurements?: JsonFilter<"SizeGuide">
+    createdAt?: DateTimeFilter<"SizeGuide"> | Date | string
+    updatedAt?: DateTimeFilter<"SizeGuide"> | Date | string
+    products?: ProductListRelationFilter
+  }, "id">
+
+  export type SizeGuideOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    measurements?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SizeGuideCountOrderByAggregateInput
+    _max?: SizeGuideMaxOrderByAggregateInput
+    _min?: SizeGuideMinOrderByAggregateInput
+  }
+
+  export type SizeGuideScalarWhereWithAggregatesInput = {
+    AND?: SizeGuideScalarWhereWithAggregatesInput | SizeGuideScalarWhereWithAggregatesInput[]
+    OR?: SizeGuideScalarWhereWithAggregatesInput[]
+    NOT?: SizeGuideScalarWhereWithAggregatesInput | SizeGuideScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SizeGuide"> | string
+    name?: StringWithAggregatesFilter<"SizeGuide"> | string
+    description?: StringNullableWithAggregatesFilter<"SizeGuide"> | string | null
+    measurements?: JsonWithAggregatesFilter<"SizeGuide">
+    createdAt?: DateTimeWithAggregatesFilter<"SizeGuide"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SizeGuide"> | Date | string
   }
 
   export type ProductSizeWhereInput = {
@@ -10040,6 +11421,7 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    expiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     manualCourier?: StringNullableFilter<"Order"> | string | null
@@ -10088,6 +11470,7 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     paidAt?: SortOrderInput | SortOrder
+    expiredAt?: SortOrderInput | SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     manualCourier?: SortOrderInput | SortOrder
@@ -10140,6 +11523,7 @@ export namespace Prisma {
     paymentStatus?: StringFilter<"Order"> | string
     orderStatus?: StringFilter<"Order"> | string
     paidAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    expiredAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     isPreOrder?: BoolFilter<"Order"> | boolean
     trackingNumber?: StringNullableFilter<"Order"> | string | null
     manualCourier?: StringNullableFilter<"Order"> | string | null
@@ -10187,6 +11571,7 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     paidAt?: SortOrderInput | SortOrder
+    expiredAt?: SortOrderInput | SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrderInput | SortOrder
     manualCourier?: SortOrderInput | SortOrder
@@ -10241,6 +11626,7 @@ export namespace Prisma {
     paymentStatus?: StringWithAggregatesFilter<"Order"> | string
     orderStatus?: StringWithAggregatesFilter<"Order"> | string
     paidAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    expiredAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     isPreOrder?: BoolWithAggregatesFilter<"Order"> | boolean
     trackingNumber?: StringNullableWithAggregatesFilter<"Order"> | string | null
     manualCourier?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -10511,6 +11897,7 @@ export namespace Prisma {
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
+    sizeGuide?: SizeGuideCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -10525,6 +11912,7 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     createdAt?: Date | string
+    sizeGuideId?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
   }
@@ -10543,6 +11931,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
+    sizeGuide?: SizeGuideUpdateOneWithoutProductsNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -10557,6 +11946,7 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -10573,6 +11963,7 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     createdAt?: Date | string
+    sizeGuideId?: string | null
   }
 
   export type ProductUpdateManyMutationInput = {
@@ -10601,6 +11992,74 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type SizeGuideCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    products?: ProductCreateNestedManyWithoutSizeGuideInput
+  }
+
+  export type SizeGuideUncheckedCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    products?: ProductUncheckedCreateNestedManyWithoutSizeGuideInput
+  }
+
+  export type SizeGuideUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    products?: ProductUpdateManyWithoutSizeGuideNestedInput
+  }
+
+  export type SizeGuideUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    products?: ProductUncheckedUpdateManyWithoutSizeGuideNestedInput
+  }
+
+  export type SizeGuideCreateManyInput = {
+    id?: string
+    name: string
+    description?: string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SizeGuideUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SizeGuideUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductSizeCreateInput = {
@@ -10665,6 +12124,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -10713,6 +12173,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -10761,6 +12222,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10809,6 +12271,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10857,6 +12320,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -10903,6 +12367,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10949,6 +12414,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11259,6 +12725,21 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type OrderItemListRelationFilter = {
     every?: OrderItemWhereInput
     some?: OrderItemWhereInput
@@ -11269,6 +12750,16 @@ export namespace Prisma {
     every?: ProductSizeWhereInput
     some?: ProductSizeWhereInput
     none?: ProductSizeWhereInput
+  }
+
+  export type SizeGuideNullableScalarRelationFilter = {
+    is?: SizeGuideWhereInput | null
+    isNot?: SizeGuideWhereInput | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
@@ -11291,6 +12782,7 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     createdAt?: SortOrder
+    sizeGuideId?: SortOrder
   }
 
   export type ProductAvgOrderByAggregateInput = {
@@ -11309,6 +12801,7 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     createdAt?: SortOrder
+    sizeGuideId?: SortOrder
   }
 
   export type ProductMinOrderByAggregateInput = {
@@ -11322,6 +12815,7 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     createdAt?: SortOrder
+    sizeGuideId?: SortOrder
   }
 
   export type ProductSumOrderByAggregateInput = {
@@ -11385,6 +12879,108 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type ProductListRelationFilter = {
+    every?: ProductWhereInput
+    some?: ProductWhereInput
+    none?: ProductWhereInput
+  }
+
+  export type ProductOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type SizeGuideCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    measurements?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SizeGuideMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SizeGuideMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
   export type ProductScalarRelationFilter = {
     is?: ProductWhereInput
     isNot?: ProductWhereInput
@@ -11411,21 +13007,6 @@ export namespace Prisma {
     id?: SortOrder
     productId?: SortOrder
     size?: SortOrder
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
@@ -11456,11 +13037,6 @@ export namespace Prisma {
     none?: ShippingLogWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
-  }
-
   export type ShippingLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -11486,6 +13062,7 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     paidAt?: SortOrder
+    expiredAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     manualCourier?: SortOrder
@@ -11540,6 +13117,7 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     paidAt?: SortOrder
+    expiredAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     manualCourier?: SortOrder
@@ -11586,6 +13164,7 @@ export namespace Prisma {
     paymentStatus?: SortOrder
     orderStatus?: SortOrder
     paidAt?: SortOrder
+    expiredAt?: SortOrder
     isPreOrder?: SortOrder
     trackingNumber?: SortOrder
     manualCourier?: SortOrder
@@ -11617,24 +13196,6 @@ export namespace Prisma {
     total?: SortOrder
     shippingRetryCount?: SortOrder
     exchangeRate?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -11837,6 +13398,12 @@ export namespace Prisma {
     connect?: ProductSizeWhereUniqueInput | ProductSizeWhereUniqueInput[]
   }
 
+  export type SizeGuideCreateNestedOneWithoutProductsInput = {
+    create?: XOR<SizeGuideCreateWithoutProductsInput, SizeGuideUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: SizeGuideCreateOrConnectWithoutProductsInput
+    connect?: SizeGuideWhereUniqueInput
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -11904,6 +13471,20 @@ export namespace Prisma {
     deleteMany?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
   }
 
+  export type SizeGuideUpdateOneWithoutProductsNestedInput = {
+    create?: XOR<SizeGuideCreateWithoutProductsInput, SizeGuideUncheckedCreateWithoutProductsInput>
+    connectOrCreate?: SizeGuideCreateOrConnectWithoutProductsInput
+    upsert?: SizeGuideUpsertWithoutProductsInput
+    disconnect?: SizeGuideWhereInput | boolean
+    delete?: SizeGuideWhereInput | boolean
+    connect?: SizeGuideWhereUniqueInput
+    update?: XOR<XOR<SizeGuideUpdateToOneWithWhereWithoutProductsInput, SizeGuideUpdateWithoutProductsInput>, SizeGuideUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<OrderItemCreateWithoutProductInput, OrderItemUncheckedCreateWithoutProductInput> | OrderItemCreateWithoutProductInput[] | OrderItemUncheckedCreateWithoutProductInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutProductInput | OrderItemCreateOrConnectWithoutProductInput[]
@@ -11930,6 +13511,48 @@ export namespace Prisma {
     update?: ProductSizeUpdateWithWhereUniqueWithoutProductInput | ProductSizeUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: ProductSizeUpdateManyWithWhereWithoutProductInput | ProductSizeUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: ProductSizeScalarWhereInput | ProductSizeScalarWhereInput[]
+  }
+
+  export type ProductCreateNestedManyWithoutSizeGuideInput = {
+    create?: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput> | ProductCreateWithoutSizeGuideInput[] | ProductUncheckedCreateWithoutSizeGuideInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutSizeGuideInput | ProductCreateOrConnectWithoutSizeGuideInput[]
+    createMany?: ProductCreateManySizeGuideInputEnvelope
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type ProductUncheckedCreateNestedManyWithoutSizeGuideInput = {
+    create?: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput> | ProductCreateWithoutSizeGuideInput[] | ProductUncheckedCreateWithoutSizeGuideInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutSizeGuideInput | ProductCreateOrConnectWithoutSizeGuideInput[]
+    createMany?: ProductCreateManySizeGuideInputEnvelope
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+  }
+
+  export type ProductUpdateManyWithoutSizeGuideNestedInput = {
+    create?: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput> | ProductCreateWithoutSizeGuideInput[] | ProductUncheckedCreateWithoutSizeGuideInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutSizeGuideInput | ProductCreateOrConnectWithoutSizeGuideInput[]
+    upsert?: ProductUpsertWithWhereUniqueWithoutSizeGuideInput | ProductUpsertWithWhereUniqueWithoutSizeGuideInput[]
+    createMany?: ProductCreateManySizeGuideInputEnvelope
+    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    update?: ProductUpdateWithWhereUniqueWithoutSizeGuideInput | ProductUpdateWithWhereUniqueWithoutSizeGuideInput[]
+    updateMany?: ProductUpdateManyWithWhereWithoutSizeGuideInput | ProductUpdateManyWithWhereWithoutSizeGuideInput[]
+    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  }
+
+  export type ProductUncheckedUpdateManyWithoutSizeGuideNestedInput = {
+    create?: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput> | ProductCreateWithoutSizeGuideInput[] | ProductUncheckedCreateWithoutSizeGuideInput[]
+    connectOrCreate?: ProductCreateOrConnectWithoutSizeGuideInput | ProductCreateOrConnectWithoutSizeGuideInput[]
+    upsert?: ProductUpsertWithWhereUniqueWithoutSizeGuideInput | ProductUpsertWithWhereUniqueWithoutSizeGuideInput[]
+    createMany?: ProductCreateManySizeGuideInputEnvelope
+    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
+    update?: ProductUpdateWithWhereUniqueWithoutSizeGuideInput | ProductUpdateWithWhereUniqueWithoutSizeGuideInput[]
+    updateMany?: ProductUpdateManyWithWhereWithoutSizeGuideInput | ProductUpdateManyWithWhereWithoutSizeGuideInput[]
+    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
   }
 
   export type ProductCreateNestedOneWithoutSizesInput = {
@@ -11972,10 +13595,6 @@ export namespace Prisma {
     connectOrCreate?: ShippingLogCreateOrConnectWithoutOrderInput | ShippingLogCreateOrConnectWithoutOrderInput[]
     createMany?: ShippingLogCreateManyOrderInputEnvelope
     connect?: ShippingLogWhereUniqueInput | ShippingLogWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -12137,6 +13756,20 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12203,42 +13836,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -12265,6 +13862,51 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12359,6 +14001,29 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type SizeGuideCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SizeGuideUncheckedCreateWithoutProductsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SizeGuideCreateOrConnectWithoutProductsInput = {
+    where: SizeGuideWhereUniqueInput
+    create: XOR<SizeGuideCreateWithoutProductsInput, SizeGuideUncheckedCreateWithoutProductsInput>
+  }
+
   export type OrderItemUpsertWithWhereUniqueWithoutProductInput = {
     where: OrderItemWhereUniqueInput
     update: XOR<OrderItemUpdateWithoutProductInput, OrderItemUncheckedUpdateWithoutProductInput>
@@ -12412,6 +14077,111 @@ export namespace Prisma {
     size?: StringFilter<"ProductSize"> | string
   }
 
+  export type SizeGuideUpsertWithoutProductsInput = {
+    update: XOR<SizeGuideUpdateWithoutProductsInput, SizeGuideUncheckedUpdateWithoutProductsInput>
+    create: XOR<SizeGuideCreateWithoutProductsInput, SizeGuideUncheckedCreateWithoutProductsInput>
+    where?: SizeGuideWhereInput
+  }
+
+  export type SizeGuideUpdateToOneWithWhereWithoutProductsInput = {
+    where?: SizeGuideWhereInput
+    data: XOR<SizeGuideUpdateWithoutProductsInput, SizeGuideUncheckedUpdateWithoutProductsInput>
+  }
+
+  export type SizeGuideUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SizeGuideUncheckedUpdateWithoutProductsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    measurements?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProductCreateWithoutSizeGuideInput = {
+    id?: string
+    name: string
+    slug: string
+    description: string
+    price: number
+    category: string
+    images?: ProductCreateimagesInput | string[]
+    isActive?: boolean
+    isPreOrder?: boolean
+    stock?: number
+    createdAt?: Date | string
+    orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    sizes?: ProductSizeCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutSizeGuideInput = {
+    id?: string
+    name: string
+    slug: string
+    description: string
+    price: number
+    category: string
+    images?: ProductCreateimagesInput | string[]
+    isActive?: boolean
+    isPreOrder?: boolean
+    stock?: number
+    createdAt?: Date | string
+    orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
+    sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutSizeGuideInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput>
+  }
+
+  export type ProductCreateManySizeGuideInputEnvelope = {
+    data: ProductCreateManySizeGuideInput | ProductCreateManySizeGuideInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProductUpsertWithWhereUniqueWithoutSizeGuideInput = {
+    where: ProductWhereUniqueInput
+    update: XOR<ProductUpdateWithoutSizeGuideInput, ProductUncheckedUpdateWithoutSizeGuideInput>
+    create: XOR<ProductCreateWithoutSizeGuideInput, ProductUncheckedCreateWithoutSizeGuideInput>
+  }
+
+  export type ProductUpdateWithWhereUniqueWithoutSizeGuideInput = {
+    where: ProductWhereUniqueInput
+    data: XOR<ProductUpdateWithoutSizeGuideInput, ProductUncheckedUpdateWithoutSizeGuideInput>
+  }
+
+  export type ProductUpdateManyWithWhereWithoutSizeGuideInput = {
+    where: ProductScalarWhereInput
+    data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutSizeGuideInput>
+  }
+
+  export type ProductScalarWhereInput = {
+    AND?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    OR?: ProductScalarWhereInput[]
+    NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    id?: StringFilter<"Product"> | string
+    name?: StringFilter<"Product"> | string
+    slug?: StringFilter<"Product"> | string
+    description?: StringFilter<"Product"> | string
+    price?: IntFilter<"Product"> | number
+    category?: StringFilter<"Product"> | string
+    images?: StringNullableListFilter<"Product">
+    isActive?: BoolFilter<"Product"> | boolean
+    isPreOrder?: BoolFilter<"Product"> | boolean
+    stock?: IntFilter<"Product"> | number
+    createdAt?: DateTimeFilter<"Product"> | Date | string
+    sizeGuideId?: StringNullableFilter<"Product"> | string | null
+  }
+
   export type ProductCreateWithoutSizesInput = {
     id?: string
     name: string
@@ -12425,6 +14195,7 @@ export namespace Prisma {
     stock?: number
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
+    sizeGuide?: SizeGuideCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateWithoutSizesInput = {
@@ -12439,6 +14210,7 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     createdAt?: Date | string
+    sizeGuideId?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -12471,6 +14243,7 @@ export namespace Prisma {
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    sizeGuide?: SizeGuideUpdateOneWithoutProductsNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutSizesInput = {
@@ -12485,6 +14258,7 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -12611,6 +14385,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -12658,6 +14433,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -12721,6 +14497,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12768,6 +14545,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12815,6 +14593,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -12862,6 +14641,7 @@ export namespace Prisma {
     paymentStatus?: string
     orderStatus?: string
     paidAt?: Date | string | null
+    expiredAt?: Date | string | null
     isPreOrder?: boolean
     trackingNumber?: string | null
     manualCourier?: string | null
@@ -12906,6 +14686,7 @@ export namespace Prisma {
     stock?: number
     createdAt?: Date | string
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
+    sizeGuide?: SizeGuideCreateNestedOneWithoutProductsInput
   }
 
   export type ProductUncheckedCreateWithoutOrderItemsInput = {
@@ -12920,6 +14701,7 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     createdAt?: Date | string
+    sizeGuideId?: string | null
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -12960,6 +14742,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13007,6 +14790,7 @@ export namespace Prisma {
     paymentStatus?: StringFieldUpdateOperationsInput | string
     orderStatus?: StringFieldUpdateOperationsInput | string
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     trackingNumber?: NullableStringFieldUpdateOperationsInput | string | null
     manualCourier?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13057,6 +14841,7 @@ export namespace Prisma {
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
+    sizeGuide?: SizeGuideUpdateOneWithoutProductsNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutOrderItemsInput = {
@@ -13071,6 +14856,7 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -13124,6 +14910,66 @@ export namespace Prisma {
   export type ProductSizeUncheckedUpdateManyWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProductCreateManySizeGuideInput = {
+    id?: string
+    name: string
+    slug: string
+    description: string
+    price: number
+    category: string
+    images?: ProductCreateimagesInput | string[]
+    isActive?: boolean
+    isPreOrder?: boolean
+    stock?: number
+    createdAt?: Date | string
+  }
+
+  export type ProductUpdateWithoutSizeGuideInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    category?: StringFieldUpdateOperationsInput | string
+    images?: ProductUpdateimagesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderItems?: OrderItemUpdateManyWithoutProductNestedInput
+    sizes?: ProductSizeUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutSizeGuideInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    category?: StringFieldUpdateOperationsInput | string
+    images?: ProductUpdateimagesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
+    sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateManyWithoutSizeGuideInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: IntFieldUpdateOperationsInput | number
+    category?: StringFieldUpdateOperationsInput | string
+    images?: ProductUpdateimagesInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    isPreOrder?: BoolFieldUpdateOperationsInput | boolean
+    stock?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateManyOrderInput = {

@@ -65,7 +65,12 @@ export async function POST(request: Request) {
         statusMessage: payload.statusMessage,
       });
     } else {
-      const nextStatus = statusCode === "01" ? "pending" : statusCode === "02" ? "failed" : null;
+      const isFailed =
+        statusCode === "02" ||
+        ["FAILED", "EXPIRED", "EXPIRE", "CANCEL", "CANCELLED"].includes(statusCode.toUpperCase()) ||
+        ["FAILED", "EXPIRED", "EXPIRE", "CANCEL", "CANCELLED"].includes((payload.statusMessage || "").toUpperCase());
+
+      const nextStatus = statusCode === "01" ? "pending" : isFailed ? "failed" : null;
       if (!nextStatus) {
         return NextResponse.json({ error: "statusCode Duitku tidak dikenali." }, { status: 400 });
       }

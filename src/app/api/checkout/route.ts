@@ -59,6 +59,7 @@ export async function POST(request: Request) {
     const orderCountry = (country || "ID").trim().toUpperCase();
     const activeRate = await getActiveExchangeRate();
     const orderNumber = generateOrderNumber();
+    const EXPIRY_MINUTES = 60;
 
     // 1. Calculate total quantities required per product (regardless of size)
     const productQuantities = new Map<string, number>();
@@ -133,6 +134,7 @@ export async function POST(request: Request) {
       const computedTotal = serverSubtotal + (shippingCost || 0);
 
       const orderIsPreOrder = Array.from(productMap.values()).some((p) => p.isPreOrder);
+      const expiredAt = new Date(Date.now() + EXPIRY_MINUTES * 60 * 1000);
 
       const createdOrder = await tx.order.create({
         data: {
@@ -156,6 +158,7 @@ export async function POST(request: Request) {
           total: computedTotal,
           paymentStatus: "pending",
           orderStatus: "order_received",
+          expiredAt,
           isPreOrder: orderIsPreOrder,
           items: {
             create: resolvedItems.map((item) => ({
@@ -217,6 +220,7 @@ export async function POST(request: Request) {
         items: duitkuItems,
         callbackUrl: `${appUrl}/api/payments/duitku/callback`,
         returnUrl: `${appUrl}/payment/instructions/${encodeURIComponent(orderNumber)}`,
+        expiryPeriod: EXPIRY_MINUTES,
       });
 
       await prisma.order.update({

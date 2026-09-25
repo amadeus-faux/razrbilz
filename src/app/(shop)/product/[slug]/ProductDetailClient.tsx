@@ -21,6 +21,15 @@ export interface ClientProduct {
   basePrice?: number;
   stock: number;
   images: string[];
+  sizeGuide?: {
+    id: string;
+    name: string;
+    description: string | null;
+    measurements: {
+      columns?: string[];
+      rows?: Record<string, string>[];
+    };
+  } | null;
   sizes: {
     size: string;
   }[];

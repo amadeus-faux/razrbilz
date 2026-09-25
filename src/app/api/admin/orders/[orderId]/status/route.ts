@@ -61,6 +61,12 @@ export async function PATCH(
     if (orderStatus === "delivered") {
       updateData.shippingOrderStatus = "DELIVERED";
       updateData.biteshipStatus = "delivered";
+    } else if (orderStatus === "returned") {
+      updateData.shippingOrderStatus = "RETURNED";
+      updateData.biteshipStatus = "returned";
+    } else if (orderStatus === "cancelled") {
+      updateData.shippingOrderStatus = "CANCELLED";
+      updateData.biteshipStatus = "cancelled";
     }
 
     const updated = await prisma.order.update({

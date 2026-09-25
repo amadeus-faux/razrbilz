@@ -3,17 +3,23 @@ import { notFound } from "next/navigation";
 import EditProductForm from "./EditProductForm";
 
 export default async function EditProductPage({
-    params,
+  params,
 }: {
-    params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 }) {
-    const { id } = await params;
-    const product = await prisma.product.findUnique({
-        where: { id },
-        include: { sizes: true },
-    });
+  const { id } = await params;
+  const [product, sizeGuides] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id },
+      include: { sizes: true },
+    }),
+    prisma.sizeGuide.findMany({
+      select: { id: true, name: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
-    if (!product) notFound();
+  if (!product) notFound();
 
-    return <EditProductForm product={product} />;
+  return <EditProductForm product={product} sizeGuides={sizeGuides} />;
 }

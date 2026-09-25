@@ -403,7 +403,11 @@ export default function CheckoutPage() {
     async function loadPaymentMethods() {
       setLoadingMethods(true);
       try {
-        const amount = subtotal() + (selectedCourier?.price || 0);
+        const currentSubtotal = items.reduce(
+          (sum, it) => sum + getItemPrice(it) * it.quantity,
+          0
+        );
+        const amount = currentSubtotal + (selectedCourier?.price || 0);
         const res = await fetch(`/api/payments/duitku/methods?amount=${amount}`);
         if (res.ok) {
           const data = await res.json();
@@ -433,7 +437,7 @@ export default function CheckoutPage() {
     return () => {
       isMounted = false;
     };
-  }, [subtotal, selectedCourier]);
+  }, [items, getItemPrice, selectedCourier]);
 
   // ── Submit Checkout ────────────────────────────────────────────────────────
   async function onSubmit(data: CheckoutFormData) {

@@ -68,7 +68,7 @@ export default function ContactPage() {
           {
             Icon: Phone,
             label: "Call Support",
-            value: "(+62) 87763997856",
+            value: "(+62) 877 - 6399 - 7856",
             href: "tel:+6287763997856",
           },
           {

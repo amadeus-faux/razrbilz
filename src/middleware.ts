@@ -69,7 +69,10 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   const existingCookie = request.cookies.get("user_country")?.value;
 
-  if (!existingCookie) {
+  // Valid country code must be exactly 2 uppercase letters
+  const isValidCountryCode = (v?: string) => !!v && /^[A-Z]{2}$/.test(v);
+
+  if (!isValidCountryCode(existingCookie)) {
     const detectedCountry =
       request.headers.get("x-vercel-ip-country") ||
       request.headers.get("cf-ipcountry") ||

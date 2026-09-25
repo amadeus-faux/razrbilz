@@ -226,13 +226,13 @@ export default function ExchangeRateCard() {
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-sm font-semibold text-emerald-400">
               {rateInfo
-                ? formatRupiah(Math.ceil(((350000 / 10000) * rateInfo.usdToIdr) / 5000) * 5000)
+                ? formatRupiah(Math.ceil(((350000 / 10000) * rateInfo.usdToIdr) / 5000) * 5000 - 1000)
                 : "..."}
             </span>
             <span className="text-[10px] text-[#8c8680]">untuk pembeli US</span>
           </div>
           <span className="text-[10px] text-[#8c8680] mt-1 block">
-            35 USD × {rateInfo ? Math.round(rateInfo.usdToIdr).toLocaleString("id-ID") : "..."} (kelipatan 5.000)
+            35 USD × {rateInfo ? Math.round(rateInfo.usdToIdr).toLocaleString("id-ID") : "..."} (kelipatan 5.000 - Rp 1.000)
           </span>
         </div>
       </div>

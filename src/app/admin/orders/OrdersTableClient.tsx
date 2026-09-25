@@ -359,6 +359,8 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     if (activeFilter === "in_production") {
       return (
         order.paymentStatus === "paid" &&
+        order.orderStatus !== "returned" &&
+        order.orderStatus !== "cancelled" &&
         (order.orderStatus === "in_production" || order.shippingOrderStatus === "WAITING_PRODUCTION") &&
         !order.biteshipOrderId
       );
@@ -381,6 +383,7 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
     if (activeFilter === "cancelled") {
       return (
         order.orderStatus === "cancelled" ||
+        order.paymentStatus === "failed" ||
         order.biteshipStatus?.toLowerCase() === "cancelled"
       );
     }
@@ -418,6 +421,8 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
   const countInProduction = initialOrders.filter(
     (o) =>
       o.paymentStatus === "paid" &&
+      o.orderStatus !== "returned" &&
+      o.orderStatus !== "cancelled" &&
       (o.orderStatus === "in_production" || o.shippingOrderStatus === "WAITING_PRODUCTION") &&
       !o.biteshipOrderId
   ).length;
@@ -431,6 +436,7 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
   const countCancelled = initialOrders.filter(
     (o) =>
       o.orderStatus === "cancelled" ||
+      o.paymentStatus === "failed" ||
       o.biteshipStatus?.toLowerCase() === "cancelled"
   ).length;
 
@@ -623,11 +629,15 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
             ) : (
               filteredOrders.map((order) => {
                 const isPaid = order.paymentStatus === "paid";
+                const isPaymentFailed =
+                  order.paymentStatus === "failed" || order.orderStatus === "cancelled";
                 const isFailed =
                   order.shippingOrderStatus === "FAILED" ||
                   (isPaid && !order.biteshipOrderId && order.shippingOrderError);
                 const isWaitingProduction =
                   isPaid &&
+                  order.orderStatus !== "returned" &&
+                  order.orderStatus !== "cancelled" &&
                   (order.orderStatus === "in_production" ||
                     order.shippingOrderStatus === "WAITING_PRODUCTION") &&
                   !order.biteshipOrderId;
@@ -716,6 +726,8 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                         className={`inline-block px-2.5 py-0.5 text-[10px] uppercase font-semibold tracking-wider rounded-full border ${
                           isPaid
                             ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : isPaymentFailed
+                            ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
                             : "bg-amber-500/10 text-amber-400 border-amber-500/20"
                         }`}
                       >
@@ -726,7 +738,12 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                     {/* Status Pengiriman (Biteship Dynamic Life-Cycle + Sync Button) */}
                     <td className="py-3.5 px-4 min-w-[220px]">
                       <div className="space-y-1.5">
-                        {!isPaid ? (
+                        {isPaymentFailed ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg">
+                            <XCircle size={12} strokeWidth={2} />
+                            Dibatalkan / Kadaluarsa
+                          </span>
+                        ) : !isPaid ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] text-[#8c8680] bg-[#181715] border border-[#262422] rounded-lg">
                             <Clock size={12} strokeWidth={2} />
                             Menunggu Pembayaran

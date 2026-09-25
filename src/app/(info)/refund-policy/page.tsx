@@ -12,7 +12,7 @@ export default function RefundPolicyPage() {
       <header className="space-y-3 pb-8 border-b border-border">
         <h1 className="text-page-heading">Refund &amp; Exchange Policy</h1>
         <p className="text-[11px] text-muted tracking-wide">
-          Last updated: October 2026 · Applies to all purchases made through the official RAZRBILZ website.
+          Last updated: November 2026 · Applies to all purchases made through the official RAZRBILZ website.
         </p>
       </header>
 

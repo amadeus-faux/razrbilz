@@ -46,13 +46,13 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
           aria-hidden="true"
         >
           <div
-            className="flex justify-between text-foreground uppercase leading-none"
+            className="flex justify-between text-foreground leading-none"
             style={{
               fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
               fontSize: "clamp(4rem, 23.6vw, 30rem)",
             }}
           >
-            {"RAZRBILZ".split("").map((char, i) => (
+            {"razrbilz".split("").map((char, i) => (
               <span key={i}>{char}</span>
             ))}
           </div>

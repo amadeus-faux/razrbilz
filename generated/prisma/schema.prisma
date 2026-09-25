@@ -21,6 +21,18 @@ model Product {
   createdAt   DateTime      @default(now())
   orderItems  OrderItem[]
   sizes       ProductSize[]
+  sizeGuideId String?
+  sizeGuide   SizeGuide?    @relation(fields: [sizeGuideId], references: [id], onDelete: SetNull)
+}
+
+model SizeGuide {
+  id           String    @id @default(cuid())
+  name         String
+  description  String?
+  measurements Json      @default("{\"columns\":[\"Size\",\"Chest Width\",\"Length\"],\"rows\":[]}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  products     Product[]
 }
 
 model ProductSize {
@@ -53,6 +65,7 @@ model Order {
   paymentStatus       String        @default("pending")
   orderStatus         String        @default("processing")
   paidAt              DateTime?
+  expiredAt           DateTime?
   isPreOrder          Boolean       @default(true)
   trackingNumber      String?
   manualCourier       String?

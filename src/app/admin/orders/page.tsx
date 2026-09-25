@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import OrdersTableClient from "./OrdersTableClient";
+import { autoExpireStaleOrders } from "@/lib/order-fulfillment";
 import { AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -7,6 +8,11 @@ export const revalidate = 0;
 
 async function getOrders() {
   try {
+    // Otomatis ubah status pesanan kadaluarsa menjadi FAILED & CANCELLED
+    await autoExpireStaleOrders().catch((err) =>
+      console.error("Auto expire stale orders error:", err)
+    );
+
     return await prisma.order.findMany({
       include: {
         items: {
@@ -33,6 +39,8 @@ export default async function AdminOrdersPage() {
   const inProductionCount = orders.filter(
     (o) =>
       o.paymentStatus === "paid" &&
+      o.orderStatus !== "returned" &&
+      o.orderStatus !== "cancelled" &&
       (o.orderStatus === "in_production" || o.shippingOrderStatus === "WAITING_PRODUCTION") &&
       !o.biteshipOrderId
   ).length;

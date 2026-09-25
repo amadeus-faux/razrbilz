@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Package, ShoppingCart, LayoutDashboard, ExternalLink, Menu, X, LogOut } from "lucide-react";
+import { Package, ShoppingCart, LayoutDashboard, ExternalLink, Menu, X, LogOut, Ruler } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Katalog Produk", icon: Package },
+  { href: "/admin/size-guides", label: "Size Guide", icon: Ruler },
   { href: "/admin/orders", label: "Pesanan Masuk", icon: ShoppingCart },
 ];
 

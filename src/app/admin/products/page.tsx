@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import Link from "next/link";
 import { Plus, Package } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +12,7 @@ export const revalidate = 0;
 async function getProducts() {
   try {
     return await prisma.product.findMany({
-      include: { sizes: true },
+      include: { sizes: true, sizeGuide: true },
       orderBy: { createdAt: "desc" },
     });
   } catch (error) {
@@ -71,6 +72,7 @@ export default async function AdminProductsPage() {
               <tbody className="divide-y divide-[#201f1c]">
                 {products.map((p) => {
                   const isSoldOut = p.stock <= 0;
+                  const customerPrice = resolveDisplayPrice(p.price, "ID", 0);
                   return (
                     <tr key={p.id} className="hover:bg-[#1a1917]/60 transition-colors">
                       <td className="py-3.5 px-4">
@@ -95,12 +97,27 @@ export default async function AdminProductsPage() {
                         <p className="text-[11px] text-[#736e67] font-mono mt-0.5">/{p.slug}</p>
                       </td>
                       <td className="py-3.5 px-4 text-[#dedad3]">
-                        <span className="px-2.5 py-1 rounded-md bg-[#1c1b18] border border-white/5 text-[11px] font-medium text-[#c4c0b8]">
-                          {p.category}
-                        </span>
+                        <div className="space-y-1">
+                          <span className="inline-block px-2.5 py-0.5 rounded-md bg-[#1c1b18] border border-white/5 text-[11px] font-medium text-[#c4c0b8]">
+                            {p.category}
+                          </span>
+                          {p.sizeGuide && (
+                            <div className="text-[10px] text-[#8c8680] flex items-center gap-1">
+                              <span className="text-[#a8a39d]">📐 {p.sizeGuide.name}</span>
+                            </div>
+                          )}
+                        </div>
                       </td>
-                      <td className="py-3.5 px-4 font-semibold text-sm text-[#f4f2ee]">
-                        {formatRupiah(p.price)}
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-0.5">
+                          <div className="font-semibold text-sm text-[#f4f2ee] flex items-center gap-1.5">
+                            <span>{formatRupiah(customerPrice)}</span>
+                            <span className="text-[9.5px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Customer</span>
+                          </div>
+                          <p className="text-[11px] text-[#8c8680]">
+                            Dasar: {formatRupiah(p.price)}
+                          </p>
+                        </div>
                       </td>
                       <td className="py-3.5 px-4">
                         <div className="space-y-1.5 max-w-xs">

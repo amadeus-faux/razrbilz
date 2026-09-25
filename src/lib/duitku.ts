@@ -24,6 +24,7 @@ export interface DuitkuTransactionParams {
   items: DuitkuItem[];
   callbackUrl: string;
   returnUrl: string;
+  expiryPeriod?: number;
 }
 
 export interface DuitkuTransactionResponse {
@@ -133,7 +134,7 @@ export async function createDuitkuTransaction(
       callbackUrl: params.callbackUrl,
       returnUrl: params.returnUrl,
       signature,
-      expiryPeriod: 60,
+      expiryPeriod: params.expiryPeriod ?? 60,
     }),
   });
 

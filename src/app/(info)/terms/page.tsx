@@ -41,7 +41,7 @@ export default function TermsOfServicePage() {
             3. Payment &amp; Security
           </h2>
           <p>
-            Online payment transactions are encrypted and securely processed through the official Midtrans Payment Gateway. We do not store credit card details or bank account credentials on our internal servers.
+            Online payment transactions are encrypted and securely processed through the official Duitku Payment Gateway. We do not store credit card details or bank account credentials on our internal servers.
           </p>
         </section>
 

@@ -9,7 +9,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, slug, description, price, category, images, sizes, stock, isActive, isPreOrder } = body;
+    const { name, slug, description, price, category, images, sizes, stock, isActive, isPreOrder, sizeGuideId } = body;
 
     const product = await prisma.product.update({
       where: { id },
@@ -23,6 +23,7 @@ export async function PATCH(
         isActive,
         ...(stock !== undefined ? { stock: Math.max(0, Number(stock) || 0) } : {}),
         ...(isPreOrder !== undefined ? { isPreOrder } : {}),
+        ...(sizeGuideId !== undefined ? { sizeGuideId: sizeGuideId || null } : {}),
         sizes: {
           deleteMany: {},
           create: (sizes || []).map((s: string | { size: string }) => ({

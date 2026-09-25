@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Ruler } from "lucide-react";
+import { formatRupiah } from "@/lib/utils";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import ImageUploader from "@/components/admin/ImageUploader";
 
 interface EditProductFormProps {
@@ -17,11 +19,13 @@ interface EditProductFormProps {
     images: string[];
     isActive: boolean;
     isPreOrder?: boolean;
+    sizeGuideId?: string | null;
     sizes: { size: string }[];
   };
+  sizeGuides: { id: string; name: string }[];
 }
 
-export default function EditProductForm({ product }: EditProductFormProps) {
+export default function EditProductForm({ product, sizeGuides }: EditProductFormProps) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [name, setName] = useState(product.name);
@@ -32,6 +36,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
   const [images, setImages] = useState<string[]>(product.images);
   const [isActive, setIsActive] = useState(product.isActive);
   const [isPreOrder, setIsPreOrder] = useState(product.isPreOrder ?? true);
+  const [sizeGuideId, setSizeGuideId] = useState<string>(product.sizeGuideId || "");
   const [availableSizes, setAvailableSizes] = useState<string[]>(
     product.sizes.length > 0 ? product.sizes.map((s) => s.size) : ["S", "M", "L", "XL"]
   );
@@ -74,6 +79,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
           category,
           images,
           sizes: availableSizes.map((s) => ({ size: s })),
+          sizeGuideId: sizeGuideId || null,
           isActive,
           isPreOrder,
         }),
@@ -127,7 +133,7 @@ export default function EditProductForm({ product }: EditProductFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#9c968f] mb-2">
-              Harga (IDR) <span className="text-rose-400">*</span>
+              Harga Dasar (IDR) <span className="text-rose-400">*</span>
             </label>
             <input
               type="number"
@@ -138,6 +144,18 @@ export default function EditProductForm({ product }: EditProductFormProps) {
               onChange={(e) => setPrice(Number(e.target.value))}
               className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
             />
+            <div className="mt-2 p-2.5 rounded-lg bg-[#191815] border border-[#272623] space-y-1">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-[#8c8680]">Harga Dasar:</span>
+                <span className="text-[#dedad3] font-mono">{formatRupiah(price || 0)}</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-emerald-400 font-medium">Harga ke Customer:</span>
+                <span className="text-emerald-400 font-bold font-mono">
+                  {formatRupiah(resolveDisplayPrice(price || 0, "ID", 0))}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -215,6 +233,40 @@ export default function EditProductForm({ product }: EditProductFormProps) {
           </div>
           <p className="text-[11px] text-[#736e67] mt-1.5">
             Klik untuk mengaktifkan atau menonaktifkan ukuran yang dapat dipilih pembeli.
+          </p>
+        </div>
+
+        {/* Pilihan Size Guide */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9c968f]">
+              Size Guide (Panduan Ukuran)
+            </label>
+            <Link
+              href="/admin/size-guides"
+              target="_blank"
+              className="text-[11px] text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
+            >
+              <Ruler size={12} />
+              <span>Kelola Size Guide &rarr;</span>
+            </Link>
+          </div>
+          <select
+            value={sizeGuideId}
+            onChange={(e) => setSizeGuideId(e.target.value)}
+            className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all cursor-pointer"
+          >
+            <option value="" className="bg-[#1c1b18] text-neutral-400">
+              -- Tidak Ada (Sembunyikan Size Guide) --
+            </option>
+            {sizeGuides.map((guide) => (
+              <option key={guide.id} value={guide.id} className="bg-[#1c1b18] text-white">
+                {guide.name}
+              </option>
+            ))}
+          </select>
+          <p className="text-[11px] text-[#736e67] mt-1.5">
+            Pilih panduan ukuran yang akan ditampilkan pada modal &quot;Size Guide&quot; di halaman produk.
           </p>
         </div>
 

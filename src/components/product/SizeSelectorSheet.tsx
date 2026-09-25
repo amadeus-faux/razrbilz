@@ -21,17 +21,18 @@ interface SizeSelectorPopoverProps {
     description: string;
     images: string[];
     stock?: number;
+    sizeGuide?: {
+      id: string;
+      name: string;
+      description?: string | null;
+      measurements?: {
+        columns?: string[];
+        rows?: Record<string, string>[];
+      };
+    } | null;
   };
   sizes: (SizeOption | string)[];
 }
-
-// Static size chart data
-const SIZE_CHART = [
-  { size: "S", chest: "51 cm", length: "53 cm" },
-  { size: "M", chest: "53 cm", length: "55 cm" },
-  { size: "L", chest: "55 cm", length: "58 cm" },
-  { size: "XL", chest: "58 cm", length: "60 cm" },
-];
 
 const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -45,6 +46,15 @@ export default function SizeSelectorPopover({
   const [showShipping, setShowShipping] = useState(false);
   const [showSizeChart, setShowSizeChart] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
+
+  const guide = product.sizeGuide;
+  const guideColumns = guide?.measurements?.columns && Array.isArray(guide.measurements.columns) && guide.measurements.columns.length > 0
+    ? guide.measurements.columns
+    : null;
+  const guideRows = guide?.measurements?.rows && Array.isArray(guide.measurements.rows) && guide.measurements.rows.length > 0
+    ? guide.measurements.rows
+    : null;
+  const hasCustomGuide = Boolean(guide && guideColumns && guideRows);
 
   if (!isOpen) return null;
 
@@ -183,16 +193,18 @@ export default function SizeSelectorPopover({
                 )}
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowSizeChart(true)}
-                className="flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-muted hover:text-foreground transition-colors uppercase"
-                aria-label="Open size guide"
-                id="btn-size-guide"
-              >
-                <Ruler size={13} strokeWidth={1.5} />
-                SIZE GUIDE
-              </button>
+              {hasCustomGuide && (
+                <button
+                  type="button"
+                  onClick={() => setShowSizeChart(true)}
+                  className="flex items-center gap-1.5 text-[10px] font-medium tracking-widest text-muted hover:text-foreground transition-colors uppercase cursor-pointer"
+                  aria-label="Open size guide"
+                  id="btn-size-guide"
+                >
+                  <Ruler size={13} strokeWidth={1.5} />
+                  SIZE GUIDE
+                </button>
+              )}
 
               {showShipping && (
                 <div className="mt-2.5 text-[11px] text-muted leading-relaxed space-y-1.5 animate-fadeIn">
@@ -223,50 +235,77 @@ export default function SizeSelectorPopover({
             id="size-chart-modal"
           >
             {/* Modal header */}
-            <div className="flex items-center justify-center pb-3 border-b border-border mb-5">
+            <div className="flex items-center justify-center pb-3 border-b border-border mb-4">
               <div className="flex items-center gap-2">
                 <Ruler size={14} strokeWidth={1.5} className="text-muted" />
-                <span className="text-[11px] tracking-widest uppercase">
-                  Size Guide
+                <span className="text-[11px] tracking-widest uppercase font-semibold text-foreground">
+                  {guide?.name || "Size Guide"}
                 </span>
               </div>
             </div>
 
-            {/* Size chart table */}
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left pb-2.5 text-[10px] tracking-widest text-muted uppercase">
-                    SIZE
-                  </th>
-                  <th className="text-center pb-2.5 text-[10px] tracking-widest text-muted uppercase">
-                    CHEST WIDTH
-                  </th>
-                  <th className="text-center pb-2.5 text-[10px] tracking-widest text-muted uppercase">
-                    LENGTH
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {SIZE_CHART.map((row) => (
-                  <tr key={row.size} className="border-b border-border/40 last:border-0">
-                    <td className="py-3 text-foreground">{row.size}</td>
-                    <td className="py-3 text-center text-muted">{row.chest}</td>
-                    <td className="py-3 text-center text-muted">{row.length}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {guide?.description && (
+              <p className="text-[11px] text-muted text-center mb-4 leading-relaxed">
+                {guide.description}
+              </p>
+            )}
+
+            {/* Dynamic Size chart table or fallback */}
+            {hasCustomGuide && guideColumns && guideRows ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-border">
+                      {guideColumns.map((col, idx) => (
+                        <th
+                          key={idx}
+                          className={`pb-2.5 text-[10px] tracking-widest text-muted uppercase ${
+                            idx === 0 ? "text-left" : "text-center"
+                          }`}
+                        >
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {guideRows.map((row, rIdx) => (
+                      <tr key={rIdx} className="border-b border-border/40 last:border-0">
+                        {guideColumns.map((col, cIdx) => (
+                          <td
+                            key={cIdx}
+                            className={`py-3 ${
+                              cIdx === 0
+                                ? "text-foreground font-medium text-left"
+                                : "text-center text-muted"
+                            }`}
+                          >
+                            {row[col] || "—"}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="py-6 text-center space-y-2">
+                <p className="text-xs text-foreground font-medium">Panduan ukuran belum tersedia</p>
+                <p className="text-[11px] text-muted">
+                  Produk ini belum memiliki tabel ukuran khusus.
+                </p>
+              </div>
+            )}
 
             <p className="mt-5 text-[10px] text-muted leading-relaxed border-t border-border pt-4">
-              All measurements are body measurements in centimetres.
+              All measurements are in centimetres.
               We recommend sizing up for a relaxed fit.
             </p>
 
             {/* Back to selector */}
             <button
               onClick={() => setShowSizeChart(false)}
-              className="mt-4 w-full py-2.5 text-[11px] tracking-widest uppercase text-foreground bg-surface hover:bg-surface-hover rounded-xl transition-colors"
+              className="mt-4 w-full py-2.5 text-[11px] tracking-widest uppercase text-foreground bg-surface hover:bg-surface-hover rounded-xl transition-colors cursor-pointer border border-border"
             >
               ← BACK TO SIZE SELECTION
             </button>
