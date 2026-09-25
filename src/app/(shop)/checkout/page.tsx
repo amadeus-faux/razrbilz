@@ -1070,7 +1070,7 @@ export default function CheckoutPage() {
                           {isExpanded && (
                             <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
                               <p className="text-[10px] uppercase text-muted tracking-wider pt-2 pb-1 font-medium">
-                                Pilih {cat.title}:
+                                Choose {cat.title}:
                               </p>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                 {categoryMethods.map((method) => {
