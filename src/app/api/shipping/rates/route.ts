@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const products = productIds.length
       ? await prisma.product.findMany({
           where: { id: { in: productIds } },
-          select: { id: true, name: true, weightGrams: true },
+          select: { id: true, name: true, weightGrams: true, lengthCm: true, widthCm: true, heightCm: true },
         })
       : [];
     const productById = new Map(products.map((p) => [p.id, p]));
@@ -38,6 +38,9 @@ export async function POST(request: Request) {
         name: p?.name,
         quantity: Number(i?.quantity) || 0,
         weightGrams: p?.weightGrams,
+        lengthCm: p?.lengthCm,
+        widthCm: p?.widthCm,
+        heightCm: p?.heightCm,
       };
     });
 

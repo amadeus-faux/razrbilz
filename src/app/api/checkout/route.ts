@@ -180,10 +180,18 @@ export async function POST(request: Request) {
         );
       }
       // 2.5: quote pakai berat asli per produk dari DB (bukan hardcode 350 g),
-      // dijumlahkan sesuai quantity tiap baris item.
+      // dijumlahkan sesuai quantity tiap baris item. Dimensi ikut dikirim supaya
+      // berat volumetrik yang dipakai saat menagih = yang saat menampilkan tarif.
       const quoteProducts = await prisma.product.findMany({
         where: { id: { in: Array.from(productQuantities.keys()) } },
-        select: { id: true, name: true, weightGrams: true },
+        select: {
+          id: true,
+          name: true,
+          weightGrams: true,
+          lengthCm: true,
+          widthCm: true,
+          heightCm: true,
+        },
       });
       const quoteProductById = new Map(quoteProducts.map((p) => [p.id, p]));
       const quote = await getServerShippingRates({
@@ -195,6 +203,9 @@ export async function POST(request: Request) {
             name: p?.name,
             quantity: it.quantity,
             weightGrams: p?.weightGrams,
+            lengthCm: p?.lengthCm,
+            widthCm: p?.widthCm,
+            heightCm: p?.heightCm,
           };
         }),
       });

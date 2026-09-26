@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma, Prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
+import { parseDimensionInput, DIMENSION_FIELDS } from "@/lib/package-dimensions";
 
 export async function PATCH(
   request: Request,
@@ -48,6 +49,17 @@ export async function PATCH(
         return NextResponse.json({ error: "Berat produk harus berupa angka lebih dari 0 (gram)." }, { status: 400 });
       }
       data.weightGrams = Math.floor(weightNum);
+    }
+
+    // Dimensi kemasan (cm). Dikosongkan berarti NULL = "belum diukur", dan
+    // quoting produk itu tetap hanya memakai berat aktual.
+    for (const [field, label] of DIMENSION_FIELDS) {
+      if (body[field] === undefined) continue;
+      const parsed = parseDimensionInput(body[field], label);
+      if (!parsed.ok) {
+        return NextResponse.json({ error: parsed.error }, { status: 400 });
+      }
+      data[field] = parsed.value;
     }
 
     if (body.price !== undefined) {

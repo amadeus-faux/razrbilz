@@ -132,6 +132,9 @@ exports.Prisma.ProductScalarFieldEnum = {
   isPreOrder: 'isPreOrder',
   stock: 'stock',
   weightGrams: 'weightGrams',
+  lengthCm: 'lengthCm',
+  widthCm: 'widthCm',
+  heightCm: 'heightCm',
   createdAt: 'createdAt',
   sizeGuideId: 'sizeGuideId'
 };

@@ -7,6 +7,10 @@ import { ArrowLeft, Loader2, Save, Ruler } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 import { resolveDisplayPrice } from "@/lib/pricing";
 import ImageUploader from "@/components/admin/ImageUploader";
+import DimensionFields, {
+  type DimensionDraft,
+} from "@/components/admin/DimensionFields";
+import { buildDimensionPayload } from "@/lib/package-dimensions";
 
 interface EditProductFormProps {
   product: {
@@ -16,6 +20,9 @@ interface EditProductFormProps {
     price: number;
     stock: number;
     weightGrams?: number;
+    lengthCm?: number | null;
+    widthCm?: number | null;
+    heightCm?: number | null;
     category: string;
     images: string[];
     isActive: boolean;
@@ -34,6 +41,11 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
   const [price, setPrice] = useState(product.price);
   const [stock, setStock] = useState(product.stock ?? 0);
   const [weightGrams, setWeightGrams] = useState(product.weightGrams ?? 350);
+  const [dimensions, setDimensions] = useState<DimensionDraft>({
+    lengthCm: product.lengthCm?.toString() ?? "",
+    widthCm: product.widthCm?.toString() ?? "",
+    heightCm: product.heightCm?.toString() ?? "",
+  });
   const [category, setCategory] = useState(product.category);
   const [images, setImages] = useState<string[]>(product.images);
   const [isActive, setIsActive] = useState(product.isActive);
@@ -74,6 +86,11 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
       alert("Harga produk harus berupa angka lebih dari 0.");
       return;
     }
+    const dims = buildDimensionPayload(dimensions);
+    if (!dims.ok) {
+      alert(dims.error);
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -86,6 +103,7 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
           price: priceNum,
           stock: Math.max(0, Number(stock) || 0),
           weightGrams: Math.max(1, Number(weightGrams) || 350),
+          ...dims.values,
           category,
           images,
           sizes: availableSizes.map((s) => ({ size: s })),
@@ -236,6 +254,8 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
             Berat per unit dipakai menghitung ongkir Biteship (dikalikan quantity di keranjang). Default 350 g.
           </p>
         </div>
+
+        <DimensionFields value={dimensions} onChange={setDimensions} />
 
         {/* Pilihan Ukuran Tersedia */}
         <div>

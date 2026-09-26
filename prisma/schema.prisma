@@ -19,6 +19,13 @@ model Product {
   isPreOrder  Boolean       @default(true)
   stock       Int           @default(0)
   weightGrams Int           @default(350)
+  // Dimensi kemasan per unit (cm). NULL = belum diukur admin → ongkir hanya
+  // pakai berat aktual. Sengaja tidak diberi default palsu: Biteship
+  // menjumlahkan volume antar item, jadi angka karangan akan mengubah harga
+  // semua produk lama secara diam-diam.
+  lengthCm    Int?
+  widthCm     Int?
+  heightCm    Int?
   createdAt   DateTime      @default(now())
   orderItems  OrderItem[]
   sizes       ProductSize[]

@@ -127,7 +127,7 @@ export async function POST(
         shippedAt: finalShippedAt,
         note: note ? note.trim() : null,
       });
-      emailSent = emailResult.success;
+      emailSent = emailResult.success && !emailResult.skipped;
       emailMessage = emailResult.message;
     }
 

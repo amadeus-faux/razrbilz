@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/require-admin";
+import { parseDimensionInput, DIMENSION_FIELDS, type DimensionColumn } from "@/lib/package-dimensions";
 
 export async function POST(request: Request) {
     const auth = await requireAdmin();
@@ -20,6 +21,20 @@ export async function POST(request: Request) {
             );
         }
 
+        // Dimensi: kosong = belum diukur (NULL), bukan angka karangan.
+        const dimensions: Record<DimensionColumn, number | null> = {
+            lengthCm: null,
+            widthCm: null,
+            heightCm: null,
+        };
+        for (const [field, label] of DIMENSION_FIELDS) {
+            const parsed = parseDimensionInput(body[field], label);
+            if (!parsed.ok) {
+                return NextResponse.json({ error: parsed.error }, { status: 400 });
+            }
+            dimensions[field] = parsed.value;
+        }
+
         const product = await prisma.product.create({
             data: {
                 name,
@@ -30,6 +45,7 @@ export async function POST(request: Request) {
                 images,
                 stock: Math.max(0, Number(stock) || 0),
                 weightGrams: Math.max(1, Number(weightGrams) || 350),
+                ...dimensions,
                 isActive: isActive ?? true,
                 isPreOrder: isPreOrder ?? true,
                 sizeGuideId: sizeGuideId || null,

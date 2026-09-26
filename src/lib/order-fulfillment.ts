@@ -2,6 +2,7 @@ import { prisma, Prisma } from "@/lib/prisma";
 import { createBiteshipOrder } from "@/lib/biteship";
 import { checkDuitkuTransaction } from "@/lib/duitku";
 import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
+import { resolveDimensionsCm } from "@/lib/package-dimensions";
 import { sendPaymentSuccessEmail } from "@/lib/email";
 import { reportHandledError } from "@/lib/sentry";
 
@@ -254,6 +255,9 @@ export async function markOrderPaid({
           // yang dibayar customer. Fallback ke konstanta quote bila produk sudah
           // terhapus (productId → null) atau berat belum diisi.
           weight: item.product?.weightGrams ?? WEIGHT_PER_ITEM_GRAMS,
+          // Dimensi juga harus sama dengan saat quote — Biteship menghitung
+          // berat volumetrik dari angka ini dan menagih sesuai hasilnya.
+          dimensions: resolveDimensionsCm(item.product),
         })),
       });
 

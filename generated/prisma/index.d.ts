@@ -1748,12 +1748,18 @@ export namespace Prisma {
     price: number | null
     stock: number | null
     weightGrams: number | null
+    lengthCm: number | null
+    widthCm: number | null
+    heightCm: number | null
   }
 
   export type ProductSumAggregateOutputType = {
     price: number | null
     stock: number | null
     weightGrams: number | null
+    lengthCm: number | null
+    widthCm: number | null
+    heightCm: number | null
   }
 
   export type ProductMinAggregateOutputType = {
@@ -1767,6 +1773,9 @@ export namespace Prisma {
     isPreOrder: boolean | null
     stock: number | null
     weightGrams: number | null
+    lengthCm: number | null
+    widthCm: number | null
+    heightCm: number | null
     createdAt: Date | null
     sizeGuideId: string | null
   }
@@ -1782,6 +1791,9 @@ export namespace Prisma {
     isPreOrder: boolean | null
     stock: number | null
     weightGrams: number | null
+    lengthCm: number | null
+    widthCm: number | null
+    heightCm: number | null
     createdAt: Date | null
     sizeGuideId: string | null
   }
@@ -1798,6 +1810,9 @@ export namespace Prisma {
     isPreOrder: number
     stock: number
     weightGrams: number
+    lengthCm: number
+    widthCm: number
+    heightCm: number
     createdAt: number
     sizeGuideId: number
     _all: number
@@ -1808,12 +1823,18 @@ export namespace Prisma {
     price?: true
     stock?: true
     weightGrams?: true
+    lengthCm?: true
+    widthCm?: true
+    heightCm?: true
   }
 
   export type ProductSumAggregateInputType = {
     price?: true
     stock?: true
     weightGrams?: true
+    lengthCm?: true
+    widthCm?: true
+    heightCm?: true
   }
 
   export type ProductMinAggregateInputType = {
@@ -1827,6 +1848,9 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     weightGrams?: true
+    lengthCm?: true
+    widthCm?: true
+    heightCm?: true
     createdAt?: true
     sizeGuideId?: true
   }
@@ -1842,6 +1866,9 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     weightGrams?: true
+    lengthCm?: true
+    widthCm?: true
+    heightCm?: true
     createdAt?: true
     sizeGuideId?: true
   }
@@ -1858,6 +1885,9 @@ export namespace Prisma {
     isPreOrder?: true
     stock?: true
     weightGrams?: true
+    lengthCm?: true
+    widthCm?: true
+    heightCm?: true
     createdAt?: true
     sizeGuideId?: true
     _all?: true
@@ -1961,6 +1991,9 @@ export namespace Prisma {
     isPreOrder: boolean
     stock: number
     weightGrams: number
+    lengthCm: number | null
+    widthCm: number | null
+    heightCm: number | null
     createdAt: Date
     sizeGuideId: string | null
     _count: ProductCountAggregateOutputType | null
@@ -1996,6 +2029,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     weightGrams?: boolean
+    lengthCm?: boolean
+    widthCm?: boolean
+    heightCm?: boolean
     createdAt?: boolean
     sizeGuideId?: boolean
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
@@ -2016,6 +2052,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     weightGrams?: boolean
+    lengthCm?: boolean
+    widthCm?: boolean
+    heightCm?: boolean
     createdAt?: boolean
     sizeGuideId?: boolean
     sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
@@ -2033,6 +2072,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     weightGrams?: boolean
+    lengthCm?: boolean
+    widthCm?: boolean
+    heightCm?: boolean
     createdAt?: boolean
     sizeGuideId?: boolean
     sizeGuide?: boolean | Product$sizeGuideArgs<ExtArgs>
@@ -2050,11 +2092,14 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: boolean
     weightGrams?: boolean
+    lengthCm?: boolean
+    widthCm?: boolean
+    heightCm?: boolean
     createdAt?: boolean
     sizeGuideId?: boolean
   }
 
-  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "stock" | "weightGrams" | "createdAt" | "sizeGuideId", ExtArgs["result"]["product"]>
+  export type ProductOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "description" | "price" | "category" | "images" | "isActive" | "isPreOrder" | "stock" | "weightGrams" | "lengthCm" | "widthCm" | "heightCm" | "createdAt" | "sizeGuideId", ExtArgs["result"]["product"]>
   export type ProductInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Product$orderItemsArgs<ExtArgs>
     sizes?: boolean | Product$sizesArgs<ExtArgs>
@@ -2087,6 +2132,9 @@ export namespace Prisma {
       isPreOrder: boolean
       stock: number
       weightGrams: number
+      lengthCm: number | null
+      widthCm: number | null
+      heightCm: number | null
       createdAt: Date
       sizeGuideId: string | null
     }, ExtArgs["result"]["product"]>
@@ -2526,6 +2574,9 @@ export namespace Prisma {
     readonly isPreOrder: FieldRef<"Product", 'Boolean'>
     readonly stock: FieldRef<"Product", 'Int'>
     readonly weightGrams: FieldRef<"Product", 'Int'>
+    readonly lengthCm: FieldRef<"Product", 'Int'>
+    readonly widthCm: FieldRef<"Product", 'Int'>
+    readonly heightCm: FieldRef<"Product", 'Int'>
     readonly createdAt: FieldRef<"Product", 'DateTime'>
     readonly sizeGuideId: FieldRef<"Product", 'String'>
   }
@@ -12111,6 +12162,9 @@ export namespace Prisma {
     isPreOrder: 'isPreOrder',
     stock: 'stock',
     weightGrams: 'weightGrams',
+    lengthCm: 'lengthCm',
+    widthCm: 'widthCm',
+    heightCm: 'heightCm',
     createdAt: 'createdAt',
     sizeGuideId: 'sizeGuideId'
   };
@@ -12389,6 +12443,9 @@ export namespace Prisma {
     isPreOrder?: BoolFilter<"Product"> | boolean
     stock?: IntFilter<"Product"> | number
     weightGrams?: IntFilter<"Product"> | number
+    lengthCm?: IntNullableFilter<"Product"> | number | null
+    widthCm?: IntNullableFilter<"Product"> | number | null
+    heightCm?: IntNullableFilter<"Product"> | number | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     sizeGuideId?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
@@ -12408,6 +12465,9 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrderInput | SortOrder
+    widthCm?: SortOrderInput | SortOrder
+    heightCm?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     sizeGuideId?: SortOrderInput | SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
@@ -12430,6 +12490,9 @@ export namespace Prisma {
     isPreOrder?: BoolFilter<"Product"> | boolean
     stock?: IntFilter<"Product"> | number
     weightGrams?: IntFilter<"Product"> | number
+    lengthCm?: IntNullableFilter<"Product"> | number | null
+    widthCm?: IntNullableFilter<"Product"> | number | null
+    heightCm?: IntNullableFilter<"Product"> | number | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     sizeGuideId?: StringNullableFilter<"Product"> | string | null
     orderItems?: OrderItemListRelationFilter
@@ -12449,6 +12512,9 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrderInput | SortOrder
+    widthCm?: SortOrderInput | SortOrder
+    heightCm?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     sizeGuideId?: SortOrderInput | SortOrder
     _count?: ProductCountOrderByAggregateInput
@@ -12473,6 +12539,9 @@ export namespace Prisma {
     isPreOrder?: BoolWithAggregatesFilter<"Product"> | boolean
     stock?: IntWithAggregatesFilter<"Product"> | number
     weightGrams?: IntWithAggregatesFilter<"Product"> | number
+    lengthCm?: IntNullableWithAggregatesFilter<"Product"> | number | null
+    widthCm?: IntNullableWithAggregatesFilter<"Product"> | number | null
+    heightCm?: IntNullableWithAggregatesFilter<"Product"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Product"> | Date | string
     sizeGuideId?: StringNullableWithAggregatesFilter<"Product"> | string | null
   }
@@ -13148,6 +13217,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
@@ -13166,6 +13238,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     sizeGuideId?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
@@ -13184,6 +13259,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
@@ -13202,6 +13280,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
@@ -13220,6 +13301,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     sizeGuideId?: string | null
   }
@@ -13236,6 +13320,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13251,6 +13338,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -14051,6 +14141,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -14119,6 +14220,9 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrder
+    widthCm?: SortOrder
+    heightCm?: SortOrder
     createdAt?: SortOrder
     sizeGuideId?: SortOrder
   }
@@ -14127,6 +14231,9 @@ export namespace Prisma {
     price?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrder
+    widthCm?: SortOrder
+    heightCm?: SortOrder
   }
 
   export type ProductMaxOrderByAggregateInput = {
@@ -14140,6 +14247,9 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrder
+    widthCm?: SortOrder
+    heightCm?: SortOrder
     createdAt?: SortOrder
     sizeGuideId?: SortOrder
   }
@@ -14155,6 +14265,9 @@ export namespace Prisma {
     isPreOrder?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrder
+    widthCm?: SortOrder
+    heightCm?: SortOrder
     createdAt?: SortOrder
     sizeGuideId?: SortOrder
   }
@@ -14163,6 +14276,9 @@ export namespace Prisma {
     price?: SortOrder
     stock?: SortOrder
     weightGrams?: SortOrder
+    lengthCm?: SortOrder
+    widthCm?: SortOrder
+    heightCm?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -14205,6 +14321,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -14819,6 +14951,14 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -15127,6 +15267,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15204,6 +15355,33 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15233,17 +15411,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -15278,17 +15445,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -15506,6 +15662,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
@@ -15523,6 +15682,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
@@ -15569,6 +15731,9 @@ export namespace Prisma {
     isPreOrder?: BoolFilter<"Product"> | boolean
     stock?: IntFilter<"Product"> | number
     weightGrams?: IntFilter<"Product"> | number
+    lengthCm?: IntNullableFilter<"Product"> | number | null
+    widthCm?: IntNullableFilter<"Product"> | number | null
+    heightCm?: IntNullableFilter<"Product"> | number | null
     createdAt?: DateTimeFilter<"Product"> | Date | string
     sizeGuideId?: StringNullableFilter<"Product"> | string | null
   }
@@ -15585,6 +15750,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutProductInput
     sizeGuide?: SizeGuideCreateNestedOneWithoutProductsInput
@@ -15602,6 +15770,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     sizeGuideId?: string | null
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutProductInput
@@ -15635,6 +15806,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizeGuide?: SizeGuideUpdateOneWithoutProductsNestedInput
@@ -15652,6 +15826,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
@@ -16102,6 +16279,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     sizes?: ProductSizeCreateNestedManyWithoutProductInput
     sizeGuide?: SizeGuideCreateNestedOneWithoutProductsInput
@@ -16119,6 +16299,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
     sizeGuideId?: string | null
     sizes?: ProductSizeUncheckedCreateNestedManyWithoutProductInput
@@ -16265,6 +16448,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
     sizeGuide?: SizeGuideUpdateOneWithoutProductsNestedInput
@@ -16282,6 +16468,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sizeGuideId?: NullableStringFieldUpdateOperationsInput | string | null
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
@@ -16359,6 +16548,9 @@ export namespace Prisma {
     isPreOrder?: boolean
     stock?: number
     weightGrams?: number
+    lengthCm?: number | null
+    widthCm?: number | null
+    heightCm?: number | null
     createdAt?: Date | string
   }
 
@@ -16374,6 +16566,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUpdateManyWithoutProductNestedInput
@@ -16391,6 +16586,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutProductNestedInput
     sizes?: ProductSizeUncheckedUpdateManyWithoutProductNestedInput
@@ -16408,6 +16606,9 @@ export namespace Prisma {
     isPreOrder?: BoolFieldUpdateOperationsInput | boolean
     stock?: IntFieldUpdateOperationsInput | number
     weightGrams?: IntFieldUpdateOperationsInput | number
+    lengthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    widthCm?: NullableIntFieldUpdateOperationsInput | number | null
+    heightCm?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

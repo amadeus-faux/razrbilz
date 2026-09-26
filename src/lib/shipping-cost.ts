@@ -1,5 +1,6 @@
 import { getShippingRates, type BiteshipCourierRate } from "@/lib/biteship";
 import { getOriginPostalCode } from "@/lib/origin";
+import { resolveDimensionsCm } from "@/lib/package-dimensions";
 
 /**
  * Sumber tunggal (server-authoritative) untuk ongkos pengiriman.
@@ -116,6 +117,11 @@ export interface ShippingQuoteItem {
   // WEIGHT_PER_ITEM_GRAMS. Server yang menyuplai nilai ini (dari Product),
   // bukan client, supaya ongkir tidak bisa dimanipulasi.
   weightGrams?: number;
+  // Dimensi kemasan per unit (cm) dari DB, ikut server-authoritative.
+  // Ketiganya boleh null = belum diukur → item ini hanya dihitung berdasar berat.
+  lengthCm?: number | null;
+  widthCm?: number | null;
+  heightCm?: number | null;
 }
 
 export interface ShippingRatesParams {
@@ -168,6 +174,7 @@ export async function getServerShippingRates(
         ? item.weightGrams
         : WEIGHT_PER_ITEM_GRAMS,
     quantity: item.quantity,
+    dimensions: resolveDimensionsCm(item, item.name || "produk tanpa nama"),
   }));
 
   if (!process.env.BITESHIP_API_KEY) {

@@ -12,10 +12,13 @@ import {
   ShipmentEmail,
   type EmailItemLine,
 } from "@/email/templates";
+import { ContactNotificationEmail } from "@/email/contact-notification";
 
 export interface EmailResult {
   success: boolean;
   message: string;
+  /** true = email TIDAK dikirim karena jejaknya sudah ada. Bukan kegagalan. */
+  skipped?: boolean;
 }
 
 /** Data pesanan yang dibutuhkan semua template. */
@@ -60,10 +63,15 @@ async function deliver({
   to,
   subject,
   element,
+  replyTo,
 }: {
   to: string;
   subject: string;
   element: ReactElement;
+  /** Ke mana tombol Reply mengarah. Bila tidak diisi, EMAIL_REPLY_TO environment
+   *  yang dipakai. Form Contact Us mengirim alamat pengunjung ke sini supaya
+   *  balasan pemilik toko sampai ke pengunjung, bukan ke alamat pengirim (info@). */
+  replyTo?: string | null;
 }): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
@@ -84,7 +92,7 @@ async function deliver({
       subject,
       html,
       text: toPlainText(html),
-      replyTo: process.env.EMAIL_REPLY_TO || undefined,
+      replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
     });
 
     if (error) {
@@ -103,6 +111,39 @@ async function deliver({
   }
 }
 
+/**
+ * Jejak audit di ShippingLog, ditulis HANYA setelah Resend menerima kiriman.
+ * Dengan begitu "tidak ada baris = email belum pernah dikirim" bisa dipercaya
+ * saat menelusuri keluhan, tanpa harus membuka dashboard Resend.
+ */
+async function logEmailSent(p: {
+  orderId: string;
+  event: string;
+  recipient: string;
+  subject: string;
+  /** Disimpan utuh di `previousValue` supaya pengecekan idempoten bisa persis. */
+  trackingNumber?: string;
+  detail?: Record<string, unknown>;
+}): Promise<void> {
+  try {
+    await prisma.shippingLog.create({
+      data: {
+        orderId: p.orderId,
+        event: p.event,
+        previousValue: p.trackingNumber ?? null,
+        newValue: JSON.stringify({
+          recipient: p.recipient,
+          subject: p.subject,
+          ...p.detail,
+        }),
+        note: `Email "${p.subject}" terkirim ke ${p.recipient}`,
+      },
+    });
+  } catch (error) {
+    console.error(`[Email] Gagal mencatat log ${p.event} untuk order ${p.orderId}:`, error);
+  }
+}
+
 /** Email "pesanan diterima" — dikirim tepat setelah order + transaksi Duitku dibuat. */
 export async function sendOrderReceivedEmail(
   order: EmailOrder & {
@@ -118,10 +159,11 @@ export async function sendOrderReceivedEmail(
   const locale = resolveLocale(order.country);
   const copy = EMAIL_COPY[locale];
   const base = siteUrl();
+  const subject = copy.orderReceived.subject(order.orderNumber);
 
-  return deliver({
+  const result = await deliver({
     to: order.customerEmail,
-    subject: copy.orderReceived.subject(order.orderNumber),
+    subject,
     element: (
       <OrderReceivedEmail
         locale={locale}
@@ -139,6 +181,18 @@ export async function sendOrderReceivedEmail(
       />
     ),
   });
+
+  if (result.success) {
+    await logEmailSent({
+      orderId: order.orderId,
+      event: "EMAIL_ORDER_RECEIVED_SENT",
+      recipient: order.customerEmail,
+      subject,
+      detail: { locale },
+    });
+  }
+
+  return result;
 }
 
 /** Email "pembayaran diterima" — dipanggil dari satu-satunya titik transisi ke paid. */
@@ -154,10 +208,11 @@ export async function sendPaymentSuccessEmail(
   const locale = resolveLocale(order.country);
   const copy = EMAIL_COPY[locale];
   const base = siteUrl();
+  const subject = copy.paymentSuccess.subject(order.orderNumber);
 
-  return deliver({
+  const result = await deliver({
     to: order.customerEmail,
-    subject: copy.paymentSuccess.subject(order.orderNumber),
+    subject,
     element: (
       <PaymentSuccessEmail
         locale={locale}
@@ -174,6 +229,18 @@ export async function sendPaymentSuccessEmail(
       />
     ),
   });
+
+  if (result.success) {
+    await logEmailSent({
+      orderId: order.orderId,
+      event: "EMAIL_PAYMENT_SENT",
+      recipient: order.customerEmail,
+      subject,
+      detail: { locale, paymentMethod: order.paymentMethodName ?? null },
+    });
+  }
+
+  return result;
 }
 
 /**
@@ -194,10 +261,11 @@ export async function sendCancellationEmail(
   const locale = resolveLocale(order.country);
   const copy = EMAIL_COPY[locale];
   const base = siteUrl();
+  const subject = copy.cancellation.subject(order.orderNumber);
 
-  return deliver({
+  const result = await deliver({
     to: order.customerEmail,
-    subject: copy.cancellation.subject(order.orderNumber),
+    subject,
     element: (
       <CancellationEmail
         locale={locale}
@@ -210,6 +278,18 @@ export async function sendCancellationEmail(
       />
     ),
   });
+
+  if (result.success) {
+    await logEmailSent({
+      orderId: order.orderId,
+      event: "EMAIL_CANCELLATION_SENT",
+      recipient: order.customerEmail,
+      subject,
+      detail: { locale, paymentMethod: order.paymentMethodName ?? null },
+    });
+  }
+
+  return result;
 }
 
 /**
@@ -233,19 +313,18 @@ export async function sendShippingEmail(
   }
 
   try {
+    // Pencocokan PERSIS pada resi di `previousValue`, bukan substring di `newValue`:
+    // resi lama yang merupakan potongan resi baru (koreksi typo) tidak boleh
+    // membuat email resi baru dianggap sudah terkirim.
     const already = await prisma.shippingLog.findFirst({
-      where: {
-        orderId,
-        event: "EMAIL_TRACKING_SENT",
-        newValue: { contains: trackingNumber },
-      },
+      where: { orderId, event: "EMAIL_TRACKING_SENT", previousValue: trackingNumber },
       select: { id: true },
     });
     if (already) {
       console.log(
         `[Email] Notifikasi resi ${trackingNumber} untuk order ${orderNumber} sudah pernah dikirim (skip).`
       );
-      return { success: true, message: "Email resi sudah pernah dikirim" };
+      return { success: true, skipped: true, message: "Email resi sudah pernah dikirim" };
     }
   } catch (error) {
     console.error(`[Email] Gagal memeriksa log email untuk order ${orderNumber}:`, error);
@@ -253,9 +332,11 @@ export async function sendShippingEmail(
 
   const locale = resolveLocale(order.country);
   const copy = EMAIL_COPY[locale];
+  const subject = copy.shipment.subject(orderNumber, courier);
+
   const result = await deliver({
     to: customerEmail,
-    subject: copy.shipment.subject(orderNumber, courier),
+    subject,
     element: (
       <ShipmentEmail
         locale={locale}
@@ -274,26 +355,46 @@ export async function sendShippingEmail(
 
   if (!result.success) return result;
 
-  // Jejak audit di ShippingLog (dipakai tabel riwayat pesanan admin).
-  try {
-    await prisma.shippingLog.create({
-      data: {
-        orderId,
-        event: "EMAIL_TRACKING_SENT",
-        newValue: JSON.stringify({
-          recipient: customerEmail,
-          subject: copy.shipment.subject(orderNumber, courier),
-          trackingNumber,
-          courier,
-          service: order.service ?? null,
-          locale,
-        }),
-        note: `Email konfirmasi resi (locale=${locale}) terkirim ke ${customerEmail} (Resi: ${trackingNumber})`,
-      },
-    });
-  } catch (error) {
-    console.error(`[Email] Gagal mencatat log email untuk order ${orderNumber}:`, error);
-  }
+  await logEmailSent({
+    orderId,
+    event: "EMAIL_TRACKING_SENT",
+    recipient: customerEmail,
+    subject,
+    trackingNumber,
+    detail: { courier, service: order.service ?? null, locale },
+  });
+
+  return result;
+}
+
+/**
+ * Notifikasi internal untuk pesan dari form Contact Us.
+ *
+ * `from` tetap alamat kita (EMAIL_FROM, domain terverifikasi) — alamat pengunjung
+ * masuk ke `replyTo`, karena mengirim dengan from = email pihak lain akan ditolak
+ * provider dan tidak pernah sampai. Tidak ada jejak di ShippingLog: tabel itu
+ * terhubung ke satu order lewat FK, dan pesan kontak tidak punya order. Bukti
+ * pengirimannya adalah log console + inbox support.
+ */
+export async function sendContactMessageEmail(p: {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<EmailResult> {
+  const to = process.env.CONTACT_EMAIL_TO || "support@razrbilz.id";
+  const subject = `Pesan baru dari Contact Us - ${p.name}`;
+
+  const result = await deliver({
+    to,
+    subject,
+    replyTo: p.email,
+    element: <ContactNotificationEmail {...p} receivedAt={new Date()} />,
+  });
+
+  console.log(
+    `[Email] Notifikasi Contact Us dari ${p.email} <${p.name}> ke ${to}: ${result.message}`
+  );
 
   return result;
 }

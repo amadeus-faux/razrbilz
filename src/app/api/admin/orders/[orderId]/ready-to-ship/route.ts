@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { createBiteshipOrder } from "@/lib/biteship";
 import { requireAdmin } from "@/lib/require-admin";
 import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
+import { resolveDimensionsCm } from "@/lib/package-dimensions";
 
 interface RouteParams {
   params: Promise<{ orderId: string }>;
@@ -80,6 +81,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         quantity: item.quantity,
         value: item.priceAtBuy,
         weight: item.product?.weightGrams ?? WEIGHT_PER_ITEM_GRAMS,
+        dimensions: resolveDimensionsCm(item.product),
       })),
     });
 

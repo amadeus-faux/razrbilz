@@ -7,6 +7,10 @@ import { ArrowLeft, Loader2, Plus, Ruler } from "lucide-react";
 import { slugify, formatRupiah } from "@/lib/utils";
 import { resolveDisplayPrice } from "@/lib/pricing";
 import ImageUploader from "@/components/admin/ImageUploader";
+import DimensionFields, {
+  type DimensionDraft,
+} from "@/components/admin/DimensionFields";
+import { buildDimensionPayload } from "@/lib/package-dimensions";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -16,6 +20,11 @@ export default function NewProductPage() {
   const [price, setPrice] = useState<number>(350000);
   const [stock, setStock] = useState<number>(50);
   const [weightGrams, setWeightGrams] = useState<number>(350);
+  const [dimensions, setDimensions] = useState<DimensionDraft>({
+    lengthCm: "",
+    widthCm: "",
+    heightCm: "",
+  });
   const [category, setCategory] = useState("T-Shirts");
   const [images, setImages] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
@@ -72,6 +81,12 @@ export default function NewProductPage() {
       setSubmitting(false);
       return;
     }
+    const dims = buildDimensionPayload(dimensions);
+    if (!dims.ok) {
+      alert(dims.error);
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/admin/products", {
@@ -84,6 +99,7 @@ export default function NewProductPage() {
           price: priceNum,
           stock: Math.max(0, Number(stock) || 0),
           weightGrams: Math.max(1, Number(weightGrams) || 350),
+          ...dims.values,
           category,
           images,
           sizes: availableSizes.map((s) => ({ size: s })),
@@ -239,6 +255,8 @@ export default function NewProductPage() {
             Berat per unit dipakai menghitung ongkir Biteship (dikalikan quantity di keranjang). Default 350 g.
           </p>
         </div>
+
+        <DimensionFields value={dimensions} onChange={setDimensions} />
 
         {/* Pilihan Ukuran Tersedia */}
         <div>

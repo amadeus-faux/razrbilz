@@ -4,6 +4,9 @@ interface BiteshipRateItem {
   name: string;
   weight: number; // in grams
   quantity: number;
+  // cm. Dikirim hanya bila ketiga sisi terisi; Biteship menghitung berat
+  // volumetrik sendiri dan memakainya bila lebih besar dari berat aktual.
+  dimensions?: DimensionsCm | null;
 }
 
 interface BiteshipRateRequest {
@@ -25,6 +28,7 @@ export interface BiteshipCourierRate {
 
 import { isCourierServiceEnabled, ENABLED_COURIER_SERVICES } from "./enabled-couriers";
 import { getOriginPostalCode } from "./origin";
+import type { DimensionsCm } from "./package-dimensions";
 
 export async function getShippingRates(
   request: BiteshipRateRequest
@@ -45,6 +49,7 @@ export async function getShippingRates(
       name: item.name,
       weight: item.weight,
       quantity: item.quantity,
+      ...(item.dimensions ? { ...item.dimensions } : {}),
     })),
   };
 
@@ -450,6 +455,7 @@ export interface CreateBiteshipOrderParams {
     quantity: number;
     value: number;
     weight?: number; // grams
+    dimensions?: DimensionsCm | null; // cm, hanya bila admin sudah mengukur
   }[];
 }
 
@@ -587,6 +593,9 @@ export async function createBiteshipOrder(
       value: item.value,
       quantity: item.quantity,
       weight: item.weight || 500,
+      // Dimensi harus sama dengan yang dipakai saat quote, kalau tidak harga
+      // label yang ditagihkan kurir menyimpang dari ongkir yang dibayar customer.
+      ...(item.dimensions ? { ...item.dimensions } : {}),
     })),
   };
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getBiteshipOrder } from "@/lib/biteship";
 import { mapBiteshipStatusToInternal } from "@/lib/biteship-status";
+import { sendShippingEmail } from "@/lib/email";
 import { requireAdmin } from "@/lib/require-admin";
 
 interface RouteParams {
@@ -87,9 +88,40 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     console.log(`[Sync Shipping] ✅ Order ${order.orderNumber} status updated: '${previousStatus}' -> '${rawStatus}'`);
 
+    // Email "pesanan dikirim". Route ini mengubah status tanpa menunggu webhook
+    // Biteship, jadi tanpa panggilan di bawah customer tidak pernah tahu paketnya
+    // berangkat. sendShippingEmail idempoten per nomor resi → menekan tombol sync
+    // berulang tidak mengirim email ganda.
+    let emailNote = "";
+    if (orderStatus === "shipped") {
+      const resi = waybillId || order.trackingNumber;
+      if (!resi) {
+        emailNote = " resi kurir belum terbit, email notifikasi dilewatkan.";
+        console.warn(
+          `[Sync Shipping] ⚠️ Order ${order.orderNumber} berstatus shipped tapi resi belum ada — email tidak dikirim.`
+        );
+      } else {
+        const emailResult = await sendShippingEmail({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          customerName: order.customerName,
+          customerEmail: order.email,
+          country: order.country,
+          courier: order.courier,
+          trackingNumber: resi,
+          shippedAt: result.raw?.updated_at ?? null,
+        });
+        emailNote = emailResult.skipped
+          ? " Email notifikasi dilewati (resi ini sudah pernah dikirim)."
+          : emailResult.success
+            ? " Email notifikasi terkirim."
+            : ` Email notifikasi TIDAK terkirim: ${emailResult.message}`;
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Status pesanan ${order.orderNumber} berhasil diperbarui menjadi: ${description} (${rawStatus})`,
+      message: `Status pesanan ${order.orderNumber} berhasil diperbarui menjadi: ${description} (${rawStatus})` + emailNote,
       orderNumber: updatedOrder.orderNumber,
       biteshipOrderId: order.biteshipOrderId,
       biteshipStatus: rawStatus,

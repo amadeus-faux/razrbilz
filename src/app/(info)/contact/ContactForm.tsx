@@ -2,44 +2,66 @@
 
 import { useState } from "react";
 import { Send, CheckCircle2, AlertCircle, Mail, MapPin, Clock, Loader2, Phone } from "lucide-react";
+import {
+  CONTACT_EMAIL_MAX,
+  CONTACT_HONEYPOT_FIELD,
+  CONTACT_MESSAGE_MAX,
+  CONTACT_NAME_MAX,
+  CONTACT_SUBJECT_MAX,
+  validateContactInput,
+} from "@/lib/contact";
 
 const inputCls =
   "w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover transition-all placeholder:text-muted/40";
+
+/** Honeypot: tetap ada di DOM supaya bot mengisinya, tapi di luar layar. */
+const honeypotCls =
+  "absolute -left-[9999px] top-auto h-px w-px overflow-hidden opacity-0";
 
 export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const formspreeEndpoint = "https://formspree.io/f/mrpgzzvw";
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitting(true);
-    setErrorMessage("");
-
     const form = e.currentTarget;
-    const formData = new FormData(form);
+
+    setErrorMessage("");
+    const raw = Object.fromEntries(new FormData(form));
+
+    // Aturan yang sama dengan API; sisi browser hanya menghindari round-trip
+    // gagal, bukan pengganti validasi server.
+    const validation = validateContactInput(raw);
+    if (!validation.ok) {
+      setErrorMessage(validation.error);
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
-      const response = await fetch(formspreeEndpoint, {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...validation.value,
+          [CONTACT_HONEYPOT_FIELD]: String(raw[CONTACT_HONEYPOT_FIELD] ?? ""),
+        }),
       });
 
-      if (response.ok) {
-        setSubmitted(true);
-        form.reset();
-      } else {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to send your message. Please try again.");
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "We couldn't send your message. Please try again."
+        );
       }
+
+      setSubmitted(true);
+      form.reset();
     } catch (err) {
       setErrorMessage(
-        err instanceof Error ? err.message : "Terjadi kesalahan saat mengirim pesan."
+        err instanceof Error ? err.message : "Something went wrong sending your message."
       );
     } finally {
       setSubmitting(false);
@@ -62,8 +84,8 @@ export default function ContactForm() {
           {
             Icon: Mail,
             label: "Email",
-            value: "razrbilz@gmail.com",
-            href: "mailto:razrbilz@gmail.com",
+            value: "support@razrbilz.id",
+            href: "mailto:support@razrbilz.id",
           },
           {
             Icon: Phone,
@@ -121,9 +143,9 @@ export default function ContactForm() {
               <CheckCircle2 size={24} className="text-foreground" strokeWidth={1.5} />
             </div>
             <div className="space-y-2">
-              <h2 className="text-section-heading">Message Received!</h2>
+              <h2 className="text-section-heading">Message Sent!</h2>
               <p className="text-sm text-muted max-w-sm mx-auto leading-relaxed">
-                Thank you! Our team will respond via email within 24 hours.
+                Your message has been sent. We&rsquo;ll reply as soon as we can.
               </p>
             </div>
             <button
@@ -134,7 +156,16 @@ export default function ContactForm() {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="px-6 md:px-8 py-7 space-y-5">
+          <form onSubmit={handleSubmit} className="relative px-6 md:px-8 py-7 space-y-5">
+            <input
+              type="text"
+              name={CONTACT_HONEYPOT_FIELD}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className={honeypotCls}
+            />
+
             {errorMessage && (
               <div className="p-3.5 bg-red-500/10 text-red-400 text-xs rounded-xl flex items-center gap-2.5 border border-red-500/20">
                 <AlertCircle size={14} strokeWidth={1.5} />
@@ -151,6 +182,7 @@ export default function ContactForm() {
                   type="text"
                   name="name"
                   required
+                  maxLength={CONTACT_NAME_MAX}
                   placeholder="E.g., Budi Santoso"
                   className={inputCls}
                 />
@@ -164,6 +196,7 @@ export default function ContactForm() {
                   type="email"
                   name="email"
                   required
+                  maxLength={CONTACT_EMAIL_MAX}
                   placeholder="email@example.com"
                   className={inputCls}
                 />
@@ -180,6 +213,7 @@ export default function ContactForm() {
               <input
                 type="text"
                 name="subject"
+                maxLength={CONTACT_SUBJECT_MAX}
                 placeholder="E.g., Defect Claim RZ-12345"
                 className={inputCls}
               />
@@ -193,7 +227,8 @@ export default function ContactForm() {
                 name="message"
                 required
                 rows={5}
-                placeholder="Please details your inquiry or issue here..."
+                maxLength={CONTACT_MESSAGE_MAX}
+                placeholder="Describe your inquiry or issue here..."
                 className={`${inputCls} resize-none`}
               />
             </div>
