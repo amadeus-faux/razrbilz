@@ -106,6 +106,12 @@ model ExchangeRate {
   expiresAt  DateTime?
 }
 
+model SiteSetting {
+  key       String   @id
+  value     String?
+  updatedAt DateTime @updatedAt
+}
+
 model ShippingLog {
   id            String   @id @default(cuid())
   orderId       String

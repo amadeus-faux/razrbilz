@@ -4,13 +4,19 @@ import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
 import { pageMeta } from "@/lib/seo";
+import { getHomeMetaDescription } from "@/lib/site-settings";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Judul & deskripsi diambil dari default di root layout; dari halaman ini hanya
-// perlu canonical + og:url supaya preview link tidak menunjuk ke halaman lain.
-export const metadata = pageMeta({ path: "/" });
+// Judul tetap warisi default root layout (menyetel title di sini akan menghasilkan
+// "RAZRBILZ — RAZRBILZ" karena template judul). Deskripsi diambil dari database
+// supaya bisa diubah dari dashboard; route ini force-dynamic, jadi reload
+// homepage selalu menampilkan nilai terbaru.
+export async function generateMetadata(): Promise<Metadata> {
+  return pageMeta({ path: "/", description: await getHomeMetaDescription() });
+}
 
 async function getProducts() {
   try {
@@ -49,7 +55,13 @@ export default async function ShopPage() {
   }));
 
   return (
-    <section className="container-shop min-h-[100dvh] flex flex-col justify-center items-center w-full !pb-0 py-12 md:py-16" id="products-section">
+    // padding-bottom menggeser item yang di-center flex sebesar pb/2: 200px
+    // menaikkan grid 100px supaya pusat gambar sejajar stage Product Detail,
+    // 96px (naik 48px) untuk mobile sekaligus jadi clearance BottomNav.
+    <section
+      className="container-shop min-h-[100dvh] flex flex-col justify-center items-center w-full !pb-24 py-12 md:py-16 md:landscape:!pb-[200px]"
+      id="products-section"
+    >
       <div className="w-full my-auto">
         <ProductGrid products={localizedProducts} />
       </div>

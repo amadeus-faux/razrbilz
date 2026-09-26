@@ -19,6 +19,7 @@ import RevenueChart from "./RevenueChart";
 import ProductStatsTable from "./ProductStatsTable";
 import GeoCharts from "./GeoCharts";
 import ExchangeRateCard from "./ExchangeRateCard";
+import SiteSettingsCard from "./SiteSettingsCard";
 
 type Period = "7" | "30" | "90" | "year" | "all";
 
@@ -302,6 +303,9 @@ export default function DashboardClient({
 
       {/* ── Exchange Rate Panel ───────────────────────────────────────────── */}
       <ExchangeRateCard />
+
+      {/* ── Site Settings ────────────────────────────────────────────────── */}
+      <SiteSettingsCard />
 
       {/* ── Recent Orders ────────────────────────────────────────────────── */}
       <div className="bg-[#141412] border border-[#242320] rounded-2xl p-6">

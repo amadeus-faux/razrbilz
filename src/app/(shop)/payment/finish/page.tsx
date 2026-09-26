@@ -129,11 +129,11 @@ export default async function PaymentFinishPage({ searchParams }: PageProps) {
         <div className="space-y-2 text-xs text-muted text-left bg-surface p-4 rounded-xl leading-relaxed">
           <div className="flex items-start gap-2">
             <Package size={14} className="mt-0.5 text-foreground flex-shrink-0" />
-            <span>All items are made to order — production takes 14–21 days before dispatch</span>
+            <span>All items are pre-order — production takes 14–21 days before dispatch</span>
           </div>
           <div className="flex items-start gap-2">
             <Truck size={14} className="mt-0.5 text-foreground flex-shrink-0" />
-            <span>Tracking number is sent via email / WhatsApp</span>
+            <span>Tracking number is sent via email</span>
           </div>
         </div>
 

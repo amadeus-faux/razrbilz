@@ -210,6 +210,12 @@ exports.Prisma.ExchangeRateScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.SiteSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ShippingLogScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
@@ -269,6 +275,7 @@ exports.Prisma.ModelName = {
   ProductSize: 'ProductSize',
   Order: 'Order',
   ExchangeRate: 'ExchangeRate',
+  SiteSetting: 'SiteSetting',
   ShippingLog: 'ShippingLog',
   OrderItem: 'OrderItem',
   Admin: 'Admin'
