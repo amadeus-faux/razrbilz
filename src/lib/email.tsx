@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 
 import { prisma } from "@/lib/prisma";
 import { resolveLocale } from "@/lib/checkout-i18n";
+import { isInternationalCountry } from "@/lib/shipping-cost";
 import { EMAIL_COPY } from "@/email/copy";
 import {
   CancellationEmail,
@@ -348,6 +349,7 @@ export async function sendShippingEmail(
         shippedAt={order.shippedAt ?? null}
         trackingUrl={order.trackingUrl || trackingUrlFor(courier)}
         note={order.note ?? null}
+        international={isInternationalCountry(order.country)}
         siteUrl={siteUrl()}
       />
     ),

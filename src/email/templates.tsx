@@ -236,10 +236,22 @@ export function ShipmentEmail(
     shippedAt?: Date | string | null;
     trackingUrl?: string | null;
     note?: string | null;
+    /** Negara tujuan di luar Indonesia. Catatan "status baru terisi beberapa
+     *  hari kerja" hanya benar untuk rute internasional — paket dalam negeri
+     *  sudah terpantau sejak berangkat, jadi kartunya tidak ditampilkan. */
+    international?: boolean;
   }
 ) {
-  const { locale, courier, service, trackingNumber, shippedAt, trackingUrl, note } =
-    props;
+  const {
+    locale,
+    courier,
+    service,
+    trackingNumber,
+    shippedAt,
+    trackingUrl,
+    note,
+    international,
+  } = props;
   const c = EMAIL_COPY[locale];
 
   return (
@@ -275,9 +287,11 @@ export function ShipmentEmail(
         </Text>
       )}
 
-      <Section style={{ ...emailStyles.card, marginTop: 16 }}>
-        <Text style={emailStyles.body}>{c.shipment.delayNote}</Text>
-      </Section>
+      {international ? (
+        <Section style={{ ...emailStyles.card, marginTop: 16 }}>
+          <Text style={emailStyles.body}>{c.shipment.delayNote}</Text>
+        </Section>
+      ) : null}
     </EmailLayout>
   );
 }
