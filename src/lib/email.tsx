@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { resolveLocale } from "@/lib/checkout-i18n";
 import { EMAIL_COPY } from "@/email/copy";
 import {
+  CancellationEmail,
   OrderReceivedEmail,
   PaymentSuccessEmail,
   ShipmentEmail,
@@ -170,6 +171,42 @@ export async function sendPaymentSuccessEmail(
         confirmationUrl={
           base ? `${base}/order-confirmation/${encodeURIComponent(order.orderNumber)}` : null
         }
+      />
+    ),
+  });
+}
+
+/**
+ * Email "pesanan dibatalkan" + info refund manual.
+ *
+ * Hanya untuk order yang benar-benar sudah dibayar: order belum bayar tidak punya
+ * apa pun untuk dikembalikan, jadi menulis "refund" di sana adalah klaim palsu.
+ */
+export async function sendCancellationEmail(
+  order: Omit<EmailOrder, "items"> & {
+    paymentMethodName?: string | null;
+    cancelledAt?: Date | string | null;
+  }
+): Promise<EmailResult> {
+  if (!order.customerEmail) {
+    return { success: false, message: "Email customer kosong" };
+  }
+  const locale = resolveLocale(order.country);
+  const copy = EMAIL_COPY[locale];
+  const base = siteUrl();
+
+  return deliver({
+    to: order.customerEmail,
+    subject: copy.cancellation.subject(order.orderNumber),
+    element: (
+      <CancellationEmail
+        locale={locale}
+        orderNumber={order.orderNumber}
+        customerName={order.customerName}
+        total={order.total}
+        paymentMethodName={order.paymentMethodName ?? null}
+        cancelledAt={order.cancelledAt ?? null}
+        siteUrl={base}
       />
     ),
   });

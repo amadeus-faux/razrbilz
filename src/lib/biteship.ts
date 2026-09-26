@@ -639,6 +639,72 @@ export async function createBiteshipOrder(
 }
 
 /**
+ * Membatalkan pesanan pengiriman di sisi Biteship (waybill ikut ditarik).
+ *
+ * Hanya masuk akal sebelum paket diserahkan ke kurir. Setelah itu Biteship
+ * menolak, dan penolakan itu hasil yang NORMAL — bukan bug — jadi error-nya
+ * harus diteruskan ke admin apa adanya, jangan disembunyikan.
+ */
+export async function cancelBiteshipOrder(
+  biteshipOrderId: string,
+  reasonCode = "others",
+  reason = "Cancelled by store admin - RAZRBILZ"
+): Promise<{
+  success: boolean;
+  status?: string;
+  error?: string;
+  httpStatus?: number;
+  raw?: Record<string, unknown>;
+}> {
+  const apiKey = process.env.BITESHIP_API_KEY;
+  if (!apiKey) {
+    return { success: false, error: "BITESHIP_API_KEY is not configured" };
+  }
+
+  try {
+    const response = await fetch(
+      `${BITESHIP_BASE_URL}/orders/${encodeURIComponent(biteshipOrderId)}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cancellation_reason_code: reasonCode,
+          cancellation_reason: reason,
+        }),
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success === false) {
+      const errorMsg =
+        data.error ||
+        data.message ||
+        data.description ||
+        `Biteship API Error (HTTP ${response.status})`;
+
+      console.error(
+        `[Biteship] ❌ Cancel ditolak untuk ${biteshipOrderId}: HTTP ${response.status} - ${errorMsg}`
+      );
+      return { success: false, error: errorMsg, httpStatus: response.status, raw: data };
+    }
+
+    console.log(
+      `[Biteship] ✅ Order ${biteshipOrderId} dibatalkan di sisi Biteship (status: ${data.status ?? "-"})`
+    );
+    return { success: true, status: data.status, raw: data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Gagal menghubungi API Biteship",
+    };
+  }
+}
+
+/**
  * Fetches real-time order details from Biteship API by Biteship Order ID
  */
 export async function getBiteshipOrder(biteshipOrderId: string): Promise<{

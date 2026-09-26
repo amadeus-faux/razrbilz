@@ -18,7 +18,9 @@ export async function PATCH(
     const { orderStatus } = body as { orderStatus: string };
 
     const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-      returned: ["processing", "in_production", "delivered", "completed", "shipped"],
+      // ready_to_ship ikut boleh diretur: paket yang sudah di-pickup kurir tidak lagi
+      // bisa dibatalkan lewat /cancel, dan jalur retur adalah satu-satunya sisanya.
+      returned: ["processing", "in_production", "ready_to_ship", "delivered", "completed", "shipped"],
       cancelled: ["processing", "order_received", "in_production"],
       completed: ["delivered", "shipped"],
       delivered: ["processing", "in_production", "shipped", "ready_to_ship"],

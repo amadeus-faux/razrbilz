@@ -87,6 +87,20 @@ const en = {
       "Tracking updates in the destination country can take a few business days to sync after the package leaves Indonesia.",
     defaultService: "Standard",
   },
+
+  cancellation: {
+    subject: (n: string) => `Order #${n} has been cancelled`,
+    preheader: "Your order is cancelled — your refund is being processed.",
+    heading: "ORDER CANCELLED",
+    body: (n: string) =>
+      `Order #${n} has been cancelled by our team. This order will not be shipped to you.`,
+    refundHeading: "YOUR REFUND",
+    refundBody:
+      "The amount you paid is not kept. Refunds are processed by hand by our team, and we will send you a separate confirmation as soon as the transfer has been made.",
+    refundAmountLabel: "Amount to be refunded",
+    refundNote:
+      "The refund goes back to the payment channel you used. If anything looks wrong, reply to this email with your payment receipt and we will check it.",
+  },
 };
 
 type EmailCopy = typeof en;
@@ -169,6 +183,20 @@ const id: EmailCopy = {
     delayNote:
       "Status pelacakan kadang baru muncul beberapa saat setelah paket diterima kurir. Bila belum terlihat, coba cek kembali dalam 1–2 hari kerja.",
     defaultService: "Standar",
+  },
+
+  cancellation: {
+    subject: (n: string) => `Pesanan #${n} dibatalkan`,
+    preheader: "Pesananmu dibatalkan — refund sedang kami proses.",
+    heading: "PESANAN DIBATALKAN",
+    body: (n: string) =>
+      `Pesanan #${n} sudah kami batalkan oleh tim kami. Pesanan ini tidak akan dikirim ke alamatmu.`,
+    refundHeading: "REFUND KAMU",
+    refundBody:
+      "Uang yang sudah kamu bayarkan tidak kami tahan. Refund kami proses manual oleh tim, dan kami akan kirim konfirmasi terpisah begitu transfernya dilakukan.",
+    refundAmountLabel: "Nominal yang dikembalikan",
+    refundNote:
+      "Refund dikirim ke kanal pembayaran yang kamu gunakan sebelumnya. Kalau ada yang tidak sesuai, balas email ini dengan bukti bayarmu dan akan kami cek.",
   },
 };
 

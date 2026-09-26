@@ -25,6 +25,22 @@ import {
 import { useRouter } from "next/navigation";
 import ManualShippingCard from "./ManualShippingCard";
 
+/** Cermin guard server di api/admin/orders/[orderId]/cancel — tombolnya jangan
+ *  sampai menawarkan aksi yang pasti ditolak API. */
+const CANCELABLE_ORDER_STATUSES = [
+  "order_received",
+  "processing",
+  "in_production",
+  "ready_to_ship",
+];
+const PRE_PICKUP_BITESHIP_STATUSES = [
+  "pending",
+  "allocated",
+  "confirmed",
+  "scheduled",
+  "picking_up",
+];
+
 export interface OrderItemType {
   id: string;
   size: string;
@@ -68,6 +84,7 @@ export interface OrderType {
   manualService?: string | null;
   manualShippedAt?: any;
   manualTrackingNote?: string | null;
+  duitkuPaymentMethod?: string | null;
   createdAt: any;
   items: OrderItemType[];
 }
@@ -75,7 +92,9 @@ export interface OrderType {
 export default function OrdersTableClient({ initialOrders }: { initialOrders: OrderType[] }) {
   const router = useRouter();
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [actionType, setActionType] = useState<"ready" | "retry" | "sync" | "return" | null>(null);
+  const [actionType, setActionType] = useState<
+    "ready" | "retry" | "sync" | "return" | "cancel" | null
+  >(null);
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [copiedResi, setCopiedResi] = useState<string | null>(null);
   const [copiedAddr, setCopiedAddr] = useState<string | null>(null);
@@ -236,6 +255,64 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
       setActionMessage({
         type: "success",
         text: `✅ Order ${order.orderNumber} berhasil ditandai sebagai Retur.`,
+      });
+      router.refresh();
+    } catch (err) {
+      setActionMessage({
+        type: "error",
+        text: `❌ Gagal: ${err instanceof Error ? err.message : "Terjadi kesalahan"}`,
+      });
+    } finally {
+      setProcessingId(null);
+      setActionType(null);
+    }
+  }
+
+  async function handleCancelOrder(order: OrderType) {
+    const paidWith = order.duitkuPaymentMethod
+      ? `${formatRupiah(order.total)} via ${order.duitkuPaymentMethod}`
+      : formatRupiah(order.total);
+
+    const biteshipLine = order.biteshipOrderId
+      ? `• Pengiriman Biteship (${order.biteshipOrderId}) ditarik lewat API Biteship lebih dulu. Kalau Biteship menolak, tidak ada status yang berubah.\n`
+      : "• Pesanan ini belum punya pesanan pengiriman di Biteship.\n";
+
+    if (
+      !confirm(
+        `BATALKAN pesanan ${order.orderNumber}?\n\n` +
+          `• Nominal yang sudah dibayar customer: ${paidWith}\n` +
+          `  UANG CUSTOMER SUDAH MASUK — REFUND HARUS KAMU LAKUKAN MANUAL di dashboard\n` +
+          `  Duitku / rekening bank. Sistem ini tidak punya auto-refund. Pengingat\n` +
+          `  "PERLU REFUND MANUAL" dicatat di riwayat pesanan ini.\n` +
+          biteshipLine +
+          `• Stok produk dikembalikan ke katalog.\n` +
+          `• Customer dikirim email pembatalan (bahasa mengikuti negara tujuan).\n\n` +
+          `Status pembayaran TETAP "paid" — hanya status pesanan yang jadi cancelled,\n` +
+          `sehingga nominalnya otomatis keluar dari Total Pendapatan.`
+      )
+    ) {
+      return;
+    }
+
+    setProcessingId(order.id);
+    setActionType("cancel");
+    setActionMessage(null);
+
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/cancel`, {
+        method: "POST",
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Gagal membatalkan pesanan");
+      }
+
+      setActionMessage({
+        type: data.warning ? "error" : "success",
+        text: data.warning
+          ? `⚠️ ${data.message} ${data.warning}`
+          : `✅ ${data.message}`,
       });
       router.refresh();
     } catch (err) {
@@ -672,6 +749,9 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                 const rawBStatus = (order.biteshipStatus || "").toLowerCase().trim();
                 const isIntl = order.country && order.country.toUpperCase() !== "ID";
                 const isIntlNeedsResi = isIntl && isPaid && !order.trackingNumber;
+                const isCancelable =
+                  CANCELABLE_ORDER_STATUSES.includes(order.orderStatus) &&
+                  (!rawBStatus || PRE_PICKUP_BITESHIP_STATUSES.includes(rawBStatus));
 
                 return (
                   <Fragment key={order.id}>
@@ -1017,7 +1097,7 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                         </button>
                       )}
 
-                      {/* Tombol Retur & status retur */}
+                      {/* Tombol dinamis: sebelum berangkat = Batalkan, setelah itu = Retur */}
                       {order.orderStatus === "returned" ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
                           <RotateCcw size={11} />
@@ -1025,7 +1105,26 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                         </span>
                       ) : (
                         isPaid &&
-                        order.orderStatus !== "cancelled" && (
+                        order.orderStatus !== "cancelled" &&
+                        (isCancelable ? (
+                          <button
+                            onClick={() => handleCancelOrder(order)}
+                            disabled={isProcessing}
+                            title="Batalkan pesanan + tarik pengiriman Biteship + kembalikan stok"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl text-white bg-rose-700/80 hover:bg-rose-600 transition-all cursor-pointer shadow-sm disabled:opacity-50 ml-2"
+                          >
+                            {isProcessing && actionType === "cancel" ? (
+                              <RefreshCw size={12} className="animate-spin" />
+                            ) : (
+                              <XCircle size={12} />
+                            )}
+                            <span>
+                              {isProcessing && actionType === "cancel"
+                                ? "Membatalkan..."
+                                : "Batalkan Pesanan"}
+                            </span>
+                          </button>
+                        ) : (
                           <button
                             onClick={() => handleMarkReturned(order)}
                             disabled={isProcessing}
@@ -1043,7 +1142,7 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                                 : "Retur"}
                             </span>
                           </button>
-                        )
+                        ))
                       )}
                     </td>
                   </tr>

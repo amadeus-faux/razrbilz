@@ -68,14 +68,18 @@ function ItemTable({
   return (
     <Section>
       {items.map((item, i) => (
-        <Row key={`${item.name}-${item.size}-${i}`} style={{ marginBottom: 10 }}>
-          <Column>
+        <Row key={`${item.name}-${item.size}-${i}`} className="drow" style={{ marginBottom: 10 }}>
+          <Column className="iname" style={{ width: "62%" }}>
             <Text style={{ ...emailStyles.body, fontSize: 13 }}>{item.name}</Text>
             <Text style={{ ...emailStyles.footer, marginTop: 2 }}>
               {c.labels.size}: {item.size} · {c.labels.qty}: {item.quantity}
             </Text>
           </Column>
-          <Column align="right">
+          <Column
+            className="iprice"
+            align="right"
+            style={{ width: "38%", wordBreak: "break-word", overflowWrap: "anywhere" }}
+          >
             <Text
               style={{
                 ...emailStyles.body,
@@ -113,7 +117,7 @@ export function OrderReceivedEmail(
       preheader={c.orderReceived.preheader}
       siteUrl={props.siteUrl}
     >
-      <Text style={emailStyles.sectionHeading}>{c.orderReceived.heading}</Text>
+      <Text className="sectionHeading" style={emailStyles.sectionHeading}>{c.orderReceived.heading}</Text>
       <Greeting locale={locale} name={props.customerName} />
       <Text style={{ ...emailStyles.body, marginBottom: 20 }}>
         {c.orderReceived.body(props.orderNumber)}
@@ -138,7 +142,7 @@ export function OrderReceivedEmail(
 
       {expiresAt ? (
         <Section style={{ ...emailStyles.card, marginTop: 16 }}>
-          <Text style={emailStyles.sectionHeading}>
+          <Text className="sectionHeading" style={emailStyles.sectionHeading}>
             {c.orderReceived.windowHeading}
           </Text>
           <Text style={emailStyles.body}>
@@ -149,7 +153,7 @@ export function OrderReceivedEmail(
 
       {instructionsUrl ? (
         <Section style={{ marginTop: 24, textAlign: "center" }}>
-          <Button href={instructionsUrl} style={emailStyles.cta}>
+          <Button href={instructionsUrl} className="cta" style={emailStyles.cta}>
             {c.orderReceived.payCta}
           </Button>
         </Section>
@@ -176,7 +180,7 @@ export function PaymentSuccessEmail(
       preheader={c.paymentSuccess.preheader}
       siteUrl={props.siteUrl}
     >
-      <Text style={emailStyles.sectionHeading}>{c.paymentSuccess.heading}</Text>
+      <Text className="sectionHeading" style={emailStyles.sectionHeading}>{c.paymentSuccess.heading}</Text>
       <Greeting locale={locale} name={props.customerName} />
       <Text style={{ ...emailStyles.body, marginBottom: 20 }}>
         {c.paymentSuccess.body(props.orderNumber)}
@@ -204,7 +208,7 @@ export function PaymentSuccessEmail(
       </Section>
 
       <Section style={{ ...emailStyles.card, marginTop: 16 }}>
-        <Text style={emailStyles.sectionHeading}>
+        <Text className="sectionHeading" style={emailStyles.sectionHeading}>
           {c.paymentSuccess.nextHeading}
         </Text>
         <Text style={{ ...emailStyles.body, marginBottom: 8 }}>
@@ -215,7 +219,7 @@ export function PaymentSuccessEmail(
 
       {confirmationUrl ? (
         <Section style={{ marginTop: 24, textAlign: "center" }}>
-          <Button href={confirmationUrl} style={emailStyles.cta}>
+          <Button href={confirmationUrl} className="cta" style={emailStyles.cta}>
             {c.paymentSuccess.viewCta}
           </Button>
         </Section>
@@ -240,7 +244,7 @@ export function ShipmentEmail(
 
   return (
     <EmailLayout locale={locale} preheader={c.shipment.preheader} siteUrl={props.siteUrl}>
-      <Text style={emailStyles.sectionHeading}>{c.shipment.heading}</Text>
+      <Text className="sectionHeading" style={emailStyles.sectionHeading}>{c.shipment.heading}</Text>
       <Greeting locale={locale} name={props.customerName} />
       <Text style={{ ...emailStyles.body, marginBottom: 20 }}>
         {c.shipment.body(props.orderNumber, courier, service || "")}
@@ -261,7 +265,7 @@ export function ShipmentEmail(
 
       {trackingUrl ? (
         <Section style={{ marginTop: 24, textAlign: "center" }}>
-          <Button href={trackingUrl} style={emailStyles.cta}>
+          <Button href={trackingUrl} className="cta" style={emailStyles.cta}>
             {c.shipment.trackCta}
           </Button>
         </Section>
@@ -273,6 +277,60 @@ export function ShipmentEmail(
 
       <Section style={{ ...emailStyles.card, marginTop: 16 }}>
         <Text style={emailStyles.body}>{c.shipment.delayNote}</Text>
+      </Section>
+    </EmailLayout>
+  );
+}
+
+export function CancellationEmail(
+  props: BaseProps & {
+    total: number;
+    paymentMethodName?: string | null;
+    cancelledAt?: Date | string | null;
+  }
+) {
+  const { locale, total, paymentMethodName, cancelledAt } = props;
+  const c = EMAIL_COPY[locale];
+
+  return (
+    <EmailLayout
+      locale={locale}
+      preheader={c.cancellation.preheader}
+      siteUrl={props.siteUrl}
+      showPolicy={false}
+    >
+      <Text className="sectionHeading" style={emailStyles.sectionHeading}>
+        {c.cancellation.heading}
+      </Text>
+      <Greeting locale={locale} name={props.customerName} />
+      <Text style={{ ...emailStyles.body, marginBottom: 20 }}>
+        {c.cancellation.body(props.orderNumber)}
+      </Text>
+
+      <Section style={emailStyles.card}>
+        <DetailRow label={c.labels.orderNumber} value={props.orderNumber} mono />
+        <DetailRow
+          label={c.cancellation.refundAmountLabel}
+          value={formatRupiah(total)}
+          strong
+          mono
+        />
+        {paymentMethodName ? (
+          <DetailRow label={c.labels.paymentMethod} value={paymentMethodName} />
+        ) : null}
+        {cancelledAt ? (
+          <DetailRow label={c.labels.date} value={formatDate(cancelledAt, c.dateLocale)} />
+        ) : null}
+      </Section>
+
+      <Section style={{ ...emailStyles.card, marginTop: 16 }}>
+        <Text className="sectionHeading" style={emailStyles.sectionHeading}>
+          {c.cancellation.refundHeading}
+        </Text>
+        <Text style={emailStyles.body}>{c.cancellation.refundBody}</Text>
+        <Text style={{ ...emailStyles.body, marginTop: 10 }}>
+          {c.cancellation.refundNote}
+        </Text>
       </Section>
     </EmailLayout>
   );
