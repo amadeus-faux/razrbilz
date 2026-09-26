@@ -347,10 +347,18 @@ export async function POST(request: Request) {
           duitkuPaymentUrl: transaction.paymentUrl || null,
           duitkuVaNumber: transaction.vaNumber || null,
           duitkuQrString: transaction.qrString || null,
+          duitkuPaymentCode: transaction.paymentCode || null,
           duitkuStatusMessage: transaction.statusMessage,
         },
       });
-      console.log(`[Checkout] Duitku reference saved for order ${orderNumber}`);
+      // Diagnostik: field apa saja yang DITAK-tidak dikembalikan Duitku per metode.
+      // Membantu memastikan retail (Indomaret/Alfamart) mengembalikan paymentCode
+      // vs vaNumber, tanpa membocorkan nilai sensitif ke log.
+      console.log(
+        `[Checkout] Duitku inquiry OK for ${orderNumber}: method=${chosenMethod} ` +
+          `va=${Boolean(transaction.vaNumber)} qr=${Boolean(transaction.qrString)} ` +
+          `code=${Boolean(transaction.paymentCode)} url=${Boolean(transaction.paymentUrl)}`
+      );
     } catch (duitkuError) {
       console.error(`[Checkout] Duitku V2 error for ${orderNumber}:`, duitkuError);
       // 7.4: Kompensasi (revert stok + hapus order) TIDAK boleh menelan error
@@ -393,6 +401,7 @@ export async function POST(request: Request) {
       paymentUrl: transaction?.paymentUrl || null,
       vaNumber: transaction?.vaNumber || null,
       qrString: transaction?.qrString || null,
+      paymentCode: transaction?.paymentCode || null,
       amount: serverTotal,
     });
   } catch (error) {

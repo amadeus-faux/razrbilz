@@ -79,6 +79,7 @@ model Order {
   duitkuPaymentUrl    String?
   duitkuVaNumber      String?
   duitkuQrString      String?
+  duitkuPaymentCode   String?
   duitkuFee           String?
   duitkuStatusMessage String?
   createdAt           DateTime      @default(now())

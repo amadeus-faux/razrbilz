@@ -547,6 +547,7 @@ export default function CheckoutPage() {
       if (
         result.vaNumber ||
         result.qrString ||
+        result.paymentCode ||
         selectedCategory === "va" ||
         selectedCategory === "qris"
       ) {
@@ -559,6 +560,7 @@ export default function CheckoutPage() {
           paymentImage: selectedPaymentMethod?.paymentImage,
           vaNumber: result.vaNumber || null,
           qrString: result.qrString || null,
+          paymentCode: result.paymentCode || null,
           paymentUrl: result.paymentUrl || null,
           reference: result.reference || null,
           instructionsUrl: result.paymentInstructionsUrl,

@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import QRCode from "qrcode";
 import { formatRupiah } from "@/lib/utils";
+import { classifyPaymentMethod, retailOutletLabel } from "@/lib/payment-display";
 
 export interface PaymentModalData {
   orderNumber: string;
@@ -28,6 +29,7 @@ export interface PaymentModalData {
   paymentImage?: string;
   vaNumber?: string | null;
   qrString?: string | null;
+  paymentCode?: string | null;
   paymentUrl?: string | null;
   reference?: string | null;
   instructionsUrl: string;
@@ -41,6 +43,7 @@ interface PaymentModalProps {
 
 export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
   const [copiedVa, setCopiedVa] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
   const [copiedAmount, setCopiedAmount] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "paid" | "failed">("pending");
@@ -143,7 +146,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
     setCheckingStatus(true);
     setStatusMessage("");
     try {
-      const res = await fetch(`/api/payments/duitku/check-status?orderNumber=${encodeURIComponent(data.orderNumber)}`);
+      const res = await fetch(`/api/payments/duitku/check-status?orderNumber=${encodeURIComponent(data.orderNumber)}&sync=1`);
       if (res.ok) {
         const result = await res.json();
         if (result.paymentStatus === "paid") {
@@ -168,6 +171,14 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
     setTimeout(() => setCopiedVa(false), 2000);
   };
 
+  const handleCopyCode = () => {
+    const code = data?.paymentCode || data?.vaNumber;
+    if (!code) return;
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
   const handleCopyAmount = () => {
     if (!data?.total) return;
     navigator.clipboard.writeText(String(data.total));
@@ -177,8 +188,11 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
 
   if (!isOpen || !data) return null;
 
-  const isVA = Boolean(data.vaNumber);
-  const isQRIS = Boolean(data.qrString);
+  const category = classifyPaymentMethod({ code: data.paymentMethod, name: data.paymentName });
+  const isQRIS = Boolean(data.qrString) || category === "qris";
+  const isRetail = !isQRIS && category === "retail";
+  const isVA = !isQRIS && !isRetail && Boolean(data.vaNumber);
+  const retailCode = data.paymentCode || data.vaNumber || null;
 
   return (
     <div
@@ -289,6 +303,111 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   <p className="text-[9px] text-white/40 mt-0.5">Batas waktu bayar</p>
                 </div>
               </div>
+
+              {/* Retail Outlet Display (Indomaret / Alfamart) */}
+              {isRetail && (
+                <div className="space-y-4">
+                  {/* Payment Code Box */}
+                  <div className="p-4 rounded-xl bg-black border border-white/15 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase tracking-wider text-white/50">
+                        Kode Pembayaran
+                      </span>
+                      <span className="text-[9px] text-amber-400 uppercase font-mono tracking-wide bg-amber-500/10 px-2 py-0.5 rounded">
+                        Bayar di Kasir
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-white select-all break-all">
+                        {retailCode || "-"}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopyCode}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
+                          copiedCode
+                            ? "bg-emerald-500 text-black"
+                            : "bg-white/10 hover:bg-white/20 text-white"
+                        }`}
+                      >
+                        {copiedCode ? (
+                          <>
+                            <Check size={13} /> Tersalin
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={13} /> Salin
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Total Amount Box */}
+                  <div className="p-4 rounded-xl bg-black border border-white/15 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-white/50 block">
+                        Total yang Harus Dibayar
+                      </span>
+                      <span className="text-base font-bold text-white font-mono mt-0.5 block">
+                        {formatRupiah(data.total)}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyAmount}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
+                        copiedAmount
+                          ? "bg-emerald-500 text-black"
+                          : "bg-white/10 hover:bg-white/20 text-white"
+                      }`}
+                    >
+                      {copiedAmount ? "Tersalin ✓" : "Salin Nominal"}
+                    </button>
+                  </div>
+
+                  {/* Retail Payment Guide */}
+                  <div className="space-y-2 pt-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+                      Cara bayar di {retailOutletLabel(data.paymentName)}
+                    </p>
+                    <div className="text-[11px] text-white/70 leading-relaxed p-3 bg-white/[0.02] rounded-xl border border-white/5">
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>
+                          Kunjungi gerai <strong>{retailOutletLabel(data.paymentName)}</strong> terdekat
+                          sebelum batas waktu pembayaran.
+                        </li>
+                        <li>
+                          Sampaikan ke kasir bahwa Anda ingin melakukan <strong>pembayaran tagihan</strong>{" "}
+                          (Duitku / e-commerce).
+                        </li>
+                        <li>
+                          Sebutkan <strong>Kode Pembayaran</strong>:{" "}
+                          <span className="font-mono text-white font-semibold">{retailCode || "-"}</span>.
+                        </li>
+                        <li>
+                          Pastikan nominal yang dibayar{" "}
+                          <span className="font-mono text-white font-semibold">{formatRupiah(data.total)}</span>.
+                        </li>
+                        <li>
+                          Simpan struk sebagai bukti pembayaran. Status pesanan terverifikasi otomatis
+                          setelah pembayaran diterima.
+                        </li>
+                      </ol>
+                    </div>
+                    {data.paymentUrl && (
+                      <a
+                        href={data.paymentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-white/60 hover:text-white inline-flex items-center gap-1 underline underline-offset-4"
+                      >
+                        Buka halaman pembayaran Duitku <ExternalLink size={11} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Virtual Account Display */}
               {isVA && (
@@ -482,9 +601,9 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
               )}
 
               {/* Fallback / Payment URL Link (for E-Wallet, CC, or backup QR) */}
-              {(!isVA && !isQRIS && data.paymentUrl) || (isQRIS && data.paymentUrl) ? (
+              {(!isVA && !isQRIS && !isRetail && data.paymentUrl) || (isQRIS && data.paymentUrl) ? (
                 <div className="space-y-2 text-center pt-1">
-                  {!isVA && !isQRIS && (
+                  {!isVA && !isQRIS && !isRetail && (
                     <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
                       <p className="text-xs text-white/70">
                         Untuk menyelesaikan pembayaran via {data.paymentName}, silakan buka tautan pembayaran resmi Duitku.

@@ -185,6 +185,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   duitkuPaymentUrl: 'duitkuPaymentUrl',
   duitkuVaNumber: 'duitkuVaNumber',
   duitkuQrString: 'duitkuQrString',
+  duitkuPaymentCode: 'duitkuPaymentCode',
   duitkuFee: 'duitkuFee',
   duitkuStatusMessage: 'duitkuStatusMessage',
   createdAt: 'createdAt',

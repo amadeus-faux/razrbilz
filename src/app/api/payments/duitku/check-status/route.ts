@@ -1,30 +1,46 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { syncOrderPaymentStatus } from "@/lib/order-fulfillment";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 /**
- * GET /api/payments/duitku/check-status?orderNumber=...
+ * GET /api/payments/duitku/check-status?orderNumber=...&sync=1
  *
  * Endpoint PUBLIK (bisa diakses hanya dengan orderNumber, tanpa bukti kepemilikan).
- * Karena itu:
- *  - READ-ONLY: tidak memanggil syncOrderPaymentStatus / tidak memutasi status order.
- *    Sinkronisasi status Duitku terjadi lewat callback server-to-server yang
- *    terverifikasi signature, atau lewat job autoExpireStaleOrders — bukan di sini.
- *  - TIDAK mengembalikan data sensitif (VA number, QR string, paymentUrl).
- *    Hanya status + info tracking yang memang needed untuk lacak pesanan.
+ *
+ * Default: READ-ONLY — hanya membaca paymentStatus dari DB. Dipakai poll otomatis
+ * tiap 4 detik di modal supaya murah dan tidak membebani API Duitku.
+ *
+ * Dengan `sync=1` (tombol manual "Saya Sudah Bayar (Cek Status)"): endpoint bertanya
+ * LANGSUNG ke Duitku lewat transactionStatus lalu menyinkronkan status order. AMAN
+ * walau publik: status hanya naik jadi PAID bila Duitku sendiri mengonfirmasi
+ * statusCode "00" — bukan karena pemanggil mengklaim sudah bayar. Jalur ini identik
+ * dengan yang sudah dipakai halaman /payment/instructions.
+ *
+ * TIDAK mengembalikan data sensitif (VA number, QR string, paymentUrl, paymentCode).
  */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const orderNumber =
       searchParams.get("orderNumber") || searchParams.get("orderId");
+    const syncParam = searchParams.get("sync");
+    const wantsSync = syncParam === "1" || syncParam === "true";
 
     if (!orderNumber) {
       return NextResponse.json(
         { error: "Parameter orderNumber wajib diisi" },
         { status: 400 }
+      );
+    }
+
+    // 2B: sinkronisasi ke Duitku HANYA saat diminta eksplisit (tombol manual),
+    // bukan pada poll otomatis. Gagal sync tidak boleh menggagalkan pembacaan status.
+    if (wantsSync) {
+      await syncOrderPaymentStatus(orderNumber).catch((err) =>
+        console.error("[CheckStatus] syncOrderPaymentStatus error:", err)
       );
     }
 

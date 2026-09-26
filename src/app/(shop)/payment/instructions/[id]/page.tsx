@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Clock, CreditCard, ArrowRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
+import { classifyPaymentMethod, retailOutletLabel } from "@/lib/payment-display";
 import { syncOrderPaymentStatus } from "@/lib/order-fulfillment";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,9 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
   }
 
   const isFailed = order.paymentStatus === "failed";
+  const category = classifyPaymentMethod({ code: order.duitkuPaymentMethod });
+  const isRetail = category === "retail";
+  const retailCode = order.duitkuPaymentCode || order.duitkuVaNumber || null;
 
   return (
     <div className="container-shop pt-12 pb-24 min-h-[80vh] flex justify-center">
@@ -66,7 +70,20 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
           <div className="p-4 flex justify-between gap-4"><span className="text-muted">Nomor Pesanan</span><span className="font-mono text-right">{order.orderNumber}</span></div>
           <div className="p-4 flex justify-between gap-4"><span className="text-muted">Total</span><span>{formatRupiah(order.total)}</span></div>
           <div className="p-4 flex justify-between gap-4"><span className="text-muted">Metode</span><span>{order.duitkuPaymentMethod || "Duitku"}</span></div>
-          {order.duitkuVaNumber && (
+          {isRetail && retailCode && (
+            <div className="p-4 space-y-2">
+              <span className="text-muted block">
+                Kode Pembayaran — {retailOutletLabel(order.duitkuPaymentMethod)}
+              </span>
+              <code className="font-mono text-sm text-foreground break-all font-semibold">{retailCode}</code>
+              <p className="text-[11px] text-muted leading-relaxed">
+                Bayar di kasir {retailOutletLabel(order.duitkuPaymentMethod)} dengan menyebutkan kode
+                pembayaran di atas. Sebutkan nominal {formatRupiah(order.total)} dan simpan struk sebagai
+                bukti. Status pesanan terverifikasi otomatis setelah pembayaran diterima.
+              </p>
+            </div>
+          )}
+          {!isRetail && order.duitkuVaNumber && (
             <div className="p-4 space-y-2">
               <span className="text-muted block">Nomor Virtual Account</span>
               <code className="font-mono text-sm text-foreground break-all font-semibold">{order.duitkuVaNumber}</code>
@@ -81,7 +98,7 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
           {order.duitkuReference && <div className="p-4 flex justify-between gap-4"><span className="text-muted">Referensi Duitku</span><span className="font-mono text-right break-all">{order.duitkuReference}</span></div>}
         </div>
 
-        {!order.duitkuVaNumber && !order.duitkuPaymentUrl && !order.duitkuQrString && (
+        {!order.duitkuVaNumber && !order.duitkuPaymentCode && !order.duitkuPaymentUrl && !order.duitkuQrString && (
           <p className="p-4 rounded-xl bg-amber-500/10 text-xs text-amber-500 leading-relaxed">
             Kanal pembayaran ini tidak mengembalikan nomor VA otomatis. Hubungi customer support dengan nomor pesanan Anda untuk instruksi pembayaran.
           </p>

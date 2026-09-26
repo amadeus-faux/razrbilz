@@ -33,6 +33,7 @@ export interface DuitkuTransactionResponse {
   paymentUrl?: string;
   vaNumber?: string;
   qrString?: string;
+  paymentCode?: string;
   appUrl?: string;
   amount: string | number;
   statusCode: string;
