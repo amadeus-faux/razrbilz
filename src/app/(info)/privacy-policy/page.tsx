@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta({
+  path: "/privacy-policy",
   title: "Privacy Policy",
-  description: "Protection and governance of RAZRBILZ customer personal data.",
-};
+  description:
+    "What personal data RAZRBILZ collects to fulfil an order, who we share it with (payment and shipping partners), and how to ask us to remove it.",
+});
 
 export default function PrivacyPolicyPage() {
   return (

@@ -3,16 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: "RAZRBILZ",
-  description:
-    "Find Your North.",
-};
+// Judul & deskripsi diambil dari default di root layout; dari halaman ini hanya
+// perlu canonical + og:url supaya preview link tidak menunjuk ke halaman lain.
+export const metadata = pageMeta({ path: "/" });
 
 async function getProducts() {
   try {

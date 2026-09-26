@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
+import { describe, pageMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -33,23 +34,41 @@ export async function generateMetadata({
   params,
 }: PageParams): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const product = await prisma.product.findUnique({
+  const path = `/product/${slug}`;
+
+  // Query metadata yang gagal tidak boleh mengubah halaman jadi error
+  // (pooler Supabase cuma 15 koneksi) — jatuh ke fallback brand.
+  const product = await prisma.product
+    .findUnique({
       where: { slug },
-      select: { images: true },
-    });
-    return {
-      title: `RAZRBILZ`,
-      description: "Find Your North.",
-      openGraph: {
-        title: `RAZRBILZ`,
-        description: "Find Your North.",
-        images: product?.images[0] ? [product.images[0]] : [],
+      select: {
+        name: true,
+        description: true,
+        images: true,
+        isActive: true,
       },
-    };
-  } catch {
-    return { title: "RAZRBILZ" };
-  }
+    })
+    .catch(() => null);
+
+  // Produk nonaktif akan memanggil notFound() di body halaman — judul/OG-nya
+  // jangan bocor ke crawler.
+  if (!product?.isActive) return pageMeta({ path });
+
+  // Harga sengaja tidak masuk deskripsi: yang tampil di toko adalah harga hasil
+  // `resolveDisplayPrice` (pembulatan + kurs), bukan `price` mentah dari DB.
+  return pageMeta({
+    path,
+    title: product.name,
+    description: describe(
+      product.description ||
+        "Made to order at our studio in Bandung — 14–21 days of production, shipped worldwide with tracking."
+    ),
+    // Dimensi foto produk tidak diketahui, jadi width/height dikosongkan;
+    // tanpa `image` sekali pun, pageMeta memakai gambar brand.
+    image: product.images[0]
+      ? { url: product.images[0], alt: product.name }
+      : undefined,
+  });
 }
 
 export default async function ProductDetailPage({ params }: PageParams) {

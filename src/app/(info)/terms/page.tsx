@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta({
+  path: "/terms",
   title: "Terms of Service",
-  description: "Terms of use for the RAZRBILZ platform and services.",
-};
+  description: "Terms of use for the RAZRBILZ platform, orders and services.",
+});
 
 export default function TermsOfServicePage() {
   return (

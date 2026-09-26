@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Size Guide — RAZRBILZ",
-  description: "RAZRBILZ unisex size guide (S, M, L, XL)",
-};
+export const metadata = pageMeta({
+  path: "/size-guide",
+  title: "Size Guide",
+  description:
+    "RAZRBILZ unisex size chart (S, M, L, XL) with chest, length and shoulder measurements in centimetres.",
+});
 
 export default function SizeGuidePage() {
   const tShirtSizes = [

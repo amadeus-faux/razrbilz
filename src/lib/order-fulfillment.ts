@@ -3,6 +3,7 @@ import { createBiteshipOrder } from "@/lib/biteship";
 import { checkDuitkuTransaction } from "@/lib/duitku";
 import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
 import { sendPaymentSuccessEmail } from "@/lib/email";
+import { reportHandledError } from "@/lib/sentry";
 
 // 3.4: jendela tambahan SETELAH expiredAt sebelum order benar-benar di-expire.
 // Mengantisipasi pembayaran yang sedang diproses bank tepat di detik-detik akhir.
@@ -430,6 +431,10 @@ export async function autoExpireStaleOrders(): Promise<number> {
         expiredCount++;
       } catch (err) {
         console.error(`[OrderFulfillment] Error expiring order ${order.orderNumber}:`, err);
+        reportHandledError("auto-expire-order", err, {
+          orderNumber: order.orderNumber,
+          orderId: order.id,
+        });
       }
     }
 
@@ -504,6 +509,7 @@ export async function returnOrderStock(orderId: string): Promise<boolean> {
       `[OrderFulfillment] ❌ returnOrderStock GAGAL untuk order ${orderId} — pengembalian stok di-rollback. Menandai needsManualReview untuk rekonsiliasi manual:`,
       error
     );
+    reportHandledError("return-order-stock", error, { orderId });
     await prisma.order
       .update({ where: { id: orderId }, data: { needsManualReview: true } })
       .catch((e) =>

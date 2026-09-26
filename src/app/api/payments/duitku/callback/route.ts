@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyDuitkuCallbackSignature } from "@/lib/duitku";
 import { markOrderPaid, cancelOrderAndReturnStock } from "@/lib/order-fulfillment";
+import { reportHandledError } from "@/lib/sentry";
 
 type CallbackPayload = {
   merchantCode?: string;
@@ -108,6 +109,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("[Duitku] Callback processing failed:", error);
+    // Status pembayaran bisa tertinggal (customer sudah bayar tapi order belum
+    // paid) dan tidak ada yang tahu kalau ini hanya masuk console.
+    reportHandledError("duitku-callback", error);
     return NextResponse.json({ error: "Gagal memproses callback Duitku." }, { status: 500 });
   }
 }

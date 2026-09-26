@@ -2,6 +2,11 @@ import { prisma } from "@/lib/prisma";
 import DashboardClient from "./DashboardClient";
 import ResetDataButton from "./ResetDataButton";
 import { calculateDashboardStats, DashboardStatsResult } from "@/lib/dashboard-stats";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Admin — Dashboard" },
+};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

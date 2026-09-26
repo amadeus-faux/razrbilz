@@ -5,6 +5,11 @@ import Link from "next/link";
 import { Plus, Package } from "lucide-react";
 import Image from "next/image";
 import ProductActions from "./ProductActions";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: { absolute: "Admin — Katalog Produk" },
+};
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

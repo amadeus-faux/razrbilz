@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "RAZRBILZ",
-  description: "Find Your North.",
-};
+export const metadata = pageMeta({
+  path: "/about",
+  title: "About the Brand",
+  description:
+    "RAZRBILZ is an independent unisex apparel brand from Bandung, Indonesia — boxy, relaxed silhouettes in heavyweight 240–320 gsm cotton, ethically made in small runs.",
+});
 
 export default function AboutPage() {
   return (

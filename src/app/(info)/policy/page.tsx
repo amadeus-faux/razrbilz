@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Policy & Shipping — RAZRBILZ",
-  description: "RAZRBILZ shipping, returns, and payment policy",
-};
+export const metadata = pageMeta({
+  path: "/policy",
+  title: "Policy & Shipping",
+  description:
+    "How RAZRBILZ ships: couriers, delivery windows inside Indonesia and overseas, made-to-order production time, and payment channels.",
+});
 
 interface PolicySectionProps {
   title: string;

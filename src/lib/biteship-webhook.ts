@@ -7,6 +7,7 @@ import {
 } from "@/lib/biteship-status";
 import { sendShippingEmail } from "@/lib/email";
 import { returnOrderStock } from "@/lib/order-fulfillment";
+import { reportHandledError } from "@/lib/sentry";
 
 function verifyWebhookSecret(request: Request): boolean {
   const secret = process.env.BITESHIP_WEBHOOK_SECRET;
@@ -203,7 +204,9 @@ export async function processBiteshipWebhook(
             );
           } else {
             // returnOrderStock sudah menandai needsManualReview + me-rollback
-            // transaksinya. Status order tetap returned; stok perlu rekonsiliasi manual.
+            // transaksinya, dan sudah melapor ke Sentry dengan tag
+            // `return-order-stock`. Tidak perlu dilaporkan dua kali di sini.
+            // Status order tetap returned; stok perlu rekonsiliasi manual.
             console.error(
               `[Biteship Webhook] ⚠️ Order ${order.orderNumber} berstatus retur tetapi pengembalian stok GAGAL — order ditandai needsManualReview untuk rekonsiliasi manual.`
             );
@@ -368,6 +371,9 @@ export async function processBiteshipWebhook(
     // 7.2: error internal → balas 5xx supaya Biteship tahu harus retry.
     // Detail asli hanya di-log di server, tidak dibocorkan ke pemanggil.
     console.error("[Biteship Webhook] ❌ Error in processing event:", error);
+    reportHandledError("biteship-webhook", error, {
+      orderNumber: payload?.metadata?.order_number ?? null,
+    });
     return NextResponse.json(
       {
         ok: false,

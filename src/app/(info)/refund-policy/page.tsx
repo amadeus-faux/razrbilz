@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMeta({
+  path: "/refund-policy",
   title: "Return & Refund Policy",
-  description: "RAZRBILZ return and refund policy — all sales final except production defects.",
-};
+  description:
+    "RAZRBILZ return and refund policy — all sales final except production defects, and how we handle a parcel that comes back to us.",
+});
 
 export default function RefundPolicyPage() {
   return (

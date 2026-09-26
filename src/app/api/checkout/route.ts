@@ -5,6 +5,7 @@ import { generateOrderNumber } from "@/lib/utils";
 import { sendOrderReceivedEmail } from "@/lib/email";
 import { resolveDisplayPrice, isInternational } from "@/lib/pricing";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
+import { reportHandledError } from "@/lib/sentry";
 import {
   getServerShippingRates,
   getInternationalShippingCost,
@@ -429,6 +430,10 @@ export async function POST(request: Request) {
             `[Checkout] ⚠️ KOMPENSASI GAGAL: tidak bisa mengembalikan stok produk ${productId} (qty ${requiredQty}) untuk order ${orderNumber} (orderId ${order.id}). Stok mungkin terpotong tanpa pembayaran — perlu rekonsiliasi manual.`,
             revertErr
           );
+          reportHandledError("checkout-compensation-stock", revertErr, {
+            orderNumber,
+            orderId: order.id,
+          });
         }
       }
       try {
@@ -438,6 +443,10 @@ export async function POST(request: Request) {
           `[Checkout] ⚠️ KOMPENSASI GAGAL: tidak bisa menghapus order ${orderNumber} (orderId ${order.id}) setelah Duitku error. Order pending mungkin menggantung — perlu rekonsiliasi manual.`,
           deleteErr
         );
+        reportHandledError("checkout-compensation-delete", deleteErr, {
+          orderNumber,
+          orderId: order.id,
+        });
       }
       throw new CheckoutError(
         duitkuError instanceof Error
@@ -484,6 +493,12 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Checkout error:", error);
+    // CheckoutError = penolakan yang memang diharapkan (stok habis, kurs
+    // berubah, validasi). Yang di luar itu berarti customer gagal membuat
+    // pesanan tanpa sebab yang jelas — itu yang harus muncul di Sentry.
+    if (!(error instanceof CheckoutError)) {
+      reportHandledError("checkout-unexpected", error);
+    }
     if (error instanceof CheckoutError) {
       return NextResponse.json(
         {
