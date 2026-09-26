@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createBiteshipOrder } from "@/lib/biteship";
+import { requireAdmin } from "@/lib/require-admin";
+import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
 
 interface RouteParams {
   params: Promise<{ orderId: string }>;
@@ -12,6 +14,9 @@ interface RouteParams {
  * POST /api/admin/orders/[orderId]/ready-to-ship
  */
 export async function POST(request: Request, { params }: RouteParams) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { orderId } = await params;
 
@@ -71,10 +76,10 @@ export async function POST(request: Request, { params }: RouteParams) {
       destinationNote: "Order selesai produksi (siap kirim)",
       courier: order.courier,
       items: order.items.map((item) => ({
-        name: `${item.product?.name || "Product"} (Size ${item.size})`,
+        name: `${item.productNameSnapshot || item.product?.name || "Product"} (Size ${item.size})`,
         quantity: item.quantity,
         value: item.priceAtBuy,
-        weight: 500, // Standard apparel weight in grams
+        weight: item.product?.weightGrams ?? WEIGHT_PER_ITEM_GRAMS,
       })),
     });
 

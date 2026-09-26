@@ -242,6 +242,7 @@ export async function calculateDashboardStats(
       by: ["productId"],
       where: {
         order: { paymentStatus: "paid" },
+        productId: { not: null },
       },
       _sum: { quantity: true },
     }),
@@ -293,7 +294,9 @@ export async function calculateDashboardStats(
   );
 
   const salesMap = new Map<string, number>(
-    productSales.map((ps) => [ps.productId, ps._sum.quantity ?? 0])
+    productSales
+      .filter((ps): ps is { productId: string; _sum: { quantity: number | null } } => ps.productId !== null)
+      .map((ps) => [ps.productId, ps._sum.quantity ?? 0])
   );
 
   const now = new Date();

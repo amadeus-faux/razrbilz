@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
-import { resolveDisplayPrice } from "@/lib/pricing";
+import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -57,8 +57,7 @@ export default async function ProductDetailPage({ params }: PageParams) {
   const cookieStore = await cookies();
   // Default to "ID" — ensure country is always treated as local unless explicitly international
   const rawCountry = cookieStore.get("user_country")?.value ?? "";
-  const userCountry =
-    rawCountry && /^[A-Z]{2}$/.test(rawCountry) ? rawCountry : "ID";
+  const userCountry = normalizeCountryCode(rawCountry);
 
   const [allProducts, exchangeRate] = await Promise.all([
     getActiveProducts(),

@@ -3,6 +3,10 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma";
 
+// Re-export namespace Prisma (untuk tipe seperti Prisma.ProductUpdateInput)
+// supaya route tidak perlu import lewat path relatif ke /generated.
+export { Prisma } from "../../generated/prisma";
+
 // Prefer DIRECT_URL (direct Postgres connection to Supabase), fallback to DATABASE_URL
 const rawConnectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || "";
 const connectionString = rawConnectionString.trim().replace(/^['"]|['"]$/g, "");

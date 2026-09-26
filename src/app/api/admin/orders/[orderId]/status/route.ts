@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { returnOrderStock } from "@/lib/order-fulfillment";
+import { requireAdmin } from "@/lib/require-admin";
 
 /** PATCH /api/admin/orders/[orderId]/status — Update orderStatus */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { orderId } = await params;
     const body = await request.json();
@@ -53,8 +57,13 @@ export async function PATCH(
       );
     }
 
+    let stockReturnFailed = false;
     if (orderStatus === "returned" && order.orderStatus !== "returned") {
-      await returnOrderStock(orderId);
+      // 7.1: kalau pengembalian stok gagal, returnOrderStock sudah menandai
+      // needsManualReview + mengembalikan false. Jangan balas success:true tanpa
+      // memberi tahu admin bahwa stok belum benar-benar kembali.
+      const ok = await returnOrderStock(orderId);
+      stockReturnFailed = !ok;
     }
 
     const updateData: Record<string, any> = { orderStatus };
@@ -88,7 +97,13 @@ export async function PATCH(
     revalidatePath("/admin/orders");
     revalidatePath("/admin/dashboard");
 
-    return NextResponse.json({ success: true, order: updated });
+    return NextResponse.json({
+      success: true,
+      order: updated,
+      warning: stockReturnFailed
+        ? "Status diperbarui, TAPI pengembalian stok GAGAL. Pesanan ditandai perlu-tinjauan-manual (needsManualReview) — periksa stok secara manual."
+        : undefined,
+    });
   } catch (error) {
     console.error("[OrderStatus] PATCH error:", error);
     return NextResponse.json({ error: "Gagal mengubah status pesanan." }, { status: 500 });

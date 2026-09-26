@@ -71,6 +71,7 @@ export default function SizeSelectorPopover({
       price: product.price,
       basePrice: product.basePrice ?? product.price,
       image: product.images[0] || "/placeholder-product.svg",
+      stock: product.stock ?? 0,
     });
     setTimeout(() => {
       onClose();

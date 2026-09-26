@@ -1,19 +1,50 @@
 import { prisma } from "@/lib/prisma";
 import OrdersTableClient from "./OrdersTableClient";
+import OrdersDateFilter from "./OrdersDateFilter";
 import { autoExpireStaleOrders } from "@/lib/order-fulfillment";
 import { AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-async function getOrders() {
+type RangeKey = "7" | "30" | "90" | "year" | "all";
+const VALID_RANGES: RangeKey[] = ["7", "30", "90", "year", "all"];
+const DEFAULT_RANGE: RangeKey = "30";
+
+// WIB (Asia/Jakarta) = UTC+7, tanpa DST. createdAt disimpan dalam UTC,
+// jadi batas rentang dihitung sebagai instant absolut (JS Date) agar konsisten.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+function getCreatedAtFilter(range: RangeKey): { createdAt: { gte: Date } } | Record<string, never> {
+  const now = Date.now();
+
+  if (range === "all") return {};
+
+  if (range === "year") {
+    // Tahun berjalan menurut wall-clock WIB, mulai 1 Januari 00:00 WIB.
+    const wibYear = Number(
+      new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric" }).format(new Date(now))
+    );
+    const start = new Date(Date.UTC(wibYear, 0, 1, 0, 0, 0) - WIB_OFFSET_MS);
+    return { createdAt: { gte: start } };
+  }
+
+  const days = Number(range); // 7 | 30 | 90
+  const start = new Date(now - days * 24 * 60 * 60 * 1000);
+  return { createdAt: { gte: start } };
+}
+
+async function getOrders(range: RangeKey) {
   try {
     // Otomatis ubah status pesanan kadaluarsa menjadi FAILED & CANCELLED
     await autoExpireStaleOrders().catch((err) =>
       console.error("Auto expire stale orders error:", err)
     );
 
+    const where = getCreatedAtFilter(range);
+
     return await prisma.order.findMany({
+      where,
       include: {
         items: {
           include: { product: true },
@@ -27,8 +58,17 @@ async function getOrders() {
   }
 }
 
-export default async function AdminOrdersPage() {
-  const orders = await getOrders();
+interface PageProps {
+  searchParams: Promise<{ range?: string }>;
+}
+
+export default async function AdminOrdersPage({ searchParams }: PageProps) {
+  const { range: rangeParam } = await searchParams;
+  const range: RangeKey = VALID_RANGES.includes(rangeParam as RangeKey)
+    ? (rangeParam as RangeKey)
+    : DEFAULT_RANGE;
+
+  const orders = await getOrders(range);
 
   const failedCount = orders.filter(
     (o) =>
@@ -73,6 +113,8 @@ export default async function AdminOrdersPage() {
           )}
         </div>
       </div>
+
+      <OrdersDateFilter value={range} />
 
       <div className="bg-[#141412] border border-[#242320] rounded-2xl shadow-sm overflow-hidden">
         <OrdersTableClient initialOrders={orders as any} />

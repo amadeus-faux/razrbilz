@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import DashboardClient from "./DashboardClient";
+import ResetDataButton from "./ResetDataButton";
 import { calculateDashboardStats, DashboardStatsResult } from "@/lib/dashboard-stats";
 
 export const dynamic = "force-dynamic";
@@ -74,13 +75,16 @@ export default async function AdminDashboardPage() {
   ]);
 
   return (
-    <DashboardClient
-      initialStats={initialStats}
-      recentOrders={recentOrders.map((o) => ({
-        ...o,
-        createdAt: o.createdAt.toISOString(),
-      }))}
-      totalProducts={totalProducts}
-    />
+    <>
+      <DashboardClient
+        initialStats={initialStats}
+        recentOrders={recentOrders.map((o) => ({
+          ...o,
+          createdAt: o.createdAt.toISOString(),
+        }))}
+        totalProducts={totalProducts}
+      />
+      <ResetDataButton />
+    </>
   );
 }

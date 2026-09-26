@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
-import { resolveDisplayPrice } from "@/lib/pricing";
+import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
 import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
@@ -122,7 +122,6 @@ const PAYMENT_CATEGORIES = [
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useSyncExternalStore(subscribe, getItemsSnapshot, getServerSnapshot);
-  const subtotal = useCartStore((state) => state.subtotal);
   const clearCart = useCartStore((state) => state.clearCart);
 
   // ── Cascading location states ──────────────────────────────────────────────
@@ -138,6 +137,7 @@ export default function CheckoutPage() {
 
   // ── Shipping & Order states ────────────────────────────────────────────────
   const [shippingRates, setShippingRates] = useState<BiteshipCourierRate[]>([]);
+  const [shippingRatesFallback, setShippingRatesFallback] = useState(false);
   const [selectedCourier, setSelectedCourier] = useState<BiteshipCourierRate | null>(null);
   const [loadingRates, setLoadingRates] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -179,13 +179,16 @@ export default function CheckoutPage() {
   const isInternational = isCountrySelected && !isIndonesia;
 
   const [exchangeRate, setExchangeRate] = useState<number>(17500);
+  // 6.2: dinaikkan untuk memaksa re-fetch kurs (mis. setelah server menolak
+  // submit karena kurs berubah / RATE_CHANGED).
+  const [pricingNonce, setPricingNonce] = useState(0);
 
   // Sync pricing when country changes
   useEffect(() => {
     let isMounted = true;
     async function updatePricing() {
       try {
-        const country = selectedCountry || "ID";
+        const country = normalizeCountryCode(selectedCountry);
         if (typeof document !== "undefined") {
           document.cookie = `user_country=${country}; path=/; max-age=31536000; SameSite=Lax`;
         }
@@ -204,11 +207,11 @@ export default function CheckoutPage() {
     return () => {
       isMounted = false;
     };
-  }, [selectedCountry]);
+  }, [selectedCountry, pricingNonce]);
 
   const getItemPrice = useCallback(
     (it: CartItem) => {
-      return resolveDisplayPrice(it.basePrice ?? it.price, selectedCountry, exchangeRate);
+      return resolveDisplayPrice(it.basePrice, selectedCountry, exchangeRate);
     },
     [selectedCountry, exchangeRate]
   );
@@ -339,38 +342,71 @@ export default function CheckoutPage() {
   }, [selectedDistrict, postalCodesMap, isIndonesia, setValue]);
 
   // ── 5. Fetch shipping rates ─────────────────────────────────────────────────
+  // 2.4: AbortController + token urutan. Ganti kode pos/kurir/negara berturut-turut
+  // bisa membuat response lama tiba belakangan; kita batalkan request sebelumnya
+  // dan abaikan response yang sudah usang agar state tidak tertimpa data basi.
+  const ratesAbortRef = useRef<AbortController | null>(null);
+  const ratesSeqRef = useRef(0);
   const fetchShippingRates = useCallback(
     async (countryCode: string, destPostalCode: string) => {
+      ratesAbortRef.current?.abort();
+      const controller = new AbortController();
+      ratesAbortRef.current = controller;
+      const seq = ++ratesSeqRef.current;
+
       setLoadingRates(true);
       setRateError("");
       try {
         const res = await fetch("/api/shipping/rates", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({
             country: countryCode,
             destinationPostalCode: destPostalCode || "00000",
+            // 2.5: kirim productId + quantity; berat asli diambil server dari DB.
             items: items.map((item) => ({
-              name: item.name,
-              weight: 350,
+              productId: item.productId,
               quantity: item.quantity,
             })),
           }),
         });
         if (!res.ok) throw new Error("Failed to fetch rates");
         const data = await res.json();
+        // Abaikan response usang (request lebih baru sudah jalan).
+        if (seq !== ratesSeqRef.current || controller.signal.aborted) return;
         const rates: BiteshipCourierRate[] = data.rates || [];
         setShippingRates(rates);
+        setShippingRatesFallback(Boolean(data.isFallback));
         if (rates.length > 0) setSelectedCourier(rates[0]);
-      } catch {
+      } catch (err) {
+        if ((err as { name?: string })?.name === "AbortError") return;
+        if (seq !== ratesSeqRef.current) return;
         setRateError("Gagal memuat tarif pengiriman. Coba kembali.");
         setShippingRates([]);
+        setShippingRatesFallback(false);
       } finally {
-        setLoadingRates(false);
+        if (seq === ratesSeqRef.current && !controller.signal.aborted) {
+          setLoadingRates(false);
+        }
       }
     },
     [items]
   );
+
+  // Batalkan request tarif yang masih berjalan saat komponen lepas.
+  useEffect(() => {
+    return () => ratesAbortRef.current?.abort();
+  }, []);
+
+  // 2.3 Reset kurir & tarif SEKETIKA saat negara berubah (sebelum fetch tarif
+  //     baru selesai), supaya tombol submit tidak pernah bisa diklik dengan
+  //     kurir/ongkir yang tidak cocok dengan negara tujuan yang baru dipilih.
+  useEffect(() => {
+    setSelectedCourier(null);
+    setShippingRates([]);
+    setRateError("");
+  }, [selectedCountry]);
 
   useEffect(() => {
     if (isInternational) {
@@ -392,14 +428,23 @@ export default function CheckoutPage() {
         // Reset rates while typing incomplete postal code
         setShippingRates([]);
         setSelectedCourier(null);
+        setShippingRatesFallback(false);
         setRateError("");
       }
     }
   }, [selectedCountry, postalCode, isInternational, isIndonesia, fetchShippingRates]);
 
   // ── 6. Load Payment Methods from Duitku ─────────────────────────────────────
+  // 2.4: AbortController + token urutan agar response methods yang usang (dari
+  // subtotal/kurir sebelumnya) tidak menimpa state saat user berubah cepat.
+  const methodsAbortRef = useRef<AbortController | null>(null);
+  const methodsSeqRef = useRef(0);
   useEffect(() => {
-    let isMounted = true;
+    methodsAbortRef.current?.abort();
+    const controller = new AbortController();
+    methodsAbortRef.current = controller;
+    const seq = ++methodsSeqRef.current;
+
     async function loadPaymentMethods() {
       setLoadingMethods(true);
       try {
@@ -408,10 +453,13 @@ export default function CheckoutPage() {
           0
         );
         const amount = currentSubtotal + (selectedCourier?.price || 0);
-        const res = await fetch(`/api/payments/duitku/methods?amount=${amount}`);
+        const res = await fetch(`/api/payments/duitku/methods?amount=${amount}`, {
+          signal: controller.signal,
+        });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.methods && data.methods.length > 0) {
+          if (seq !== methodsSeqRef.current || controller.signal.aborted) return;
+          if (data.methods && data.methods.length > 0) {
             setPaymentMethods(data.methods);
             setSelectedPaymentMethod((prev) => {
               if (prev) {
@@ -427,15 +475,18 @@ export default function CheckoutPage() {
           }
         }
       } catch (err) {
+        if ((err as { name?: string })?.name === "AbortError") return;
         console.error("Failed to load payment methods:", err);
       } finally {
-        if (isMounted) setLoadingMethods(false);
+        if (seq === methodsSeqRef.current && !controller.signal.aborted) {
+          setLoadingMethods(false);
+        }
       }
     }
 
     loadPaymentMethods();
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [items, getItemPrice, selectedCourier]);
 
@@ -460,8 +511,11 @@ export default function CheckoutPage() {
           stateProvince: isInternational ? (data.province || null) : null,
           province: isIndonesia ? data.province : "",
           courier: `${selectedCourier.courier_name} - ${selectedCourier.courier_service_name}`,
-          shippingCost: selectedCourier.price,
+          courierCode: selectedCourier.courier_code,
+          courierServiceCode: selectedCourier.courier_service_code,
           paymentMethod: selectedPaymentMethod?.paymentMethod || "VA",
+          // 6.2: kurs yang dipakai client menampilkan harga, divalidasi server.
+          exchangeRateUsed: exchangeRate,
           items: items.map((item) => ({
             productId: item.productId,
             size: item.size,
@@ -473,11 +527,21 @@ export default function CheckoutPage() {
 
       if (!res.ok) {
         const errData = await res.json();
+        // 6.2: kurs berubah saat user berada di halaman checkout. Segarkan kurs
+        // (dan harga) otomatis, lalu minta user meninjau ulang sebelum submit.
+        if (errData?.code === "RATE_CHANGED") {
+          setPricingNonce((n) => n + 1);
+        }
         throw new Error(errData.error || "Checkout gagal diproses");
       }
 
       const result = await res.json();
-      clearCart();
+      // Hanya kosongkan cart kalau pesanan benar-benar tersimpan di server
+      // (orderNumber ada). Kalau respons sukses tapi tanpa orderNumber, biarkan
+      // cart utuh supaya user tidak kehilangan item tanpa pesanan yang tercatat.
+      if (result.orderNumber) {
+        clearCart();
+      }
 
       // If method is VA or QRIS (or returns vaNumber / qrString), show modal on-page!
       if (
@@ -488,9 +552,7 @@ export default function CheckoutPage() {
       ) {
         setModalData({
           orderNumber: result.orderNumber,
-          total:
-            result.amount ||
-            total + (selectedPaymentMethod ? Number(selectedPaymentMethod.totalFee) : 0),
+          total: (result.amount ?? total) + paymentFee,
           paymentMethod:
             result.paymentMethod || selectedPaymentMethod?.paymentMethod || "VA",
           paymentName: selectedPaymentMethod?.paymentName || "Virtual Account",
@@ -546,6 +608,19 @@ export default function CheckoutPage() {
   );
   const total = calculatedSubtotal + shippingCost;
   const totalCount = items.reduce((acc, it) => acc + it.quantity, 0);
+
+  // 2.6: Fee layanan HANYA dibebankan ke customer untuk metode customer-bears
+  // (VC/kartu kredit, OVO, ShopeePay). Untuk metode yang fee-nya ditanggung
+  // merchant, jangan tambahkan ke angka yang ditampilkan — supaya TOTAL DUE dan
+  // modal sama dengan yang benar-benar dibayar customer. (serverTotal = subtotal
+  // + ongkir tanpa fee; Duitku menambahkan fee ini di sisi pembayaran untuk
+  // metode customer-bears.)
+  const customerBearsFee = isCustomerBearsFee(selectedPaymentMethod);
+  const paymentFee =
+    customerBearsFee && selectedPaymentMethod
+      ? Number(selectedPaymentMethod.totalFee) || 0
+      : 0;
+  const totalDue = total + paymentFee;
 
   return (
     <div className="container-shop pt-10 pb-10 min-h-screen">
@@ -912,6 +987,14 @@ export default function CheckoutPage() {
                 {/* Rates list */}
                 {!loadingRates && shippingRates.length > 0 && (
                   <div className="space-y-2 pt-1">
+                    {shippingRatesFallback && (
+                      <div className="mb-1 flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
+                        <AlertCircle size={14} className="mt-0.5 flex-shrink-0 text-amber-300" />
+                        <span>
+                          Ongkir di bawah adalah <strong className="text-amber-100">estimasi fallback</strong>, bukan tarif kurir real-time (layanan tarif langsung sedang tidak tersedia). Harga final dapat disesuaikan.
+                        </span>
+                      </div>
+                    )}
                     {shippingRates.map((rate) => {
                       const isSelected =
                         selectedCourier?.courier_code === rate.courier_code &&
@@ -939,13 +1022,11 @@ export default function CheckoutPage() {
                             </div>
                             <div>
                               <p className="text-xs uppercase tracking-wider text-foreground">
-                                {isInternational
-                                  ? "POS INDONESIA — INTERNATIONAL SHIPPING"
-                                  : `${rate.courier_name} — ${rate.courier_service_name}`}
+                                {`${rate.courier_name} — ${rate.courier_service_name}`}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
                                 {isInternational
-                                  ? "Estimated arrival: 10–14 business days"
+                                  ? `Estimated arrival: ${rate.duration || "10-14 business days"}`
                                   : `Estimasi tiba: ${rate.duration || "2-4 hari kerja"}`}
                               </p>
                             </div>
@@ -1070,7 +1151,7 @@ export default function CheckoutPage() {
                           {isExpanded && (
                             <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
                               <p className="text-[10px] uppercase text-muted tracking-wider pt-2 pb-1 font-medium">
-                                Pilih {cat.title}:
+                                Choose {cat.title}:
                               </p>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                 {categoryMethods.map((method) => {
@@ -1225,14 +1306,14 @@ export default function CheckoutPage() {
                       <span className="text-[11px] uppercase tracking-widest text-foreground block">
                         TOTAL DUE
                       </span>
-                      {selectedPaymentMethod && Number(selectedPaymentMethod.totalFee) > 0 && (
+                      {paymentFee > 0 && (
                         <span className="text-[10px] text-muted block mt-0.5">
                           Termasuk ongkir & biaya layanan
                         </span>
                       )}
                     </div>
                     <span className="text-lg text-foreground">
-                      {formatRupiah(total + (selectedPaymentMethod ? Number(selectedPaymentMethod.totalFee) : 0))}
+                      {formatRupiah(totalDue)}
                     </span>
                   </div>
                 </div>

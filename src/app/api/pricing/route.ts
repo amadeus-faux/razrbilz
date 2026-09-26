@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
-import { isInternational } from "@/lib/pricing";
+import { isInternational, normalizeCountryCode } from "@/lib/pricing";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +11,9 @@ export async function GET(request: NextRequest) {
       request.headers.get("x-vercel-ip-country") ||
       request.headers.get("cf-ipcountry");
 
-    const region = (countryParam || cookieCountry || headerCountry || "ID").toUpperCase();
+    const region = normalizeCountryCode(
+      countryParam || cookieCountry || headerCountry || "ID"
+    );
     const rate = await getActiveExchangeRate();
     const international = isInternational(region);
 
@@ -22,8 +24,11 @@ export async function GET(request: NextRequest) {
     });
 
     // If explicit country parameter was provided, sync user_country cookie
-    if (countryParam && countryParam.length === 2) {
-      response.cookies.set("user_country", countryParam.toUpperCase(), {
+    const normalizedParam = countryParam
+      ? normalizeCountryCode(countryParam, "")
+      : "";
+    if (normalizedParam) {
+      response.cookies.set("user_country", normalizedParam, {
         path: "/",
         maxAge: 60 * 60 * 24 * 365,
         sameSite: "lax",

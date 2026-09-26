@@ -16,6 +16,22 @@
 export const INTERNAL_USD_RATE = 10_000;
 export const DEFAULT_FALLBACK_USD_IDR = 17_500;
 
+const COUNTRY_CODE_RE = /^[A-Z]{2}$/;
+
+/**
+ * Normalize a raw country value (e.g. from the `user_country` cookie) to a
+ * trusted uppercase ISO-3166 alpha-2 code. Anything malformed/spoofed falls
+ * back to `fallback` (default "ID"). Use this everywhere the cookie is read so
+ * validation is consistent across shop, product, checkout, and pricing.
+ */
+export function normalizeCountryCode(
+  value?: string | null,
+  fallback = "ID"
+): string {
+  const v = (value ?? "").trim().toUpperCase();
+  return COUNTRY_CODE_RE.test(v) ? v : fallback;
+}
+
 /**
  * Check if the given country/region is international (outside Indonesia)
  */

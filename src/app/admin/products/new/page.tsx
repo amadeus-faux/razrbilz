@@ -15,6 +15,7 @@ export default function NewProductPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(350000);
   const [stock, setStock] = useState<number>(50);
+  const [weightGrams, setWeightGrams] = useState<number>(350);
   const [category, setCategory] = useState("T-Shirts");
   const [images, setImages] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
@@ -74,6 +75,7 @@ export default function NewProductPage() {
           description,
           price: Number(price),
           stock: Math.max(0, Number(stock) || 0),
+          weightGrams: Math.max(1, Number(weightGrams) || 350),
           category,
           images,
           sizes: availableSizes.map((s) => ({ size: s })),
@@ -207,6 +209,26 @@ export default function NewProductPage() {
           />
           <p className="text-[11px] text-[#736e67] mt-1.5">
             Stok berlaku untuk keseluruhan produk (gabungan semua ukuran). Pembeli dapat memilih ukuran mana pun selama total stok masih tersedia.
+          </p>
+        </div>
+
+        {/* Berat Produk */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-[#9c968f] mb-2">
+            Berat Produk (gram) <span className="text-rose-400">*</span>
+          </label>
+          <input
+            type="number"
+            required
+            min={1}
+            step={10}
+            value={weightGrams}
+            onChange={(e) => setWeightGrams(Math.max(1, Number(e.target.value)))}
+            placeholder="misal: 350"
+            className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-[#5a5650]"
+          />
+          <p className="text-[11px] text-[#736e67] mt-1.5">
+            Berat per unit dipakai menghitung ongkir Biteship (dikalikan quantity di keranjang). Default 350 g.
           </p>
         </div>
 

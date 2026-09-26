@@ -1,4 +1,4 @@
-import { processBiteshipWebhook } from "../route";
+import { processBiteshipWebhook } from "@/lib/biteship-webhook";
 import { NextResponse } from "next/server";
 
 export async function GET() {

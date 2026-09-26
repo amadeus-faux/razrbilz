@@ -2,7 +2,7 @@ import ProductGrid from "@/components/product/ProductGrid";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
-import { resolveDisplayPrice } from "@/lib/pricing";
+import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ async function getProducts() {
 
 export default async function ShopPage() {
   const cookieStore = await cookies();
-  const userCountry = cookieStore.get("user_country")?.value || "ID";
+  const userCountry = normalizeCountryCode(cookieStore.get("user_country")?.value);
 
   const [products, exchangeRate] = await Promise.all([
     getProducts(),

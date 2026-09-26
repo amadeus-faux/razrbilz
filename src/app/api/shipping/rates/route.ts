@@ -1,161 +1,64 @@
 import { NextResponse } from "next/server";
-import { getShippingRates } from "@/lib/biteship";
+import { getServerShippingRates } from "@/lib/shipping-cost";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const NO_STORE_HEADERS = {
+  headers: {
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+  },
+};
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { destinationPostalCode, items, couriers, country } = body;
 
-    // Check if country is international (not Indonesia)
-    const isInternational =
-      country &&
-      country !== "ID" &&
-      country !== "Indonesia" &&
-      country.toLowerCase() !== "id";
+    // 2.5: Berat & nama produk diambil dari DB (server-authoritative). Client
+    // hanya mengirim productId + quantity; nilai weight dari client diabaikan
+    // supaya ongkir tidak bisa dimanipulasi dengan memalsukan berat.
+    const rawItems: Array<{ productId?: string; quantity?: number }> = Array.isArray(items)
+      ? items
+      : [];
+    const productIds = rawItems
+      .map((i) => i?.productId)
+      .filter((id): id is string => typeof id === "string" && id.length > 0);
+    const products = productIds.length
+      ? await prisma.product.findMany({
+          where: { id: { in: productIds } },
+          select: { id: true, name: true, weightGrams: true },
+        })
+      : [];
+    const productById = new Map(products.map((p) => [p.id, p]));
+    const serverItems = rawItems.map((i) => {
+      const p = i?.productId ? productById.get(i.productId) : undefined;
+      return {
+        name: p?.name,
+        quantity: Number(i?.quantity) || 0,
+        weightGrams: p?.weightGrams,
+      };
+    });
 
-    if (isInternational) {
-      return NextResponse.json(
-        {
-          rates: [
-            {
-              courier_name: "DHL Express / FedEx",
-              courier_code: "intl_express",
-              courier_service_name: "International Priority",
-              courier_service_code: "intl_priority",
-              description: "International Express Tracked Shipping (Flat Rate)",
-              duration: "5-10 business days",
-              price: 820000,
-            },
-          ],
-        },
-        {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          },
-        }
-      );
+    const result = await getServerShippingRates({
+      country,
+      destinationPostalCode,
+      items: serverItems,
+      couriers,
+    });
+
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
     }
-
-    if (!destinationPostalCode || destinationPostalCode.trim().length < 5) {
-      return NextResponse.json(
-        { error: "Kode pos tujuan tidak valid (harus 5 digit)" },
-        { status: 400 }
-      );
-    }
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return NextResponse.json(
-        { error: "Item tidak boleh kosong" },
-        { status: 400 }
-      );
-    }
-
-    const originPostalCode = process.env.ORIGIN_POSTAL_CODE || "40393";
-
-    if (!process.env.BITESHIP_API_KEY) {
-      const fallbackRates = [
-        {
-          courier_name: "SiCepat",
-          courier_code: "sicepat",
-          courier_service_name: "SIUNT (Reguler)",
-          courier_service_code: "siunt",
-          description: "SiCepat Untung Reguler",
-          duration: "1-2 hari",
-          price: 18000,
-        },
-        {
-          courier_name: "JNE",
-          courier_code: "jne",
-          courier_service_name: "REG (Reguler)",
-          courier_service_code: "reg",
-          description: "Layanan Reguler JNE",
-          duration: "2-3 hari",
-          price: 20000,
-        },
-        {
-          courier_name: "J&T",
-          courier_code: "jnt",
-          courier_service_name: "EZ",
-          courier_service_code: "ez",
-          description: "J&T Express Reguler",
-          duration: "2-3 hari",
-          price: 19000,
-        },
-      ];
-
-      return NextResponse.json(
-        { rates: fallbackRates },
-        {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          },
-        }
-      );
-    }
-
-    try {
-      const rates = await getShippingRates({
-        originPostalCode,
-        destinationPostalCode: destinationPostalCode.trim(),
-        items,
-        couriers,
-      });
-
-      if (rates && rates.length > 0) {
-        return NextResponse.json(
-          { rates },
-          {
-            headers: {
-              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-            },
-          }
-        );
-      }
-    } catch (biteshipError) {
-      console.warn("[ShippingRates] Biteship live API returned an error, using reliable fallback rates:", biteshipError);
-    }
-
-    // Fallback standard Indonesian courier rates if Biteship is down or unserviceable
-    const standardRates = [
-      {
-        courier_name: "J&T",
-        courier_code: "jnt",
-        courier_service_name: "EZ",
-        courier_service_code: "ez",
-        description: "Layanan Reguler J&T",
-        duration: "2-3 hari",
-        price: 8000,
-      },
-      {
-        courier_name: "JNE",
-        courier_code: "jne",
-        courier_service_name: "REG",
-        courier_service_code: "reg",
-        description: "Layanan Reguler JNE",
-        duration: "2-3 hari",
-        price: 9000,
-      },
-      {
-        courier_name: "SiCepat",
-        courier_code: "sicepat",
-        courier_service_name: "Reguler",
-        courier_service_code: "reg",
-        description: "Layanan Reguler SiCepat",
-        duration: "1-2 hari",
-        price: 8000,
-      },
-    ];
 
     return NextResponse.json(
-      { rates: standardRates },
       {
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-        },
-      }
+        rates: result.rates,
+        isFallback: result.isFallback ?? false,
+        fallbackReason: result.fallbackReason ?? null,
+      },
+      NO_STORE_HEADERS
     );
   } catch (error) {
     console.error("Shipping rates error:", error);

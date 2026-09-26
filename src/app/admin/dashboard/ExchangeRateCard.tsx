@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { RefreshCw, Globe, Check, AlertCircle, Edit3, RotateCcw } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
+import { resolveDisplayPrice } from "@/lib/pricing";
 
 interface RateInfo {
   usdToIdr: number;
@@ -226,7 +227,7 @@ export default function ExchangeRateCard() {
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-sm font-semibold text-emerald-400">
               {rateInfo
-                ? formatRupiah(Math.ceil(((350000 / 10000) * rateInfo.usdToIdr) / 5000) * 5000 - 1000)
+                ? formatRupiah(resolveDisplayPrice(350000, "US", rateInfo.usdToIdr))
                 : "..."}
             </span>
             <span className="text-[10px] text-[#8c8680]">untuk pembeli US</span>

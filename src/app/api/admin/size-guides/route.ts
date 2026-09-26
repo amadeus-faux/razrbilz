@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/require-admin";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const sizeGuides = await prisma.sizeGuide.findMany({
       include: {
@@ -24,13 +28,16 @@ export async function GET() {
   } catch (error: any) {
     console.error("Fetch size guides error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal memuat size guide" },
+      { error: "Terjadi kesalahan, coba lagi nanti." },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await request.json();
     const { name, description, measurements } = body;
@@ -64,7 +71,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Create size guide error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal membuat size guide" },
+      { error: "Terjadi kesalahan, coba lagi nanti." },
       { status: 500 }
     );
   }

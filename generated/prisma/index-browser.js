@@ -131,6 +131,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   isActive: 'isActive',
   isPreOrder: 'isPreOrder',
   stock: 'stock',
+  weightGrams: 'weightGrams',
   createdAt: 'createdAt',
   sizeGuideId: 'sizeGuideId'
 };
@@ -172,6 +173,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   orderStatus: 'orderStatus',
   paidAt: 'paidAt',
   expiredAt: 'expiredAt',
+  stockReturnedAt: 'stockReturnedAt',
   isPreOrder: 'isPreOrder',
   trackingNumber: 'trackingNumber',
   manualCourier: 'manualCourier',
@@ -193,6 +195,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   shippingOrderError: 'shippingOrderError',
   shippingOrderStatus: 'shippingOrderStatus',
   shippingRetryCount: 'shippingRetryCount',
+  needsManualReview: 'needsManualReview',
   priceRegion: 'priceRegion',
   exchangeRate: 'exchangeRate'
 };
@@ -223,7 +226,9 @@ exports.Prisma.OrderItemScalarFieldEnum = {
   productId: 'productId',
   size: 'size',
   quantity: 'quantity',
-  priceAtBuy: 'priceAtBuy'
+  priceAtBuy: 'priceAtBuy',
+  productNameSnapshot: 'productNameSnapshot',
+  productImageSnapshot: 'productImageSnapshot'
 };
 
 exports.Prisma.AdminScalarFieldEnum = {

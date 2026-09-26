@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyDuitkuCallbackSignature } from "@/lib/duitku";
-import { markOrderPaid, returnOrderStock } from "@/lib/order-fulfillment";
+import { markOrderPaid, cancelOrderAndReturnStock } from "@/lib/order-fulfillment";
 
 type CallbackPayload = {
   merchantCode?: string;
@@ -77,20 +77,25 @@ export async function POST(request: Request) {
 
       // Never downgrade an already paid order
       if (order.paymentStatus !== "paid") {
-        if (nextStatus === "failed" && order.paymentStatus !== "failed" && order.orderStatus !== "cancelled") {
-          await returnOrderStock(order.id);
-        }
-        await prisma.order.update({
-          where: { id: order.id },
-          data: {
-            paymentStatus: nextStatus,
-            orderStatus: nextStatus === "failed" ? "cancelled" : order.orderStatus,
+        if (nextStatus === "failed") {
+          // 5.1: batal + kembalikan stok atomik & idempoten dalam satu transaction.
+          await cancelOrderAndReturnStock(order.id, payload.statusMessage, {
             duitkuReference: payload.reference || order.duitkuReference,
             duitkuFee: payload.fee === undefined ? order.duitkuFee : String(payload.fee),
             duitkuPaymentMethod: payload.paymentCode || order.duitkuPaymentMethod,
-            duitkuStatusMessage: payload.statusMessage || order.duitkuStatusMessage,
-          },
-        });
+          });
+        } else {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: {
+              paymentStatus: nextStatus,
+              duitkuReference: payload.reference || order.duitkuReference,
+              duitkuFee: payload.fee === undefined ? order.duitkuFee : String(payload.fee),
+              duitkuPaymentMethod: payload.paymentCode || order.duitkuPaymentMethod,
+              duitkuStatusMessage: payload.statusMessage || order.duitkuStatusMessage,
+            },
+          });
+        }
       }
     }
 

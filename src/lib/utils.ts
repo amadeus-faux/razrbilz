@@ -11,11 +11,18 @@ export function formatRupiah(amount: number, fractionDigits = 0): string {
 }
 
 /**
- * Generate a unique order number
+ * Generate a unique, unguessable order number.
+ * Memakai crypto.getRandomValues (tersedia di Node 19+ & browser) — BUKAN
+ * Math.random() — agar orderNumber tidak praktis ditebak/di-brute-force,
+ * karena nomor ini dipakai sebagai akses tracking tanpa login.
  */
 export function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const bytes = new Uint8Array(8); // 64-bit entropy
+  crypto.getRandomValues(bytes);
+  const random = Array.from(bytes, (b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
   return `RZ-${timestamp}-${random}`;
 }
 

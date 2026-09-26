@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getBiteshipOrder } from "@/lib/biteship";
-import { mapBiteshipStatusToInternal } from "@/app/api/webhooks/biteship/route";
+import { mapBiteshipStatusToInternal } from "@/lib/biteship-status";
+import { requireAdmin } from "@/lib/require-admin";
 
 interface RouteParams {
   params: Promise<{ orderId: string }>;
@@ -13,6 +14,9 @@ interface RouteParams {
  * POST /api/admin/orders/[orderId]/sync-shipping
  */
 export async function POST(request: Request, { params }: RouteParams) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { orderId } = await params;
 

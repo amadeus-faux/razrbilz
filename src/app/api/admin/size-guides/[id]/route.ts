@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/require-admin";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { id } = await params;
     const sizeGuide = await prisma.sizeGuide.findUnique({
@@ -29,7 +33,7 @@ export async function GET(
   } catch (error: any) {
     console.error("Get size guide error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal memuat detail size guide" },
+      { error: "Terjadi kesalahan, coba lagi nanti." },
       { status: 500 }
     );
   }
@@ -39,6 +43,9 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -88,7 +95,7 @@ export async function PATCH(
   } catch (error: any) {
     console.error("Update size guide error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal memperbarui size guide" },
+      { error: "Terjadi kesalahan, coba lagi nanti." },
       { status: 500 }
     );
   }
@@ -98,6 +105,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { id } = await params;
 
@@ -115,15 +125,18 @@ export async function DELETE(
       return NextResponse.json({ error: "Size guide tidak ditemukan" }, { status: 404 });
     }
 
-    // Set null on products first to ensure clean state
-    await prisma.product.updateMany({
-      where: { sizeGuideId: id },
-      data: { sizeGuideId: null },
-    });
-
-    await prisma.sizeGuide.delete({
-      where: { id },
-    });
+    // 5.4: atomic — unlink produk dan hapus size-guide dalam satu transaksi.
+    // Kalau delete gagal di tengah, updateMany ikut rollback sehingga produk
+    // tidak kehilangan referensi size-guide tanpa size-guide-nya benar-benar terhapus.
+    await prisma.$transaction([
+      prisma.product.updateMany({
+        where: { sizeGuideId: id },
+        data: { sizeGuideId: null },
+      }),
+      prisma.sizeGuide.delete({
+        where: { id },
+      }),
+    ]);
 
     revalidatePath("/admin/size-guides");
     revalidatePath("/admin/products");
@@ -138,7 +151,7 @@ export async function DELETE(
   } catch (error: any) {
     console.error("Delete size guide error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal menghapus size guide" },
+      { error: "Terjadi kesalahan, coba lagi nanti." },
       { status: 500 }
     );
   }

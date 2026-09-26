@@ -4,8 +4,12 @@ import {
   setManualOverrideRate,
   clearManualOverrideRate,
 } from "@/lib/exchange-rate";
+import { requireAdmin } from "@/lib/require-admin";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const rateInfo = await getActiveExchangeRateInfo();
     return NextResponse.json({ success: true, rate: rateInfo });
@@ -19,6 +23,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await request.json();
     const { usdToIdr, isOverride } = body;
@@ -48,6 +55,9 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const updated = await clearManualOverrideRate();
     return NextResponse.json({ success: true, rate: updated });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { requireAdmin } from "@/lib/require-admin";
 
 export const maxDuration = 30;
 
@@ -10,6 +11,9 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(request: Request) {
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     try {
         const formData = await request.formData();
         const files = formData.getAll("files") as File[];

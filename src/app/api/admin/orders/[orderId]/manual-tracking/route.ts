@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { sendManualShippingEmail } from "@/lib/email";
+import { requireAdmin } from "@/lib/require-admin";
 
 interface ManualTrackingRequestBody {
   trackingNumber: string;
@@ -15,6 +16,9 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   try {
     const { orderId } = await params;
     const body: ManualTrackingRequestBody = await request.json();

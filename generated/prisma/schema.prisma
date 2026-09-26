@@ -18,6 +18,7 @@ model Product {
   isActive    Boolean       @default(true)
   isPreOrder  Boolean       @default(true)
   stock       Int           @default(0)
+  weightGrams Int           @default(350)
   createdAt   DateTime      @default(now())
   orderItems  OrderItem[]
   sizes       ProductSize[]
@@ -66,6 +67,7 @@ model Order {
   orderStatus         String        @default("processing")
   paidAt              DateTime?
   expiredAt           DateTime?
+  stockReturnedAt     DateTime?
   isPreOrder          Boolean       @default(true)
   trackingNumber      String?
   manualCourier       String?
@@ -87,6 +89,7 @@ model Order {
   shippingOrderError  String?
   shippingOrderStatus String        @default("PENDING")
   shippingRetryCount  Int           @default(0)
+  needsManualReview   Boolean       @default(false)
   priceRegion         String        @default("ID")
   exchangeRate        Float?
   items               OrderItem[]
@@ -115,14 +118,16 @@ model ShippingLog {
 }
 
 model OrderItem {
-  id         String  @id @default(cuid())
-  orderId    String
-  productId  String
-  size       String
-  quantity   Int
-  priceAtBuy Int
-  order      Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product    Product @relation(fields: [productId], references: [id])
+  id                   String   @id @default(cuid())
+  orderId              String
+  productId            String?
+  size                 String
+  quantity             Int
+  priceAtBuy           Int
+  productNameSnapshot  String?
+  productImageSnapshot String?
+  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product              Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 }
 
 model Admin {

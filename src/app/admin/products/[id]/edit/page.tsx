@@ -21,5 +21,5 @@ export default async function EditProductPage({
 
   if (!product) notFound();
 
-  return <EditProductForm product={product} sizeGuides={sizeGuides} />;
+  return <EditProductForm key={product.id} product={product} sizeGuides={sizeGuides} />;
 }

@@ -41,7 +41,7 @@ export default function CartPage() {
 
   const getItemPrice = useCallback(
     (it: CartItemType) => {
-      return resolveDisplayPrice(it.basePrice ?? it.price, country, exchangeRate);
+      return resolveDisplayPrice(it.basePrice, country, exchangeRate);
     },
     [country, exchangeRate]
   );
@@ -145,24 +145,32 @@ export default function CartPage() {
 
                   {/* Qty stepper + subtotal */}
                   <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/60">
-                    <div className="flex items-center border border-border rounded-full bg-surface overflow-hidden">
-                      <button
-                        onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
-                        aria-label="Decrease quantity"
-                      >
-                        <Minus size={11} strokeWidth={2} />
-                      </button>
-                      <span className="w-7 text-center text-xs text-foreground tabular-nums select-none">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
-                        aria-label="Increase quantity"
-                      >
-                        <Plus size={11} strokeWidth={2} />
-                      </button>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center border border-border rounded-full bg-surface overflow-hidden">
+                        <button
+                          onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
+                          className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus size={11} strokeWidth={2} />
+                        </button>
+                        <span className="w-7 text-center text-xs text-foreground tabular-nums select-none">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
+                          disabled={typeof item.stock === "number" && item.quantity >= item.stock}
+                          className="w-8 h-8 flex items-center justify-center text-muted hover:text-foreground hover:bg-surface-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:text-muted"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus size={11} strokeWidth={2} />
+                        </button>
+                      </div>
+                      {typeof item.stock === "number" && item.quantity >= item.stock && (
+                        <span className="text-[9px] uppercase tracking-wider text-amber-400/90">
+                          Maks {item.stock}
+                        </span>
+                      )}
                     </div>
 
                     <span className="text-xs text-foreground tabular-nums">

@@ -1,6 +1,13 @@
-import { prisma } from "@/lib/prisma";
+import { prisma, Prisma } from "@/lib/prisma";
 import { createBiteshipOrder } from "@/lib/biteship";
 import { checkDuitkuTransaction } from "@/lib/duitku";
+import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
+
+// 3.4: jendela tambahan SETELAH expiredAt sebelum order benar-benar di-expire.
+// Mengantisipasi pembayaran yang sedang diproses bank tepat di detik-detik akhir.
+// expiredAt asli = 60 menit (lihat EXPIRY_MINUTES di checkout) → efektif 70 menit.
+const EXPIRY_GRACE_MINUTES = 10;
+const BASE_EXPIRY_MINUTES = 60;
 
 interface MarkOrderPaidParams {
   orderId: string;
@@ -10,9 +17,52 @@ interface MarkOrderPaidParams {
   statusMessage?: string;
 }
 
+type DuitkuCheck =
+  | { ok: true; result: Awaited<ReturnType<typeof checkDuitkuTransaction>> }
+  | { ok: false; error: unknown };
+
+/**
+ * 3.4: Bungkus checkDuitkuTransaction supaya bisa MEMBEDAKAN "API Duitku gagal
+ * dihubungi" dari "status terkonfirmasi". Jangan pernah menyamakan network error
+ * dengan "belum bayar" — itu penyebab order lunas ikut ter-expire.
+ */
+async function checkDuitkuSafe(orderNumber: string): Promise<DuitkuCheck> {
+  try {
+    const result = await checkDuitkuTransaction(orderNumber);
+    return { ok: true, result };
+  } catch (error) {
+    return { ok: false, error };
+  }
+}
+
+function isDuitkuPaid(statusCode: string): boolean {
+  return statusCode === "00";
+}
+
+function isDuitkuExplicitFailed(result: {
+  statusCode: string;
+  statusMessage?: string;
+}): boolean {
+  return (
+    result.statusCode === "02" ||
+    ["FAILED", "EXPIRED", "EXPIRE", "CANCEL", "CANCELLED"].includes(
+      (result.statusMessage || "").toUpperCase()
+    )
+  );
+}
+
 /**
  * Marks an order as paid, decrements stock for each item, and creates a Biteship order.
- * Safe and idempotent: if order is already paid, does nothing.
+ *
+ * 3.3: Transisi pending→paid dibungkus dalam $transaction dengan `updateMany`
+ * bersyarat (where paymentStatus != 'paid') sebagai LOCK idempoten. Hanya satu
+ * pemanggil (count===1) yang menang dan boleh lanjut membuat order Biteship —
+ * menghilangkan race double-Biteship saat callback Duitku retry berjalan bareng.
+ *
+ * 3.4 (poin 2 & 3): Bila order sebelumnya sempat FAILED/expired dan stoknya sudah
+ * dikembalikan (stockReturnedAt terisi), pembayaran telat yang TERKONFIRMASI sukses
+ * tetap di-override jadi PAID, stok ditarik ulang (re-reserve), dan kejadian ini
+ * di-log eksplisit sebagai `order.payment.late_success_override`.
  */
 export async function markOrderPaid({
   orderId,
@@ -21,76 +71,170 @@ export async function markOrderPaid({
   paymentMethod,
   statusMessage,
 }: MarkOrderPaidParams) {
-  const order = await prisma.order.findUnique({
+  const pre = await prisma.order.findUnique({
     where: { id: orderId },
     include: { items: { include: { product: true } } },
   });
 
-  if (!order) return null;
+  if (!pre) return null;
 
   // Already marked as paid
-  if (order.paymentStatus === "paid") {
-    return order;
+  if (pre.paymentStatus === "paid") {
+    return pre;
   }
 
-  const nextOrderStatus = order.isPreOrder ? "in_production" : "processing";
-  const initialShippingStatus = order.isPreOrder ? "WAITING_PRODUCTION" : "PENDING";
+  const wasFailedOverride =
+    pre.paymentStatus === "failed" || pre.orderStatus === "cancelled";
+  const nextOrderStatus = pre.isPreOrder ? "in_production" : "processing";
+  const initialShippingStatus = pre.isPreOrder ? "WAITING_PRODUCTION" : "PENDING";
 
-  // 1. Update order status to paid (paidAt = now, only set once)
-  const updatedOrder = await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      paymentStatus: "paid",
-      orderStatus: nextOrderStatus,
-      shippingOrderStatus: initialShippingStatus,
-      paidAt: order.paidAt ?? new Date(),
-      duitkuReference: reference || order.duitkuReference,
-      duitkuFee: fee !== undefined ? String(fee) : order.duitkuFee,
-      duitkuPaymentMethod: paymentMethod || order.duitkuPaymentMethod,
-      duitkuStatusMessage: statusMessage || order.duitkuStatusMessage,
-    },
+  // 3.3: transisi atomik + lock idempoten.
+  const transition = await prisma.$transaction(async (tx) => {
+    const lock = await tx.order.updateMany({
+      where: { id: orderId, paymentStatus: { not: "paid" } },
+      data: {
+        paymentStatus: "paid",
+        orderStatus: nextOrderStatus,
+        shippingOrderStatus: initialShippingStatus,
+        paidAt: pre.paidAt ?? new Date(),
+        duitkuReference: reference || pre.duitkuReference,
+        duitkuFee: fee !== undefined ? String(fee) : pre.duitkuFee,
+        duitkuPaymentMethod: paymentMethod || pre.duitkuPaymentMethod,
+        duitkuStatusMessage: statusMessage || pre.duitkuStatusMessage,
+      },
+    });
+
+    // count === 0 → caller lain sudah lebih dulu menandai paid. Kalah race, keluar.
+    if (lock.count === 0) {
+      return { won: false as const };
+    }
+
+    // 3.4 poin 2: order ini sebelumnya FAILED dan stoknya sudah dikembalikan.
+    // Tarik ulang stok supaya tidak oversell. Idempoten via lock stockReturnedAt.
+    if (pre.stockReturnedAt) {
+      const relock = await tx.order.updateMany({
+        where: { id: orderId, stockReturnedAt: { not: null } },
+        data: { stockReturnedAt: null },
+      });
+      if (relock.count > 0) {
+        for (const item of pre.items) {
+          if (!item.productId) continue;
+          const prod = await tx.product.findUnique({
+            where: { id: item.productId },
+            select: { stock: true },
+          });
+          const current = prod?.stock ?? 0;
+          const shortfall = item.quantity - current;
+          // Customer SUDAH bayar → pesanan tetap dihormati. Bila stok tidak cukup
+          // (sudah terjual ke orang lain saat sempat expired), clamp ke 0 dan catat.
+          const target = shortfall > 0 ? 0 : current - item.quantity;
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: target },
+          });
+          if (shortfall > 0) {
+            await tx.shippingLog.create({
+              data: {
+                orderId,
+                event: "order.stock.oversell_on_late_payment",
+                previousValue: String(current),
+                newValue: String(target),
+                note:
+                  `Stok tidak cukup saat re-reserve akibat pembayaran telat masuk ` +
+                  `(order ${pre.orderNumber} sebelumnya sempat expired). ` +
+                  `Kekurangan: ${shortfall} untuk produk ${item.productId}. ` +
+                  `Stok di-clamp ke 0 — PERLU REKONSILIASI MANUAL.`,
+              },
+            });
+          }
+        }
+      }
+    }
+
+    // 3.4 poin 3: log eksplisit kejadian override FAILED → PAID.
+    if (wasFailedOverride) {
+      await tx.shippingLog.create({
+        data: {
+          orderId,
+          event: "order.payment.late_success_override",
+          previousValue: "failed",
+          newValue: "paid",
+          note:
+            `Pembayaran TERKONFIRMASI SUKSES setelah order sempat di-expire/FAILED. ` +
+            `Status di-override menjadi PAID. paidAt=${(pre.paidAt ?? new Date()).toISOString()}, ` +
+            `reference=${reference || pre.duitkuReference || "-"}. ` +
+            `Pertimbangkan menyesuaikan grace period bila kasus ini sering terjadi.`,
+        },
+      });
+    }
+
+    return { won: true as const };
+  });
+
+  if (!transition.won) {
+    // Sudah diproses caller lain yang menang race.
+    return await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { product: true } } },
+    });
+  }
+
+  if (wasFailedOverride) {
+    console.warn(
+      `[OrderFulfillment] ⚠️ LATE SUCCESS OVERRIDE: order ${pre.orderNumber} sebelumnya FAILED/expired, ` +
+        `kini dikonfirmasi PAID. Status di-override + stok ditarik ulang.`
+    );
+  }
+
+  const updatedOrder = await prisma.order.findUnique({
+    where: { id: orderId },
     include: { items: { include: { product: true } } },
   });
 
-  // 2. Pre-Order status check: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
-  if (order.isPreOrder) {
+  // Pre-Order: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
+  if (pre.isPreOrder) {
     await prisma.shippingLog.create({
       data: {
-        orderId: order.id,
+        orderId: pre.id,
         event: "order.in_production",
-        previousValue: order.orderStatus,
+        previousValue: pre.orderStatus,
         newValue: "in_production",
         note: "Pembayaran terkonfirmasi. Pesanan masuk masa produksi (Pre-Order 14-21 hari). Pengiriman ke Biteship ditunda.",
       },
     });
-    console.log(`[OrderFulfillment] Order ${order.orderNumber} is PRE-ORDER. Status set to 'in_production'. Biteship dispatch deferred.`);
+    console.log(`[OrderFulfillment] Order ${pre.orderNumber} is PRE-ORDER. Status set to 'in_production'. Biteship dispatch deferred.`);
     return updatedOrder;
   }
 
-  // 4. For Ready-Stock: Create Biteship shipment immediately if not yet created
-  if (!order.biteshipOrderId) {
+  // Ready-Stock: Create Biteship shipment immediately if not yet created.
+  // Hanya caller yang MENANG lock yang sampai di sini → tidak ada double Biteship.
+  if (!pre.biteshipOrderId) {
     try {
       const shipping = await createBiteshipOrder({
-        orderNumber: order.orderNumber,
-        customerName: order.customerName,
-        customerPhone: order.phone,
-        customerEmail: order.email,
-        destinationAddress: [order.shippingAddress, order.district, order.city, order.province]
+        orderNumber: pre.orderNumber,
+        customerName: pre.customerName,
+        customerPhone: pre.phone,
+        customerEmail: pre.email,
+        destinationAddress: [pre.shippingAddress, pre.district, pre.city, pre.province]
           .filter(Boolean)
           .join(", "),
-        destinationPostalCode: order.postalCode,
+        destinationPostalCode: pre.postalCode,
         destinationNote: "Pembayaran melalui Duitku V2",
-        courier: order.courier,
-        items: order.items.map((item) => ({
-          name: `${item.product.name} (Size ${item.size})`,
+        courier: pre.courier,
+        items: pre.items.map((item) => ({
+          name: `${item.productNameSnapshot || item.product?.name || "Produk"} (Size ${item.size})`,
           quantity: item.quantity,
           value: item.priceAtBuy,
-          weight: 500,
+          // 2.5 lanjutan: pakai berat asli per unit (sama dengan yang dipakai
+          // saat quote) supaya tagihan label Biteship konsisten dengan ongkir
+          // yang dibayar customer. Fallback ke konstanta quote bila produk sudah
+          // terhapus (productId → null) atau berat belum diisi.
+          weight: item.product?.weightGrams ?? WEIGHT_PER_ITEM_GRAMS,
         })),
       });
 
       await prisma.order.update({
-        where: { id: order.id },
+        where: { id: pre.id },
         data:
           shipping.success && shipping.orderId
             ? {
@@ -108,7 +252,7 @@ export async function markOrderPaid({
       });
     } catch (shippingError) {
       await prisma.order.update({
-        where: { id: order.id },
+        where: { id: pre.id },
         data: {
           shippingOrderStatus: "FAILED",
           shippingOrderError:
@@ -135,10 +279,23 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
     if (!order) return null;
     if (order.paymentStatus === "paid") return order;
 
-    // Check directly with Duitku
-    const result = await checkDuitkuTransaction(order.orderNumber).catch(() => null);
+    // 3.4: hubungi Duitku, BEDAKAN antara "API gagal" dan "status terkonfirmasi".
+    const check = await checkDuitkuSafe(order.orderNumber);
 
-    if (result && result.statusCode === "00") {
+    if (!check.ok) {
+      // API Duitku tidak bisa dihubungi → JANGAN expire. Biarkan status apa adanya,
+      // coba lagi nanti (retry/cron). Gagal koneksi bukan berarti belum bayar.
+      console.warn(
+        `[OrderFulfillment] Duitku unreachable for ${order.orderNumber}; skip expire (akan dicoba lagi).`,
+        check.error
+      );
+      return order;
+    }
+
+    const result = check.result;
+
+    // Dibayar — termasuk override order yang sebelumnya FAILED (late success).
+    if (isDuitkuPaid(result.statusCode)) {
       return await markOrderPaid({
         orderId: order.id,
         reference: result.reference,
@@ -147,33 +304,29 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
       });
     }
 
-    const isExplicitFailed =
-      result?.statusCode === "02" ||
-      ["FAILED", "EXPIRED", "CANCEL", "CANCELLED"].includes(
-        (result?.statusMessage || "").toUpperCase()
-      );
+    const explicitFailed = isDuitkuExplicitFailed(result);
 
-    const now = new Date();
-    const isPastExpiration =
-      (order.expiredAt && order.expiredAt <= now) ||
-      (!order.expiredAt && now.getTime() - new Date(order.createdAt).getTime() >= 60 * 60 * 1000);
+    // Grace period: expire hanya bila sudah lewat expiredAt + grace
+    // (atau, bila expiredAt null, createdAt + 60 menit + grace).
+    const now = Date.now();
+    const graceMs = EXPIRY_GRACE_MINUTES * 60 * 1000;
+    const effectiveExpiry = order.expiredAt
+      ? new Date(order.expiredAt).getTime() + graceMs
+      : new Date(order.createdAt).getTime() + BASE_EXPIRY_MINUTES * 60 * 1000 + graceMs;
+    const isPastGrace = now >= effectiveExpiry;
 
-    if (isExplicitFailed || isPastExpiration) {
-      if (order.paymentStatus !== "failed" && order.orderStatus !== "cancelled") {
-        await returnOrderStock(order.id);
+    // Boleh expire bila: Duitku eksplisit gagal, ATAU status bukan-paid (termasuk
+    // pending/01) DAN sudah lewat grace period.
+    if (explicitFailed || isPastGrace) {
+      if (order.paymentStatus === "failed" || order.orderStatus === "cancelled") {
+        return order;
       }
-      return await prisma.order.update({
-        where: { id: order.id },
-        data: {
-          paymentStatus: "failed",
-          orderStatus: "cancelled",
-          duitkuStatusMessage:
-            result?.statusMessage ||
-            order.duitkuStatusMessage ||
-            "Waktu pembayaran telah habis (Expired)",
-        },
-        include: { items: { include: { product: true } } },
-      });
+      return await cancelOrderAndReturnStock(
+        order.id,
+        result.statusMessage ||
+          order.duitkuStatusMessage ||
+          "Waktu pembayaran telah habis (Expired)"
+      );
     }
 
     return order;
@@ -184,24 +337,32 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
 }
 
 /**
- * Automatically checks and expires all pending orders that have passed their expiration window.
- * Fallback execution:
- * 1. Finds all pending orders where expiredAt <= now OR (expiredAt is null and createdAt <= 60 mins ago).
- * 2. Checks Duitku API:
- *    - If Duitku reports paid ("00") -> markOrderPaid
- *    - If Duitku reports expired/failed ("02") OR no response and already past expiration -> mark as "failed", "cancelled", and return stock.
+ * Automatically checks and expires all pending orders that have passed their
+ * expiration window PLUS grace period.
+ *
+ * 3.4: TIDAK PERNAH expire hanya karena API Duitku gagal dihubungi.
+ * 1. Cari order pending yang sudah lewat expiredAt + grace (atau createdAt + 60m + grace).
+ * 2. Hubungi Duitku:
+ *    - API error       -> SKIP (biarkan pending, coba lagi nanti).
+ *    - paid ("00")     -> markOrderPaid (termasuk override FAILED→PAID).
+ *    - selain paid     -> baru boleh di-expire (failed/cancelled + kembalikan stok),
+ *                         karena kita sudah punya konfirmasi status dari Duitku.
  */
 export async function autoExpireStaleOrders(): Promise<number> {
   try {
     const now = new Date();
-    const sixtyMinutesAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const graceMs = EXPIRY_GRACE_MINUTES * 60 * 1000;
+    const graceCutoff = new Date(now.getTime() - graceMs);
+    const nullExpiryCutoff = new Date(
+      now.getTime() - BASE_EXPIRY_MINUTES * 60 * 1000 - graceMs
+    );
 
     const staleOrders = await prisma.order.findMany({
       where: {
         paymentStatus: "pending",
         OR: [
-          { expiredAt: { lte: now } },
-          { expiredAt: null, createdAt: { lte: sixtyMinutesAgo } },
+          { expiredAt: { lte: graceCutoff } },
+          { expiredAt: null, createdAt: { lte: nullExpiryCutoff } },
         ],
       },
       include: { items: true },
@@ -210,34 +371,39 @@ export async function autoExpireStaleOrders(): Promise<number> {
     if (staleOrders.length === 0) return 0;
 
     let expiredCount = 0;
+    let skippedCount = 0;
     for (const order of staleOrders) {
       try {
-        if (order.duitkuReference) {
-          const result = await checkDuitkuTransaction(order.orderNumber).catch(() => null);
-          if (result && result.statusCode === "00") {
-            await markOrderPaid({
-              orderId: order.id,
-              reference: result.reference,
-              fee: result.fee,
-              statusMessage: result.statusMessage,
-            });
-            continue;
-          }
+        const check = await checkDuitkuSafe(order.orderNumber);
+
+        // 3.4: API Duitku gagal dihubungi → JANGAN expire. Skip, retry nanti.
+        if (!check.ok) {
+          skippedCount++;
+          console.warn(
+            `[OrderFulfillment] Duitku unreachable for ${order.orderNumber}; skip auto-expire (akan dicoba lagi).`
+          );
+          continue;
         }
 
-        // Return reserved inventory
-        await returnOrderStock(order.id);
+        const result = check.result;
 
-        // Update to failed / cancelled
-        await prisma.order.update({
-          where: { id: order.id },
-          data: {
-            paymentStatus: "failed",
-            orderStatus: "cancelled",
-            duitkuStatusMessage:
-              order.duitkuStatusMessage || "Waktu pembayaran telah habis (Expired)",
-          },
-        });
+        if (isDuitkuPaid(result.statusCode)) {
+          await markOrderPaid({
+            orderId: order.id,
+            reference: result.reference,
+            fee: result.fee,
+            statusMessage: result.statusMessage,
+          });
+          continue;
+        }
+
+        // Sudah dapat konfirmasi status bukan-paid dari Duitku + lewat grace → expire.
+        await cancelOrderAndReturnStock(
+          order.id,
+          result.statusMessage ||
+            order.duitkuStatusMessage ||
+            "Waktu pembayaran telah habis (Expired)"
+        );
         expiredCount++;
       } catch (err) {
         console.error(`[OrderFulfillment] Error expiring order ${order.orderNumber}:`, err);
@@ -247,6 +413,9 @@ export async function autoExpireStaleOrders(): Promise<number> {
     if (expiredCount > 0) {
       console.log(`[OrderFulfillment] Otomatis mengubah ${expiredCount} pesanan kadaluarsa menjadi FAILED & CANCELLED.`);
     }
+    if (skippedCount > 0) {
+      console.log(`[OrderFulfillment] ${skippedCount} pesanan dilewati (Duitku tidak bisa dihubungi) — tidak di-expire.`);
+    }
     return expiredCount;
   } catch (error) {
     console.error("[OrderFulfillment] autoExpireStaleOrders error:", error);
@@ -255,32 +424,127 @@ export async function autoExpireStaleOrders(): Promise<number> {
 }
 
 /**
+ * 5.1: Inti pengembalian stok yang ATOMIC + IDEMPOTEN, dijalankan di dalam sebuah
+ * transaction (tx). Pakai `stockReturnedAt` sebagai lock: updateMany bersyarat
+ * (hanya order yang stockReturnedAt-nya masih null) memastikan kalau fungsi ini
+ * terpanggil dua kali (retry / double-click / race), stok TIDAK ditambah dua kali.
+ * Mengembalikan true bila stok benar-benar dikembalikan pada pemanggilan ini.
+ */
+async function returnStockTx(
+  tx: Prisma.TransactionClient,
+  orderId: string
+): Promise<boolean> {
+  const lock = await tx.order.updateMany({
+    where: { id: orderId, stockReturnedAt: null },
+    data: { stockReturnedAt: new Date() },
+  });
+  // count === 0 → stok untuk order ini sudah pernah dikembalikan. Idempoten.
+  if (lock.count === 0) return false;
+
+  const order = await tx.order.findUnique({
+    where: { id: orderId },
+    include: { items: true },
+  });
+  if (!order || order.items.length === 0) return false;
+
+  for (const item of order.items) {
+    if (!item.productId) continue;
+    await tx.product.update({
+      where: { id: item.productId },
+      data: { stock: { increment: item.quantity } },
+    });
+  }
+  return true;
+}
+
+/**
  * Restores product stock for each item in an order.
  * Safe and idempotent: ensures stock is returned when an order expires or is cancelled.
+ *
+ * 7.1: TIDAK lagi menelan error diam-diam. Mengembalikan `true` bila stok
+ * berada dalam keadaan benar setelah pemanggilan ini (dikembalikan sekarang ATAU
+ * memang sudah pernah dikembalikan). Mengembalikan `false` bila terjadi error —
+ * transaksi stok sudah di-rollback, order ditandai `needsManualReview: true`, dan
+ * pemanggil TIDAK boleh membalas success:true seolah stok sudah kembali.
  */
-export async function returnOrderStock(orderId: string) {
+export async function returnOrderStock(orderId: string): Promise<boolean> {
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { items: true },
-    });
-    if (!order || !order.items || order.items.length === 0) return;
-
-    for (const item of order.items) {
-      await prisma.product
-        .update({
-          where: { id: item.productId },
-          data: { stock: { increment: item.quantity } },
-        })
-        .catch((err) => {
-          console.error(
-            `[OrderFulfillment] Failed to return stock for product ${item.productId}:`,
-            err
-          );
-        });
+    const returned = await prisma.$transaction((tx) => returnStockTx(tx, orderId));
+    if (returned) {
+      console.log(`[OrderFulfillment] Stock restored successfully for order ${orderId}`);
+    } else {
+      console.log(`[OrderFulfillment] Stock already returned for order ${orderId} (skip).`);
     }
-    console.log(`[OrderFulfillment] Stock restored successfully for order ${order.orderNumber}`);
+    return true;
   } catch (error) {
-    console.error("[OrderFulfillment] returnOrderStock error:", error);
+    console.error(
+      `[OrderFulfillment] ❌ returnOrderStock GAGAL untuk order ${orderId} — pengembalian stok di-rollback. Menandai needsManualReview untuk rekonsiliasi manual:`,
+      error
+    );
+    await prisma.order
+      .update({ where: { id: orderId }, data: { needsManualReview: true } })
+      .catch((e) =>
+        console.error(
+          `[OrderFulfillment] Gagal menandai needsManualReview untuk order ${orderId}:`,
+          e
+        )
+      );
+    return false;
+  }
+}
+
+/**
+ * 5.1: Membatalkan order (failed/cancelled) DAN mengembalikan stok dalam SATU
+ * transaction atomik + idempoten. Dipakai di jalur expire/callback gagal supaya
+ * tidak ada window di mana stok sudah kembali tapi status belum ter-update
+ * (atau sebaliknya), dan supaya double-call tidak mengembalikan stok dua kali.
+ *
+ * 7.1: Bila transaksi gagal (mis. pengembalian stok error), order ditandai
+ * `needsManualReview: true` dan error DILEMPAR kembali supaya pemanggil tahu dan
+ * tidak membalas success:true padahal stok belum benar-benar kembali.
+ */
+export async function cancelOrderAndReturnStock(
+  orderId: string,
+  statusMessage?: string,
+  extraData?: Prisma.OrderUpdateInput
+) {
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+        select: { id: true, duitkuStatusMessage: true },
+      });
+      if (!order) return null;
+
+      await returnStockTx(tx, orderId);
+
+      return tx.order.update({
+        where: { id: orderId },
+        data: {
+          ...(extraData || {}),
+          paymentStatus: "failed",
+          orderStatus: "cancelled",
+          duitkuStatusMessage:
+            statusMessage ||
+            order.duitkuStatusMessage ||
+            "Waktu pembayaran telah habis (Expired)",
+        },
+        include: { items: { include: { product: true } } },
+      });
+    });
+  } catch (error) {
+    console.error(
+      `[OrderFulfillment] ❌ cancelOrderAndReturnStock GAGAL untuk order ${orderId} — order TIDAK berubah status dan stok tidak kembali (transaksi rollback). Menandai needsManualReview:`,
+      error
+    );
+    await prisma.order
+      .update({ where: { id: orderId }, data: { needsManualReview: true } })
+      .catch((e) =>
+        console.error(
+          `[OrderFulfillment] Gagal menandai needsManualReview untuk order ${orderId}:`,
+          e
+        )
+      );
+    throw error;
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Fragment } from "react";
+import { useState, Fragment, useRef, useEffect, useCallback } from "react";
 import { formatRupiah } from "@/lib/utils";
 import {
   RefreshCw,
@@ -30,6 +30,8 @@ export interface OrderItemType {
   size: string;
   quantity: number;
   priceAtBuy: number;
+  productNameSnapshot?: string | null;
+  productImageSnapshot?: string | null;
   product?: {
     name: string;
   } | null;
@@ -80,6 +82,26 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isSyncingAll, setIsSyncingAll] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+
+  // Timer "copied" feedback dilacak supaya bisa dibersihkan saat unmount
+  // (mencegah setState pada komponen yang sudah lepas).
+  const copyTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => {
+    const timers = copyTimersRef.current;
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  // navigator.clipboard bisa undefined (konteks non-secure) atau reject
+  // (permission denied). Bungkus agar kegagalan tidak melempar unhandled error.
+  const safeCopy = useCallback(async (text: string): Promise<boolean> => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      console.error("Gagal menyalin ke clipboard:", err);
+      return false;
+    }
+  }, []);
 
   async function handleMarkReadyToShip(order: OrderType) {
     if (
@@ -298,9 +320,11 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
   }
 
   function handleCopy(text: string) {
-    navigator.clipboard.writeText(text);
-    setCopiedResi(text);
-    setTimeout(() => setCopiedResi(null), 2000);
+    safeCopy(text).then((ok) => {
+      if (!ok) return;
+      setCopiedResi(text);
+      copyTimersRef.current.push(setTimeout(() => setCopiedResi(null), 2000));
+    });
   }
 
   // Helper: resolve country name from code
@@ -344,9 +368,11 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
 
   function handleCopyAddress(order: OrderType) {
     const text = buildCopyAddress(order);
-    navigator.clipboard.writeText(text);
-    setCopiedAddr(order.id);
-    setTimeout(() => setCopiedAddr(null), 2500);
+    safeCopy(text).then((ok) => {
+      if (!ok) return;
+      setCopiedAddr(order.id);
+      copyTimersRef.current.push(setTimeout(() => setCopiedAddr(null), 2500));
+    });
   }
 
   function toggleExpand(orderId: string) {
@@ -702,7 +728,7 @@ export default function OrdersTableClient({ initialOrders }: { initialOrders: Or
                         {order.items.map((it, idx) => (
                           <p key={idx} className="text-[11px] text-[#dedad3]">
                             <span className="font-medium text-[#f4f2ee]">
-                              {it.product ? it.product.name : "Item"}
+                              {it.productNameSnapshot || it.product?.name || "Item"}
                             </span>{" "}
                             ({it.size}) × {it.quantity}
                           </p>

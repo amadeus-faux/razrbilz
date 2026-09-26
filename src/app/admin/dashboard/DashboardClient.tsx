@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   DollarSign,
   ShoppingBag,
@@ -98,25 +98,35 @@ export default function DashboardClient({
   const [stats, setStats] = useState<DashboardStats>(initialStats);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchStats = useCallback(async (p: Period) => {
+  const abortRef = useRef<AbortController | null>(null);
+
+  const fetchStats = useCallback(async (p: Period, signal?: AbortSignal) => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/admin/dashboard/stats?period=${p}`, {
         cache: "no-store",
+        signal,
       });
       if (res.ok) {
         const data = await res.json();
         setStats(data);
       }
     } catch (err) {
+      if ((err as { name?: string })?.name === "AbortError") return;
       console.error("Failed to fetch dashboard stats:", err);
     } finally {
-      setIsLoading(false);
+      if (!signal?.aborted) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchStats(period);
+    // Batalkan request sebelumnya (ganti period / unmount) supaya tidak ada
+    // setState pada komponen yang sudah lepas atau respons basi yang menimpa.
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    fetchStats(period, controller.signal);
+    return () => controller.abort();
   }, [period, fetchStats]);
 
   const periodLabel = PERIOD_OPTIONS.find((o) => o.value === period)?.label ?? period;

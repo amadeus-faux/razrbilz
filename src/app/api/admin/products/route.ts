@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/require-admin";
 
 export async function POST(request: Request) {
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     try {
         const body = await request.json();
-        const { name, slug, description, price, category, images, sizes, stock, isActive, isPreOrder, sizeGuideId } = body;
+        const { name, slug, description, price, category, images, sizes, stock, isActive, isPreOrder, sizeGuideId, weightGrams } = body;
 
         const product = await prisma.product.create({
             data: {
@@ -16,6 +20,7 @@ export async function POST(request: Request) {
                 category,
                 images,
                 stock: Math.max(0, Number(stock) || 0),
+                weightGrams: Math.max(1, Number(weightGrams) || 350),
                 isActive: isActive ?? true,
                 isPreOrder: isPreOrder ?? true,
                 sizeGuideId: sizeGuideId || null,
@@ -34,9 +39,11 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ product });
     } catch (error: any) {
+        // 7.3: detail error asli (mis. pesan Prisma) hanya di-log di server,
+        // jangan dikembalikan mentah ke client.
         console.error("Create product error:", error);
         return NextResponse.json(
-            { error: error?.message || "Gagal membuat produk" },
+            { error: "Terjadi kesalahan, coba lagi nanti." },
             { status: 500 }
         );
     }

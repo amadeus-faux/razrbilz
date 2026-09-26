@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
-import { processBiteshipWebhook } from "../src/app/api/webhooks/biteship/route";
+import { processBiteshipWebhook } from "../src/lib/biteship-webhook";
 
 async function main() {
   console.log("=== Testing Biteship Webhook Handlers ===");

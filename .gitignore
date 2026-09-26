@@ -35,6 +35,12 @@ yarn-error.log*
 .env*
 .env.local
 
+# local data backups (mengandung data pribadi customer — jangan di-commit)
+/backups
+
+# scratch / test payloads lokal
+/tmp
+
 # vercel
 .vercel
 
