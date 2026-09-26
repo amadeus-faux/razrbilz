@@ -6,6 +6,7 @@ import {
   type BiteshipWebhookPayload,
 } from "@/lib/biteship-status";
 import { sendShippingEmail } from "@/lib/email";
+import { returnOrderStock } from "@/lib/order-fulfillment";
 
 function verifyWebhookSecret(request: Request): boolean {
   const secret = process.env.BITESHIP_WEBHOOK_SECRET;
@@ -176,6 +177,37 @@ export async function processBiteshipWebhook(
         if (orderStatus === "shipped") {
           const resi = waybillId || order.trackingNumber;
           if (resi) shipmentNotice = { trackingNumber: resi };
+        }
+
+        // 7b: paket retur = barang fisik kembali ke studio, jadi stok harus
+        // ditarik ulang. Sebelumnya hanya jalur admin (api/admin/orders/[orderId]/status)
+        // yang memanggil returnOrderStock, sehingga retur otomatis dari Biteship
+        // membuat produk tampak "habis" selamanya. returnOrderStock idempoten
+        // (lock stockReturnedAt) → retry webhook tidak menambah stok dua kali.
+        // paymentStatus sengaja TIDAK diubah (tetap paid; revenue sudah mengecualikan
+        // order returned/cancelled).
+        if (orderStatus === "returned" && order.orderStatus !== "returned") {
+          const stockReturned = await returnOrderStock(order.id);
+          if (stockReturned) {
+            await prisma.shippingLog.create({
+              data: {
+                orderId: order.id,
+                event: "order.stock.returned_by_webhook",
+                previousValue: order.orderStatus,
+                newValue: "returned",
+                note: `Paket retur terdeteksi otomatis dari webhook Biteship (status: ${rawStatus}). Stok produk dikembalikan ke katalog tanpa tindakan admin.`,
+              },
+            });
+            console.log(
+              `[Biteship Webhook] ↩️ Stok order ${order.orderNumber} dikembalikan otomatis (retur Biteship).`
+            );
+          } else {
+            // returnOrderStock sudah menandai needsManualReview + me-rollback
+            // transaksinya. Status order tetap returned; stok perlu rekonsiliasi manual.
+            console.error(
+              `[Biteship Webhook] ⚠️ Order ${order.orderNumber} berstatus retur tetapi pengembalian stok GAGAL — order ditandai needsManualReview untuk rekonsiliasi manual.`
+            );
+          }
         }
         break;
       }
