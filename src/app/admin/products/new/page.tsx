@@ -65,6 +65,14 @@ export default function NewProductPage() {
       return;
     }
 
+    // 6.4: validasi harga > 0 di CLIENT (bukan mengandalkan step/min browser).
+    const priceNum = Number(price);
+    if (!Number.isFinite(priceNum) || priceNum <= 0) {
+      alert("Harga produk harus berupa angka lebih dari 0.");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/products", {
         method: "POST",
@@ -73,7 +81,7 @@ export default function NewProductPage() {
           name,
           slug: slugify(name),
           description,
-          price: Number(price),
+          price: priceNum,
           stock: Math.max(0, Number(stock) || 0),
           weightGrams: Math.max(1, Number(weightGrams) || 350),
           category,
@@ -142,8 +150,8 @@ export default function NewProductPage() {
             <input
               type="number"
               required
-              min={0}
-              step={1000}
+              min={1}
+              step={1}
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
               className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
@@ -221,7 +229,7 @@ export default function NewProductPage() {
             type="number"
             required
             min={1}
-            step={10}
+            step={1}
             value={weightGrams}
             onChange={(e) => setWeightGrams(Math.max(1, Number(e.target.value)))}
             placeholder="misal: 350"

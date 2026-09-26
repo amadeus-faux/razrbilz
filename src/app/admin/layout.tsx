@@ -47,7 +47,7 @@ export default function AdminLayout({
             className="text-base font-normal tracking-[0.14em] text-[#f4f2ee]"
             style={{ fontFamily: "var(--font-tanker-var), sans-serif" }}
           >
-            RAZRBILZ
+            razrbilz
           </span>
           <span className="text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded bg-white/10 text-neutral-300 font-sans">
             Admin
@@ -73,11 +73,10 @@ export default function AdminLayout({
                   key={href}
                   href={href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${
-                    isActive
+                  className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${isActive
                       ? "bg-[#242320] text-[#f4f2ee] border border-white/5"
                       : "text-[#9c968f] hover:text-[#f4f2ee] hover:bg-[#1a1917]"
-                  }`}
+                    }`}
                 >
                   <Icon size={16} strokeWidth={1.75} />
                   {label}
@@ -133,11 +132,10 @@ export default function AdminLayout({
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${
-                    isActive
+                  className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${isActive
                       ? "bg-[#242320] text-[#f4f2ee] shadow-sm border border-white/5"
                       : "text-[#9c968f] hover:text-[#f4f2ee] hover:bg-[#1a1917]"
-                  }`}
+                    }`}
                 >
                   <Icon size={16} strokeWidth={1.75} />
                   {label}

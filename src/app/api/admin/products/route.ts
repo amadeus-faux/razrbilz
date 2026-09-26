@@ -11,12 +11,21 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, slug, description, price, category, images, sizes, stock, isActive, isPreOrder, sizeGuideId, weightGrams } = body;
 
+        // 6.4: tolak harga 0 / negatif / NaN di sisi API juga (bukan cuma client).
+        const priceNum = Number(price);
+        if (!Number.isFinite(priceNum) || priceNum <= 0) {
+            return NextResponse.json(
+                { error: "Harga produk harus berupa angka lebih dari 0." },
+                { status: 400 }
+            );
+        }
+
         const product = await prisma.product.create({
             data: {
                 name,
                 slug,
                 description,
-                price: Number(price),
+                price: Math.floor(priceNum),
                 category,
                 images,
                 stock: Math.max(0, Number(stock) || 0),

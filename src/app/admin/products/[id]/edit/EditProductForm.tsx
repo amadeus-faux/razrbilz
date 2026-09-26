@@ -149,7 +149,7 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
               type="number"
               required
               min={1}
-              step={1000}
+              step={1}
               value={price}
               onChange={(e) => setPrice(Number(e.target.value))}
               className="w-full px-4 py-3 bg-[#1c1b18] border border-[#2e2c28] rounded-xl text-sm text-[#f4f2ee] focus:outline-none focus:border-white/40 focus:ring-1 focus:ring-white/20 transition-all"
@@ -226,7 +226,7 @@ export default function EditProductForm({ product, sizeGuides }: EditProductForm
             type="number"
             required
             min={1}
-            step={10}
+            step={1}
             value={weightGrams}
             onChange={(e) => setWeightGrams(Math.max(1, Number(e.target.value)))}
             placeholder="misal: 350"
