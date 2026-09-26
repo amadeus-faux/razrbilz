@@ -7,6 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore, type CartItem } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
 import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
+import {
+  resolveLocale,
+  t,
+  tf,
+  translateMessage,
+  type CheckoutKey,
+  type Locale,
+} from "@/lib/checkout-i18n";
 import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
@@ -54,9 +62,9 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ message, locale }: { message?: string; locale: Locale }) {
   return message ? (
-    <p className="text-[11px] text-red-500 mt-1">{message}</p>
+    <p className="text-[11px] text-red-500 mt-1">{translateMessage(message, locale)}</p>
   ) : null;
 }
 
@@ -91,32 +99,12 @@ function isCustomerBearsFee(method: PaymentMethodOption | null): boolean {
   );
 }
 
-const PAYMENT_CATEGORIES = [
-  {
-    id: "va",
-    title: "Virtual Account",
-    badge: "BCA, Mandiri, BNI, BRI, Permata, dll",
-  },
-  {
-    id: "ewallet",
-    title: "E-Wallet",
-    badge: "DANA, OVO, ShopeePay App, LinkAja",
-  },
-  {
-    id: "qris",
-    title: "QRIS",
-    badge: "BCA Mobile, Livin, GoPay, OVO, DANA, dll",
-  },
-  {
-    id: "cc",
-    title: "Credit Card",
-    badge: "Visa, Mastercard, JCB",
-  },
-  {
-    id: "other",
-    title: "Other Payments",
-    badge: "Indomaret, Retail, Paylater",
-  },
+const PAYMENT_CATEGORIES: { id: string; titleKey: CheckoutKey }[] = [
+  { id: "va", titleKey: "catVa" },
+  { id: "ewallet", titleKey: "catEwallet" },
+  { id: "qris", titleKey: "catQris" },
+  { id: "cc", titleKey: "catCc" },
+  { id: "other", titleKey: "catOther" },
 ];
 
 export default function CheckoutPage() {
@@ -175,24 +163,49 @@ export default function CheckoutPage() {
   const postalCode = watch("postalCode");
 
   const isCountrySelected = Boolean(selectedCountry);
-  const isIndonesia = selectedCountry === "ID" || selectedCountry === "Indonesia";
+  // Predikat region KANONIK (sama seperti resolveLocale) — menggantikan definisi
+  // lokal lama yang berbeda dari pricing.isInternational.
+  const isIndonesia = normalizeCountryCode(selectedCountry) === "ID";
   const isInternational = isCountrySelected && !isIndonesia;
+  // Bahasa checkout mengikuti ke MANA barang dikirim.
+  const locale: Locale = resolveLocale(selectedCountry);
+
+  // Membedakan "default ID" dari pilihan aktif user, supaya kita tidak menimpa
+  // cookie user_country (sinyal geo) hanya karena halaman checkout dibuka.
+  const userChoseCountryRef = useRef(false);
+
+  // Default negara awal = sinyal geo pengunjung (cookie user_country, diisi
+  // middleware dari header geo), supaya checkout dibuka dalam bahasa region
+  // asal pengunjung. Pilihan manual user di form tetap menang karena efek ini
+  // hanya jalan sekali saat mount.
+  useEffect(() => {
+    const geo = normalizeCountryCode(
+      document.cookie.match(/(?:^|;\s*)user_country=([^;]*)/)?.[1]
+    );
+    if (COUNTRIES.some((c) => c.code === geo)) {
+      setValue("country", geo);
+    }
+  }, [setValue]);
 
   const [exchangeRate, setExchangeRate] = useState<number>(17500);
   // 6.2: dinaikkan untuk memaksa re-fetch kurs (mis. setelah server menolak
   // submit karena kurs berubah / RATE_CHANGED).
   const [pricingNonce, setPricingNonce] = useState(0);
 
-  // Sync pricing when country changes
+  // Sync pricing when country changes.
+  // - Sebelum user memilih: panggil /api/pricing TANPA param → server memakai
+  //   cookie user_country / header geo, TIDAK menulis ulang cookie. (Fix
+  //   self-clobber: pengunjung internasional tidak lagi kehilangan region-nya.)
+  // - Setelah user memilih negara: kirim ?country= → server sinkronkan cookie ke
+  //   pilihan itu (sumber kebenaran baru = alamat pengiriman).
   useEffect(() => {
     let isMounted = true;
     async function updatePricing() {
       try {
-        const country = normalizeCountryCode(selectedCountry);
-        if (typeof document !== "undefined") {
-          document.cookie = `user_country=${country}; path=/; max-age=31536000; SameSite=Lax`;
-        }
-        const res = await fetch(`/api/pricing?country=${encodeURIComponent(country)}`);
+        const url = userChoseCountryRef.current
+          ? `/api/pricing?country=${encodeURIComponent(normalizeCountryCode(selectedCountry))}`
+          : `/api/pricing`;
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.usdToIdr) {
@@ -208,6 +221,14 @@ export default function CheckoutPage() {
       isMounted = false;
     };
   }, [selectedCountry, pricingNonce]);
+
+  // Perbarui <html lang> selama checkout aktif; kembalikan ke "en" saat keluar.
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    return () => {
+      document.documentElement.lang = "en";
+    };
+  }, [locale]);
 
   const getItemPrice = useCallback(
     (it: CartItem) => {
@@ -382,7 +403,7 @@ export default function CheckoutPage() {
       } catch (err) {
         if ((err as { name?: string })?.name === "AbortError") return;
         if (seq !== ratesSeqRef.current) return;
-        setRateError("Gagal memuat tarif pengiriman. Coba kembali.");
+        setRateError(t("rateLoadError", locale));
         setShippingRates([]);
         setShippingRatesFallback(false);
       } finally {
@@ -391,7 +412,7 @@ export default function CheckoutPage() {
         }
       }
     },
-    [items]
+    [items, locale]
   );
 
   // Batalkan request tarif yang masih berjalan saat komponen lepas.
@@ -493,7 +514,7 @@ export default function CheckoutPage() {
   // ── Submit Checkout ────────────────────────────────────────────────────────
   async function onSubmit(data: CheckoutFormData) {
     if (!selectedCourier) {
-      alert("Silakan pilih opsi pengiriman.");
+      alert(t("selectShippingFirst", locale));
       return;
     }
     setSubmitting(true);
@@ -532,7 +553,13 @@ export default function CheckoutPage() {
         if (errData?.code === "RATE_CHANGED") {
           setPricingNonce((n) => n + 1);
         }
-        throw new Error(errData.error || "Checkout gagal diproses");
+        throw new Error(
+          translateMessage(
+            errData.errorKey || errData.error || "checkoutFailed",
+            locale,
+            errData.errorParams ?? undefined
+          )
+        );
       }
 
       const result = await res.json();
@@ -564,13 +591,14 @@ export default function CheckoutPage() {
           paymentUrl: result.paymentUrl || null,
           reference: result.reference || null,
           instructionsUrl: result.paymentInstructionsUrl,
+          expiresAt: result.expiresAt || null,
         });
         setShowModal(true);
       } else {
         router.push(result.paymentInstructionsUrl);
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Terjadi kesalahan pada sistem.");
+      alert(err instanceof Error ? err.message : t("systemError", locale));
     } finally {
       setSubmitting(false);
     }
@@ -586,17 +614,17 @@ export default function CheckoutPage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-xs tracking-widest uppercase text-foreground">
-              YOUR BAG IS EMPTY
+              {t("bagIsEmpty", locale)}
             </h1>
             <p className="text-xs text-muted leading-relaxed">
-              Tambahkan produk RAZRBILZ ke keranjang sebelum melakukan checkout.
+              {t("bagIsEmptyDesc", locale)}
             </p>
           </div>
           <Link
             href="/"
             className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background text-[11px] tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
           >
-            RETURN TO SHOP
+            {t("returnToShop", locale)}
           </Link>
         </div>
       </div>
@@ -635,10 +663,10 @@ export default function CheckoutPage() {
             className="group inline-flex items-center gap-2 text-[10px] font-medium text-muted hover:text-foreground transition-colors uppercase tracking-[0.14em]"
           >
             <ArrowLeft size={13} strokeWidth={2} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
-            Back to Bag
+            {t("backToBag", locale)}
           </Link>
           <span className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-            Secure Checkout
+            {t("secureCheckout", locale)}
           </span>
         </div>
 
@@ -656,32 +684,32 @@ export default function CheckoutPage() {
                       1
                     </span>
                     <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                      CONTACT INFORMATION
+                      {t("contactInformation", locale)}
                     </h2>
                   </div>
                 </div>
 
                 <div className="space-y-3 pt-1">
                   <div>
-                    <FieldLabel>Email Address *</FieldLabel>
+                    <FieldLabel>{t("emailAddress", locale)} *</FieldLabel>
                     <input
                       {...register("email")}
                       type="email"
                       placeholder="alex@example.com"
                       className={inputCls}
                     />
-                    <FieldError message={errors.email?.message} />
+                    <FieldError message={errors.email?.message} locale={locale} />
                   </div>
 
                   <div>
-                    <FieldLabel>Phone Number *</FieldLabel>
+                    <FieldLabel>{t("phoneNumber", locale)} *</FieldLabel>
                     <input
                       {...register("phone")}
                       type="tel"
                       placeholder="08123456789"
                       className={inputCls}
                     />
-                    <FieldError message={errors.phone?.message} />
+                    <FieldError message={errors.phone?.message} locale={locale} />
                   </div>
 
                   <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
@@ -691,7 +719,7 @@ export default function CheckoutPage() {
                       className="rounded border-border bg-surface text-foreground focus:ring-foreground"
                     />
                     <span className="text-[11px] text-muted">
-                      Email me with news and exclusive offers
+                      {t("newsOffers", locale)}
                     </span>
                   </label>
                 </div>
@@ -705,7 +733,7 @@ export default function CheckoutPage() {
                       2
                     </span>
                     <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                      DELIVERY ADDRESS
+                      {t("deliveryAddress", locale)}
                     </h2>
                   </div>
                 </div>
@@ -713,10 +741,17 @@ export default function CheckoutPage() {
                 <div className="space-y-3 pt-1">
                   {/* Country Selector */}
                   <div>
-                    <FieldLabel>Country / Region *</FieldLabel>
+                    <FieldLabel>{t("countryRegion", locale)} *</FieldLabel>
                     <div className="relative">
-                      <select {...register("country")} className={selectCls}>
-                        <option value="">Pilih Negara</option>
+                      <select
+                        {...register("country", {
+                          onChange: () => {
+                            userChoseCountryRef.current = true;
+                          },
+                        })}
+                        className={selectCls}
+                      >
+                        <option value="">{t("selectCountry", locale)}</option>
                         {COUNTRIES.map((c) => (
                           <option key={c.code} value={c.code}>
                             {c.name}
@@ -728,23 +763,23 @@ export default function CheckoutPage() {
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                       />
                     </div>
-                    <FieldError message={errors.country?.message} />
+                    <FieldError message={errors.country?.message} locale={locale} />
                   </div>
 
                   {/* Name Fields */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <FieldLabel>First Name *</FieldLabel>
+                      <FieldLabel>{t("firstName", locale)} *</FieldLabel>
                       <input
                         {...register("firstName")}
                         type="text"
                         placeholder="Alex"
                         className={inputCls}
                       />
-                      <FieldError message={errors.firstName?.message} />
+                      <FieldError message={errors.firstName?.message} locale={locale} />
                     </div>
                     <div>
-                      <FieldLabel>Last Name</FieldLabel>
+                      <FieldLabel>{t("lastName", locale)}</FieldLabel>
                       <input
                         {...register("lastName")}
                         type="text"
@@ -756,23 +791,23 @@ export default function CheckoutPage() {
 
                   {/* Street Address */}
                   <div>
-                    <FieldLabel>Street Address *</FieldLabel>
+                    <FieldLabel>{t("streetAddress", locale)} *</FieldLabel>
                     <input
                       {...register("address")}
                       type="text"
-                      placeholder="Nama jalan, nomor rumah / gedung"
+                      placeholder={t("streetPlaceholder", locale)}
                       className={inputCls}
                     />
-                    <FieldError message={errors.address?.message} />
+                    <FieldError message={errors.address?.message} locale={locale} />
                   </div>
 
                   {/* Apartment / Suite */}
                   <div>
-                    <FieldLabel>Apartment, suite, unit (optional)</FieldLabel>
+                    <FieldLabel>{t("apartmentUnit", locale)}</FieldLabel>
                     <input
                       {...register("apartment")}
                       type="text"
-                      placeholder="Lantai, blok, atau unit (opsional)"
+                      placeholder={t("apartmentPlaceholder", locale)}
                       className={inputCls}
                     />
                   </div>
@@ -782,7 +817,7 @@ export default function CheckoutPage() {
                     <>
                       {/* Province */}
                       <div>
-                        <FieldLabel>Province *</FieldLabel>
+                        <FieldLabel>{t("province", locale)} *</FieldLabel>
                         <div className="relative">
                           <select
                             {...register("province")}
@@ -790,7 +825,7 @@ export default function CheckoutPage() {
                             disabled={loadingProvinces}
                           >
                             <option value="">
-                              {loadingProvinces ? "Memuat Provinsi..." : "Pilih Provinsi"}
+                              {loadingProvinces ? t("loadingProvinces", locale) : t("selectProvince", locale)}
                             </option>
                             {provinces.map((prov) => (
                               <option key={prov} value={prov}>
@@ -803,12 +838,12 @@ export default function CheckoutPage() {
                             className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                           />
                         </div>
-                        <FieldError message={errors.province?.message} />
+                        <FieldError message={errors.province?.message} locale={locale} />
                       </div>
 
                       {/* City */}
                       <div>
-                        <FieldLabel>City / Regency *</FieldLabel>
+                        <FieldLabel>{t("cityRegency", locale)} *</FieldLabel>
                         <div className="relative">
                           <select
                             {...register("city")}
@@ -817,10 +852,10 @@ export default function CheckoutPage() {
                           >
                             <option value="">
                               {!selectedProvince
-                                ? "Pilih provinsi terlebih dahulu"
+                                ? t("selectProvinceFirst", locale)
                                 : loadingCities
-                                  ? "Memuat Kota/Kabupaten..."
-                                  : "Pilih Kota / Kabupaten"}
+                                  ? t("loadingCities", locale)
+                                  : t("selectCity", locale)}
                             </option>
                             {cities.map((city) => (
                               <option key={city} value={city}>
@@ -833,14 +868,14 @@ export default function CheckoutPage() {
                             className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                           />
                         </div>
-                        <FieldError message={errors.city?.message} />
+                        <FieldError message={errors.city?.message} locale={locale} />
                       </div>
 
                       {/* District & Postal Code */}
                       <div className="grid grid-cols-2 gap-3">
                         {/* District */}
                         <div>
-                          <FieldLabel>District (Kecamatan) *</FieldLabel>
+                          <FieldLabel>{t("district", locale)} *</FieldLabel>
                           <div className="relative">
                             <select
                               {...register("district")}
@@ -849,10 +884,10 @@ export default function CheckoutPage() {
                             >
                               <option value="">
                                 {!selectedCity
-                                  ? "Pilih kota dulu"
+                                  ? t("selectCityFirst", locale)
                                   : loadingDistricts
-                                    ? "Memuat..."
-                                    : "Pilih Kecamatan"}
+                                    ? t("loadingGeneric", locale)
+                                    : t("selectDistrict", locale)}
                               </option>
                               {districts.map((dist) => (
                                 <option key={dist} value={dist}>
@@ -865,16 +900,16 @@ export default function CheckoutPage() {
                               className="absolute right-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
                             />
                           </div>
-                          <FieldError message={errors.district?.message} />
+                          <FieldError message={errors.district?.message} locale={locale} />
                         </div>
 
                         {/* Postal Code */}
                         <div>
-                          <FieldLabel>Postal Code *</FieldLabel>
+                          <FieldLabel>{t("postalCode", locale)} *</FieldLabel>
                           {availablePostalCodes.length > 1 ? (
                             <div className="relative">
                               <select {...register("postalCode")} className={selectCls}>
-                                <option value="">Pilih Kode Pos</option>
+                                <option value="">{t("selectPostalCode", locale)}</option>
                                 {availablePostalCodes.map((code) => (
                                   <option key={code} value={code}>
                                     {code}
@@ -894,12 +929,12 @@ export default function CheckoutPage() {
                               placeholder={
                                 availablePostalCodes.length === 1
                                   ? availablePostalCodes[0]
-                                  : "Contoh: 12345"
+                                  : t("postalExample", locale)
                               }
                               className={inputCls}
                             />
                           )}
-                          <FieldError message={errors.postalCode?.message} />
+                          <FieldError message={errors.postalCode?.message} locale={locale} />
                         </div>
                       </div>
                     </>
@@ -909,34 +944,34 @@ export default function CheckoutPage() {
                   {isInternational && (
                     <>
                       <div>
-                        <FieldLabel>State / Province / Region</FieldLabel>
+                        <FieldLabel>{t("stateRegion", locale)}</FieldLabel>
                         <input
                           {...register("province")}
                           type="text"
-                          placeholder="e.g. California, Ontario, NSW"
+                          placeholder={t("statePlaceholder", locale)}
                           className={inputCls}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <FieldLabel>City *</FieldLabel>
+                          <FieldLabel>{t("city", locale)} *</FieldLabel>
                           <input
                             {...register("city")}
                             type="text"
-                            placeholder="e.g. Los Angeles"
+                            placeholder={t("cityPlaceholder", locale)}
                             className={inputCls}
                           />
-                          <FieldError message={errors.city?.message} />
+                          <FieldError message={errors.city?.message} locale={locale} />
                         </div>
                         <div>
-                          <FieldLabel>Postal / ZIP Code *</FieldLabel>
+                          <FieldLabel>{t("zipCode", locale)} *</FieldLabel>
                           <input
                             {...register("postalCode")}
                             type="text"
-                            placeholder="e.g. 90001"
+                            placeholder={t("zipPlaceholder", locale)}
                             className={inputCls}
                           />
-                          <FieldError message={errors.postalCode?.message} />
+                          <FieldError message={errors.postalCode?.message} locale={locale} />
                         </div>
                       </div>
                     </>
@@ -952,12 +987,12 @@ export default function CheckoutPage() {
                       3
                     </span>
                     <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                      SHIPPING METHOD
+                      {t("shippingMethod", locale)}
                     </h2>
                   </div>
                   {shippingRates.length > 0 && (
                     <span className="text-[10px] text-muted uppercase tracking-wider">
-                      {shippingRates.length} opsi tersedia
+                      {tf(shippingRates.length === 1 ? "optionsAvailableOne" : "optionsAvailable", locale, { count: shippingRates.length })}
                     </span>
                   )}
                 </div>
@@ -966,7 +1001,7 @@ export default function CheckoutPage() {
                 {loadingRates && (
                   <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted">
                     <Loader2 size={16} className="animate-spin text-foreground" />
-                    <span>Menghitung tarif pengiriman Biteship...</span>
+                    <span>{t("calculatingRates", locale)}</span>
                   </div>
                 )}
 
@@ -982,7 +1017,7 @@ export default function CheckoutPage() {
                 {!loadingRates && !rateError && shippingRates.length === 0 && (
                   <div className="py-6 text-center text-xs text-muted space-y-1">
                     <Truck size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
-                    <p>Lengkapi alamat pengiriman di atas untuk melihat opsi kurir.</p>
+                    <p>{t("completeAddressForRates", locale)}</p>
                   </div>
                 )}
 
@@ -993,7 +1028,9 @@ export default function CheckoutPage() {
                       <div className="mb-1 flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
                         <AlertCircle size={14} className="mt-0.5 flex-shrink-0 text-amber-300" />
                         <span>
-                          Ongkir di bawah adalah <strong className="text-amber-100">estimasi fallback</strong>, bukan tarif kurir real-time (layanan tarif langsung sedang tidak tersedia). Harga final dapat disesuaikan.
+                          {t("ratesFallbackLead", locale)}{" "}
+                          <strong className="text-amber-100">{t("ratesFallbackEmph", locale)}</strong>
+                          {t("ratesFallbackTail", locale)}
                         </span>
                       </div>
                     )}
@@ -1027,9 +1064,13 @@ export default function CheckoutPage() {
                                 {`${rate.courier_name} — ${rate.courier_service_name}`}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
-                                {isInternational
-                                  ? `Estimated arrival: ${rate.duration || "10-14 business days"}`
-                                  : `Estimasi tiba: ${rate.duration || "2-4 hari kerja"}`}
+                                {`${t("estimatedArrival", locale)} ${
+                                  rate.duration ||
+                                  t(
+                                    isInternational ? "estDurationIntl" : "estDurationDomestic",
+                                    locale
+                                  )
+                                }`}
                               </p>
                             </div>
                           </div>
@@ -1047,17 +1088,11 @@ export default function CheckoutPage() {
                   <div className="mt-3 flex items-start gap-2 px-1">
                     <span className="text-muted mt-0.5 flex-shrink-0 text-[11px]">⏱</span>
                     <p className="text-[10px] text-muted leading-relaxed">
-                      {isInternational ? (
-                        <>
-                          Shipping estimate is counted <strong className="text-foreground/70">from when your order is ready to ship</strong>.
-                          {" "}As all items are <strong className="text-foreground/70">pre-order (14–21 days production)</strong>, total delivery time = production + shipping duration above.
-                        </>
-                      ) : (
-                        <>
-                          Estimasi tiba dihitung <strong className="text-foreground/70">sejak produk siap dikirimkan</strong>.
-                          {" "}Karena semua produk bersifat <strong className="text-foreground/70">pre-order (produksi 14–21 hari)</strong>, total waktu pengiriman = produksi + durasi pengiriman di atas.
-                        </>
-                      )}
+                      {t("preOrderLead", locale)}{" "}
+                      <strong className="text-foreground/70">{t("preOrderEmph1", locale)}</strong>
+                      {t("preOrderMid", locale)}{" "}
+                      <strong className="text-foreground/70">{t("preOrderEmph2", locale)}</strong>
+                      {t("preOrderTail", locale)}
                     </p>
                   </div>
                 )}
@@ -1071,19 +1106,19 @@ export default function CheckoutPage() {
                       4
                     </span>
                     <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                      PAYMENT METHOD
+                      {t("paymentMethod", locale)}
                     </h2>
                   </div>
                   <div className="flex items-center gap-1.5 text-muted">
                     <ShieldCheck size={14} className="text-foreground" />
-                    <span className="text-[10px] uppercase tracking-wider">Tersertifikasi BI</span>
+                    <span className="text-[10px] uppercase tracking-wider">{t("biCertified", locale)}</span>
                   </div>
                 </div>
 
                 {loadingMethods ? (
                   <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2 text-xs text-muted border border-border">
                     <Loader2 size={15} className="animate-spin text-foreground" />
-                    <span>Memuat pilihan metode pembayaran...</span>
+                    <span>{t("loadingPaymentMethods", locale)}</span>
                   </div>
                 ) : paymentMethods.length > 0 ? (
                   <div className="space-y-2.5 pt-1">
@@ -1131,7 +1166,7 @@ export default function CheckoutPage() {
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
                                   <p className="text-xs uppercase tracking-wider text-foreground font-semibold">
-                                    {cat.title}
+                                    {t(cat.titleKey, locale)}
                                   </p>
                                   {isCategoryActive && selectedPaymentMethod && (
                                     <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-foreground text-background font-medium tracking-wide">
@@ -1153,7 +1188,7 @@ export default function CheckoutPage() {
                           {isExpanded && (
                             <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
                               <p className="text-[10px] uppercase text-muted tracking-wider pt-2 pb-1 font-medium">
-                                Choose {cat.title}:
+                                {t("choose", locale)} {t(cat.titleKey, locale)}:
                               </p>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                 {categoryMethods.map((method) => {
@@ -1195,7 +1230,7 @@ export default function CheckoutPage() {
                                         </p>
                                       </div>
                                       <span className="text-[10px] text-muted whitespace-nowrap ml-2">
-                                        {feeNumber > 0 ? `+ ${formatRupiah(feeNumber)}` : "Bebas Biaya"}
+                                        {feeNumber > 0 ? `+ ${formatRupiah(feeNumber)}` : t("noFee", locale)}
                                       </span>
                                     </button>
                                   );
@@ -1209,7 +1244,8 @@ export default function CheckoutPage() {
                   </div>
                 ) : (
                   <p className="text-xs text-muted leading-relaxed">
-                    Setelah menekan <strong>PRE-ORDER NOW</strong>, instruksi pembayaran Duitku akan ditampilkan di halaman selanjutnya.
+                    {t("paymentNoteLead", locale)} <strong>{t("submitCta", locale)}</strong>
+                    {t("paymentNoteTail", locale)}
                   </p>
                 )}
               </div>
@@ -1223,7 +1259,7 @@ export default function CheckoutPage() {
                 {/* Summary Header */}
                 <div className="px-6 py-5 border-b border-border">
                   <h2 className="text-[10px] uppercase tracking-[0.18em] text-foreground">
-                    ORDER SUMMARY ({totalCount})
+                    {t("orderSummary", locale)} ({totalCount})
                   </h2>
                 </div>
 
@@ -1254,7 +1290,7 @@ export default function CheckoutPage() {
                           {it.name}
                         </p>
                         <p className="text-[10px] text-muted mt-0.5">
-                          SIZE {it.size} &times; {it.quantity}
+                          {t("sizeWord", locale)} {it.size} &times; {it.quantity}
                         </p>
                       </div>
 
@@ -1268,35 +1304,35 @@ export default function CheckoutPage() {
 
                 {isInternational && (
                   <div className="mx-6 mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
-                    Product prices are adjusted for international buyers ({selectedCountry}) based on live USD/IDR exchange rates.
+                    {tf("intlPriceNote", locale, { country: selectedCountry })}
                   </div>
                 )}
 
                 {/* Price Breakdown */}
                 <div className="px-6 py-5 space-y-3">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted">Subtotal ({totalCount} items)</span>
+                    <span className="text-muted">{tf(totalCount === 1 ? "subtotalOne" : "subtotalCount", locale, { count: totalCount })}</span>
                     <span className="text-foreground">{formatRupiah(calculatedSubtotal)}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-muted flex items-center gap-1">
-                      Shipping
+                      {t("shipping", locale)}
                       <HelpCircle size={12} className="text-muted/80" />
                     </span>
                     <span className="text-foreground">
-                      {selectedCourier ? formatRupiah(selectedCourier.price) : "Pilih kurir"}
+                      {selectedCourier ? formatRupiah(selectedCourier.price) : t("selectCourier", locale)}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted">Service Fee</span>
+                    <span className="text-muted">{t("serviceFee", locale)}</span>
                     <span className="text-foreground">
                       {selectedPaymentMethod
                         ? isCustomerBearsFee(selectedPaymentMethod)
                           ? Number(selectedPaymentMethod.totalFee) > 0
                             ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
-                            : "Bebas Biaya"
+                            : t("noFee", locale)
                           : "-"
                         : "—"}
                     </span>
@@ -1306,11 +1342,11 @@ export default function CheckoutPage() {
                   <div className="pt-4 border-t border-border flex justify-between items-baseline">
                     <div>
                       <span className="text-[11px] uppercase tracking-widest text-foreground block">
-                        TOTAL DUE
+                        {t("totalDue", locale)}
                       </span>
                       {paymentFee > 0 && (
                         <span className="text-[10px] text-muted block mt-0.5">
-                          Termasuk ongkir & biaya layanan
+                          {t("includesFees", locale)}
                         </span>
                       )}
                     </div>
@@ -1330,14 +1366,14 @@ export default function CheckoutPage() {
                     {submitting ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
-                        <span>MEMPROSES PESANAN...</span>
+                        <span>{t("processing", locale)}</span>
                       </>
                     ) : (
-                      <span>PRE-ORDER NOW</span>
+                      <span>{t("submitCta", locale)}</span>
                     )}
                   </button>
                   <p className="text-[10px] text-muted text-center mt-3 tracking-wide">
-                    Taxes calculated at next step &bull; Guaranteed safe checkout
+                    {t("safeCheckout", locale)}
                   </p>
                 </div>
               </div>
@@ -1350,6 +1386,8 @@ export default function CheckoutPage() {
 
       {/* On-Page Payment Modal for Direct VA & QRIS settlement */}
       <PaymentModal
+        // Remount per order supaya hitung mundur, polling dan QR selalu segar.
+        key={modalData?.orderNumber ?? "payment-modal"}
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
@@ -1358,6 +1396,7 @@ export default function CheckoutPage() {
           }
         }}
         data={modalData}
+        locale={locale}
       />
     </div>
   );

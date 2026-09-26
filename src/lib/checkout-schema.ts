@@ -1,30 +1,35 @@
 import { z } from "zod";
 
+/**
+ * Pesan validasi disimpan sebagai KUNCI dictionary (lihat `translateMessage` di
+ * `checkout-i18n.ts`), bukan teks jadi, supaya field error ikut berganti bahasa
+ * mengikuti negara pengiriman tanpa perlu merekonstruksi schema per locale.
+ */
 export const checkoutSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
+  firstName: z.string().min(1, "errFirstName"),
   lastName: z.string().optional(),
   customerName: z.string().optional(),
-  email: z.string().email("Please enter a valid email"),
+  email: z.string().email("errEmail"),
   phone: z
     .string()
-    .min(8, "Phone number must be at least 8 digits")
-    .max(20, "Phone number must not exceed 20 digits"),
-  country: z.string().min(2, "Country is required"),
-  province: z.string().min(1, "Province is required"),
+    .min(8, "errPhoneMin")
+    .max(20, "errPhoneMax"),
+  country: z.string().min(2, "errCountry"),
+  province: z.string().min(1, "errProvince"),
   address: z
     .string()
-    .min(3, "Address is required")
-    .max(500, "Address is too long"),
+    .min(3, "errAddress")
+    .max(500, "errAddressLong"),
   apartment: z.string().optional(),
   district: z.string().optional(),
   city: z
     .string()
-    .min(2, "City is required")
-    .max(100, "City is too long"),
+    .min(2, "errCity")
+    .max(100, "errCityLong"),
   postalCode: z
     .string()
-    .min(3, "Postal code is required")
-    .max(10, "Postal code is too long"),
+    .min(3, "errPostal")
+    .max(10, "errPostalLong"),
   newsOffers: z.boolean().optional(),
 });
 

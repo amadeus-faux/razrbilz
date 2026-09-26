@@ -25,7 +25,7 @@ export interface BiteshipWebhookPayload {
 }
 
 export function mapBiteshipStatusToInternal(biteshipStatus: string): {
-  orderStatus: "processing" | "ready_to_ship" | "shipped" | "delivered" | "cancelled";
+  orderStatus: "processing" | "ready_to_ship" | "shipped" | "delivered" | "cancelled" | "returned";
   description: string;
 } {
   const normalized = (biteshipStatus || "").toLowerCase().trim();
@@ -52,7 +52,7 @@ export function mapBiteshipStatusToInternal(biteshipStatus: string): {
       return { orderStatus: "cancelled", description: "Kurir tidak ditemukan atau pengiriman ditolak" };
     case "returned":
     case "disposed":
-      return { orderStatus: "cancelled", description: "Paket dikembalikan ke pengirim" };
+      return { orderStatus: "returned", description: "Paket dikembalikan ke pengirim" };
     default:
       return { orderStatus: "ready_to_ship", description: `Status Biteship: ${biteshipStatus}` };
   }

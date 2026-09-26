@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Script from "next/script";
 import "./globals.css";
 import { PageTransitionProvider } from "@/context/PageTransitionContext";
 import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay";
@@ -42,30 +41,14 @@ export const metadata: Metadata = {
   },
 };
 
-const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "";
-const MIDTRANS_IS_PRODUCTION = process.env.MIDTRANS_IS_PRODUCTION === "true";
-const MIDTRANS_SNAP_URL = MIDTRANS_IS_PRODUCTION
-  ? "https://app.midtrans.com/snap/snap.js"
-  : "https://app.sandbox.midtrans.com/snap/snap.js";
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="id" className={`h-full antialiased ${tanker.variable}`}>
+    <html lang="en" className={`h-full antialiased ${tanker.variable}`}>
       <body className="min-h-full flex flex-col">
         <PageTransitionProvider>
           {children}
           <PageTransitionOverlay />
         </PageTransitionProvider>
-
-        {/* Midtrans Snap SDK — loaded globally so window.snap is available on checkout */}
-        {MIDTRANS_CLIENT_KEY && (
-          <Script
-            src={MIDTRANS_SNAP_URL}
-            data-client-key={MIDTRANS_CLIENT_KEY}
-            strategy="lazyOnload"
-            id="midtrans-snap-script"
-          />
-        )}
       </body>
     </html>
   );

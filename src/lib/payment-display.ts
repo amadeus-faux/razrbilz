@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/checkout-i18n";
+
 /**
  * Klasifikasi metode pembayaran Duitku ke kategori tampilan, supaya instruksi
  * pembayaran yang dirender SESUAI metode yang benar-benar dipilih customer.
@@ -66,10 +68,15 @@ export function classifyPaymentMethod(input: {
 }
 
 /** Label retailer yang ramah untuk instruksi (mis. "Indomaret" / "Alfamart"). */
-export function retailOutletLabel(nameOrCode?: string | null): string {
+export function retailOutletLabel(
+  nameOrCode?: string | null,
+  locale: Locale = "id"
+): string {
   const n = (nameOrCode ?? "").toUpperCase();
   if (n.includes("ALFA")) return "Alfamart";
   // "IR" = kode Indomaret yang terkonfirmasi dari data produksi.
   if (n.includes("INDO") || n === "IR") return "Indomaret";
-  return nameOrCode?.trim() || "gerai retail";
+  // Nama retailer tak dikenal → kembalikan apa adanya; hanya fallback-nya yang
+  // sadar-lokal, supaya UI Inggris tidak menampilkan "gerai retail".
+  return nameOrCode?.trim() || (locale === "en" ? "retail outlet" : "gerai retail");
 }

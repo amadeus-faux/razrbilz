@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCartStore, type CartItem as CartItemType } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
 import { resolveDisplayPrice } from "@/lib/pricing";
-import { Minus, Plus, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowRight, ShieldCheck, Truck, RefreshCw, Lock } from "lucide-react";
 import { useSyncExternalStore, useState, useEffect, useCallback } from "react";
 
 const emptyItems: CartItemType[] = [];
@@ -168,7 +168,7 @@ export default function CartPage() {
                       </div>
                       {typeof item.stock === "number" && item.quantity >= item.stock && (
                         <span className="text-[9px] uppercase tracking-wider text-amber-400/90">
-                          Maks {item.stock}
+                          Max qty {item.stock}
                         </span>
                       )}
                     </div>
@@ -184,9 +184,9 @@ export default function CartPage() {
             {/* Trust strip — lighter footnote treatment */}
             <div className="flex items-center justify-between gap-4 pt-6 mt-2 border-t border-border">
               {[
-                { icon: Truck, label: "Pre Order", sub: "14–21 business days" },
+                { icon: Truck, label: "Pre Order", sub: "14–21 days production" },
                 { icon: ShieldCheck, label: "100% Authentic", sub: "Made with passion" },
-                { icon: RefreshCw, label: "Easy Exchange", sub: "Within 3 days" },
+                { icon: Lock, label: "Secure Payment", sub: "Via Duitku" },
               ].map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex items-center gap-2.5 min-w-0">
                   <Icon size={15} className="text-disabled flex-shrink-0" strokeWidth={1.5} />
@@ -209,7 +209,7 @@ export default function CartPage() {
                 </h2>
                 {country && country !== "ID" && (
                   <p className="text-[10px] text-amber-300/80 mt-1">
-                    Harga disesuaikan untuk region {country}
+                    Prices adjusted for region {country}
                   </p>
                 )}
               </div>

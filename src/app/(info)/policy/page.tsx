@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Policy & Shipping — RAZRBILZ",
-  description: "Kebijakan pengiriman, pengembalian, dan pembayaran RAZRBILZ",
+  description: "RAZRBILZ shipping, returns, and payment policy",
 };
 
 interface PolicySectionProps {
@@ -35,39 +35,51 @@ export default function PolicyPage() {
 
       {/* Sections */}
       <div className="space-y-8 divide-y divide-border">
-        <PolicySection title="Pengiriman">
+        <PolicySection title="Production &amp; Shipping">
           <p>
-            Pesanan diproses dalam 1–2 hari kerja (Senin–Jumat, tidak termasuk
-            hari libur nasional).
+            Every RAZRBILZ piece is made to order. Production takes{" "}
+            <strong className="text-foreground font-medium">14–21 days</strong>, and the delivery
+            estimate shown at checkout is counted from the moment your order is ready to ship —
+            so total time from payment to arrival is the production period plus the shipping
+            duration.
           </p>
           <p>
-            Pengiriman menggunakan kurir resmi rekanan (JNE, SiCepat, J&T) melalui
-            integrasi Biteship. Nomor resi pengiriman akan diberikan segera setelah
-            paket diserahkan ke pihak ekspedisi.
+            Domestic delivery uses our partner couriers through the Biteship integration
+            (JNE REG, J&amp;T EZ, SiCepat REG &amp; SiUNT, Pos Indonesia REG, and Gojek
+            instant / same-day). International orders are shipped with Pos Indonesia. The
+            available options and live rates are calculated for your address at checkout.
+          </p>
+          <p>
+            The tracking number is provided as soon as the parcel is handed over to the courier.
           </p>
         </PolicySection>
 
         <div className="pt-8">
-          <PolicySection title="Pengembalian & Penukaran">
+          <PolicySection title="Returns &amp; Refunds">
             <p>
-              Penukaran ukuran dapat dilakukan maksimal 3 hari setelah barang diterima,
-              dengan syarat produk belum dipakai, belum dicuci, dan hangtag masih
-              terpasang sempurna.
+              All sales are final. We do not accept returns, refunds, or size exchanges for
+              change of mind or incorrect size selection. The only exception is a production
+              defect or an error on our side.
             </p>
             <p>
-              Ongkos kirim untuk penukaran ukuran ditanggung oleh pembeli, kecuali
-              terdapat cacat produksi atau kesalahan pengiriman dari pihak kami.
+              The full conditions, including the unboxing-video requirement for defect claims,
+              are set out on the{" "}
+              <a href="/refund-policy" className="text-foreground underline underline-offset-4">
+                Return &amp; Refund Policy
+              </a>{" "}
+              page, which is the authoritative version.
             </p>
           </PolicySection>
         </div>
 
         <div className="pt-8">
-          <PolicySection title="Pembayaran">
+          <PolicySection title="Payment">
             <p>
-              Semua transaksi diproses secara aman melalui{" "}
-              <strong className="text-foreground font-medium">Midtrans Payment Gateway</strong>.
-              Kami menerima Transfer Bank (Virtual Account BCA, Mandiri, BNI, BRI),
-              QRIS, GoPay, ShopeePay, dan Kartu Kredit.
+              All transactions are processed securely through the{" "}
+              <strong className="text-foreground font-medium">Duitku Payment Gateway</strong>. We
+              accept a wide range of payment methods, including bank and virtual account
+              transfers, e-wallets, QRIS, credit cards, and retail outlet payments. The methods
+              currently available to you are shown at checkout.
             </p>
           </PolicySection>
         </div>

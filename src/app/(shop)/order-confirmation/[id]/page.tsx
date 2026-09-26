@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatRupiah } from "@/lib/utils";
+import { orderStatusLabel, paymentStatusLabel } from "@/lib/order-status-labels";
 import { CheckCircle2, ArrowRight, Truck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
@@ -38,14 +39,14 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
         <h1 className="text-label text-base mb-2">ORDER RECEIVED</h1>
         <p className="text-xs text-muted mb-8">
-          Terima kasih telah berbelanja di RAZRBILZ. Detail pesanan Anda telah
-          kami terima.
+          Thank you for shopping at RAZRBILZ. Your order details have
+          been received.
         </p>
 
         {/* Order Details Card */}
         <div className="border border-border p-6 text-left space-y-4 mb-8">
           <div className="flex justify-between border-b border-border pb-3">
-            <span className="text-xs text-muted">Nomor Pesanan</span>
+            <span className="text-xs text-muted">Order Number</span>
             <span className="text-xs font-mono font-medium">
               {order ? order.orderNumber : id}
             </span>
@@ -54,29 +55,21 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
           {order && (
             <>
               <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-xs text-muted">Penerima</span>
+                <span className="text-xs text-muted">Recipient</span>
                 <span className="text-xs font-medium">{order.customerName}</span>
               </div>
 
               <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-xs text-muted">Status Pembayaran</span>
-                <span className="text-xs font-medium uppercase">
-                  {order.paymentStatus}
+                <span className="text-xs text-muted">Payment Status</span>
+                <span className="text-xs font-medium">
+                  {paymentStatusLabel(order.paymentStatus)}
                 </span>
               </div>
 
               <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-xs text-muted">Status Pesanan</span>
+                <span className="text-xs text-muted">Order Status</span>
                 <span className="text-xs font-medium">
-                  {order.orderStatus === "in_production"
-                    ? "DALAM PRODUKSI (PRE-ORDER 14-21 HARI)"
-                    : order.orderStatus === "ready_to_ship"
-                    ? "SIAP DIKIRIM (MENUNGGU KURIR)"
-                    : order.orderStatus === "shipped"
-                    ? "SEDANG DIKIRIM"
-                    : order.orderStatus === "delivered"
-                    ? "SELESAI (DITERIMA)"
-                    : order.orderStatus.toUpperCase()}
+                  {orderStatusLabel(order.orderStatus)}
                 </span>
               </div>
 
@@ -85,7 +78,7 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider text-muted block">
-                        Kurir & Layanan
+                        Courier &amp; Service
                       </span>
                       <span className="text-xs font-medium text-foreground">
                         {order.manualCourier || order.courier}
@@ -99,12 +92,12 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-opacity"
                     >
                       <Truck size={12} />
-                      <span>Lacak Paket</span>
+                      <span>Track Package</span>
                     </a>
                   </div>
 
                   <div className="flex justify-between items-center pt-1 border-t border-border/40">
-                    <span className="text-xs text-muted">Nomor Resi</span>
+                    <span className="text-xs text-muted">Tracking Number</span>
                     <span className="text-xs font-mono font-bold tracking-wider text-foreground">
                       {order.trackingNumber}
                     </span>
@@ -112,9 +105,9 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
                   {order.manualShippedAt && (
                     <div className="flex justify-between items-center text-[11px] text-muted">
-                      <span>Tanggal Dikirim</span>
+                      <span>Shipped On</span>
                       <span>
-                        {new Date(order.manualShippedAt).toLocaleDateString("id-ID", {
+                        {new Date(order.manualShippedAt).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
@@ -125,13 +118,13 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
                   {order.country && order.country !== "ID" && (
                     <p className="text-[10.5px] text-muted/80 pt-1 border-t border-border/40 leading-relaxed italic">
-                      * Catatan: Status pelacakan di sistem pos negara tujuan terkadang membutuhkan beberapa hari kerja untuk diperbarui setelah paket keluar dari Indonesia.
+                      * Note: Tracking status in the destination country's postal system can take a few business days to update after the package leaves Indonesia.
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="flex justify-between border-b border-border pb-3">
-                  <span className="text-xs text-muted">Kurir</span>
+                  <span className="text-xs text-muted">Courier</span>
                   <span className="text-xs font-medium">{order.courier}</span>
                 </div>
               )}
@@ -148,7 +141,7 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
           href="/"
           className="inline-flex items-center gap-2 text-label border-b border-foreground pb-1 hover:opacity-60 transition-opacity"
         >
-          KEMBALI KE SHOP
+          BACK TO SHOP
           <ArrowRight size={14} strokeWidth={1.5} />
         </Link>
       </div>

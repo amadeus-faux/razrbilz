@@ -35,7 +35,7 @@ export default function ContactPage() {
         form.reset();
       } else {
         const data = await response.json();
-        throw new Error(data.error || "Gagal mengirim pesan. Silakan coba lagi.");
+        throw new Error(data.error || "Failed to send your message. Please try again.");
       }
     } catch (err) {
       setErrorMessage(
@@ -180,7 +180,7 @@ export default function ContactPage() {
               <input
                 type="text"
                 name="subject"
-                placeholder="E.g., Size Exchange RZ-12345"
+                placeholder="E.g., Defect Claim RZ-12345"
                 className={inputCls}
               />
             </div>

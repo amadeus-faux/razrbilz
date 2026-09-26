@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createDuitkuTransaction } from "@/lib/duitku";
 import { generateOrderNumber } from "@/lib/utils";
+import { sendOrderReceivedEmail } from "@/lib/email";
 import { resolveDisplayPrice, isInternational } from "@/lib/pricing";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import {
@@ -16,6 +17,24 @@ interface CheckoutItem {
   size: string;
   quantity: number;
   priceAtBuy?: number;
+}
+
+/**
+ * Error yang bisa ditampilkan ke customer. `error` tetap teks Indonesia supaya
+ * terbaca di log server, sedangkan `errorKey` adalah kunci dictionary
+ * `checkout-i18n` yang dipakai client untuk merender pesan dalam bahasa checkout
+ * yang sedang dipakai (lihat `translateMessage`).
+ */
+class CheckoutError extends Error {
+  constructor(
+    message: string,
+    readonly errorKey: string,
+    readonly errorParams?: Record<string, string | number>,
+    readonly status = 400
+  ) {
+    super(message);
+    this.name = "CheckoutError";
+  }
 }
 
 export async function POST(request: Request) {
@@ -61,7 +80,7 @@ export async function POST(request: Request) {
 
     if (!items || items.length === 0) {
       return NextResponse.json(
-        { error: "Keranjang belanja kosong" },
+        { error: "Keranjang belanja kosong", errorKey: "errEmptyCart" },
         { status: 400 }
       );
     }
@@ -73,7 +92,10 @@ export async function POST(request: Request) {
       const q = item.quantity;
       if (typeof q !== "number" || !Number.isInteger(q) || q < 1) {
         return NextResponse.json(
-          { error: "Quantity setiap item harus berupa bilangan bulat minimal 1." },
+          {
+            error: "Quantity setiap item harus berupa bilangan bulat minimal 1.",
+            errorKey: "errQtyInteger",
+          },
           { status: 400 }
         );
       }
@@ -99,6 +121,7 @@ export async function POST(request: Request) {
               error:
                 "Kurs konversi baru saja diperbarui. Silakan muat ulang halaman checkout untuk melihat total terbaru sebelum memesan.",
               code: "RATE_CHANGED",
+              errorKey: "errRateChanged",
             },
             { status: 409 }
           );
@@ -116,7 +139,11 @@ export async function POST(request: Request) {
     for (const [, totalQty] of productQuantities) {
       if (totalQty > MAX_QTY_PER_PRODUCT) {
         return NextResponse.json(
-          { error: `Maksimum ${MAX_QTY_PER_PRODUCT} item per produk dalam satu pesanan.` },
+          {
+            error: `Maksimum ${MAX_QTY_PER_PRODUCT} item per produk dalam satu pesanan.`,
+            errorKey: "errMaxQtyPerProduct",
+            errorParams: { max: MAX_QTY_PER_PRODUCT },
+          },
           { status: 400 }
         );
       }
@@ -132,7 +159,10 @@ export async function POST(request: Request) {
       //     Tolak kalau buyer (atau request rekayasa) mengirim kurir domestik.
       if (courierCode && courierCode !== INTERNATIONAL_COURIER.courier_code) {
         return NextResponse.json(
-          { error: "Kurir yang dipilih tidak berlaku untuk pengiriman internasional. Silakan pilih ulang." },
+          {
+            error: "Kurir yang dipilih tidak berlaku untuk pengiriman internasional. Silakan pilih ulang.",
+            errorKey: "errIntlCourier",
+          },
           { status: 400 }
         );
       }
@@ -141,7 +171,10 @@ export async function POST(request: Request) {
       // 2.3 Tolak kurir internasional untuk alamat domestik.
       if (courierCode === INTERNATIONAL_COURIER.courier_code) {
         return NextResponse.json(
-          { error: "Kurir internasional tidak berlaku untuk alamat domestik. Silakan pilih ulang kurir." },
+          {
+            error: "Kurir internasional tidak berlaku untuk alamat domestik. Silakan pilih ulang kurir.",
+            errorKey: "errDomesticCourier",
+          },
           { status: 400 }
         );
       }
@@ -165,7 +198,10 @@ export async function POST(request: Request) {
         }),
       });
       if (!quote.ok) {
-        return NextResponse.json({ error: quote.error }, { status: 400 });
+        return NextResponse.json(
+          { error: quote.error, errorKey: quote.errorCode },
+          { status: 400 }
+        );
       }
       const matched = findMatchingRate(
         quote.rates,
@@ -174,7 +210,10 @@ export async function POST(request: Request) {
       );
       if (!matched) {
         return NextResponse.json(
-          { error: "Opsi pengiriman yang dipilih tidak tersedia. Silakan pilih ulang kurir." },
+          {
+            error: "Opsi pengiriman yang dipilih tidak tersedia. Silakan pilih ulang kurir.",
+            errorKey: "errCourierUnavailable",
+          },
           { status: 400 }
         );
       }
@@ -194,12 +233,17 @@ export async function POST(request: Request) {
         });
 
         if (!product || !product.isActive) {
-          throw new Error(`Produk tidak ditemukan atau sedang tidak aktif.`);
+          throw new CheckoutError(
+            `Produk tidak ditemukan atau sedang tidak aktif.`,
+            "errProductUnavailable"
+          );
         }
 
         if (product.stock < requiredQty) {
-          throw new Error(
-            `Stok untuk "${product.name}" tidak mencukupi (tersedia: ${product.stock}, diminta: ${requiredQty}).`
+          throw new CheckoutError(
+            `Stok untuk "${product.name}" tidak mencukupi (tersedia: ${product.stock}, diminta: ${requiredQty}).`,
+            "errInsufficientStock",
+            { name: product.name, available: product.stock, requested: requiredQty }
           );
         }
 
@@ -216,8 +260,10 @@ export async function POST(request: Request) {
         });
 
         if (updateResult.count === 0) {
-          throw new Error(
-            `Stok produk "${product.name}" baru saja habis atau tidak mencukupi. Silakan coba kembali.`
+          throw new CheckoutError(
+            `Stok produk "${product.name}" baru saja habis atau tidak mencukupi. Silakan coba kembali.`,
+            "errStockJustGone",
+            { name: product.name }
           );
         }
 
@@ -228,7 +274,10 @@ export async function POST(request: Request) {
       const resolvedItems = items.map((item) => {
         const prod = productMap.get(item.productId);
         if (!prod) {
-          throw new Error(`Produk ${item.productId} tidak valid`);
+          throw new CheckoutError(
+            `Produk ${item.productId} tidak valid`,
+            "errInvalidProduct"
+          );
         }
         const unitPrice = resolveDisplayPrice(prod.price, orderCountry, activeRate);
         return {
@@ -300,7 +349,12 @@ export async function POST(request: Request) {
 
     const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_BASE_URL;
     if (!appUrl) {
-      throw new Error("APP_URL atau NEXT_PUBLIC_BASE_URL wajib diisi untuk callback Duitku.");
+      throw new CheckoutError(
+        "APP_URL atau NEXT_PUBLIC_BASE_URL wajib diisi untuk callback Duitku.",
+        "errMissingAppUrl",
+        undefined,
+        500
+      );
     }
 
     const chosenMethod = paymentMethod || process.env.DUITKU_PAYMENT_METHOD || "VA";
@@ -385,10 +439,31 @@ export async function POST(request: Request) {
           deleteErr
         );
       }
-      throw new Error(
-        duitkuError instanceof Error ? duitkuError.message : "Gagal menghubungkan ke Duitku."
+      throw new CheckoutError(
+        duitkuError instanceof Error
+          ? duitkuError.message
+          : "Gagal menghubungkan ke Duitku.",
+        "errDuitkuConnect",
+        undefined,
+        500
       );
     }
+
+    // Email "pesanan diterima + cara bayar". Sengaja di-await: deliver() tidak
+    // pernah melempar, jadi kegagalan Resend hanya tercatat di log dan customer
+    // tetap menerima instruksi pembayaran di layar.
+    await sendOrderReceivedEmail({
+      orderId,
+      orderNumber,
+      customerName,
+      customerEmail: email,
+      country: orderCountry,
+      items: validatedItems,
+      total: serverTotal,
+      shippingCost: serverShippingCost,
+      courier,
+      expiresAt: order.expiredAt,
+    });
 
     return NextResponse.json({
       success: true,
@@ -403,13 +478,27 @@ export async function POST(request: Request) {
       qrString: transaction?.qrString || null,
       paymentCode: transaction?.paymentCode || null,
       amount: serverTotal,
+      // Batas bayar sebenarnya ada di server (EXPIRY_MINUTES); kirim ke client
+      // supaya hitung mundur modal memakai deadline asli, bukan asumsi 24 jam.
+      expiresAt: order.expiredAt?.toISOString() ?? null,
     });
   } catch (error) {
     console.error("Checkout error:", error);
+    if (error instanceof CheckoutError) {
+      return NextResponse.json(
+        {
+          error: error.message,
+          errorKey: error.errorKey,
+          errorParams: error.errorParams ?? null,
+        },
+        { status: error.status }
+      );
+    }
     return NextResponse.json(
       {
         error:
           error instanceof Error ? error.message : "Gagal memproses pesanan",
+        errorKey: "checkoutFailed",
       },
       { status: 500 }
     );

@@ -20,16 +20,16 @@ export default async function PaymentUnfinishPage({ searchParams }: PageProps) {
             PAYMENT PENDING / INCOMPLETE
           </span>
           <h1 className="text-base tracking-wider uppercase">
-            PEMBAYARAN BELUM SELESAI
+            PAYMENT NOT COMPLETED
           </h1>
           <p className="text-xs text-muted leading-relaxed">
-            Transaksi Anda belum selesai atau sedang menunggu konfirmasi pembayaran dari pihak bank/e-wallet.
+            Your transaction is not finished yet, or it is awaiting payment confirmation from the bank / e-wallet.
           </p>
         </div>
 
         {order_id && (
           <div className="border border-border rounded-xl p-4 text-xs bg-surface/50">
-            <span className="text-muted">No. Pesanan: </span>
+            <span className="text-muted">Order No.: </span>
             <span className="font-mono text-foreground">
               {order_id}
             </span>
@@ -38,10 +38,10 @@ export default async function PaymentUnfinishPage({ searchParams }: PageProps) {
 
         <div className="space-y-2 text-xs text-muted text-left bg-surface p-4 rounded-xl leading-relaxed">
           <p>
-            • Jika Anda memilih pembayaran via <strong>Transfer Virtual Account</strong>, silakan selesaikan pembayaran sebelum batas waktu berakhir.
+            • If you chose <strong>Virtual Account transfer</strong>, please complete the payment before the cut-off time expires.
           </p>
           <p>
-            • Status pesanan akan otomatis terverifikasi begitu pembayaran diterima oleh sistem Midtrans.
+            • Your order status verifies automatically as soon as the payment is received by the Duitku system.
           </p>
         </div>
 
@@ -51,13 +51,13 @@ export default async function PaymentUnfinishPage({ searchParams }: PageProps) {
             className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:opacity-90 transition-opacity"
           >
             <RefreshCw size={14} />
-            ULANGI CHECKOUT
+            RESTART CHECKOUT
           </Link>
           <Link
             href="/"
             className="flex-1 inline-flex items-center justify-center gap-2 py-3.5 border border-border text-foreground text-xs tracking-widest uppercase rounded-xl hover:bg-surface transition-colors"
           >
-            LIHAT TOKO
+            VIEW SHOP
             <ArrowRight size={14} />
           </Link>
         </div>

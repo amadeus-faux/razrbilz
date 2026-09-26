@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { sendManualShippingEmail } from "@/lib/email";
+import { sendShippingEmail } from "@/lib/email";
 import { requireAdmin } from "@/lib/require-admin";
 
 interface ManualTrackingRequestBody {
@@ -111,19 +111,24 @@ export async function POST(
       },
     });
 
-    // 5. Send notification email to customer
+    // 5. Kirim email notifikasi resi ke customer (bahasa mengikuti negara tujuan)
+    let emailSent = false;
+    let emailMessage = "Customer tidak punya alamat email.";
     if (existingOrder.email) {
-      await sendManualShippingEmail({
+      const emailResult = await sendShippingEmail({
         orderId: existingOrder.id,
         orderNumber: existingOrder.orderNumber,
         customerName: existingOrder.customerName,
         customerEmail: existingOrder.email,
+        country: existingOrder.country,
         courier: finalCourier,
         service: finalService,
         trackingNumber: cleanedResi,
         shippedAt: finalShippedAt,
         note: note ? note.trim() : null,
       });
+      emailSent = emailResult.success;
+      emailMessage = emailResult.message;
     }
 
     revalidatePath("/admin/orders");
@@ -133,9 +138,14 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: isUpdate
-        ? `Resi ${cleanedResi} berhasil diperbarui.`
-        : `Resi ${cleanedResi} berhasil disimpan & pesanan ditandai dikirim.`,
+      message:
+        (isUpdate
+          ? `Resi ${cleanedResi} berhasil diperbarui.`
+          : `Resi ${cleanedResi} berhasil disimpan & pesanan ditandai dikirim.`) +
+        (emailSent
+          ? " Email notifikasi terkirim."
+          : ` Email notifikasi TIDAK terkirim: ${emailMessage}`),
+      emailSent,
       isUpuStandard,
       order: updatedOrder,
     });

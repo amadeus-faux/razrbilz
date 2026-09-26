@@ -20,6 +20,7 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import { formatRupiah } from "@/lib/utils";
 import { classifyPaymentMethod, retailOutletLabel } from "@/lib/payment-display";
+import { t, tf, messageParts, type CheckoutKey, type Locale } from "@/lib/checkout-i18n";
 
 export interface PaymentModalData {
   orderNumber: string;
@@ -33,23 +34,73 @@ export interface PaymentModalData {
   paymentUrl?: string | null;
   reference?: string | null;
   instructionsUrl: string;
+  /** ISO string batas bayar dari server (`Order.expiredAt`); null bila tidak ada. */
+  expiresAt?: string | null;
 }
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: PaymentModalData | null;
+  locale: Locale;
 }
 
-export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
+/** Pesan dictionary; nilai `{placeholder}` ditebalkan/di-mono supaya angka penting
+ *  (nomor VA, nominal, kode) cepat ditemukan lagi saat customer berpindah aplikasi. */
+function Msg({
+  k,
+  locale,
+  vars,
+  mono = true,
+}: {
+  k: CheckoutKey;
+  locale: Locale;
+  vars?: Record<string, string | number>;
+  mono?: boolean;
+}) {
+  return (
+    <>
+      {messageParts(k, locale, vars).map((part, i) =>
+        part.isVar ? (
+          <span
+            key={i}
+            className={
+              mono ? "font-mono text-white font-semibold" : "text-white font-semibold"
+            }
+          >
+            {part.text}
+          </span>
+        ) : (
+          <span key={i}>{part.text}</span>
+        )
+      )}
+    </>
+  );
+}
+
+/** Dipakai kalau server tidak mengirim `expiresAt`; sama dengan EXPIRY_MINUTES
+ *  di `api/checkout` karena modal dibuka sesaat setelah order dibuat. */
+const FALLBACK_EXPIRY_SECONDS = 60 * 60;
+
+function secondsUntilExpiry(expiresAt?: string | null): number {
+  if (!expiresAt) return FALLBACK_EXPIRY_SECONDS;
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  return Number.isFinite(ms)
+    ? Math.max(0, Math.ceil(ms / 1000))
+    : FALLBACK_EXPIRY_SECONDS;
+}
+
+export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProps) {
   const [copiedVa, setCopiedVa] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedAmount, setCopiedAmount] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"pending" | "paid" | "failed">("pending");
-  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [statusKey, setStatusKey] = useState<CheckoutKey | "">("");
   const [activeGuideTab, setActiveGuideTab] = useState<"mobile" | "atm" | "ibanking">("mobile");
-  const [timeLeft, setTimeLeft] = useState<number>(24 * 3600); // 24 hours countdown
+  const [timeLeft, setTimeLeft] = useState<number>(() =>
+    secondsUntilExpiry(data?.expiresAt)
+  );
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [generatingQr, setGeneratingQr] = useState(false);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -144,7 +195,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
   const handleManualCheck = async () => {
     if (!data?.orderNumber || checkingStatus) return;
     setCheckingStatus(true);
-    setStatusMessage("");
+    setStatusKey("");
     try {
       const res = await fetch(`/api/payments/duitku/check-status?orderNumber=${encodeURIComponent(data.orderNumber)}&sync=1`);
       if (res.ok) {
@@ -152,13 +203,13 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
         if (result.paymentStatus === "paid") {
           setPaymentStatus("paid");
         } else {
-          setStatusMessage("Pembayaran belum terdeteksi. Silakan selesaikan pembayaran dan coba kembali.");
+          setStatusKey("pmStatusNotFound");
         }
       } else {
-        setStatusMessage("Gagal memeriksa status. Silakan coba sesaat lagi.");
+        setStatusKey("pmStatusCheckFailed");
       }
     } catch {
-      setStatusMessage("Terjadi kesalahan jaringan.");
+      setStatusKey("pmNetworkError");
     } finally {
       setCheckingStatus(false);
     }
@@ -193,6 +244,8 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
   const isRetail = !isQRIS && category === "retail";
   const isVA = !isQRIS && !isRetail && Boolean(data.vaNumber);
   const retailCode = data.paymentCode || data.vaNumber || null;
+  const outlet = retailOutletLabel(data.paymentName, locale);
+  const amountLabel = formatRupiah(data.total);
 
   return (
     <div
@@ -208,13 +261,13 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
             <p className="text-[11px] uppercase tracking-widest text-white/70 font-mono">
-              Pesanan #{data.orderNumber}
+              {tf("pmOrder", locale, { number: data.orderNumber })}
             </p>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-            title="Tutup Modal"
+            title={t("pmClose", locale)}
           >
             <X size={16} />
           </button>
@@ -234,24 +287,24 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
               </div>
               <div className="space-y-1.5">
                 <h3 className="text-base font-semibold text-white tracking-wide uppercase">
-                  PEMBAYARAN BERHASIL DITERIMA!
+                  {t("pmPaidTitle", locale)}
                 </h3>
                 <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                  Terima kasih! Pesanan Anda telah terkonfirmasi dan stok item telah berhasil diamankan untuk pengiriman.
+                  {t("pmPaidDesc", locale)}
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-xs space-y-2 text-left font-mono">
                 <div className="flex justify-between">
-                  <span className="text-white/50">No. Pesanan:</span>
+                  <span className="text-white/50">{t("pmOrderNo", locale)}</span>
                   <span className="text-white font-semibold">{data.orderNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">Total Dibayar:</span>
+                  <span className="text-white/50">{t("pmTotalPaid", locale)}</span>
                   <span className="text-emerald-400 font-semibold">{formatRupiah(data.total)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">Metode:</span>
+                  <span className="text-white/50">{t("pmMethod", locale)}</span>
                   <span className="text-white">{data.paymentName}</span>
                 </div>
               </div>
@@ -261,13 +314,13 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   href={`/order-confirmation/${encodeURIComponent(data.orderNumber)}`}
                   className="w-full py-3.5 bg-white text-black text-xs font-semibold tracking-widest uppercase rounded-xl inline-flex justify-center items-center gap-2 hover:bg-white/90 transition-all"
                 >
-                  LIHAT KONFIRMASI PESANAN <ArrowRight size={14} />
+                  {t("pmViewConfirmation", locale)} <ArrowRight size={14} />
                 </Link>
                 <Link
                   href="/"
                   className="w-full py-3 bg-white/5 text-white/70 text-xs tracking-wider uppercase rounded-xl hover:bg-white/10 transition-colors text-center"
                 >
-                  KEMBALI KE BERANDA
+                  {t("pmBackHome", locale)}
                 </Link>
               </div>
             </div>
@@ -291,7 +344,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                     <p className="text-xs font-semibold text-white tracking-wide">
                       {data.paymentName}
                     </p>
-                    <p className="text-[10px] text-white/50">Duitku Direct Payment</p>
+                    <p className="text-[10px] text-white/50">{t("pmDuitkuDirect", locale)}</p>
                   </div>
                 </div>
 
@@ -300,7 +353,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                     <Clock size={13} />
                     <span>{formatTime(timeLeft)}</span>
                   </div>
-                  <p className="text-[9px] text-white/40 mt-0.5">Batas waktu bayar</p>
+                  <p className="text-[9px] text-white/40 mt-0.5">{t("pmPayBy", locale)}</p>
                 </div>
               </div>
 
@@ -311,10 +364,10 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   <div className="p-4 rounded-xl bg-black border border-white/15 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] uppercase tracking-wider text-white/50">
-                        Kode Pembayaran
+                        {t("pmPaymentCode", locale)}
                       </span>
                       <span className="text-[9px] text-amber-400 uppercase font-mono tracking-wide bg-amber-500/10 px-2 py-0.5 rounded">
-                        Bayar di Kasir
+                        {t("pmPayAtCounter", locale)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-1">
@@ -332,11 +385,11 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                       >
                         {copiedCode ? (
                           <>
-                            <Check size={13} /> Tersalin
+                            <Check size={13} /> {t("pmCopied", locale)}
                           </>
                         ) : (
                           <>
-                            <Copy size={13} /> Salin
+                            <Copy size={13} /> {t("pmCopy", locale)}
                           </>
                         )}
                       </button>
@@ -347,10 +400,10 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   <div className="p-4 rounded-xl bg-black border border-white/15 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider text-white/50 block">
-                        Total yang Harus Dibayar
+                        {t("pmTotalToPay", locale)}
                       </span>
                       <span className="text-base font-bold text-white font-mono mt-0.5 block">
-                        {formatRupiah(data.total)}
+                        {amountLabel}
                       </span>
                     </div>
                     <button
@@ -362,37 +415,28 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                           : "bg-white/10 hover:bg-white/20 text-white"
                       }`}
                     >
-                      {copiedAmount ? "Tersalin ✓" : "Salin Nominal"}
+                      {copiedAmount ? `${t("pmCopied", locale)} ✓` : t("pmCopyAmount", locale)}
                     </button>
                   </div>
 
                   {/* Retail Payment Guide */}
                   <div className="space-y-2 pt-1">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
-                      Cara bayar di {retailOutletLabel(data.paymentName)}
+                      {tf("pmRetailHowTo", locale, { outlet })}
                     </p>
                     <div className="text-[11px] text-white/70 leading-relaxed p-3 bg-white/[0.02] rounded-xl border border-white/5">
                       <ol className="list-decimal list-inside space-y-1">
                         <li>
-                          Kunjungi gerai <strong>{retailOutletLabel(data.paymentName)}</strong> terdekat
-                          sebelum batas waktu pembayaran.
+                          <Msg k="pmRetailStep1" locale={locale} vars={{ outlet }} mono={false} />
+                        </li>
+                        <li>{t("pmRetailStep2", locale)}</li>
+                        <li>
+                          <Msg k="pmRetailStep3" locale={locale} vars={{ code: retailCode || "-" }} />
                         </li>
                         <li>
-                          Sampaikan ke kasir bahwa Anda ingin melakukan <strong>pembayaran tagihan</strong>{" "}
-                          (Duitku / e-commerce).
+                          <Msg k="pmRetailStep4" locale={locale} vars={{ amount: amountLabel }} />
                         </li>
-                        <li>
-                          Sebutkan <strong>Kode Pembayaran</strong>:{" "}
-                          <span className="font-mono text-white font-semibold">{retailCode || "-"}</span>.
-                        </li>
-                        <li>
-                          Pastikan nominal yang dibayar{" "}
-                          <span className="font-mono text-white font-semibold">{formatRupiah(data.total)}</span>.
-                        </li>
-                        <li>
-                          Simpan struk sebagai bukti pembayaran. Status pesanan terverifikasi otomatis
-                          setelah pembayaran diterima.
-                        </li>
+                        <li>{t("pmRetailStep5", locale)}</li>
                       </ol>
                     </div>
                     {data.paymentUrl && (
@@ -402,7 +446,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                         rel="noopener noreferrer"
                         className="text-[11px] text-white/60 hover:text-white inline-flex items-center gap-1 underline underline-offset-4"
                       >
-                        Buka halaman pembayaran Duitku <ExternalLink size={11} />
+                        {t("pmOpenDuitkuPage", locale)} <ExternalLink size={11} />
                       </a>
                     )}
                   </div>
@@ -416,10 +460,10 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   <div className="p-4 rounded-xl bg-black border border-white/15 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] uppercase tracking-wider text-white/50">
-                        Nomor Virtual Account
+                        {t("pmVaNumber", locale)}
                       </span>
                       <span className="text-[9px] text-emerald-400 uppercase font-mono tracking-wide bg-emerald-500/10 px-2 py-0.5 rounded">
-                        Verifikasi Otomatis
+                        {t("pmAutoVerify", locale)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-1">
@@ -437,11 +481,11 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                       >
                         {copiedVa ? (
                           <>
-                            <Check size={13} /> Tersalin
+                            <Check size={13} /> {t("pmCopied", locale)}
                           </>
                         ) : (
                           <>
-                            <Copy size={13} /> Salin
+                            <Copy size={13} /> {t("pmCopy", locale)}
                           </>
                         )}
                       </button>
@@ -452,10 +496,10 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   <div className="p-4 rounded-xl bg-black border border-white/15 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider text-white/50 block">
-                        Total yang Harus Dibayar
+                        {t("pmTotalToPay", locale)}
                       </span>
                       <span className="text-base font-bold text-white font-mono mt-0.5 block">
-                        {formatRupiah(data.total)}
+                        {amountLabel}
                       </span>
                     </div>
                     <button
@@ -469,11 +513,11 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                     >
                       {copiedAmount ? (
                         <>
-                          <Check size={13} /> Tersalin
+                          <Check size={13} /> {t("pmCopied", locale)}
                         </>
                       ) : (
                         <>
-                          <Copy size={13} /> Salin Nominal
+                          <Copy size={13} /> {t("pmCopyAmount", locale)}
                         </>
                       )}
                     </button>
@@ -491,7 +535,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                             : "border-transparent text-white/50 hover:text-white/80"
                         }`}
                       >
-                        m-Banking
+                        {t("pmTabMobile", locale)}
                       </button>
                       <button
                         type="button"
@@ -502,7 +546,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                             : "border-transparent text-white/50 hover:text-white/80"
                         }`}
                       >
-                        ATM
+                        {t("pmTabAtm", locale)}
                       </button>
                       <button
                         type="button"
@@ -513,35 +557,59 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                             : "border-transparent text-white/50 hover:text-white/80"
                         }`}
                       >
-                        Internet Banking
+                        {t("pmTabIb", locale)}
                       </button>
                     </div>
 
                     <div className="text-[11px] text-white/70 leading-relaxed p-3 bg-white/[0.02] rounded-xl border border-white/5 space-y-1.5">
                       {activeGuideTab === "mobile" && (
                         <ol className="list-decimal list-inside space-y-1">
-                          <li>Buka aplikasi Mobile Banking pilihan Anda dan lakukan login.</li>
-                          <li>Pilih menu <strong>Transfer</strong> &gt; <strong>Virtual Account</strong> / <strong>Pembayaran</strong>.</li>
-                          <li>Masukkan nomor Virtual Account: <span className="font-mono text-white font-semibold">{data.vaNumber}</span>.</li>
-                          <li>Pastikan nominal pembayaran sesuai yaitu <span className="font-mono text-white font-semibold">{formatRupiah(data.total)}</span>.</li>
-                          <li>Masukkan PIN transaksi Anda untuk menyelesaikan pembayaran.</li>
+                          <li>{t("pmVaMobile1", locale)}</li>
+                          <li>{t("pmVaMobile2", locale)}</li>
+                          <li>
+                            <Msg
+                              k="pmVaMobile3"
+                              locale={locale}
+                              vars={{ va: data.vaNumber ?? "" }}
+                            />
+                          </li>
+                          <li>
+                            <Msg
+                              k="pmVaMobile4"
+                              locale={locale}
+                              vars={{ amount: amountLabel }}
+                            />
+                          </li>
+                          <li>{t("pmVaMobile5", locale)}</li>
                         </ol>
                       )}
                       {activeGuideTab === "atm" && (
                         <ol className="list-decimal list-inside space-y-1">
-                          <li>Masukkan kartu ATM dan PIN Anda di mesin ATM.</li>
-                          <li>Pilih menu <strong>Transaksi Lainnya</strong> &gt; <strong>Transfer / Pembayaran</strong>.</li>
-                          <li>Pilih ke rekening <strong>Virtual Account</strong>.</li>
-                          <li>Masukkan nomor Virtual Account: <span className="font-mono text-white font-semibold">{data.vaNumber}</span>.</li>
-                          <li>Periksa detail pembayaran di layar dan tekan <strong>Ya / Benar</strong> untuk memproses.</li>
+                          <li>{t("pmVaAtm1", locale)}</li>
+                          <li>{t("pmVaAtm2", locale)}</li>
+                          <li>{t("pmVaAtm3", locale)}</li>
+                          <li>
+                            <Msg
+                              k="pmVaAtm4"
+                              locale={locale}
+                              vars={{ va: data.vaNumber ?? "" }}
+                            />
+                          </li>
+                          <li>{t("pmVaAtm5", locale)}</li>
                         </ol>
                       )}
                       {activeGuideTab === "ibanking" && (
                         <ol className="list-decimal list-inside space-y-1">
-                          <li>Login ke portal Internet Banking bank Anda.</li>
-                          <li>Pilih menu <strong>Bayar / Beli</strong> &gt; <strong>Virtual Account</strong>.</li>
-                          <li>Masukkan nomor Virtual Account: <span className="font-mono text-white font-semibold">{data.vaNumber}</span>.</li>
-                          <li>Verifikasi transaksi menggunakan token / autentikator Anda.</li>
+                          <li>{t("pmVaIb1", locale)}</li>
+                          <li>{t("pmVaIb2", locale)}</li>
+                          <li>
+                            <Msg
+                              k="pmVaIb3"
+                              locale={locale}
+                              vars={{ va: data.vaNumber ?? "" }}
+                            />
+                          </li>
+                          <li>{t("pmVaIb4", locale)}</li>
                         </ol>
                       )}
                     </div>
@@ -556,7 +624,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                     {generatingQr ? (
                       <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-black">
                         <Loader2 size={24} className="animate-spin text-black" />
-                        <span className="text-xs font-medium">Membuat Kode QRIS...</span>
+                        <span className="text-xs font-medium">{t("pmQrGenerating", locale)}</span>
                       </div>
                     ) : qrDataUrl ? (
                       <img
@@ -567,22 +635,22 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                     ) : (
                       <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-black p-2">
                         <QrCode size={36} />
-                        <span className="text-xs">Gagal merender QR lokal. Buka tautan pembayaran di bawah.</span>
+                        <span className="text-xs">{t("pmQrFailed", locale)}</span>
                       </div>
                     )}
                     <div className="mt-2 text-center text-black">
-                      <p className="text-[10px] font-bold tracking-widest uppercase">QRIS STANDAR PEMBAYARAN NASIONAL</p>
-                      <p className="text-[9px] text-black/60">BCA Mobile, GoPay, OVO, ShopeePay, DANA, Livin&apos;, dll.</p>
+                      <p className="text-[10px] font-bold tracking-widest uppercase">{t("pmQrisNational", locale)}</p>
+                      <p className="text-[9px] text-black/60">{t("pmQrisApps", locale)}</p>
                     </div>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-black border border-white/15 flex items-center justify-between text-left">
                     <div>
                       <span className="text-[10px] uppercase tracking-wider text-white/50 block">
-                        Total Tagihan
+                        {t("pmTotalToPay", locale)}
                       </span>
                       <span className="text-base font-bold text-white font-mono mt-0.5 block">
-                        {formatRupiah(data.total)}
+                        {amountLabel}
                       </span>
                     </div>
                     <button
@@ -590,12 +658,12 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                       onClick={handleCopyAmount}
                       className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
                     >
-                      {copiedAmount ? "Tersalin ✓" : "Salin Nominal"}
+                      {copiedAmount ? `${t("pmCopied", locale)} ✓` : t("pmCopyAmount", locale)}
                     </button>
                   </div>
 
                   <p className="text-[11px] text-white/60 leading-relaxed max-w-sm mx-auto">
-                    Scan kode QR di atas menggunakan aplikasi mobile banking atau e-wallet Anda yang mendukung QRIS.
+                    {t("pmScanQr", locale)}
                   </p>
                 </div>
               )}
@@ -606,7 +674,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   {!isVA && !isQRIS && !isRetail && (
                     <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
                       <p className="text-xs text-white/70">
-                        Untuk menyelesaikan pembayaran via {data.paymentName}, silakan buka tautan pembayaran resmi Duitku.
+                        {tf("pmViaMethod", locale, { method: data.paymentName })}
                       </p>
                       <a
                         href={data.paymentUrl}
@@ -614,7 +682,7 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-xl hover:bg-white/90 transition-all shadow-md cursor-pointer"
                       >
-                        LANJUTKAN KE {data.paymentName.toUpperCase()} <ExternalLink size={14} />
+                        {tf("pmContinueTo", locale, { method: data.paymentName })} <ExternalLink size={14} />
                       </a>
                     </div>
                   )}
@@ -625,17 +693,17 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                       rel="noopener noreferrer"
                       className="text-[11px] text-white/60 hover:text-white inline-flex items-center gap-1 underline underline-offset-4"
                     >
-                      Buka Tampilan Penuh QR di Tab Baru <ExternalLink size={11} />
+                      {t("pmOpenFullQr", locale)} <ExternalLink size={11} />
                     </a>
                   )}
                 </div>
               ) : null}
 
               {/* Status Message Alert */}
-              {statusMessage && (
+              {statusKey && (
                 <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs rounded-xl flex items-center gap-2">
                   <AlertCircle size={14} className="flex-shrink-0" />
-                  <span>{statusMessage}</span>
+                  <span>{t(statusKey, locale)}</span>
                 </div>
               )}
 
@@ -648,18 +716,18 @@ export function PaymentModal({ isOpen, onClose, data }: PaymentModalProps) {
                   className="w-full py-3.5 bg-white/10 hover:bg-white/15 active:scale-[0.99] text-white text-xs font-semibold tracking-wider uppercase rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-white/10 disabled:opacity-50 shadow-md"
                 >
                   <RefreshCw size={13} className={checkingStatus ? "animate-spin text-amber-400" : ""} />
-                  {checkingStatus ? "Memeriksa Status..." : "Saya Sudah Bayar (Cek Status)"}
+                  {checkingStatus ? t("pmCheckingStatus", locale) : t("pmCheckStatusCta", locale)}
                 </button>
 
                 <div className="flex items-center justify-between text-[11px] text-white/50 px-1 pt-1">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck size={12} className="text-emerald-400" /> Auto-sync aktif tiap 4 detik
+                    <ShieldCheck size={12} className="text-emerald-400" /> {t("pmAutoSync", locale)}
                   </span>
                   <Link
                     href={data.instructionsUrl}
                     className="hover:text-white underline underline-offset-4"
                   >
-                    Halaman Instruksi Pesanan ↗
+                    {t("pmInstructionsPage", locale)} ↗
                   </Link>
                 </div>
               </div>

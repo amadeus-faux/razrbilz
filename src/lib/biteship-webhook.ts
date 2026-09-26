@@ -5,6 +5,7 @@ import {
   mapBiteshipStatusToInternal,
   type BiteshipWebhookPayload,
 } from "@/lib/biteship-status";
+import { sendShippingEmail } from "@/lib/email";
 
 function verifyWebhookSecret(request: Request): boolean {
   const secret = process.env.BITESHIP_WEBHOOK_SECRET;
@@ -123,6 +124,12 @@ export async function processBiteshipWebhook(
 
     console.log(`[Biteship Webhook] Found Order: ${order.orderNumber} (DB ID: ${order.id}) for event: ${event}`);
 
+    // Resi untuk email "pesanan dikirim". Event `order.status` dan
+    // `order.waybill_id` bisa datang dalam urutan apa pun dari Biteship, jadi
+    // keduanya mengusahakan pemberitahuan yang sama — pengirimnya idempoten per
+    // nomor resi sehingga retry webhook tidak mengirim email ganda.
+    let shipmentNotice: { trackingNumber: string } | null = null;
+
     // 5. Process Event Logic
     switch (event) {
       case "order.status": {
@@ -162,6 +169,14 @@ export async function processBiteshipWebhook(
         ]);
 
         console.log(`[Biteship Webhook] ✅ Order ${order.orderNumber} status and log updated successfully.`);
+
+        // Hanya status "sudah berangkat" yang boleh mengklaim pengiriman ke
+        // customer (subjek email berbunyi "has been shipped"), dan hanya bila
+        // nomor resi sudah diketahui.
+        if (orderStatus === "shipped") {
+          const resi = waybillId || order.trackingNumber;
+          if (resi) shipmentNotice = { trackingNumber: resi };
+        }
         break;
       }
 
@@ -266,6 +281,11 @@ export async function processBiteshipWebhook(
           ]);
 
           console.log(`[Biteship Webhook] ✅ Order ${order.orderNumber} waybill updated to ${waybillId}.`);
+
+          // Resi terbit belakangan, tapi pesanan sudah berstatus dikirim.
+          if (order.orderStatus === "shipped") {
+            shipmentNotice = { trackingNumber: waybillId };
+          }
         }
         break;
       }
@@ -282,6 +302,25 @@ export async function processBiteshipWebhook(
           },
         });
       }
+    }
+
+    // Email "pesanan dikirim / nomor resi". Sengaja DI LUAR $transaction dan
+    // setelah semua update DB: email adalah efek samping, dan sendShippingEmail
+    // tidak pernah melempar — kegagalan Resend tidak membuat Biteship menganggap
+    // webhook gagal lalu mengirim ulang event yang sama.
+    if (shipmentNotice) {
+      await sendShippingEmail({
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.email,
+        country: order.country,
+        courier:
+          payload.courier_company || payload.courier?.company || order.courier,
+        service: payload.courier_type || payload.courier?.type || null,
+        trackingNumber: shipmentNotice.trackingNumber,
+        shippedAt: payload.updated_at ?? null,
+      });
     }
 
     console.log(`================== [BITESHIP WEBHOOK COMPLETED] ==================\n`);

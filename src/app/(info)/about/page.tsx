@@ -21,20 +21,20 @@ export default function AboutPage() {
       {/* Body copy */}
       <div className="space-y-5 text-[13px] text-muted leading-[1.85] tracking-wide">
         <p>
-          <strong className="text-foreground">RAZRBILZ</strong> adalah brand
-          pakaian unisex independen yang lahir dari perpaduan estetika utilitarian,
-          arsitektur brutalist, dan siluet streetwear kontemporer.
+          <strong className="text-foreground">RAZRBILZ</strong> is an independent unisex apparel
+          brand born from the fusion of utilitarian aesthetics, brutalist architecture, and
+          contemporary streetwear silhouettes.
         </p>
 
         <p>
-          Kami berfokus pada bentuk, proporsi, dan kenyamanan material tanpa batasan gender.
-          Setiap garmen dirancang dengan siluet boxy, relaxed, dan material katun premium
-          berbobot tinggi (heavyweight) yang tahan lama.
+          We focus on shape, proportion, and material comfort without gender boundaries.
+          Each garment is designed with a boxy, relaxed silhouette in premium heavyweight
+          cotton built to last.
         </p>
 
         <p>
-          Diproduksi secara etis di Indonesia dengan kontrol kualitas yang ketat pada setiap
-          jahitan dan detail finishing.
+          Ethically produced in Indonesia with strict quality control on every stitch and
+          finishing detail.
         </p>
       </div>
 

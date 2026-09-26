@@ -2,6 +2,7 @@ import { prisma, Prisma } from "@/lib/prisma";
 import { createBiteshipOrder } from "@/lib/biteship";
 import { checkDuitkuTransaction } from "@/lib/duitku";
 import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
+import { sendPaymentSuccessEmail } from "@/lib/email";
 
 // 3.4: jendela tambahan SETELAH expiredAt sebelum order benar-benar di-expire.
 // Mengantisipasi pembayaran yang sedang diproses bank tepat di detik-detik akhir.
@@ -190,6 +191,28 @@ export async function markOrderPaid({
     where: { id: orderId },
     include: { items: { include: { product: true } } },
   });
+
+  // Email "pembayaran diterima". Hanya pemanggil yang MENANG lock yang sampai di
+  // sini, jadi callback Duitku yang retry tidak mengirim email dua kali.
+  // deliver() tidak pernah melempar → email gagal tidak membatalkan status paid.
+  if (updatedOrder) {
+    await sendPaymentSuccessEmail({
+      orderId: updatedOrder.id,
+      orderNumber: updatedOrder.orderNumber,
+      customerName: updatedOrder.customerName,
+      customerEmail: updatedOrder.email,
+      country: updatedOrder.country,
+      total: updatedOrder.total,
+      items: updatedOrder.items.map((item) => ({
+        name: item.productNameSnapshot || item.product?.name || "Produk RAZRBILZ",
+        size: item.size,
+        quantity: item.quantity,
+        priceAtBuy: item.priceAtBuy,
+      })),
+      paymentMethodName: updatedOrder.duitkuPaymentMethod,
+      paidAt: updatedOrder.paidAt,
+    });
+  }
 
   // Pre-Order: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.
   if (pre.isPreOrder) {

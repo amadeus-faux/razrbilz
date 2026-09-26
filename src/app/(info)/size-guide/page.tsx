@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Size Guide — RAZRBILZ",
-  description: "Panduan ukuran pakaian unisex RAZRBILZ (S, M, L, XL)",
+  description: "RAZRBILZ unisex size guide (S, M, L, XL)",
 };
 
 export default function SizeGuidePage() {
@@ -32,8 +32,8 @@ export default function SizeGuidePage() {
       <div>
         <h1 className="text-label text-base">SIZE GUIDE</h1>
         <p className="text-xs text-muted mt-2">
-          Semua produk RAZRBILZ dirancang dengan potongan unisex relaxed & boxy fit.
-          Gunakan panduan tabel di bawah untuk memilih ukuran terbaik Anda.
+          All RAZRBILZ pieces are cut with a unisex relaxed &amp; boxy fit.
+          Use the tables below to pick your best size.
         </p>
       </div>
 
@@ -44,10 +44,10 @@ export default function SizeGuidePage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-surface text-muted">
               <tr>
-                <th className="p-3">Ukuran</th>
-                <th className="p-3">Lebar Dada</th>
-                <th className="p-3">Panjang</th>
-                <th className="p-3">Bahu</th>
+                <th className="p-3">Size</th>
+                <th className="p-3">Chest width</th>
+                <th className="p-3">Length</th>
+                <th className="p-3">Shoulder</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -71,10 +71,10 @@ export default function SizeGuidePage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-surface text-muted">
               <tr>
-                <th className="p-3">Ukuran</th>
-                <th className="p-3">Lebar Dada</th>
-                <th className="p-3">Panjang</th>
-                <th className="p-3">Lengan</th>
+                <th className="p-3">Size</th>
+                <th className="p-3">Chest width</th>
+                <th className="p-3">Length</th>
+                <th className="p-3">Sleeve</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -98,10 +98,10 @@ export default function SizeGuidePage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-surface text-muted">
               <tr>
-                <th className="p-3">Ukuran</th>
-                <th className="p-3">Pinggang</th>
-                <th className="p-3">Pinggul</th>
-                <th className="p-3">Panjang</th>
+                <th className="p-3">Size</th>
+                <th className="p-3">Waist</th>
+                <th className="p-3">Hip</th>
+                <th className="p-3">Length</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

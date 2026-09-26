@@ -126,7 +126,7 @@ export interface ShippingRatesParams {
 
 export type ShippingRatesResult =
   | { ok: true; rates: BiteshipCourierRate[]; isFallback?: boolean; fallbackReason?: string }
-  | { ok: false; error: string };
+  | { ok: false; error: string; errorCode: string };
 
 /**
  * Menghasilkan daftar tarif pengiriman otoritatif dari server.
@@ -153,10 +153,10 @@ export async function getServerShippingRates(
 
   const cleanPostal = (destinationPostalCode || "").trim();
   if (cleanPostal.length < 5) {
-    return { ok: false, error: "Kode pos tujuan tidak valid (harus 5 digit)" };
+    return { ok: false, error: "Kode pos tujuan tidak valid (harus 5 digit)", errorCode: "errPostalInvalid" };
   }
   if (!items || !Array.isArray(items) || items.length === 0) {
-    return { ok: false, error: "Item tidak boleh kosong" };
+    return { ok: false, error: "Item tidak boleh kosong", errorCode: "errQuoteNoItems" };
   }
 
   const originPostalCode = process.env.ORIGIN_POSTAL_CODE || "40393";

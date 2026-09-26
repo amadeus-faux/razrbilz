@@ -22,7 +22,7 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
   if (!order) {
     return (
       <div className="container-shop min-h-[70vh] flex items-center justify-center">
-        <p className="text-sm text-muted">Pesanan tidak ditemukan.</p>
+        <p className="text-sm text-muted">Order not found.</p>
       </div>
     );
   }
@@ -55,52 +55,52 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
           <div>
             <p className="text-[10px] tracking-widest uppercase text-muted">Duitku V2</p>
             <h1 className="text-sm tracking-wider uppercase">
-              {isFailed ? "Pembayaran Dibatalkan / Gagal" : "Selesaikan pembayaran"}
+              {isFailed ? "Payment Cancelled / Failed" : "Complete your payment"}
             </h1>
           </div>
         </div>
 
         <div className="text-xs text-muted leading-relaxed">
           {isFailed
-            ? "Transaksi telah dibatalkan atau waktu pembayaran telah kedaluwarsa."
-            : "Gunakan detail berikut untuk menyelesaikan pembayaran. Jika pembayaran telah berhasil diselesaikan di Duitku, halaman ini akan otomatis terverifikasi."}
+            ? "The transaction has been cancelled or the payment window has expired."
+            : "Use the details below to complete your payment. Once the payment is settled with Duitku, this page verifies automatically."}
         </div>
 
         <div className="border border-border rounded-xl divide-y divide-border text-xs">
-          <div className="p-4 flex justify-between gap-4"><span className="text-muted">Nomor Pesanan</span><span className="font-mono text-right">{order.orderNumber}</span></div>
+          <div className="p-4 flex justify-between gap-4"><span className="text-muted">Order Number</span><span className="font-mono text-right">{order.orderNumber}</span></div>
           <div className="p-4 flex justify-between gap-4"><span className="text-muted">Total</span><span>{formatRupiah(order.total)}</span></div>
-          <div className="p-4 flex justify-between gap-4"><span className="text-muted">Metode</span><span>{order.duitkuPaymentMethod || "Duitku"}</span></div>
+          <div className="p-4 flex justify-between gap-4"><span className="text-muted">Method</span><span>{order.duitkuPaymentMethod || "Duitku"}</span></div>
           {isRetail && retailCode && (
             <div className="p-4 space-y-2">
               <span className="text-muted block">
-                Kode Pembayaran — {retailOutletLabel(order.duitkuPaymentMethod)}
+                Payment Code — {retailOutletLabel(order.duitkuPaymentMethod, "en")}
               </span>
               <code className="font-mono text-sm text-foreground break-all font-semibold">{retailCode}</code>
               <p className="text-[11px] text-muted leading-relaxed">
-                Bayar di kasir {retailOutletLabel(order.duitkuPaymentMethod)} dengan menyebutkan kode
-                pembayaran di atas. Sebutkan nominal {formatRupiah(order.total)} dan simpan struk sebagai
-                bukti. Status pesanan terverifikasi otomatis setelah pembayaran diterima.
+                Pay at the {retailOutletLabel(order.duitkuPaymentMethod, "en")} counter and quote the
+                payment code above. State the amount {formatRupiah(order.total)} and keep the receipt as
+                proof. Your order status verifies automatically once the payment is received.
               </p>
             </div>
           )}
           {!isRetail && order.duitkuVaNumber && (
             <div className="p-4 space-y-2">
-              <span className="text-muted block">Nomor Virtual Account</span>
+              <span className="text-muted block">Virtual Account Number</span>
               <code className="font-mono text-sm text-foreground break-all font-semibold">{order.duitkuVaNumber}</code>
             </div>
           )}
           {order.duitkuQrString && (
             <div className="p-4 space-y-2">
-              <span className="text-muted block">Kode QRIS</span>
-              <p className="text-[11px] text-muted">Scan QRIS melalui aplikasi e-wallet / mobile banking Anda.</p>
+              <span className="text-muted block">QRIS Code</span>
+              <p className="text-[11px] text-muted">Scan the QRIS code with your e-wallet or mobile banking app.</p>
             </div>
           )}
-          {order.duitkuReference && <div className="p-4 flex justify-between gap-4"><span className="text-muted">Referensi Duitku</span><span className="font-mono text-right break-all">{order.duitkuReference}</span></div>}
+          {order.duitkuReference && <div className="p-4 flex justify-between gap-4"><span className="text-muted">Duitku Reference</span><span className="font-mono text-right break-all">{order.duitkuReference}</span></div>}
         </div>
 
         {!order.duitkuVaNumber && !order.duitkuPaymentCode && !order.duitkuPaymentUrl && !order.duitkuQrString && (
           <p className="p-4 rounded-xl bg-amber-500/10 text-xs text-amber-500 leading-relaxed">
-            Kanal pembayaran ini tidak mengembalikan nomor VA otomatis. Hubungi customer support dengan nomor pesanan Anda untuk instruksi pembayaran.
+            This payment channel does not return an automatic VA number. Contact customer support with your order number to receive payment instructions.
           </p>
         )}
 
@@ -112,11 +112,11 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
               rel="noopener noreferrer"
               className="w-full py-3.5 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl inline-flex justify-center items-center gap-2 hover:opacity-90 transition-opacity"
             >
-              BAYAR SEKARANG <ArrowRight size={14} />
+              PAY NOW <ArrowRight size={14} />
             </a>
           )}
           <Link href="/" className={`w-full py-3.5 text-xs tracking-widest uppercase rounded-xl inline-flex justify-center items-center gap-2 transition-colors ${order.duitkuPaymentUrl ? "border border-border text-foreground hover:bg-surface" : "bg-foreground text-background hover:opacity-90"}`}>
-            KEMBALI KE TOKO <ArrowRight size={14} />
+            BACK TO SHOP <ArrowRight size={14} />
           </Link>
         </div>
       </div>

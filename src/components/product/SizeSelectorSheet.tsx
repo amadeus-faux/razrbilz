@@ -291,9 +291,9 @@ export default function SizeSelectorPopover({
               </div>
             ) : (
               <div className="py-6 text-center space-y-2">
-                <p className="text-xs text-foreground font-medium">Panduan ukuran belum tersedia</p>
+                <p className="text-xs text-foreground font-medium">Size guide not available yet</p>
                 <p className="text-[11px] text-muted">
-                  Produk ini belum memiliki tabel ukuran khusus.
+                  This product doesn&apos;t have a specific size chart yet.
                 </p>
               </div>
             )}

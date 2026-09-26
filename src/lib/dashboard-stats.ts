@@ -2,6 +2,14 @@ import { prisma } from "@/lib/prisma";
 
 export type Period = "7" | "30" | "90" | "year" | "all";
 
+/**
+ * Pesanan berstatus ini sudah dibayar (paymentStatus tetap "paid" — sesuai desain,
+ * retur tidak membalik paymentStatus) tetapi nilainya tidak boleh dihitung sebagai
+ * pendapatan, dan itemnya tidak boleh dihitung "terjual". Dipakai di SEMUA query
+ * revenue di file ini supaya pengecualian cukup diubah dari satu tempat.
+ */
+export const EXCLUDED_ORDER_STATUSES_FROM_REVENUE = ["cancelled", "returned"];
+
 export interface DashboardStatsResult {
   period: Period;
   revenue: number;
@@ -154,7 +162,11 @@ export async function calculateDashboardStats(
     oldestPaidOrder,
   ] = await Promise.all([
     prisma.order.findMany({
-      where: { paymentStatus: "paid", ...periodPaidFilter },
+      where: {
+        paymentStatus: "paid",
+        orderStatus: { notIn: EXCLUDED_ORDER_STATUSES_FROM_REVENUE },
+        ...periodPaidFilter,
+      },
       select: { total: true, paidAt: true },
     }),
 
@@ -193,7 +205,11 @@ export async function calculateDashboardStats(
 
     prevPaidFilter
       ? prisma.order.findMany({
-          where: { paymentStatus: "paid", ...prevPaidFilter },
+          where: {
+            paymentStatus: "paid",
+            orderStatus: { notIn: EXCLUDED_ORDER_STATUSES_FROM_REVENUE },
+            ...prevPaidFilter,
+          },
           select: { total: true },
         })
       : Promise.resolve([] as { total: number }[]),
@@ -203,7 +219,11 @@ export async function calculateDashboardStats(
       : Promise.resolve(0),
 
     prisma.order.findMany({
-      where: { paymentStatus: "paid", ...periodPaidFilter },
+      where: {
+        paymentStatus: "paid",
+        orderStatus: { notIn: EXCLUDED_ORDER_STATUSES_FROM_REVENUE },
+        ...periodPaidFilter,
+      },
       select: { paidAt: true, total: true },
       orderBy: { paidAt: "asc" },
     }),
@@ -241,7 +261,10 @@ export async function calculateDashboardStats(
     prisma.orderItem.groupBy({
       by: ["productId"],
       where: {
-        order: { paymentStatus: "paid" },
+        order: {
+          paymentStatus: "paid",
+          orderStatus: { notIn: EXCLUDED_ORDER_STATUSES_FROM_REVENUE },
+        },
         productId: { not: null },
       },
       _sum: { quantity: true },
