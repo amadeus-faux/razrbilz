@@ -1,4 +1,5 @@
 import { getShippingRates, type BiteshipCourierRate } from "@/lib/biteship";
+import { getOriginPostalCode } from "@/lib/origin";
 
 /**
  * Sumber tunggal (server-authoritative) untuk ongkos pengiriman.
@@ -159,7 +160,7 @@ export async function getServerShippingRates(
     return { ok: false, error: "Item tidak boleh kosong", errorCode: "errQuoteNoItems" };
   }
 
-  const originPostalCode = process.env.ORIGIN_POSTAL_CODE || "40393";
+  const originPostalCode = getOriginPostalCode();
   const rateItems = items.map((item) => ({
     name: item.name || "Produk RAZRBILZ",
     weight:

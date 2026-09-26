@@ -24,6 +24,7 @@ export interface BiteshipCourierRate {
 }
 
 import { isCourierServiceEnabled, ENABLED_COURIER_SERVICES } from "./enabled-couriers";
+import { getOriginPostalCode } from "./origin";
 
 export async function getShippingRates(
   request: BiteshipRateRequest
@@ -541,18 +542,22 @@ export async function createBiteshipOrder(
   const originAddress =
     process.env.BITESHIP_ORIGIN_ADDRESS ||
     "Bandung, Jawa Barat";
-  const originPostalCode = parseInt(
-    process.env.BITESHIP_ORIGIN_POSTAL_CODE ||
-    process.env.ORIGIN_POSTAL_CODE ||
-    "40625",
-    10
-  );
+  const originPostalCode = parseInt(getOriginPostalCode(), 10);
   const originNote = process.env.BITESHIP_ORIGIN_NOTE || "RAZRBILZ Official Warehouse";
 
   const destPostalCode =
     typeof params.destinationPostalCode === "number"
       ? params.destinationPostalCode
-      : parseInt(String(params.destinationPostalCode), 10) || 40393;
+      : parseInt(String(params.destinationPostalCode), 10);
+
+  // Kode pos tujuan tidak boleh ditebak. Order dengan postalCode kosong dulu
+  // lolos dan dibuat dengan tujuan 40393 (kode asal) — paketnya akan salah alamat.
+  if (!Number.isInteger(destPostalCode) || destPostalCode < 10000) {
+    const errorMsg =
+      "Kode pos tujuan tidak valid atau kosong. Periksa data pesanan sebelum menandai siap kirim.";
+    console.error(`[Biteship] ❌ ${errorMsg} order=${params.orderNumber}`);
+    return { success: false, error: errorMsg };
+  }
 
   const payload = {
     shipper_contact_name: originName,
