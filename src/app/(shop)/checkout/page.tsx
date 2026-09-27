@@ -19,6 +19,13 @@ import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
 import type { BiteshipCourierRate } from "@/lib/biteship";
+import {
+  PRODUCTION_TIME_MIN_DAYS,
+  PRODUCTION_TIME_MAX_DAYS,
+  COURIER_DURATION_FALLBACK_DOMESTIC,
+  COURIER_DURATION_FALLBACK_INTL,
+  totalArrivalEstimate,
+} from "@/lib/production-time";
 import Link from "next/link";
 import Image from "next/image";
 import { PaymentModal, type PaymentModalData } from "@/components/checkout/PaymentModal";
@@ -107,6 +114,11 @@ const PAYMENT_CATEGORIES: { id: string; titleKey: CheckoutKey }[] = [
   { id: "other", titleKey: "catOther" },
 ];
 
+const PRODUCTION_VARS = {
+  prodMin: PRODUCTION_TIME_MIN_DAYS,
+  prodMax: PRODUCTION_TIME_MAX_DAYS,
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useSyncExternalStore(subscribe, getItemsSnapshot, getServerSnapshot);
@@ -134,7 +146,7 @@ export default function CheckoutPage() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodOption[]>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethodOption | null>(null);
   const [loadingMethods, setLoadingMethods] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("va");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [modalData, setModalData] = useState<PaymentModalData | null>(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -143,7 +155,7 @@ export default function CheckoutPage() {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -167,6 +179,9 @@ export default function CheckoutPage() {
   // lokal lama yang berbeda dari pricing.isInternational.
   const isIndonesia = normalizeCountryCode(selectedCountry) === "ID";
   const isInternational = isCountrySelected && !isIndonesia;
+  // Langkah 4 (metode pembayaran) baru dibuka setelah data alamat valid DAN
+  // kurir dipilih, supaya daftar metode pembayaran tidak muncul di depan.
+  const paymentStepUnlocked = isValid && Boolean(selectedCourier);
   // Bahasa checkout mengikuti ke MANA barang dikirim.
   const locale: Locale = resolveLocale(selectedCountry);
 
@@ -399,7 +414,6 @@ export default function CheckoutPage() {
         const rates: BiteshipCourierRate[] = data.rates || [];
         setShippingRates(rates);
         setShippingRatesFallback(Boolean(data.isFallback));
-        if (rates.length > 0) setSelectedCourier(rates[0]);
       } catch (err) {
         if ((err as { name?: string })?.name === "AbortError") return;
         if (seq !== ratesSeqRef.current) return;
@@ -461,6 +475,9 @@ export default function CheckoutPage() {
   const methodsAbortRef = useRef<AbortController | null>(null);
   const methodsSeqRef = useRef(0);
   useEffect(() => {
+    // Jangan panggil Duitku sebelum langkah 4 dibuka (alamat valid + kurir
+    // dipilih): amount baru pasti setelah ongkir diketahui.
+    if (!paymentStepUnlocked) return;
     methodsAbortRef.current?.abort();
     const controller = new AbortController();
     methodsAbortRef.current = controller;
@@ -482,17 +499,16 @@ export default function CheckoutPage() {
           if (seq !== methodsSeqRef.current || controller.signal.aborted) return;
           if (data.methods && data.methods.length > 0) {
             setPaymentMethods(data.methods);
-            setSelectedPaymentMethod((prev) => {
-              if (prev) {
-                const found = data.methods.find((m: PaymentMethodOption) => m.paymentMethod === prev.paymentMethod);
-                if (found) return found;
-              }
-              return (
-                data.methods.find((m: PaymentMethodOption) => m.paymentMethod === "BC") ||
-                data.methods.find((m: PaymentMethodOption) => m.paymentMethod === "VA") ||
-                data.methods[0]
-              );
-            });
+            // Tidak ada auto-select: pilihan lama dipertahankan hanya bila
+            // metodenya masih tersedia; selain itu kembali ke belum terpilih.
+            setSelectedPaymentMethod((prev) =>
+              prev &&
+              data.methods.some(
+                (m: PaymentMethodOption) => m.paymentMethod === prev.paymentMethod
+              )
+                ? prev
+                : null
+            );
           }
         }
       } catch (err) {
@@ -509,12 +525,16 @@ export default function CheckoutPage() {
     return () => {
       controller.abort();
     };
-  }, [items, getItemPrice, selectedCourier]);
+  }, [items, getItemPrice, selectedCourier, paymentStepUnlocked]);
 
   // ── Submit Checkout ────────────────────────────────────────────────────────
   async function onSubmit(data: CheckoutFormData) {
     if (!selectedCourier) {
       alert(t("selectShippingFirst", locale));
+      return;
+    }
+    if (!selectedPaymentMethod) {
+      alert(t("selectPaymentFirst", locale));
       return;
     }
     setSubmitting(true);
@@ -1064,13 +1084,16 @@ export default function CheckoutPage() {
                                 {`${rate.courier_name} — ${rate.courier_service_name}`}
                               </p>
                               <p className="text-[10px] text-muted mt-0.5">
-                                {`${t("estimatedArrival", locale)} ${
-                                  rate.duration ||
-                                  t(
-                                    isInternational ? "estDurationIntl" : "estDurationDomestic",
-                                    locale
+                                {tf(
+                                  "arrivalEstimateDays",
+                                  locale,
+                                  totalArrivalEstimate(
+                                    rate.duration,
+                                    isInternational
+                                      ? COURIER_DURATION_FALLBACK_INTL
+                                      : COURIER_DURATION_FALLBACK_DOMESTIC
                                   )
-                                }`}
+                                )}
                               </p>
                             </div>
                           </div>
@@ -1088,11 +1111,15 @@ export default function CheckoutPage() {
                   <div className="mt-3 flex items-start gap-2 px-1">
                     <span className="text-muted mt-0.5 flex-shrink-0 text-[11px]">⏱</span>
                     <p className="text-[10px] text-muted leading-relaxed">
-                      {t("preOrderLead", locale)}{" "}
-                      <strong className="text-foreground/70">{t("preOrderEmph1", locale)}</strong>
-                      {t("preOrderMid", locale)}{" "}
-                      <strong className="text-foreground/70">{t("preOrderEmph2", locale)}</strong>
-                      {t("preOrderTail", locale)}
+                      {tf("preOrderLead", locale, PRODUCTION_VARS)}{" "}
+                      <strong className="text-foreground/70">
+                        {tf("preOrderEmph1", locale, PRODUCTION_VARS)}
+                      </strong>
+                      {tf("preOrderMid", locale, PRODUCTION_VARS)}{" "}
+                      <strong className="text-foreground/70">
+                        {tf("preOrderEmph2", locale, PRODUCTION_VARS)}
+                      </strong>
+                      {tf("preOrderTail", locale, PRODUCTION_VARS)}
                     </p>
                   </div>
                 )}
@@ -1115,7 +1142,12 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {loadingMethods ? (
+                {!paymentStepUnlocked ? (
+                  <div className="py-6 text-center text-xs text-muted space-y-1">
+                    <CreditCard size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
+                    <p>{t("completeShippingForPayment", locale)}</p>
+                  </div>
+                ) : loadingMethods ? (
                   <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2 text-xs text-muted border border-border">
                     <Loader2 size={15} className="animate-spin text-foreground" />
                     <span>{t("loadingPaymentMethods", locale)}</span>
@@ -1128,9 +1160,10 @@ export default function CheckoutPage() {
                       );
                       if (categoryMethods.length === 0) return null;
 
-                      const isExpanded = selectedCategory === cat.id;
+                      // Expand accordion mengikuti pilihan nyata: selama belum ada
+                      // metode pembayaran terpilih, tidak ada header kategori yang terbuka.
                       const isCategoryActive =
-                        selectedPaymentMethod &&
+                        !!selectedPaymentMethod &&
                         getMethodCategory(selectedPaymentMethod) === cat.id;
 
                       return (
@@ -1179,13 +1212,13 @@ export default function CheckoutPage() {
                             </div>
                             <ChevronDown
                               size={15}
-                              className={`text-muted transition-transform duration-200 flex-shrink-0 ml-2 ${isExpanded ? "rotate-180 text-foreground" : ""
+                              className={`text-muted transition-transform duration-200 flex-shrink-0 ml-2 ${isCategoryActive ? "rotate-180 text-foreground" : ""
                                 }`}
                             />
                           </button>
 
                           {/* Expanded Sub-Methods List */}
-                          {isExpanded && (
+                          {isCategoryActive && (
                             <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
                               <p className="text-[10px] uppercase text-muted tracking-wider pt-2 pb-1 font-medium">
                                 {t("choose", locale)} {t(cat.titleKey, locale)}:
@@ -1334,7 +1367,7 @@ export default function CheckoutPage() {
                             ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
                             : t("noFee", locale)
                           : "-"
-                        : "—"}
+                        : t("selectPaymentMethodFirst", locale)}
                     </span>
                   </div>
 
@@ -1360,7 +1393,7 @@ export default function CheckoutPage() {
                 <div className="px-6 pb-6">
                   <button
                     type="submit"
-                    disabled={submitting || !selectedCourier}
+                    disabled={submitting || !selectedCourier || !selectedPaymentMethod}
                     className="w-full py-4 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer font-medium shadow-sm"
                   >
                     {submitting ? (

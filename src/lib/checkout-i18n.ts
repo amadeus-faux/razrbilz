@@ -79,14 +79,13 @@ const en = {
   ratesFallbackEmph: "estimated fallback",
   ratesFallbackTail:
     ", not real-time courier rates (the live rate service is unavailable). The final price may be adjusted.",
-  estimatedArrival: "Estimated arrival:",
-  estDurationDomestic: "2-4 business days",
-  estDurationIntl: "10-14 business days",
-  preOrderLead: "Shipping estimate is counted",
-  preOrderEmph1: "from when your order is ready to ship",
-  preOrderMid: ". As all items are",
-  preOrderEmph2: "pre-order (14–21 days production)",
-  preOrderTail: ", total delivery time = production + shipping duration above.",
+  arrivalEstimateDays: "Estimated arrival: {min} - {max} days",
+  preOrderLead: "The arrival estimates above are the total waiting time: pre-order",
+  preOrderEmph1: "production ({prodMin}–{prodMax} days)",
+  preOrderMid:
+    " plus the courier's delivery duration. Courier delivery time only starts once your item is finished being produced and ready to ship,",
+  preOrderEmph2: "not from when the order is placed",
+  preOrderTail: ".",
 
   biCertified: "BI Certified",
   loadingPaymentMethods: "Loading payment options...",
@@ -100,6 +99,9 @@ const en = {
   paymentNoteLead: "After pressing",
   paymentNoteTail:
     ", your Duitku payment instructions will appear on the next page.",
+  completeShippingForPayment:
+    "Complete your delivery address and select a shipping option to see the available payment methods.",
+  selectPaymentMethodFirst: "Select a payment method",
 
   subtotalCount: "Subtotal ({count} items)",
   subtotalOne: "Subtotal ({count} item)",
@@ -117,6 +119,7 @@ const en = {
 
   rateLoadError: "Failed to load shipping rates. Please try again.",
   selectShippingFirst: "Please select a shipping option.",
+  selectPaymentFirst: "Please select a payment method first.",
   checkoutFailed: "Checkout could not be processed.",
   systemError: "Something went wrong on our side.",
 
@@ -287,14 +290,13 @@ const id: Record<CheckoutKey, string> = {
   ratesFallbackEmph: "estimasi fallback",
   ratesFallbackTail:
     ", bukan tarif kurir real-time (layanan tarif langsung sedang tidak tersedia). Harga final dapat disesuaikan.",
-  estimatedArrival: "Estimasi tiba:",
-  estDurationDomestic: "2-4 hari kerja",
-  estDurationIntl: "10-14 hari kerja",
-  preOrderLead: "Estimasi tiba dihitung",
-  preOrderEmph1: "sejak produk siap dikirimkan",
-  preOrderMid: ". Karena semua produk bersifat",
-  preOrderEmph2: "pre-order (produksi 14–21 hari)",
-  preOrderTail: ", total waktu pengiriman = produksi + durasi pengiriman di atas.",
+  arrivalEstimateDays: "Estimasi tiba: {min} - {max} hari",
+  preOrderLead: "Estimasi tiba di atas adalah total waktu tunggu, yaitu masa",
+  preOrderEmph1: "produksi pre-order ({prodMin}–{prodMax} hari)",
+  preOrderMid:
+    " ditambah estimasi durasi pengiriman kurir. Durasi pengiriman kurir baru mulai dihitung setelah produkmu selesai diproduksi dan siap dikirimkan,",
+  preOrderEmph2: "bukan sejak pesanan dibuat",
+  preOrderTail: ".",
 
   biCertified: "Tersertifikasi BI",
   loadingPaymentMethods: "Memuat pilihan metode pembayaran...",
@@ -307,6 +309,9 @@ const id: Record<CheckoutKey, string> = {
   noFee: "Bebas Biaya",
   paymentNoteLead: "Setelah menekan",
   paymentNoteTail: ", instruksi pembayaran Duitku akan ditampilkan di halaman selanjutnya.",
+  completeShippingForPayment:
+    "Lengkapi alamat pengiriman dan pilih metode pengiriman untuk melihat metode pembayaran yang tersedia.",
+  selectPaymentMethodFirst: "Pilih metode pembayaran",
 
   subtotalCount: "Subtotal ({count} produk)",
   subtotalOne: "Subtotal ({count} produk)",
@@ -324,6 +329,7 @@ const id: Record<CheckoutKey, string> = {
 
   rateLoadError: "Gagal memuat tarif pengiriman. Coba kembali.",
   selectShippingFirst: "Silakan pilih opsi pengiriman.",
+  selectPaymentFirst: "Silakan pilih metode pembayaran.",
   checkoutFailed: "Checkout gagal diproses.",
   systemError: "Terjadi kesalahan pada sistem.",
 
