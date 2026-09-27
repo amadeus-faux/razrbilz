@@ -9,11 +9,6 @@ import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
-// Judul tetap warisi default root layout (menyetel title di sini akan menghasilkan
-// "RAZRBILZ — RAZRBILZ" karena template judul). Deskripsi diambil dari database
-// supaya bisa diubah dari dashboard; route ini force-dynamic, jadi reload
-// homepage selalu menampilkan nilai terbaru.
 export async function generateMetadata(): Promise<Metadata> {
   return pageMeta({ path: "/", description: await getHomeMetaDescription() });
 }
