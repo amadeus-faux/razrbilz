@@ -13,7 +13,7 @@ export default function AboutPage() {
       {/* Hero heading */}
       <div className="space-y-2 pb-8 border-b border-border">
         <p className="text-[10px] font-medium tracking-[0.2em] uppercase text-muted">
-          RAZRBILZ Studio — Bandung, Indonesia
+          RAZRBILZ ID — Bandung, Indonesia
         </p>
         <h1 className="text-xl font-light tracking-tight text-foreground leading-snug">
           About the Brand
@@ -23,20 +23,23 @@ export default function AboutPage() {
       {/* Body copy */}
       <div className="space-y-5 text-[13px] text-muted leading-[1.85] tracking-wide">
         <p>
-          <strong className="text-foreground">RAZRBILZ</strong> is an independent unisex apparel
-          brand born from the fusion of utilitarian aesthetics, brutalist architecture, and
-          contemporary streetwear silhouettes.
+          <strong className="text-foreground">RAZRBILZ</strong> is an apparel brand born from the collision of three seemingly opposite worlds: the honesty of utilitarian design, the raw strength of brutalist architecture, and the freedom of contemporary streetwear silhouettes. To us, clothing is never just something you wear, it's structure, space, and a statement carried through everyday life.
         </p>
 
         <p>
-          We focus on shape, proportion, and material comfort without gender boundaries.
-          Each garment is designed with a boxy, relaxed silhouette in premium heavyweight
-          cotton built to last.
+          It all began with a fascination for concrete buildings that stay true to their own form, no unnecessary ornamentation, no pretense, just function and strength speaking for themselves. That same philosophy runs through everything we design: sharp lines, deliberate proportions, and silhouettes that aren't afraid to feel large, weighted, and real.
         </p>
 
         <p>
-          Ethically produced in Indonesia with strict quality control on every stitch and
-          finishing detail.
+          RAZRBILZ was founded in Bandung in 2025 by <strong>Amadeus</strong> and <strong>Yvain</strong>, two individuals from different backgrounds united by a shared obsession with form, texture, and material honesty. What started as a small studio and a curiosity about how clothing could become a medium of expression beyond gender has grown into a brand built on one belief: the best fashion is the kind anyone can wear, anytime, without needing to fit into definitions of masculine or feminine.
+        </p>
+        
+        <p>
+          We approach every piece the way an architect approaches a building, considering proportion, movement, and longevity. Each garment carries a boxy, relaxed silhouette, built from the belief that good clothing should be made to last, not just to trend.
+        </p>
+        
+        <p>
+        RAZRBILZ isn't just an apparel brand. It's a space where concrete meets fabric, where structure meets comfort, and where identity isn't confined by labels.
         </p>
       </div>
 

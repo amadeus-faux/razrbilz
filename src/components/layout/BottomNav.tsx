@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShoppingBag, LayoutGrid } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useCartStore } from "@/store/cart-store";
+import { useCartDrawerStore } from "@/store/cart-drawer-store";
 import Image from "next/image";
 import { usePageTransition } from "@/context/PageTransitionContext";
 
@@ -22,6 +23,8 @@ function getServerSnapshot() {
 export default function BottomNav() {
   const count = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const { navigateWithTransition } = usePageTransition();
+  const isCartOpen = useCartDrawerStore((state) => state.isOpen);
+  const toggleCart = useCartDrawerStore((state) => state.toggle);
 
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -70,13 +73,14 @@ export default function BottomNav() {
         />
       </div>
 
-      {/* Cart icon */}
-      <Link
-        href="/cart"
-        prefetch={true}
-        onClick={(e) => handleNavClick(e, "/cart")}
-        className="relative flex items-center justify-center w-10 h-10 text-foreground transition-opacity hover:opacity-60"
+      {/* Cart icon — membuka CartDrawer, bukan pindah halaman */}
+      <button
+        type="button"
+        onClick={toggleCart}
+        className="relative flex items-center justify-center w-10 h-10 text-foreground transition-opacity hover:opacity-60 cursor-pointer"
         aria-label="Cart"
+        aria-expanded={isCartOpen}
+        aria-controls="cart-drawer"
         id="nav-cart"
       >
         {count > 0 && (
@@ -88,7 +92,7 @@ export default function BottomNav() {
           </span>
         )}
         <ShoppingBag size={18} strokeWidth={1.5} />
-      </Link>
+      </button>
     </nav>
   );
 }

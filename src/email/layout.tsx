@@ -40,7 +40,7 @@ export const emailFonts = {
  * query. Hanya selector class: Gmail membuang selector turunan/atribut. Klien yang
  * mengabaikan blok ini tetap tampil benar karena semua gaya dasar ada inline.
  */
-export const emailResponsiveCss = `
+const emailResponsiveCss = `
 @media only screen and (max-width:480px) {
   .shell { padding:18px 14px !important; border-radius:12px !important; }
   .drow { table-layout:fixed !important; }

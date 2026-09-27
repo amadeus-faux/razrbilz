@@ -294,14 +294,119 @@
 
   .navbar-liquid-glass {
     background: rgba(16, 16, 14, 0.75);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+    /* Nilai filter disimpan di custom property: minifier produksi menghapus
+       spasi di filter list langsung (blur(28px)saturate(190%)) sehingga
+       deklarasi jadi invalid dan dibuang browser. */
+    --nav-glass: blur(20px) saturate(190%);
+    -webkit-backdrop-filter: var(--nav-glass);
+    backdrop-filter: var(--nav-glass);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.65),
       0 4px 14px rgba(0, 0, 0, 0.45),
       inset 0 1px 1px rgba(255, 255, 255, 0.2),
       inset 0 -1px 1px rgba(0, 0, 0, 0.35);
+  }
+
+  /* ── Cart drawer (liquid glass) ─────────────────────────────────────────────
+     Dirender lewat portal ke <body>. Parent yang punya transform/filter/will-change
+     (mis. .floating-nav dengan translateX(-50%)) menciptakan backdrop root
+     sendiri, sehingga backdrop-filter di dalamnya cuma menyaring parent itu —
+     bukan halaman. Portal menjaga panel tetap anak langsung dari body. */
+  .cart-drawer-root {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    visibility: hidden;
+    /* visibility ditunda 0.32s saat menutup supaya slide-out sempat terlihat */
+    transition: visibility 0s linear 0.32s;
+  }
+
+  .cart-drawer-root[data-open="true"] {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .cart-drawer-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 0.32s ease;
+  }
+
+  .cart-drawer-root[data-open="true"] .cart-drawer-scrim {
+    opacity: 1;
+  }
+
+  .cart-drawer-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(400px, 100vw);
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(255, 255, 255, 0.07);
+    /* Lihat catatan di .navbar-liquid-glass: filter list harus lewat custom
+       property supaya spasi antar-fungsi selamat dari minifier produksi. */
+    --cart-glass: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: var(--cart-glass);
+    backdrop-filter: var(--cart-glass);
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: -24px 0 64px rgba(0, 0, 0, 0.45);
+    contain: layout style paint;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cart-drawer-root[data-open="true"] .cart-drawer-panel {
+    transform: translateX(0);
+  }
+
+  /* Tanpa dukungan backdrop-filter, "kaca" jadi bening total dan teks di atas
+     konten halaman tidak terbaca — ganti dengan latar gelap solid. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cart-drawer-panel {
+      background: rgba(20, 20, 20, 0.92);
+    }
+  }
+
+  .cart-drawer-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 24px;
+  }
+
+  .cart-drawer-footer {
+    flex: 0 0 auto;
+    padding: 20px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  @media (max-width: 640px) {
+    .cart-drawer-panel {
+      width: 100vw;
+      border-left: none;
+      /* Blur lebih ringan di layar kecil: device di rentang ini umumnya
+         terbatas GPU-nya, dan backdrop-filter setinggi viewport itu mahal. */
+      --cart-glass: blur(18px) saturate(150%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cart-drawer-root,
+    .cart-drawer-root[data-open="true"],
+    .cart-drawer-scrim,
+    .cart-drawer-panel {
+      transition-duration: 0.01s;
+      transition-delay: 0s;
+    }
   }
 
   .size-btn {

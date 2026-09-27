@@ -49,7 +49,7 @@ export default function RefundPolicyPage() {
           <p>
             To submit a claim, please reach out to us via the{" "}
             <a href="/contact">Contact Us</a> page or email us at{" "}
-            <strong>razrbilz@gmail.com</strong> with your Order ID and unboxing video attached.
+            <strong>support@razrbilz.id</strong> with your Order ID and unboxing video attached.
           </p>
         </section>
       </div>

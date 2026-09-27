@@ -13,7 +13,6 @@ import {
   ShipmentEmail,
   type EmailItemLine,
 } from "@/email/templates";
-import { ContactNotificationEmail } from "@/email/contact-notification";
 
 export interface EmailResult {
   success: boolean;
@@ -64,15 +63,25 @@ async function deliver({
   to,
   subject,
   element,
+  text,
   replyTo,
+  fromName,
 }: {
   to: string;
   subject: string;
-  element: ReactElement;
+  /** Email ber-format: semua email customer memakai jalur ini. */
+  element?: ReactElement;
+  /** Teks murni tanpa HTML sama sekali. Dipakai notifikasi Contact Us: isinya
+   *  pesan pengunjung, jadi tidak boleh ada kotak/warna/templat di sekitarnya. */
+  text?: string;
   /** Ke mana tombol Reply mengarah. Bila tidak diisi, EMAIL_REPLY_TO environment
    *  yang dipakai. Form Contact Us mengirim alamat pengunjung ke sini supaya
    *  balasan pemilik toko sampai ke pengunjung, bukan ke alamat pengirim (info@). */
   replyTo?: string | null;
+  /** Label di depan alamat kita pada header From, mis. "Sam Fatih (sam@x.com)".
+   *  Alamat From TIDAK PERNAH diganti: pengiriman atas nama domain pihak lain
+   *  ditolak provider dan gagal lolos DMARC. */
+  fromName?: string;
 }): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
@@ -85,14 +94,17 @@ async function deliver({
   }
 
   try {
-    const html = await render(element);
+    const html = element ? await render(element) : undefined;
+    const fromAddress = /<([^>]+)>/.exec(from)?.[1] ?? from;
+    const quotedName = fromName?.replace(/["\\]/g, "").trim();
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from,
+      from: quotedName ? `"${quotedName}" <${fromAddress}>` : from,
       to,
       subject,
-      html,
-      text: toPlainText(html),
+      // Setiap pemanggil memberi `element` ATAU `text`; `?? ""` hanya untuk
+      // memenuhi tipe Resend pada jalur teks murni.
+      ...(html ? { html, text: text ?? toPlainText(html) } : { text: text ?? "" }),
       replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
     });
 
@@ -372,6 +384,11 @@ export async function sendShippingEmail(
 /**
  * Notifikasi internal untuk pesan dari form Contact Us.
  *
+ * Dikirim sebagai TEKS MURNI (tanpa HTML) dan isinya HANYA teks dari pengunjung —
+ * tidak ada baris pembuka, footer, atau label dari kita. Identitas pengirim
+ * dibawa di header: label From berisi alamat pengunjung + `replyTo`, dan subjek
+ * dari pengunjung (namanya bila subjek kosong).
+ *
  * `from` tetap alamat kita (EMAIL_FROM, domain terverifikasi) — alamat pengunjung
  * masuk ke `replyTo`, karena mengirim dengan from = email pihak lain akan ditolak
  * provider dan tidak pernah sampai. Tidak ada jejak di ShippingLog: tabel itu
@@ -385,13 +402,20 @@ export async function sendContactMessageEmail(p: {
   message: string;
 }): Promise<EmailResult> {
   const to = process.env.CONTACT_EMAIL_TO || "support@razrbilz.id";
-  const subject = `Pesan baru dari Contact Us - ${p.name}`;
+  /** Subjek = subjek yang ditulis pengunjung, apa adanya. Pengisi form itu
+   *  opsional; kalau kosong, nama yang jadi subjek supaya emailnya tetap bisa
+   *  diidentifikasi — di badan pesan tidak ada teks dari kita sama sekali. */
+  const subject = p.subject || `Pesan dari ${p.name}`;
+  const text = `${p.message}\n`;
 
   const result = await deliver({
     to,
     subject,
+    text,
     replyTo: p.email,
-    element: <ContactNotificationEmail {...p} receivedAt={new Date()} />,
+    /** Hanya alamat pengunjung yang jadi label From: cukup untuk mengenali
+     *  pengirim di daftar inbox, badan pesan tetap bersih. */
+    fromName: p.email,
   });
 
   console.log(

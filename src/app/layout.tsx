@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { PageTransitionProvider } from "@/context/PageTransitionContext";
 import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay";
+import CartDrawer from "@/components/cart/CartDrawer";
 import { siteOrigin } from "@/lib/site-url";
 import { BRAND_OG_IMAGE, OG_DEFAULTS } from "@/lib/seo";
 
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <PageTransitionProvider>
           {children}
+          <CartDrawer />
           <PageTransitionOverlay />
         </PageTransitionProvider>
         {/* mode default "auto": hanya mengirim event di build produksi */}
