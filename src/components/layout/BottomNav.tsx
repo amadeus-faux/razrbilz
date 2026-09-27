@@ -44,7 +44,11 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="floating-nav navbar-liquid-glass" id="bottom-nav">
+    <nav
+      className="floating-nav navbar-liquid-glass"
+      id="bottom-nav"
+      data-nosnippet
+    >
       {/* Shop icon */}
       <Link
         href="/"

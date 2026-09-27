@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BRAND_DESCRIPTION } from "@/lib/seo";
 
 interface FooterProps {
   showBrandWordmark?: boolean;
@@ -12,6 +13,7 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
         <nav
           className="flex flex-col items-start gap-y-2.5 md:flex-row md:items-center md:justify-center md:gap-x-8 md:gap-y-3 w-full"
           aria-label="Footer navigation"
+          data-nosnippet
         >
           {[
             { href: "/refund-policy", label: "Refund Policy" },
@@ -41,21 +43,32 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
       </div>
 
       {showBrandWordmark && (
-        <div
-          className="w-full overflow-hidden px-6 pb-28 pt-2 select-none"
-          aria-hidden="true"
-        >
-          <div
-            className="flex justify-between text-foreground leading-none"
-            style={{
-              fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
-              fontSize: "clamp(4rem, 23.6vw, 30rem)",
-            }}
-          >
-            {"razrbilz".split("").map((char, i) => (
-              <span key={i}>{char}</span>
-            ))}
-          </div>
+        <div className="w-full overflow-hidden px-6 pb-28 pt-2">
+          {/* Wordmark raksasa ini tersusun dari satu <span> per huruf, jadi teksnya
+              tidak terbaca sebagai satu kata. <h1> memberi crawler dan screen reader
+              judul yang bersih sementara hurufnya tetap dekoratif. */}
+          <h1 className="select-none">
+            <span className="sr-only">RAZRBILZ</span>
+            <span
+              aria-hidden="true"
+              className="flex justify-between text-foreground leading-none"
+              style={{
+                fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
+                fontSize: "clamp(4rem, 23.6vw, 30rem)",
+              }}
+            >
+              {"razrbilz".split("").map((char, i) => (
+                <span key={i}>{char}</span>
+              ))}
+            </span>
+          </h1>
+
+          {/* Satu-satunya kalimat deskriptif di homepage. Tanpa ini Google merakit
+              snippet sendiri dari sisa teks halaman (nama produk, harga, link
+              kebijakan, alt logo) dan mengabaikan meta description. */}
+          <p className="mx-auto mt-6 max-w-[52ch] text-center text-[11px] leading-[1.8] tracking-[0.06em] text-muted">
+            {BRAND_DESCRIPTION}
+          </p>
         </div>
       )}
     </footer>

@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
 
+/**
+ * Satu kalimat identitas brand. Dipakai sebagai caption homepage yang bisa
+ * dibaca crawler (lihat `Footer`) dan sebagai `description` JSON-LD — dua-duanya
+ * harus bicara dengan suara yang sama. Fakta di dalamnya sengaja diambil dari
+ * halaman /about, tidak ada klaim baru.
+ */
+export const BRAND_DESCRIPTION =
+  "RAZRBILZ is an independent unisex streetwear brand from Bandung, Indonesia. Made to order, in small runs.";
+
 export type OgImage = {
   url: string;
   width?: number;

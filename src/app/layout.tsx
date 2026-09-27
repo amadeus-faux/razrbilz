@@ -7,6 +7,7 @@ import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay
 import CartDrawer from "@/components/cart/CartDrawer";
 import { siteOrigin } from "@/lib/site-url";
 import { BRAND_OG_IMAGE, OG_DEFAULTS } from "@/lib/seo";
+import { brandJsonLd } from "@/lib/json-ld";
 
 // ── Tanker — single-weight display font (400/Regular only) ────────────────────
 const tanker = localFont({
@@ -64,6 +65,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`h-full antialiased ${tanker.variable}`}>
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(brandJsonLd()) }}
+        />
         <PageTransitionProvider>
           {children}
           <CartDrawer />
