@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useSyncExternalStore } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -156,7 +156,7 @@ export default function CheckoutPage() {
     watch,
     setValue,
     getValues,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -174,15 +174,24 @@ export default function CheckoutPage() {
   const selectedCity = watch("city");
   const selectedDistrict = watch("district");
   const postalCode = watch("postalCode");
+  const formValues = watch();
 
   const isCountrySelected = Boolean(selectedCountry);
   // Predikat region KANONIK (sama seperti resolveLocale) — menggantikan definisi
   // lokal lama yang berbeda dari pricing.isInternational.
   const isIndonesia = normalizeCountryCode(selectedCountry) === "ID";
   const isInternational = isCountrySelected && !isIndonesia;
+  // Validitas alamat dinilai langsung dari nilai form, bukan formState.isValid:
+  // RHF menulis ulang isValid dari hasil validasi PER FIELD saat trigger/setValue
+  // dipanggil, sehingga status globalnya bisa tertinggal satu langkah dan
+  // konsumen terkunci di langkah 4 tanpa pesan yang benar.
+  const addressValid = useMemo(
+    () => checkoutSchema.safeParse(formValues).success,
+    [formValues]
+  );
   // Langkah 4 (metode pembayaran) baru dibuka setelah data alamat valid DAN
   // kurir dipilih, supaya daftar metode pembayaran tidak muncul di depan.
-  const paymentStepUnlocked = isValid && Boolean(selectedCourier);
+  const paymentStepUnlocked = addressValid && Boolean(selectedCourier);
   // Bahasa checkout mengikuti ke MANA barang dikirim.
   const locale: Locale = resolveLocale(selectedCountry);
 
@@ -389,13 +398,16 @@ export default function CheckoutPage() {
     if (isIndonesia && selectedDistrict) {
       const pCodes = postalCodesMap[selectedDistrict] || [];
       setAvailablePostalCodes(pCodes);
-      if (pCodes.length === 1) {
+      // Kode pos yang sudah diisi JANGAN pernah dihapus di sini. Branch
+      // "hapus bila daftar kosong" dulu menyalakan bug terkunci di langkah 4:
+      // /api/shipping/areas tidak pernah mengirim daftar kode pos, jadi setiap
+      // perubahan kecamatan ikut menghapus kode pos user → alamat jadi tidak
+      // valid tanpa pesan.
+      if (pCodes.length === 1 && !getValues("postalCode")) {
         setValue("postalCode", pCodes[0]);
-      } else if (pCodes.length === 0) {
-        setValue("postalCode", "");
       }
     }
-  }, [selectedDistrict, postalCodesMap, isIndonesia, setValue]);
+  }, [selectedDistrict, postalCodesMap, isIndonesia, setValue, getValues]);
 
   // ── 5. Fetch shipping rates ─────────────────────────────────────────────────
   // 2.4: AbortController + token urutan. Ganti kode pos/kurir/negara berturut-turut
@@ -1170,7 +1182,7 @@ export default function CheckoutPage() {
                     <CreditCard size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
                     <p>
                       {t(
-                        isValid ? "selectCourierForPayment" : "completeAddressForPayment",
+                        addressValid ? "selectCourierForPayment" : "completeAddressForPayment",
                         locale
                       )}
                     </p>
