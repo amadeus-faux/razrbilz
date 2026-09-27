@@ -99,8 +99,10 @@ const en = {
   paymentNoteLead: "After pressing",
   paymentNoteTail:
     ", your Duitku payment instructions will appear on the next page.",
-  completeShippingForPayment:
-    "Complete your delivery address and select a shipping option to see the available payment methods.",
+  completeAddressForPayment:
+    "Complete your delivery details above to see the available payment methods.",
+  selectCourierForPayment:
+    "Select a shipping option to see the available payment methods.",
   selectPaymentMethodFirst: "Select a payment method",
 
   subtotalCount: "Subtotal ({count} items)",
@@ -309,8 +311,10 @@ const id: Record<CheckoutKey, string> = {
   noFee: "Bebas Biaya",
   paymentNoteLead: "Setelah menekan",
   paymentNoteTail: ", instruksi pembayaran Duitku akan ditampilkan di halaman selanjutnya.",
-  completeShippingForPayment:
-    "Lengkapi alamat pengiriman dan pilih metode pengiriman untuk melihat metode pembayaran yang tersedia.",
+  completeAddressForPayment:
+    "Lengkapi data pengiriman di atas untuk melihat metode pembayaran yang tersedia.",
+  selectCourierForPayment:
+    "Pilih metode pengiriman untuk melihat metode pembayaran yang tersedia.",
   selectPaymentMethodFirst: "Pilih metode pembayaran",
 
   subtotalCount: "Subtotal ({count} produk)",

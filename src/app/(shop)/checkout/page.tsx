@@ -155,6 +155,7 @@ export default function CheckoutPage() {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors, isValid },
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -184,6 +185,25 @@ export default function CheckoutPage() {
   const paymentStepUnlocked = isValid && Boolean(selectedCourier);
   // Bahasa checkout mengikuti ke MANA barang dikirim.
   const locale: Locale = resolveLocale(selectedCountry);
+
+  // Autofill browser bisa menulis nilai ke input TANPA mengirim event ke React,
+  // sehingga form state tetap kosong dan langkah pembayaran terkunci permanen
+  // walau alamat terlihat sudah terisi. Tarik nilai DOM yang sebenarnya ke dalam
+  // form state setiap kali user menyentuh form atau memilih kurir.
+  const formRef = useRef<HTMLFormElement>(null);
+  const syncValuesFromDom = useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    for (const el of Array.from(form.elements)) {
+      if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement))
+        continue;
+      if (!el.name || el.type === "checkbox" || el.type === "radio") continue;
+      const name = el.name as Exclude<keyof CheckoutFormData, "newsOffers">;
+      if (getValues(name) !== el.value) {
+        setValue(name, el.value, { shouldValidate: true });
+      }
+    }
+  }, [getValues, setValue]);
 
   // Membedakan "default ID" dari pilihan aktif user, supaya kita tidak menimpa
   // cookie user_country (sinyal geo) hanya karena halaman checkout dibuka.
@@ -690,7 +710,7 @@ export default function CheckoutPage() {
           </span>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form ref={formRef} onSubmit={handleSubmit(onSubmit)} onFocus={syncValuesFromDom}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
 
             {/* ── LEFT COLUMN: Form Sections (7 cols) ─────────────────────── */}
@@ -1062,7 +1082,10 @@ export default function CheckoutPage() {
                         <button
                           key={`${rate.courier_code}-${rate.courier_service_code}`}
                           type="button"
-                          onClick={() => setSelectedCourier(rate)}
+                          onClick={() => {
+                            syncValuesFromDom();
+                            setSelectedCourier(rate);
+                          }}
                           className={`w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer ${isSelected
                             ? "border-foreground bg-surface ring-1 ring-foreground"
                             : "border-border hover:border-foreground/30 bg-surface"
@@ -1145,7 +1168,12 @@ export default function CheckoutPage() {
                 {!paymentStepUnlocked ? (
                   <div className="py-6 text-center text-xs text-muted space-y-1">
                     <CreditCard size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
-                    <p>{t("completeShippingForPayment", locale)}</p>
+                    <p>
+                      {t(
+                        isValid ? "selectCourierForPayment" : "completeAddressForPayment",
+                        locale
+                      )}
+                    </p>
                   </div>
                 ) : loadingMethods ? (
                   <div className="p-6 bg-surface rounded-xl flex items-center justify-center gap-2 text-xs text-muted border border-border">
