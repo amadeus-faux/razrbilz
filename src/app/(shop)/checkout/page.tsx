@@ -711,11 +711,11 @@ export default function CheckoutPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between pb-6 border-b border-border mb-10">
           <Link
-            href="/cart"
+            href="/"
             className="group inline-flex items-center gap-2 text-[10px] font-medium text-muted hover:text-foreground transition-colors uppercase tracking-[0.14em]"
           >
             <ArrowLeft size={13} strokeWidth={2} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
-            {t("backToBag", locale)}
+            {t("backToShop", locale)}
           </Link>
           <span className="text-[10px] uppercase tracking-[0.18em] text-foreground">
             {t("secureCheckout", locale)}

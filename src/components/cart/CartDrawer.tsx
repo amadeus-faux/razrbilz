@@ -11,7 +11,6 @@ import {
   useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
 
 import { useCartStore, type CartItem } from "@/store/cart-store";
 import { useCartDrawerStore } from "@/store/cart-drawer-store";
@@ -47,11 +46,9 @@ function getServerClientSnapshot() {
 }
 
 export default function CartDrawer() {
-  const router = useRouter();
   const { navigateWithTransition } = usePageTransition();
 
   const isOpen = useCartDrawerStore((state) => state.isOpen);
-  const open = useCartDrawerStore((state) => state.open);
   const close = useCartDrawerStore((state) => state.close);
 
   const items = useSyncExternalStore(
@@ -79,17 +76,6 @@ export default function CartDrawer() {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
   const pricingFetchedRef = useRef(false);
-
-  // Buka drawer dari URL /?cart=1 (dipakai redirect /cart), lalu buang
-  // parameternya. Harus lewat router, bukan `history.replaceState` langsung:
-  // cara itu tidak bertahan (URL tetap `/?cart=1` di Chromium, WebKit, dan
-  // Firefox) karena App Router menulis ulang history state setelah navigasi.
-  useEffect(() => {
-    if (!mounted) return;
-    if (new URL(window.location.href).searchParams.get("cart") !== "1") return;
-    open();
-    router.replace("/", { scroll: false });
-  }, [mounted, open, router]);
 
   // Harga wilayah + kurs diambil sekali, saat drawer pertama kali dibuka — bukan
   // di setiap page load.

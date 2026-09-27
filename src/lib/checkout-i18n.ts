@@ -23,7 +23,7 @@ export function resolveLocale(countryOrRegion?: string | null): Locale {
 }
 
 const en = {
-  backToBag: "Back to Bag",
+  backToShop: "Continue Shopping",
   secureCheckout: "Secure Checkout",
 
   contactInformation: "Contact Information",
@@ -234,7 +234,7 @@ const en = {
 export type CheckoutKey = keyof typeof en;
 
 const id: Record<CheckoutKey, string> = {
-  backToBag: "Kembali ke Keranjang",
+  backToShop: "Kembali Belanja",
   secureCheckout: "Checkout Aman",
 
   contactInformation: "Informasi Kontak",

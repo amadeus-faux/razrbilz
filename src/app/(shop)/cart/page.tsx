@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 
 /**
  * Cart bukan lagi halaman penuh: isinya sekarang CartDrawer yang mengambang di
- * atas halaman mana pun. URL lama (bookmark, link "back to cart" di checkout)
- * tetap dipakai — `?cart=1` dibaca CartDrawer saat mount untuk membuka diri,
- * lalu parameternya dibuang lagi.
+ * atas halaman mana pun. Rute ini dipertahankan hanya supaya URL lama (bookmark,
+ * tautan eksternal) tidak 404 — pembukanya lewat tombol Cart di header, jadi
+ * tidak perlu param apa pun di URL.
  */
 export default function CartPage() {
-  redirect("/?cart=1");
+  redirect("/");
 }
