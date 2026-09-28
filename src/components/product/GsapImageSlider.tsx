@@ -260,7 +260,7 @@ export default function GsapImageSlider({
           <button
             type="button"
             onClick={goPrev}
-            className="hidden lg:flex items-center justify-center absolute left-[-28px] sm:left-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
+            className="hidden lg:flex items-center justify-center absolute left-[-28px] sm:left-[-36px] top-1/2 -translate-y-1/2 p-2 text-muted hover:text-foreground active:scale-95 transition-all duration-150 z-10"
             aria-label="Previous image"
           >
             <ChevronLeft size={22} strokeWidth={1.25} />
@@ -268,7 +268,7 @@ export default function GsapImageSlider({
           <button
             type="button"
             onClick={goNext}
-            className="hidden lg:flex items-center justify-center absolute right-[-28px] sm:right-[-36px] top-1/2 -translate-y-1/2 p-2 text-foreground/40 hover:text-foreground active:scale-95 transition-all duration-150 z-10"
+            className="hidden lg:flex items-center justify-center absolute right-[-28px] sm:right-[-36px] top-1/2 -translate-y-1/2 p-2 text-muted hover:text-foreground active:scale-95 transition-all duration-150 z-10"
             aria-label="Next image"
           >
             <ChevronRight size={22} strokeWidth={1.25} />

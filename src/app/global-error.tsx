@@ -18,8 +18,8 @@ export default function GlobalError({
       <body
         style={{
           margin: 0,
-          background: "#000000",
-          color: "#f0ede8",
+          background: "#FFFFFF",
+          color: "#111111",
           fontFamily: "ui-sans-serif, system-ui, sans-serif",
         }}
       >
@@ -40,7 +40,7 @@ export default function GlobalError({
                 fontSize: 10,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
-                color: "#7a7570",
+                color: "#666666",
               }}
             >
               Unexpected error
@@ -48,7 +48,7 @@ export default function GlobalError({
             <h1 style={{ margin: "12px 0 0", fontSize: 26, fontWeight: 300, lineHeight: 1.35 }}>
               We couldn&apos;t load this page
             </h1>
-            <p style={{ margin: "16px 0 0", fontSize: 13, lineHeight: 1.85, color: "#7a7570" }}>
+            <p style={{ margin: "16px 0 0", fontSize: 13, lineHeight: 1.85, color: "#666666" }}>
               Something went wrong on our side. Try again — if it keeps
               happening, send us the address of this page through the contact
               form.
@@ -59,8 +59,8 @@ export default function GlobalError({
                 onClick={reset}
                 style={{
                   padding: "16px 24px",
-                  background: "#f0ede8",
-                  color: "#000000",
+                  background: "#111111",
+                  color: "#FFFFFF",
                   fontSize: 11,
                   letterSpacing: "0.16em",
                   textTransform: "uppercase",
@@ -80,13 +80,13 @@ export default function GlobalError({
                   display: "inline-flex",
                   alignItems: "center",
                   padding: "16px 24px",
-                  background: "#1e1c1a",
-                  color: "#f0ede8",
+                  background: "#F5F5F5",
+                  color: "#111111",
                   fontSize: 11,
                   letterSpacing: "0.14em",
                   textTransform: "uppercase",
                   borderRadius: 12,
-                  border: "1px solid #2a2825",
+                  border: "1px solid #E5E5E5",
                   textDecoration: "none",
                 }}
               >

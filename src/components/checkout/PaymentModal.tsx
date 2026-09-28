@@ -65,7 +65,7 @@ function Msg({
           <span
             key={i}
             className={
-              mono ? "font-mono text-white font-semibold" : "text-white font-semibold"
+              mono ? "font-mono text-foreground font-semibold" : "text-foreground font-semibold"
             }
           >
             {part.text}
@@ -249,24 +249,24 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/55 backdrop-blur-md animate-in fade-in duration-200"
       data-lenis-prevent="true"
     >
       <div
-        className="relative w-full max-w-lg max-h-[90vh] flex flex-col bg-[#111111] border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg max-h-[90vh] flex flex-col bg-background border border-border rounded-2xl shadow-2xl overflow-hidden"
         data-lenis-prevent="true"
       >
         {/* Top Header Bar */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-border flex items-center justify-between bg-surface">
           <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <p className="text-[11px] uppercase tracking-widest text-white/70 font-mono">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+            <p className="text-[11px] uppercase tracking-widest text-foreground/80 font-mono">
               {tf("pmOrder", locale, { number: data.orderNumber })}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-foreground/[0.06] transition-colors cursor-pointer"
             title={t("pmClose", locale)}
           >
             <X size={16} />
@@ -282,43 +282,43 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
           {/* Status: SUCCESS */}
           {paymentStatus === "paid" ? (
             <div className="py-8 text-center space-y-5 animate-in zoom-in-95 duration-300">
-              <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
                 <CheckCircle2 size={36} className="animate-bounce" />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-semibold text-white tracking-wide uppercase">
+                <h3 className="text-base font-semibold text-foreground tracking-wide uppercase">
                   {t("pmPaidTitle", locale)}
                 </h3>
-                <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                <p className="text-xs text-muted max-w-sm mx-auto leading-relaxed">
                   {t("pmPaidDesc", locale)}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-xs space-y-2 text-left font-mono">
+              <div className="p-4 rounded-xl bg-surface border border-border text-xs space-y-2 text-left font-mono">
                 <div className="flex justify-between">
-                  <span className="text-white/50">{t("pmOrderNo", locale)}</span>
-                  <span className="text-white font-semibold">{data.orderNumber}</span>
+                  <span className="text-muted">{t("pmOrderNo", locale)}</span>
+                  <span className="text-foreground font-semibold">{data.orderNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">{t("pmTotalPaid", locale)}</span>
-                  <span className="text-emerald-400 font-semibold">{formatRupiah(data.total)}</span>
+                  <span className="text-muted">{t("pmTotalPaid", locale)}</span>
+                  <span className="text-emerald-700 font-semibold">{formatRupiah(data.total)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/50">{t("pmMethod", locale)}</span>
-                  <span className="text-white">{data.paymentName}</span>
+                  <span className="text-muted">{t("pmMethod", locale)}</span>
+                  <span className="text-foreground">{data.paymentName}</span>
                 </div>
               </div>
 
               <div className="pt-2 flex flex-col gap-2">
                 <Link
                   href={`/order-confirmation/${encodeURIComponent(data.orderNumber)}`}
-                  className="w-full py-3.5 bg-white text-black text-xs font-semibold tracking-widest uppercase rounded-xl inline-flex justify-center items-center gap-2 hover:bg-white/90 transition-all"
+                  className="w-full py-3.5 bg-foreground text-background text-xs font-semibold tracking-widest uppercase rounded-xl inline-flex justify-center items-center gap-2 hover:bg-foreground/90 transition-all"
                 >
                   {t("pmViewConfirmation", locale)} <ArrowRight size={14} />
                 </Link>
                 <Link
                   href="/"
-                  className="w-full py-3 bg-white/5 text-white/70 text-xs tracking-wider uppercase rounded-xl hover:bg-white/10 transition-colors text-center"
+                  className="w-full py-3 bg-surface text-foreground text-xs tracking-wider uppercase rounded-xl hover:bg-surface-hover transition-colors text-center"
                 >
                   {t("pmBackHome", locale)}
                 </Link>
@@ -327,10 +327,10 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
           ) : (
             <>
               {/* Payment Method Badge & Expiry Countdown */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/10">
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface border border-border">
                 <div className="flex items-center gap-3">
                   {data.paymentImage ? (
-                    <div className="w-10 h-6 bg-white rounded flex items-center justify-center p-0.5">
+                    <div className="w-10 h-6 bg-white border border-border rounded flex items-center justify-center p-0.5">
                       <img
                         src={data.paymentImage}
                         alt={data.paymentName}
@@ -338,22 +338,22 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                       />
                     </div>
                   ) : (
-                    <Building2 size={20} className="text-white/70" />
+                    <Building2 size={20} className="text-muted" />
                   )}
                   <div>
-                    <p className="text-xs font-semibold text-white tracking-wide">
+                    <p className="text-xs font-semibold text-foreground tracking-wide">
                       {data.paymentName}
                     </p>
-                    <p className="text-[10px] text-white/50">{t("pmDuitkuDirect", locale)}</p>
+                    <p className="text-[10px] text-muted">{t("pmDuitkuDirect", locale)}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className="flex items-center gap-1.5 text-amber-400 font-mono text-xs font-medium">
+                  <div className="flex items-center gap-1.5 text-amber-700 font-mono text-xs font-medium">
                     <Clock size={13} />
                     <span>{formatTime(timeLeft)}</span>
                   </div>
-                  <p className="text-[9px] text-white/40 mt-0.5">{t("pmPayBy", locale)}</p>
+                  <p className="text-[9px] text-muted mt-0.5">{t("pmPayBy", locale)}</p>
                 </div>
               </div>
 
@@ -361,17 +361,17 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
               {isRetail && (
                 <div className="space-y-4">
                   {/* Payment Code Box */}
-                  <div className="p-4 rounded-xl bg-black border border-white/15 space-y-1.5">
+                  <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] uppercase tracking-wider text-white/50">
+                      <span className="text-[10px] uppercase tracking-wider text-muted">
                         {t("pmPaymentCode", locale)}
                       </span>
-                      <span className="text-[9px] text-amber-400 uppercase font-mono tracking-wide bg-amber-500/10 px-2 py-0.5 rounded">
+                      <span className="text-[9px] text-amber-700 uppercase font-mono tracking-wide bg-amber-500/10 px-2 py-0.5 rounded">
                         {t("pmPayAtCounter", locale)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-1">
-                      <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-white select-all break-all">
+                      <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-foreground select-all break-all">
                         {retailCode || "-"}
                       </span>
                       <button
@@ -379,8 +379,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         onClick={handleCopyCode}
                         className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
                           copiedCode
-                            ? "bg-emerald-500 text-black"
-                            : "bg-white/10 hover:bg-white/20 text-white"
+                            ? "bg-emerald-700 text-white"
+                            : "bg-foreground text-background hover:bg-foreground/85"
                         }`}
                       >
                         {copiedCode ? (
@@ -397,12 +397,12 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                   </div>
 
                   {/* Total Amount Box */}
-                  <div className="p-4 rounded-xl bg-black border border-white/15 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-surface border border-border flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider text-white/50 block">
+                      <span className="text-[10px] uppercase tracking-wider text-muted block">
                         {t("pmTotalToPay", locale)}
                       </span>
-                      <span className="text-base font-bold text-white font-mono mt-0.5 block">
+                      <span className="text-base font-bold text-foreground font-mono mt-0.5 block">
                         {amountLabel}
                       </span>
                     </div>
@@ -411,8 +411,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                       onClick={handleCopyAmount}
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
                         copiedAmount
-                          ? "bg-emerald-500 text-black"
-                          : "bg-white/10 hover:bg-white/20 text-white"
+                          ? "bg-emerald-700 text-white"
+                          : "bg-foreground text-background hover:bg-foreground/85"
                       }`}
                     >
                       {copiedAmount ? `${t("pmCopied", locale)} ✓` : t("pmCopyAmount", locale)}
@@ -421,10 +421,10 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
 
                   {/* Retail Payment Guide */}
                   <div className="space-y-2 pt-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-foreground">
                       {tf("pmRetailHowTo", locale, { outlet })}
                     </p>
-                    <div className="text-[11px] text-white/70 leading-relaxed p-3 bg-white/[0.02] rounded-xl border border-white/5">
+                    <div className="text-[11px] text-foreground/80 leading-relaxed p-3 bg-surface rounded-xl border border-border">
                       <ol className="list-decimal list-inside space-y-1">
                         <li>
                           <Msg k="pmRetailStep1" locale={locale} vars={{ outlet }} mono={false} />
@@ -444,7 +444,7 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         href={data.paymentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] text-white/60 hover:text-white inline-flex items-center gap-1 underline underline-offset-4"
+                        className="text-[11px] text-muted hover:text-foreground inline-flex items-center gap-1 underline underline-offset-4"
                       >
                         {t("pmOpenDuitkuPage", locale)} <ExternalLink size={11} />
                       </a>
@@ -457,17 +457,17 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
               {isVA && (
                 <div className="space-y-4">
                   {/* VA Number Box */}
-                  <div className="p-4 rounded-xl bg-black border border-white/15 space-y-1.5">
+                  <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] uppercase tracking-wider text-white/50">
+                      <span className="text-[10px] uppercase tracking-wider text-muted">
                         {t("pmVaNumber", locale)}
                       </span>
-                      <span className="text-[9px] text-emerald-400 uppercase font-mono tracking-wide bg-emerald-500/10 px-2 py-0.5 rounded">
+                      <span className="text-[9px] text-emerald-700 uppercase font-mono tracking-wide bg-emerald-500/10 px-2 py-0.5 rounded">
                         {t("pmAutoVerify", locale)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-1">
-                      <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-white select-all break-all">
+                      <span className="font-mono text-lg sm:text-xl font-bold tracking-wider text-foreground select-all break-all">
                         {data.vaNumber}
                       </span>
                       <button
@@ -475,8 +475,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         onClick={handleCopyVa}
                         className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
                           copiedVa
-                            ? "bg-emerald-500 text-black"
-                            : "bg-white/10 hover:bg-white/20 text-white"
+                            ? "bg-emerald-700 text-white"
+                            : "bg-foreground text-background hover:bg-foreground/85"
                         }`}
                       >
                         {copiedVa ? (
@@ -493,12 +493,12 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                   </div>
 
                   {/* Total Amount Box */}
-                  <div className="p-4 rounded-xl bg-black border border-white/15 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-surface border border-border flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider text-white/50 block">
+                      <span className="text-[10px] uppercase tracking-wider text-muted block">
                         {t("pmTotalToPay", locale)}
                       </span>
-                      <span className="text-base font-bold text-white font-mono mt-0.5 block">
+                      <span className="text-base font-bold text-foreground font-mono mt-0.5 block">
                         {amountLabel}
                       </span>
                     </div>
@@ -507,8 +507,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                       onClick={handleCopyAmount}
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 cursor-pointer ${
                         copiedAmount
-                          ? "bg-emerald-500 text-black"
-                          : "bg-white/10 hover:bg-white/20 text-white"
+                          ? "bg-emerald-700 text-white"
+                          : "bg-foreground text-background hover:bg-foreground/85"
                       }`}
                     >
                       {copiedAmount ? (
@@ -525,14 +525,14 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
 
                   {/* Payment Guide Tabs */}
                   <div className="space-y-2 pt-1">
-                    <div className="flex border-b border-white/10 text-xs">
+                    <div className="flex border-b border-border text-xs">
                       <button
                         type="button"
                         onClick={() => setActiveGuideTab("mobile")}
                         className={`pb-2 px-3 font-medium transition-colors border-b-2 -mb-px cursor-pointer ${
                           activeGuideTab === "mobile"
-                            ? "border-white text-white"
-                            : "border-transparent text-white/50 hover:text-white/80"
+                            ? "border-foreground text-foreground"
+                            : "border-transparent text-muted hover:text-foreground"
                         }`}
                       >
                         {t("pmTabMobile", locale)}
@@ -542,8 +542,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         onClick={() => setActiveGuideTab("atm")}
                         className={`pb-2 px-3 font-medium transition-colors border-b-2 -mb-px cursor-pointer ${
                           activeGuideTab === "atm"
-                            ? "border-white text-white"
-                            : "border-transparent text-white/50 hover:text-white/80"
+                            ? "border-foreground text-foreground"
+                            : "border-transparent text-muted hover:text-foreground"
                         }`}
                       >
                         {t("pmTabAtm", locale)}
@@ -553,15 +553,15 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         onClick={() => setActiveGuideTab("ibanking")}
                         className={`pb-2 px-3 font-medium transition-colors border-b-2 -mb-px cursor-pointer ${
                           activeGuideTab === "ibanking"
-                            ? "border-white text-white"
-                            : "border-transparent text-white/50 hover:text-white/80"
+                            ? "border-foreground text-foreground"
+                            : "border-transparent text-muted hover:text-foreground"
                         }`}
                       >
                         {t("pmTabIb", locale)}
                       </button>
                     </div>
 
-                    <div className="text-[11px] text-white/70 leading-relaxed p-3 bg-white/[0.02] rounded-xl border border-white/5 space-y-1.5">
+                    <div className="text-[11px] text-foreground/80 leading-relaxed p-3 bg-surface rounded-xl border border-border space-y-1.5">
                       {activeGuideTab === "mobile" && (
                         <ol className="list-decimal list-inside space-y-1">
                           <li>{t("pmVaMobile1", locale)}</li>
@@ -620,10 +620,10 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
               {/* QRIS Display */}
               {isQRIS && data.qrString && (
                 <div className="space-y-4 text-center">
-                  <div className="p-4 bg-white rounded-2xl inline-block mx-auto shadow-xl">
+                  <div className="p-4 bg-white border border-border rounded-2xl inline-block mx-auto shadow-md">
                     {generatingQr ? (
-                      <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-black">
-                        <Loader2 size={24} className="animate-spin text-black" />
+                      <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-foreground">
+                        <Loader2 size={24} className="animate-spin text-foreground" />
                         <span className="text-xs font-medium">{t("pmQrGenerating", locale)}</span>
                       </div>
                     ) : qrDataUrl ? (
@@ -633,36 +633,36 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                         className="w-56 h-56 mx-auto object-contain"
                       />
                     ) : (
-                      <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-black p-2">
+                      <div className="w-56 h-56 flex flex-col items-center justify-center gap-2 text-foreground p-2">
                         <QrCode size={36} />
                         <span className="text-xs">{t("pmQrFailed", locale)}</span>
                       </div>
                     )}
-                    <div className="mt-2 text-center text-black">
+                    <div className="mt-2 text-center text-foreground">
                       <p className="text-[10px] font-bold tracking-widest uppercase">{t("pmQrisNational", locale)}</p>
-                      <p className="text-[9px] text-black/60">{t("pmQrisApps", locale)}</p>
+                      <p className="text-[9px] text-muted">{t("pmQrisApps", locale)}</p>
                     </div>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-black border border-white/15 flex items-center justify-between text-left">
+                  <div className="p-3.5 rounded-xl bg-surface border border-border flex items-center justify-between text-left">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider text-white/50 block">
+                      <span className="text-[10px] uppercase tracking-wider text-muted block">
                         {t("pmTotalToPay", locale)}
                       </span>
-                      <span className="text-base font-bold text-white font-mono mt-0.5 block">
+                      <span className="text-base font-bold text-foreground font-mono mt-0.5 block">
                         {amountLabel}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={handleCopyAmount}
-                      className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-foreground text-background hover:bg-foreground/85 transition-all cursor-pointer"
                     >
                       {copiedAmount ? `${t("pmCopied", locale)} ✓` : t("pmCopyAmount", locale)}
                     </button>
                   </div>
 
-                  <p className="text-[11px] text-white/60 leading-relaxed max-w-sm mx-auto">
+                  <p className="text-[11px] text-muted leading-relaxed max-w-sm mx-auto">
                     {t("pmScanQr", locale)}
                   </p>
                 </div>
@@ -672,15 +672,15 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
               {(!isVA && !isQRIS && !isRetail && data.paymentUrl) || (isQRIS && data.paymentUrl) ? (
                 <div className="space-y-2 text-center pt-1">
                   {!isVA && !isQRIS && !isRetail && (
-                    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-2">
-                      <p className="text-xs text-white/70">
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                      <p className="text-xs text-foreground/80">
                         {tf("pmViaMethod", locale, { method: data.paymentName })}
                       </p>
                       <a
                         href={data.paymentUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-white text-black font-semibold text-xs tracking-widest uppercase rounded-xl hover:bg-white/90 transition-all shadow-md cursor-pointer"
+                        className="inline-flex items-center justify-center gap-2 w-full py-3.5 bg-foreground text-background font-semibold text-xs tracking-widest uppercase rounded-xl hover:bg-foreground/85 transition-all shadow-md cursor-pointer"
                       >
                         {tf("pmContinueTo", locale, { method: data.paymentName })} <ExternalLink size={14} />
                       </a>
@@ -691,7 +691,7 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                       href={data.paymentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] text-white/60 hover:text-white inline-flex items-center gap-1 underline underline-offset-4"
+                      className="text-[11px] text-muted hover:text-foreground inline-flex items-center gap-1 underline underline-offset-4"
                     >
                       {t("pmOpenFullQr", locale)} <ExternalLink size={11} />
                     </a>
@@ -701,8 +701,8 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
 
               {/* Status Message Alert */}
               {statusKey && (
-                <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs rounded-xl flex items-center gap-2">
-                  <AlertCircle size={14} className="flex-shrink-0" />
+                <div className="p-3 bg-amber-500/10 border border-amber-600/30 text-amber-800 text-xs rounded-xl flex items-center gap-2">
+                  <AlertCircle size={14} className="flex-shrink-0 text-amber-700" />
                   <span>{t(statusKey, locale)}</span>
                 </div>
               )}
@@ -713,19 +713,19 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
                   type="button"
                   onClick={handleManualCheck}
                   disabled={checkingStatus}
-                  className="w-full py-3.5 bg-white/10 hover:bg-white/15 active:scale-[0.99] text-white text-xs font-semibold tracking-wider uppercase rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-white/10 disabled:opacity-50 shadow-md"
+                  className="w-full py-3.5 bg-surface hover:bg-surface-hover active:scale-[0.99] text-foreground text-xs font-semibold tracking-wider uppercase rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer border border-border disabled:opacity-50 shadow-sm"
                 >
-                  <RefreshCw size={13} className={checkingStatus ? "animate-spin text-amber-400" : ""} />
+                  <RefreshCw size={13} className={checkingStatus ? "animate-spin text-amber-700" : ""} />
                   {checkingStatus ? t("pmCheckingStatus", locale) : t("pmCheckStatusCta", locale)}
                 </button>
 
-                <div className="flex items-center justify-between text-[11px] text-white/50 px-1 pt-1">
+                <div className="flex items-center justify-between text-[11px] text-muted px-1 pt-1">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck size={12} className="text-emerald-400" /> {t("pmAutoSync", locale)}
+                    <ShieldCheck size={12} className="text-emerald-700" /> {t("pmAutoSync", locale)}
                   </span>
                   <Link
                     href={data.instructionsUrl}
-                    className="hover:text-white underline underline-offset-4"
+                    className="hover:text-foreground underline underline-offset-4"
                   >
                     {t("pmInstructionsPage", locale)} ↗
                   </Link>

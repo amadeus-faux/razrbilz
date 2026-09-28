@@ -226,7 +226,7 @@ export default function CartDrawer() {
             ref={closeButtonRef}
             type="button"
             onClick={close}
-            className="p-1.5 -mr-1.5 rounded-lg text-muted hover:text-foreground hover:bg-white/5 transition-colors"
+            className="p-1.5 -mr-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-hover transition-colors"
             aria-label="Close cart"
             id="cart-drawer-close"
           >
@@ -236,7 +236,7 @@ export default function CartDrawer() {
 
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-muted">
+            <div className="w-12 h-12 rounded-full bg-surface flex items-center justify-center text-muted">
               <ShoppingBag size={18} strokeWidth={1.5} />
             </div>
             <div className="space-y-1.5">
@@ -261,13 +261,13 @@ export default function CartDrawer() {
                 return (
                   <div
                     key={`${item.productId}-${item.size}`}
-                    className="flex gap-3 py-4 border-b border-white/10"
+                    className="flex gap-3 py-4 border-b border-border"
                     id={`cart-drawer-item-${item.productId}-${item.size}`}
                   >
                     <Link
                       href={`/product/${item.slug}`}
                       onClick={(event) => go(event, `/product/${item.slug}`)}
-                      className="relative w-16 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/5"
+                      className="relative w-16 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-surface"
                       aria-label={item.name}
                       tabIndex={-1}
                     >
@@ -293,12 +293,12 @@ export default function CartDrawer() {
                         <span className="text-[9px] uppercase tracking-widest text-muted">
                           Size {item.size}
                         </span>
-                        <span className="text-[9px] text-disabled">·</span>
+                        <span className="text-[9px] text-muted">·</span>
                         <span className="text-price">{formatRupiah(price)}</span>
                       </div>
 
                       <div className="mt-auto pt-3 flex items-center justify-between gap-2">
-                        <div className="flex items-center rounded-full border border-white/10 bg-white/5 overflow-hidden">
+                        <div className="flex items-center rounded-full border border-border bg-surface overflow-hidden">
                           <button
                             type="button"
                             onClick={() =>
@@ -340,7 +340,7 @@ export default function CartDrawer() {
 
                       <div className="mt-2 flex items-center justify-between gap-2">
                         {atMax ? (
-                          <span className="text-[9px] uppercase tracking-wider text-amber-400/90">
+                          <span className="text-[9px] uppercase tracking-wider text-amber-700">
                             Max qty {item.stock}
                           </span>
                         ) : (
@@ -349,7 +349,7 @@ export default function CartDrawer() {
                         <button
                           type="button"
                           onClick={() => removeItem(item.productId, item.size)}
-                          className="text-[9px] uppercase tracking-widest text-muted hover:text-red-400 transition-colors"
+                          className="text-[9px] uppercase tracking-widest text-muted hover:text-red-600 transition-colors"
                           aria-label={`Remove ${item.name} size ${item.size}`}
                         >
                           REMOVE
@@ -363,7 +363,7 @@ export default function CartDrawer() {
               <button
                 type="button"
                 onClick={clearCart}
-                className="mt-4 text-[9px] uppercase tracking-widest text-muted hover:text-red-400 transition-colors"
+                className="mt-4 text-[9px] uppercase tracking-widest text-muted hover:text-red-600 transition-colors"
                 id="cart-drawer-remove-all"
               >
                 REMOVE ALL

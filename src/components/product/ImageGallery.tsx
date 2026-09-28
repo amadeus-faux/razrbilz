@@ -68,7 +68,7 @@ export default function ImageGallery({
           {currentIndex > 0 && (
             <button
               onClick={() => goTo(currentIndex - 1)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 opacity-40 hover:opacity-80 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-full bg-background/85 backdrop-blur-sm border border-border text-foreground hover:bg-background transition-colors"
               aria-label="Previous image"
             >
               <ChevronLeft size={20} strokeWidth={1.5} />
@@ -77,7 +77,7 @@ export default function ImageGallery({
           {currentIndex < images.length - 1 && (
             <button
               onClick={() => goTo(currentIndex + 1)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 opacity-40 hover:opacity-80 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 rounded-full bg-background/85 backdrop-blur-sm border border-border text-foreground hover:bg-background transition-colors"
               aria-label="Next image"
             >
               <ChevronRight size={20} strokeWidth={1.5} />

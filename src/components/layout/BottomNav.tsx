@@ -5,7 +5,6 @@ import { ShoppingBag, LayoutGrid } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { useCartStore } from "@/store/cart-store";
 import { useCartDrawerStore } from "@/store/cart-drawer-store";
-import Image from "next/image";
 import { usePageTransition } from "@/context/PageTransitionContext";
 
 function subscribe(callback: () => void) {
@@ -67,14 +66,7 @@ export default function BottomNav() {
         id="nav-logo"
         aria-hidden="true"
       >
-        <Image
-          src="/logo/Cardinal_Compass_White.png"
-          alt=""
-          width={32}
-          height={32}
-          className="h-8 w-8 object-contain"
-          priority
-        />
+        <span className="nav-mark block h-8 w-8" />
       </div>
 
       {/* Cart icon — membuka CartDrawer, bukan pindah halaman */}

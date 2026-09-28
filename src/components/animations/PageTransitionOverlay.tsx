@@ -137,7 +137,7 @@ export default function PageTransitionOverlay() {
         style={{
           position: "absolute",
           inset: 0,
-          backgroundColor: "var(--color-background, #10100E)",
+          backgroundColor: "var(--color-background, #FFFFFF)",
           willChange: "opacity",
         }}
       />

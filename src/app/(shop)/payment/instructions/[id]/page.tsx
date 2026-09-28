@@ -49,7 +49,7 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
     <div className="container-shop pt-12 pb-24 min-h-[80vh] flex justify-center">
       <div className="w-full max-w-lg bg-surface border border-border rounded-2xl p-6 md:p-10 space-y-6">
         <div className="flex items-center gap-3">
-          <div className={`w-11 h-11 rounded-full flex items-center justify-center ${isFailed ? "bg-red-500/10 text-red-400" : "bg-amber-500/10 text-amber-400"}`}>
+          <div className={`w-11 h-11 rounded-full flex items-center justify-center ${isFailed ? "bg-red-500/10 text-red-600" : "bg-amber-500/10 text-amber-700"}`}>
             {isFailed ? <CreditCard size={21} /> : <Clock size={21} />}
           </div>
           <div>
@@ -99,7 +99,7 @@ export default async function PaymentInstructionsPage({ params }: PageProps) {
         </div>
 
         {!order.duitkuVaNumber && !order.duitkuPaymentCode && !order.duitkuPaymentUrl && !order.duitkuQrString && (
-          <p className="p-4 rounded-xl bg-amber-500/10 text-xs text-amber-500 leading-relaxed">
+          <p className="p-4 rounded-xl bg-amber-500/10 text-xs text-amber-800 leading-relaxed">
             This payment channel does not return an automatic VA number. Contact customer support with your order number to receive payment instructions.
           </p>
         )}

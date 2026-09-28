@@ -52,14 +52,14 @@ export default function ProductCard({
           alt={name}
           fill
           className={`object-contain p-2 md:landscape:p-3 transition-transform duration-500 ease-out group-hover:scale-[1.04] ${
-            isSoldOut ? "opacity-50 grayscale-[40%]" : ""
+            isSoldOut ? "opacity-75 grayscale-[35%]" : ""
           }`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
 
         {isSoldOut && (
           <div className="absolute inset-0 flex items-center justify-center p-2">
-            <span className="px-2.5 py-1 text-[9px] uppercase font-bold tracking-[0.2em] bg-black/85 backdrop-blur-md text-white border border-white/20 rounded-md shadow-lg">
+            <span className="px-2.5 py-1 text-[9px] uppercase font-bold tracking-[0.2em] bg-background/90 backdrop-blur-md text-foreground border border-border rounded-md shadow-sm">
               Sold Out
             </span>
           </div>
@@ -82,7 +82,7 @@ export default function ProductCard({
               {formatRupiah(price)}
             </span>
             {isSoldOut && (
-              <span className="text-[9px] uppercase font-bold tracking-wider text-rose-400">
+              <span className="text-[9px] uppercase font-bold tracking-wider text-rose-700">
                 (Sold Out)
               </span>
             )}

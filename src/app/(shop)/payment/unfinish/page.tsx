@@ -11,12 +11,12 @@ export default async function PaymentUnfinishPage({ searchParams }: PageProps) {
   return (
     <div className="container-shop pt-12 pb-24 min-h-[80vh] flex flex-col items-center justify-center">
       <div className="w-full max-w-lg bg-surface border border-border p-6 md:p-10 rounded-2xl text-center space-y-6">
-        <div className="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto">
+        <div className="w-16 h-16 rounded-full bg-amber-500/10 text-amber-700 flex items-center justify-center mx-auto">
           <Clock size={36} strokeWidth={1.8} />
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-[10px] tracking-widest text-amber-400 uppercase">
+          <span className="text-[10px] tracking-widest text-amber-800 uppercase">
             PAYMENT PENDING / INCOMPLETE
           </span>
           <h1 className="text-base tracking-wider uppercase">

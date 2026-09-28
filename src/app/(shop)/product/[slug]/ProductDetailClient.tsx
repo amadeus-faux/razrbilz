@@ -299,7 +299,7 @@ export default function ProductDetailClient({
             </p>
             {currentProduct.stock <= 0 && (
               <div className="pt-0.5">
-                <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-sm">
+                <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-50 text-rose-800 border border-rose-500/25 shadow-sm">
                   Sold Out
                 </span>
               </div>
@@ -312,7 +312,7 @@ export default function ProductDetailClient({
               <button
                 type="button"
                 disabled
-                className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-[#8c8680] cursor-not-allowed opacity-60 text-xs font-bold uppercase tracking-widest shadow-sm"
+                className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-muted cursor-not-allowed text-xs font-bold uppercase tracking-widest shadow-sm"
                 aria-label="Product is sold out"
                 id="btn-add-to-cart"
               >
@@ -322,11 +322,11 @@ export default function ProductDetailClient({
               <button
                 type="button"
                 onClick={() => setSheetOpen(!sheetOpen)}
-                className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface hover:bg-foreground hover:border-foreground active:scale-95 transition-all duration-200 text-foreground cursor-pointer"
+                className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-foreground bg-foreground hover:bg-foreground/85 active:scale-95 transition-all duration-200 text-background cursor-pointer"
                 style={{
                   boxShadow: sheetOpen
                     ? "none"
-                    : "0 4px 16px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2)",
+                    : "0 4px 16px rgba(17,17,17,0.18), 0 1px 4px rgba(17,17,17,0.10)",
                 }}
                 aria-label="Select size & add to cart"
                 id="btn-add-to-cart"
@@ -334,7 +334,7 @@ export default function ProductDetailClient({
                 <Plus
                   size={18}
                   strokeWidth={1.5}
-                  className={`transition-all duration-300 group-hover:text-background ${
+                  className={`transition-transform duration-300 ${
                     sheetOpen ? "rotate-45" : ""
                   }`}
                 />
@@ -368,7 +368,7 @@ export default function ProductDetailClient({
               </p>
               {incomingProduct.stock <= 0 && (
                 <div className="pt-0.5">
-                  <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                  <span className="inline-block px-3 py-0.5 text-[9.5px] font-bold tracking-[0.2em] uppercase rounded-full bg-rose-50 text-rose-800 border border-rose-500/25">
                     Sold Out
                   </span>
                 </div>
@@ -377,11 +377,11 @@ export default function ProductDetailClient({
 
             <div className="flex justify-center mt-4 sm:mt-5">
               {incomingProduct.stock <= 0 ? (
-                <div className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-[#8c8680] opacity-60 text-xs font-bold uppercase tracking-widest">
+                <div className="flex items-center justify-center px-6 h-12 sm:h-14 rounded-full border border-border bg-surface text-muted text-xs font-bold uppercase tracking-widest">
                   SOLD OUT
                 </div>
               ) : (
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-border bg-surface flex items-center justify-center text-foreground">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-foreground bg-foreground flex items-center justify-center text-background">
                   <Plus size={18} strokeWidth={1.5} />
                 </div>
               )}

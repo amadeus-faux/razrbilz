@@ -12,7 +12,7 @@ import {
 } from "@/lib/contact";
 
 const inputCls =
-  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover transition-all placeholder:text-muted/40";
+  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-foreground/25 focus:border-foreground focus:bg-surface-hover transition-all placeholder:text-muted";
 
 /** Honeypot: tetap ada di DOM supaya bot mengisinya, tapi di luar layar. */
 const honeypotCls =
@@ -167,7 +167,7 @@ export default function ContactForm() {
             />
 
             {errorMessage && (
-              <div className="p-3.5 bg-red-500/10 text-red-400 text-xs rounded-xl flex items-center gap-2.5 border border-red-500/20">
+              <div className="p-3.5 bg-red-50 text-red-700 text-xs rounded-xl flex items-center gap-2.5 border border-red-500/25">
                 <AlertCircle size={14} strokeWidth={1.5} />
                 {errorMessage}
               </div>
@@ -206,7 +206,7 @@ export default function ContactForm() {
             <div className="space-y-1.5">
               <label className="block text-[10px] uppercase tracking-[0.14em] text-muted">
                 Subject / No. Order
-                <span className="ml-1.5 text-muted/60 normal-case tracking-normal text-[9px]">
+                <span className="ml-1.5 text-muted normal-case tracking-normal text-[9px]">
                   (optional)
                 </span>
               </label>
@@ -236,8 +236,8 @@ export default function ContactForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-4 bg-foreground text-background text-[11px] tracking-[0.16em] uppercase rounded-xl hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5"
-              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.14)" }}
+              className="w-full py-4 bg-foreground text-background text-[11px] tracking-[0.16em] uppercase rounded-xl hover:bg-foreground/90 active:scale-[0.99] disabled:bg-border disabled:text-muted disabled:shadow-none disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2.5"
+              style={{ boxShadow: "0 2px 8px rgba(17,17,17,0.18)" }}
             >
               {submitting ? (
                 <>

@@ -120,7 +120,7 @@ export default function SizeSelectorPopover({
                 SELECT SIZE
               </span>
               {isSoldOut ? (
-                <span className="text-[10px] tracking-widest uppercase font-bold text-rose-400">
+                <span className="text-[10px] tracking-widest uppercase font-bold text-rose-700">
                   SOLD OUT
                 </span>
               ) : (

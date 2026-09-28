@@ -117,7 +117,7 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
                   )}
 
                   {order.country && order.country !== "ID" && (
-                    <p className="text-[10.5px] text-muted/80 pt-1 border-t border-border/40 leading-relaxed italic">
+                    <p className="text-[10.5px] text-muted pt-1 border-t border-border/40 leading-relaxed italic">
                       * Note: Tracking status in the destination country's postal system can take a few business days to update after the package leaves Indonesia.
                     </p>
                   )}

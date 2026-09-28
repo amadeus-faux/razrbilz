@@ -71,14 +71,14 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 function FieldError({ message, locale }: { message?: string; locale: Locale }) {
   return message ? (
-    <p className="text-[11px] text-red-500 mt-1">{translateMessage(message, locale)}</p>
+    <p className="text-[11px] text-red-600 mt-1">{translateMessage(message, locale)}</p>
   ) : null;
 }
 
 const inputCls =
-  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all";
+  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-foreground/25 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all";
 const selectCls =
-  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all appearance-none pr-10 cursor-pointer";
+  "w-full px-4 py-3 bg-surface border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/25 focus:border-foreground focus:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-surface/50 transition-all appearance-none pr-10 cursor-pointer";
 
 function getMethodCategory(m: PaymentMethodOption): string {
   const code = m.paymentMethod.toUpperCase();
@@ -1059,9 +1059,9 @@ export default function CheckoutPage() {
 
                 {/* Rate error state */}
                 {!loadingRates && rateError && (
-                  <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-xl flex items-start gap-3">
-                    <AlertCircle size={15} className="text-red-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-red-400 leading-relaxed">{rateError}</p>
+                  <div className="p-4 bg-red-50 border border-red-500/25 rounded-xl flex items-start gap-3">
+                    <AlertCircle size={15} className="text-red-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-700 leading-relaxed">{rateError}</p>
                   </div>
                 )}
 
@@ -1077,11 +1077,11 @@ export default function CheckoutPage() {
                 {!loadingRates && shippingRates.length > 0 && (
                   <div className="space-y-2 pt-1">
                     {shippingRatesFallback && (
-                      <div className="mb-1 flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
-                        <AlertCircle size={14} className="mt-0.5 flex-shrink-0 text-amber-300" />
+                      <div className="mb-1 flex items-start gap-2 p-3 bg-amber-50 border border-amber-500/25 rounded-xl text-[11px] text-amber-800 leading-relaxed">
+                        <AlertCircle size={14} className="mt-0.5 flex-shrink-0 text-amber-700" />
                         <span>
                           {t("ratesFallbackLead", locale)}{" "}
-                          <strong className="text-amber-100">{t("ratesFallbackEmph", locale)}</strong>
+                          <strong className="text-amber-900">{t("ratesFallbackEmph", locale)}</strong>
                           {t("ratesFallbackTail", locale)}
                         </span>
                       </div>
@@ -1290,7 +1290,7 @@ export default function CheckoutPage() {
                                           )}
                                         </div>
                                         {method.paymentImage && (
-                                          <div className="relative w-10 h-5 flex-shrink-0 bg-white rounded p-0.5 flex items-center justify-center">
+                                          <div className="relative w-10 h-5 flex-shrink-0 bg-white border border-border rounded p-0.5 flex items-center justify-center">
                                             <img
                                               src={method.paymentImage}
                                               alt={method.paymentName}
@@ -1376,7 +1376,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {isInternational && (
-                  <div className="mx-6 mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-200/90 leading-relaxed">
+                  <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-500/25 rounded-xl text-[11px] text-amber-800 leading-relaxed">
                     {tf("intlPriceNote", locale, { country: selectedCountry })}
                   </div>
                 )}
@@ -1391,7 +1391,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-muted flex items-center gap-1">
                       {t("shipping", locale)}
-                      <HelpCircle size={12} className="text-muted/80" />
+                      <HelpCircle size={12} className="text-muted" />
                     </span>
                     <span className="text-foreground">
                       {selectedCourier ? formatRupiah(selectedCourier.price) : t("selectCourier", locale)}
@@ -1434,7 +1434,7 @@ export default function CheckoutPage() {
                   <button
                     type="submit"
                     disabled={submitting || !selectedCourier || !selectedPaymentMethod}
-                    className="w-full py-4 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer font-medium shadow-sm"
+                    className="w-full py-4 bg-foreground text-background text-xs tracking-widest uppercase rounded-xl hover:bg-foreground/90 disabled:bg-border disabled:text-muted disabled:shadow-none disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 cursor-pointer font-medium shadow-sm"
                   >
                     {submitting ? (
                       <>
