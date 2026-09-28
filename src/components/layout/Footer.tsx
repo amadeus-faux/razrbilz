@@ -47,21 +47,27 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
           {/* Wordmark raksasa ini tersusun dari satu <span> per huruf, jadi teksnya
               tidak terbaca sebagai satu kata. <h1> memberi crawler dan screen reader
               judul yang bersih sementara hurufnya tetap dekoratif. */}
-          <h1 className="select-none">
-            <span className="sr-only">RAZRBILZ</span>
-            <span
-              aria-hidden="true"
-              className="flex justify-between text-foreground leading-none"
-              style={{
-                fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
-                fontSize: "clamp(4rem, 23.6vw, 30rem)",
-              }}
-            >
-              {"razrbilz".split("").map((char, i) => (
-                <span key={i}>{char}</span>
-              ))}
-            </span>
-          </h1>
+          <Link
+            href="/about"
+            className="block group"
+            aria-label="Learn about RAZRBILZ"
+          >
+            <h1 className="select-none">
+              <span className="sr-only">RAZRBILZ</span>
+              <span
+                aria-hidden="true"
+                className="flex justify-between text-foreground leading-none transition-opacity duration-300 group-hover:opacity-60"
+                style={{
+                  fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
+                  fontSize: "clamp(4rem, 23.6vw, 30rem)",
+                }}
+              >
+                {"razrbilz".split("").map((char, i) => (
+                  <span key={i}>{char}</span>
+                ))}
+              </span>
+            </h1>
+          </Link>
         </div>
       )}
     </footer>
