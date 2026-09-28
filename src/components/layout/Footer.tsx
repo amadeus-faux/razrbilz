@@ -63,10 +63,10 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
             </span>
           </h1>
 
-          {/* Satu-satunya kalimat deskriptif di homepage. Tanpa ini Google merakit
-              snippet sendiri dari sisa teks halaman (nama produk, harga, link
-              kebijakan, alt logo) dan mengabaikan meta description. */}
-          <p className="mx-auto mt-6 max-w-[52ch] text-center text-[11px] leading-[1.8] tracking-[0.06em] text-muted">
+          {/* credit line — satu-satunya kalimat deskriptif di homepage. Tanpa ini
+              Google merakit snippet sendiri dari sisa teks halaman (nama produk,
+              harga, link kebijakan, alt logo) dan mengabaikan meta description. */}
+          <p className="mt-4 text-center text-[10px] leading-[1.6] tracking-[0.08em] text-muted/60">
             {BRAND_DESCRIPTION}
           </p>
         </div>

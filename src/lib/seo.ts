@@ -7,7 +7,7 @@ import type { Metadata } from "next";
  * halaman /about, tidak ada klaim baru.
  */
 export const BRAND_DESCRIPTION =
-  "RAZRBILZ is an independent unisex streetwear brand from Bandung, Indonesia. Made to order, in small runs.";
+  "RAZRBILZ is a streetwear brand from Bandung, Indonesia. Made to order, in small runs.";
 
 export type OgImage = {
   url: string;

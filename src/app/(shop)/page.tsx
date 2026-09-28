@@ -10,7 +10,13 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export async function generateMetadata(): Promise<Metadata> {
-  return pageMeta({ path: "/", description: await getHomeMetaDescription() });
+  return {
+    ...pageMeta({ path: "/", description: await getHomeMetaDescription() }),
+    // Google pernah menempelkan foto produk dari homepage sebagai thumbnail di
+    // hasil pencarian. Direktif ini membatasi preview gambar yang diambil dari
+    // halaman ini saja — halaman produk tetap bebas menampilkan gambarnya.
+    robots: { "max-image-preview": "none" },
+  };
 }
 
 async function getProducts() {

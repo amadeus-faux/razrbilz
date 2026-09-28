@@ -69,7 +69,7 @@ export default function BottomNav() {
       >
         <Image
           src="/logo/Cardinal_Compass_White.png"
-          alt="RAZRBILZ logo"
+          alt=""
           width={32}
           height={32}
           className="h-8 w-8 object-contain"
