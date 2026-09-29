@@ -38,7 +38,6 @@ const en = {
 
   emailAddress: "Email Address",
   phoneNumber: "Phone Number",
-  newsOffers: "Email me with news and exclusive offers",
 
   countryRegion: "Country / Region",
   selectCountry: "Select country",
@@ -249,7 +248,6 @@ const id: Record<CheckoutKey, string> = {
 
   emailAddress: "Alamat Email",
   phoneNumber: "Nomor Telepon",
-  newsOffers: "Kirimi saya email berisi berita dan promo eksklusif",
 
   countryRegion: "Negara / Wilayah",
   selectCountry: "Pilih Negara",

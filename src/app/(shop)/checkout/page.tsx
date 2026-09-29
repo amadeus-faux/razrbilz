@@ -165,7 +165,6 @@ export default function CheckoutPage() {
       city: "",
       district: "",
       postalCode: "",
-      newsOffers: true,
     },
   });
 
@@ -207,7 +206,7 @@ export default function CheckoutPage() {
       if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement))
         continue;
       if (!el.name || el.type === "checkbox" || el.type === "radio") continue;
-      const name = el.name as Exclude<keyof CheckoutFormData, "newsOffers">;
+      const name = el.name as keyof CheckoutFormData;
       if (getValues(name) !== el.value) {
         setValue(name, el.value, { shouldValidate: true });
       }
@@ -763,17 +762,6 @@ export default function CheckoutPage() {
                     />
                     <FieldError message={errors.phone?.message} locale={locale} />
                   </div>
-
-                  <label className="flex items-center gap-2.5 pt-1 cursor-pointer">
-                    <input
-                      {...register("newsOffers")}
-                      type="checkbox"
-                      className="rounded border-border bg-surface text-foreground focus:ring-foreground"
-                    />
-                    <span className="text-[11px] text-muted">
-                      {t("newsOffers", locale)}
-                    </span>
-                  </label>
                 </div>
               </div>
 

@@ -5,7 +5,7 @@ export const metadata = pageMeta({
   path: "/contact",
   title: "Contact Us",
   description:
-    "Questions about sizing, stock or an order? Message the RAZRBILZ studio in Bandung Barat, Indonesia — open Monday to Friday, 09:00–17:00 WIB.",
+    "Questions about sizing, stock or an order? Message the RAZRBILZ studio in Bandung Barat, Indonesia. Messages are answered Monday to Friday, 09:00–17:00 WIB.",
 });
 
 export default function ContactPage() {

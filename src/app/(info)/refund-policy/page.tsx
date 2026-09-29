@@ -4,7 +4,7 @@ export const metadata = pageMeta({
   path: "/refund-policy",
   title: "Return & Refund Policy",
   description:
-    "RAZRBILZ return and refund policy — all sales final except production defects, and how we handle a parcel that comes back to us.",
+    "RAZRBILZ return and refund policy. All sales are final except production defects, and we explain how we handle a parcel that comes back to us.",
 });
 
 export default function RefundPolicyPage() {
@@ -20,8 +20,9 @@ export default function RefundPolicyPage() {
 
       {/*
         Halaman ini adalah SATU-SATUNya rujukan kebijakan retur. /policy hanya
-        meringkas dan menaut ke sini — jangan menulis ulang ketentuannya di tempat
-        lain supaya tidak bercabang jadi dua versi yang saling bertentangan.
+        meringkas dan menaut ke sini. Jangan menulis ulang ketentuannya di
+        tempat lain supaya tidak bercabang jadi dua versi yang saling
+        bertentangan.
       */}
       <div className="space-y-10 prose-policy">
         <section className="space-y-4">
@@ -44,7 +45,10 @@ export default function RefundPolicyPage() {
             If a product arrives with a defect or issue that is caused by our negligence such as a manufacturing defect or an incorrect item being shipped, we will take <strong>full responsibility</strong> and cover all associated costs, including return shipping and reshipping fees. This is the only exception to the final-sale rule above.
           </p>
           <p>
-            To be eligible, you must provide a <strong>clear, uncut, and unedited unboxing video</strong> as proof of the defect at the time of opening the package. Claims submitted without a valid unboxing video cannot be processed.
+            To be eligible, provide a <strong>clear, uncut, and unedited unboxing video</strong>, filmed as you open the package. It shows the state of the parcel and the garment at the moment of delivery, which is what we need in order to act on a claim without asking you to prove a point twice.
+          </p>
+          <p>
+            The video is one of the conditions of this policy. If it is missing, cut, edited, or recorded after the package was already opened, we may decline to process the claim. If you are not sure your footage is usable, send it anyway with a short note describing what you saw. We will look at it before we decide.
           </p>
           <p>
             To submit a claim, please reach out to us via the{" "}

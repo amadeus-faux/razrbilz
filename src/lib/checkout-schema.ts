@@ -30,7 +30,6 @@ export const checkoutSchema = z.object({
     .string()
     .min(3, "errPostal")
     .max(10, "errPostalLong"),
-  newsOffers: z.boolean().optional(),
 });
 
 export type CheckoutFormData = z.infer<typeof checkoutSchema>;
