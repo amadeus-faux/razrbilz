@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* Satu-satunya sumber warna untuk storefront. Admin punya palette hex sendiri
-   dan sengaja tidak membaca token ini. Kontras terhadap --color-background:
-   foreground #111111 = 18.9:1, muted #666666 = 5.7:1, keduanya lolos WCAG AA. */
 @theme inline {
   --color-background: #ffffff;
   --color-foreground: #111111;
@@ -301,10 +298,7 @@
   }
 
   .navbar-liquid-glass {
-    background: rgba(255, 255, 255, 0.72);
-    /* Nilai filter disimpan di custom property: minifier produksi menghapus
-       spasi di filter list langsung (blur(28px)saturate(190%)) sehingga
-       deklarasi jadi invalid dan dibuang browser. */
+    background: rgba(255, 255, 255, 0.18);
     --nav-glass: blur(20px) saturate(190%);
     -webkit-backdrop-filter: var(--nav-glass);
     backdrop-filter: var(--nav-glass);
@@ -316,19 +310,12 @@
       inset 0 -1px 1px rgba(17, 17, 17, 0.03);
   }
 
-  /* Tanpa backdrop-filter, navbar 72% putih di atas konten terang nyaris tak
-     terlihat — ganti dengan putih solid supaya batasnya tetap terbaca. */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .navbar-liquid-glass {
       background: rgba(255, 255, 255, 0.97);
     }
   }
 
-  /* Mark navbar digambar sebagai mask dari alpha, bukan <img>: PNG aslinya
-     dua-warna (blade putih + blade hitam) dan salah satu warnanya selalu
-     tenggelam ke latar. Sebagai mask seluruh 16 blade ikut tergambar dan
-     warnanya ikut --color-foreground. Asetnya turunan 128px dari PNG asli
-     (4,6KB vs 269KB). */
   .nav-mark {
     background-color: var(--color-foreground);
     -webkit-mask-image: url("/logo/cardinal-compass-mask.png");
@@ -341,11 +328,6 @@
     mask-size: contain;
   }
 
-  /* ── Cart drawer (liquid glass) ─────────────────────────────────────────────
-     Dirender lewat portal ke <body>. Parent yang punya transform/filter/will-change
-     (mis. .floating-nav dengan translateX(-50%)) menciptakan backdrop root
-     sendiri, sehingga backdrop-filter di dalamnya cuma menyaring parent itu —
-     bukan halaman. Portal menjaga panel tetap anak langsung dari body. */
   .cart-drawer-root {
     position: fixed;
     inset: 0;
@@ -381,9 +363,7 @@
     width: min(400px, 100vw);
     height: 100vh;
     height: 100dvh;
-    background: rgba(255, 255, 255, 0.72);
-    /* Lihat catatan di .navbar-liquid-glass: filter list harus lewat custom
-       property supaya spasi antar-fungsi selamat dari minifier produksi. */
+    background: rgba(255, 255, 255, 0.18);
     --cart-glass: blur(20px) saturate(160%);
     -webkit-backdrop-filter: var(--cart-glass);
     backdrop-filter: var(--cart-glass);
@@ -398,8 +378,6 @@
     transform: translateX(0);
   }
 
-  /* Tanpa dukungan backdrop-filter, "kaca" jadi bening total dan teks di atas
-     konten halaman tidak terbaca — ganti dengan latar solid. */
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .cart-drawer-panel {
       background: rgba(255, 255, 255, 0.98);
@@ -426,13 +404,12 @@
     .cart-drawer-panel {
       width: 100vw;
       border-left: none;
-      /* Blur lebih ringan di layar kecil: device di rentang ini umumnya
-         terbatas GPU-nya, dan backdrop-filter setinggi viewport itu mahal. */
       --cart-glass: blur(18px) saturate(150%);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
+
     .cart-drawer-root,
     .cart-drawer-root[data-open="true"],
     .cart-drawer-scrim,
