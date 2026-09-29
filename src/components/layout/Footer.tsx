@@ -56,7 +56,7 @@ export default function Footer({ showBrandWordmark = false }: FooterProps) {
               <span className="sr-only">RAZRBILZ</span>
               <span
                 aria-hidden="true"
-                className="flex justify-between text-foreground leading-none transition-opacity duration-300 group-hover:opacity-60"
+                className="flex justify-between text-foreground leading-none transition-opacity duration-300"
                 style={{
                   fontFamily: "var(--font-tanker-var), ui-sans-serif, sans-serif",
                   fontSize: "clamp(4rem, 23.6vw, 30rem)",
