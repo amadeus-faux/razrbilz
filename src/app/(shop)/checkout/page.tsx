@@ -91,10 +91,6 @@ function getMethodCategory(m: PaymentMethodOption): string {
   return "other";
 }
 
-/**
- * Returns true for payment methods where the service fee is borne by the customer
- * (OVO, ShopeePay e-wallet, and Credit Card).
- */
 function isCustomerBearsFee(method: PaymentMethodOption | null): boolean {
   if (!method) return false;
   const code = method.paymentMethod.toUpperCase();
@@ -176,28 +172,15 @@ export default function CheckoutPage() {
   const formValues = watch();
 
   const isCountrySelected = Boolean(selectedCountry);
-  // Predikat region KANONIK (sama seperti resolveLocale) — menggantikan definisi
-  // lokal lama yang berbeda dari pricing.isInternational.
   const isIndonesia = normalizeCountryCode(selectedCountry) === "ID";
   const isInternational = isCountrySelected && !isIndonesia;
-  // Validitas alamat dinilai langsung dari nilai form, bukan formState.isValid:
-  // RHF menulis ulang isValid dari hasil validasi PER FIELD saat trigger/setValue
-  // dipanggil, sehingga status globalnya bisa tertinggal satu langkah dan
-  // konsumen terkunci di langkah 4 tanpa pesan yang benar.
   const addressValid = useMemo(
     () => checkoutSchema.safeParse(formValues).success,
     [formValues]
   );
-  // Langkah 4 (metode pembayaran) baru dibuka setelah data alamat valid DAN
-  // kurir dipilih, supaya daftar metode pembayaran tidak muncul di depan.
   const paymentStepUnlocked = addressValid && Boolean(selectedCourier);
-  // Bahasa checkout mengikuti ke MANA barang dikirim.
   const locale: Locale = resolveLocale(selectedCountry);
 
-  // Autofill browser bisa menulis nilai ke input TANPA mengirim event ke React,
-  // sehingga form state tetap kosong dan langkah pembayaran terkunci permanen
-  // walau alamat terlihat sudah terisi. Tarik nilai DOM yang sebenarnya ke dalam
-  // form state setiap kali user menyentuh form atau memilih kurir.
   const formRef = useRef<HTMLFormElement>(null);
   const syncValuesFromDom = useCallback(() => {
     const form = formRef.current;
@@ -212,15 +195,7 @@ export default function CheckoutPage() {
       }
     }
   }, [getValues, setValue]);
-
-  // Membedakan "default ID" dari pilihan aktif user, supaya kita tidak menimpa
-  // cookie user_country (sinyal geo) hanya karena halaman checkout dibuka.
   const userChoseCountryRef = useRef(false);
-
-  // Default negara awal = sinyal geo pengunjung (cookie user_country, diisi
-  // middleware dari header geo), supaya checkout dibuka dalam bahasa region
-  // asal pengunjung. Pilihan manual user di form tetap menang karena efek ini
-  // hanya jalan sekali saat mount.
   useEffect(() => {
     const geo = normalizeCountryCode(
       document.cookie.match(/(?:^|;\s*)user_country=([^;]*)/)?.[1]
@@ -231,16 +206,7 @@ export default function CheckoutPage() {
   }, [setValue]);
 
   const [exchangeRate, setExchangeRate] = useState<number>(17500);
-  // 6.2: dinaikkan untuk memaksa re-fetch kurs (mis. setelah server menolak
-  // submit karena kurs berubah / RATE_CHANGED).
   const [pricingNonce, setPricingNonce] = useState(0);
-
-  // Sync pricing when country changes.
-  // - Sebelum user memilih: panggil /api/pricing TANPA param → server memakai
-  //   cookie user_country / header geo, TIDAK menulis ulang cookie. (Fix
-  //   self-clobber: pengunjung internasional tidak lagi kehilangan region-nya.)
-  // - Setelah user memilih negara: kirim ?country= → server sinkronkan cookie ke
-  //   pilihan itu (sumber kebenaran baru = alamat pengiriman).
   useEffect(() => {
     let isMounted = true;
     async function updatePricing() {
@@ -397,11 +363,6 @@ export default function CheckoutPage() {
     if (isIndonesia && selectedDistrict) {
       const pCodes = postalCodesMap[selectedDistrict] || [];
       setAvailablePostalCodes(pCodes);
-      // Kode pos yang sudah diisi JANGAN pernah dihapus di sini. Branch
-      // "hapus bila daftar kosong" dulu menyalakan bug terkunci di langkah 4:
-      // /api/shipping/areas tidak pernah mengirim daftar kode pos, jadi setiap
-      // perubahan kecamatan ikut menghapus kode pos user → alamat jadi tidak
-      // valid tanpa pesan.
       if (pCodes.length === 1 && !getValues("postalCode")) {
         setValue("postalCode", pCodes[0]);
       }
@@ -409,9 +370,6 @@ export default function CheckoutPage() {
   }, [selectedDistrict, postalCodesMap, isIndonesia, setValue, getValues]);
 
   // ── 5. Fetch shipping rates ─────────────────────────────────────────────────
-  // 2.4: AbortController + token urutan. Ganti kode pos/kurir/negara berturut-turut
-  // bisa membuat response lama tiba belakangan; kita batalkan request sebelumnya
-  // dan abaikan response yang sudah usang agar state tidak tertimpa data basi.
   const ratesAbortRef = useRef<AbortController | null>(null);
   const ratesSeqRef = useRef(0);
   const fetchShippingRates = useCallback(
@@ -431,7 +389,6 @@ export default function CheckoutPage() {
           body: JSON.stringify({
             country: countryCode,
             destinationPostalCode: destPostalCode || "00000",
-            // 2.5: kirim productId + quantity; berat asli diambil server dari DB.
             items: items.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
@@ -465,9 +422,6 @@ export default function CheckoutPage() {
     return () => ratesAbortRef.current?.abort();
   }, []);
 
-  // 2.3 Reset kurir & tarif SEKETIKA saat negara berubah (sebelum fetch tarif
-  //     baru selesai), supaya tombol submit tidak pernah bisa diklik dengan
-  //     kurir/ongkir yang tidak cocok dengan negara tujuan yang baru dipilih.
   useEffect(() => {
     setSelectedCourier(null);
     setShippingRates([]);
@@ -501,13 +455,9 @@ export default function CheckoutPage() {
   }, [selectedCountry, postalCode, isInternational, isIndonesia, fetchShippingRates]);
 
   // ── 6. Load Payment Methods from Duitku ─────────────────────────────────────
-  // 2.4: AbortController + token urutan agar response methods yang usang (dari
-  // subtotal/kurir sebelumnya) tidak menimpa state saat user berubah cepat.
   const methodsAbortRef = useRef<AbortController | null>(null);
   const methodsSeqRef = useRef(0);
   useEffect(() => {
-    // Jangan panggil Duitku sebelum langkah 4 dibuka (alamat valid + kurir
-    // dipilih): amount baru pasti setelah ongkir diketahui.
     if (!paymentStepUnlocked) return;
     methodsAbortRef.current?.abort();
     const controller = new AbortController();
@@ -530,8 +480,6 @@ export default function CheckoutPage() {
           if (seq !== methodsSeqRef.current || controller.signal.aborted) return;
           if (data.methods && data.methods.length > 0) {
             setPaymentMethods(data.methods);
-            // Tidak ada auto-select: pilihan lama dipertahankan hanya bila
-            // metodenya masih tersedia; selain itu kembali ke belum terpilih.
             setSelectedPaymentMethod((prev) =>
               prev &&
               data.methods.some(
@@ -599,8 +547,6 @@ export default function CheckoutPage() {
 
       if (!res.ok) {
         const errData = await res.json();
-        // 6.2: kurs berubah saat user berada di halaman checkout. Segarkan kurs
-        // (dan harga) otomatis, lalu minta user meninjau ulang sebelum submit.
         if (errData?.code === "RATE_CHANGED") {
           setPricingNonce((n) => n + 1);
         }
@@ -614,14 +560,10 @@ export default function CheckoutPage() {
       }
 
       const result = await res.json();
-      // Hanya kosongkan cart kalau pesanan benar-benar tersimpan di server
-      // (orderNumber ada). Kalau respons sukses tapi tanpa orderNumber, biarkan
-      // cart utuh supaya user tidak kehilangan item tanpa pesanan yang tercatat.
       if (result.orderNumber) {
         clearCart();
       }
 
-      // If method is VA or QRIS (or returns vaNumber / qrString), show modal on-page!
       if (
         result.vaNumber ||
         result.qrString ||
@@ -689,13 +631,6 @@ export default function CheckoutPage() {
   );
   const total = calculatedSubtotal + shippingCost;
   const totalCount = items.reduce((acc, it) => acc + it.quantity, 0);
-
-  // 2.6: Fee layanan HANYA dibebankan ke customer untuk metode customer-bears
-  // (VC/kartu kredit, OVO, ShopeePay). Untuk metode yang fee-nya ditanggung
-  // merchant, jangan tambahkan ke angka yang ditampilkan — supaya TOTAL DUE dan
-  // modal sama dengan yang benar-benar dibayar customer. (serverTotal = subtotal
-  // + ongkir tanpa fee; Duitku menambahkan fee ini di sisi pembayaran untuk
-  // metode customer-bears.)
   const customerBearsFee = isCustomerBearsFee(selectedPaymentMethod);
   const paymentFee =
     customerBearsFee && selectedPaymentMethod
