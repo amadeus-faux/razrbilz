@@ -1,6 +1,11 @@
 "use client";
 
 import ProductCard from "./ProductCard";
+import {
+  resolveDisplayPrice,
+  isInternational,
+} from "@/lib/pricing";
+import { useUserCountryCookie } from "@/lib/use-user-country";
 
 export interface Product {
   id: string;
@@ -8,12 +13,14 @@ export interface Product {
   slug: string;
   description?: string;
   price?: number;
+  basePrice?: number;
   stock?: number;
   images: string[];
 }
 
 interface ProductGridProps {
   products: Product[];
+  exchangeRate: number;
 }
 
 function getMaxCols(count: number, isDesktop: boolean): number {
@@ -42,8 +49,21 @@ function getColStarts(count: number, cols: number): number[] {
   return starts;
 }
 
-export default function ProductGrid({ products }: ProductGridProps) {
+export default function ProductGrid({ products, exchangeRate }: ProductGridProps) {
   const count = products.length;
+
+  // Harga hasil SSR selalu harga lokal (ID) karena halaman di-cache (ISR) dan
+  // tidak membaca cookie di server. useSyncExternalStore membaca cookie
+  // user_country setelah hydrate; React re-render sendiri bila pengunjungnya
+  // dari luar ID (lihat src/lib/use-user-country.ts).
+  const country = useUserCountryCookie();
+
+  const displayPrice = (p: Product): number | undefined => {
+    if (!isInternational(country)) return p.price;
+    const base = p.basePrice ?? p.price;
+    if (base === undefined) return p.price;
+    return resolveDisplayPrice(base, country, exchangeRate);
+  };
 
   if (count === 0) {
     return (
@@ -90,7 +110,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
               name={product.name}
               slug={product.slug}
               description={product.description}
-              price={product.price}
+              price={displayPrice(product)}
               stock={product.stock}
               image={product.images[0] || "/placeholder-product.svg"}
               index={index}

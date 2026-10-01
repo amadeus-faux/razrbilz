@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import {
   getActiveExchangeRateInfo,
   setManualOverrideRate,
@@ -22,6 +23,13 @@ export async function GET() {
   }
 }
 
+// Kurs ikut ter-bake ke halaman ISR (harga pengunjung internasional dihitung
+// dari basePrice x kurs saat render), jadi setiap perubahan harus menyapu
+// seluruh cache halaman storefront, bukan hanya "/".
+function revalidateStorefront() {
+  revalidatePath("/", "layout");
+}
+
 export async function POST(request: Request) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
@@ -32,6 +40,7 @@ export async function POST(request: Request) {
 
     if (isOverride === false) {
       const updated = await clearManualOverrideRate();
+      revalidateStorefront();
       return NextResponse.json({ success: true, rate: updated });
     }
 
@@ -44,6 +53,7 @@ export async function POST(request: Request) {
     }
 
     const updated = await setManualOverrideRate(numericRate);
+    revalidateStorefront();
     return NextResponse.json({ success: true, rate: updated });
   } catch (error: any) {
     console.error("[api/admin/exchange-rate] POST error:", error);
@@ -60,6 +70,7 @@ export async function DELETE() {
 
   try {
     const updated = await clearManualOverrideRate();
+    revalidateStorefront();
     return NextResponse.json({ success: true, rate: updated });
   } catch (error: any) {
     console.error("[api/admin/exchange-rate] DELETE error:", error);

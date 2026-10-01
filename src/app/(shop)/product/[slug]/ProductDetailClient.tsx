@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Plus, ChevronDown } from "lucide-react";
 import gsap from "gsap";
 import { Observer } from "gsap/Observer";
 import GsapImageSlider from "@/components/product/GsapImageSlider";
 import SizeSelectorSheet from "@/components/product/SizeSelectorSheet";
 import { formatRupiah } from "@/lib/utils";
+import {
+  resolveDisplayPrice,
+  isInternational,
+} from "@/lib/pricing";
+import { useUserCountryCookie } from "@/lib/use-user-country";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(Observer);
@@ -38,11 +43,13 @@ export interface ClientProduct {
 interface ProductDetailClientProps {
   products: ClientProduct[];
   initialIndex: number;
+  exchangeRate: number;
 }
 
 export default function ProductDetailClient({
   products,
   initialIndex,
+  exchangeRate,
 }: ProductDetailClientProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
@@ -61,8 +68,40 @@ export default function ProductDetailClient({
 
   const totalProducts = products.length;
   const hasMultipleProducts = totalProducts > 1;
-  const currentProduct = products[currentIndex] || products[0];
-  const incomingProduct = incomingIndex !== null ? products[incomingIndex] : null;
+
+  // Harga SSR selalu harga lokal (ID) karena halaman di-cache ISR dan tidak
+  // membaca cookie di server. Setelah mount, bila pengunjung internasional,
+  // angkanya ditukar lewat map harga. Identitas array `products` sengaja tidak
+  // diubah: efek GSAP (preload gambar, Observer) bergantung padanya dan tidak
+  // boleh jalan ulang hanya karena harga berganti.
+  const country = useUserCountryCookie();
+  const localizedPrices = useMemo(() => {
+    if (!isInternational(country)) return null;
+    const map: Record<string, number> = {};
+    for (const p of products) {
+      map[p.id] = resolveDisplayPrice(
+        p.basePrice ?? p.price,
+        country,
+        exchangeRate
+      );
+    }
+    return map;
+  }, [products, country, exchangeRate]);
+
+  const withLocalizedPrice = (p: ClientProduct): ClientProduct =>
+    localizedPrices && localizedPrices[p.id] !== undefined
+      ? { ...p, price: localizedPrices[p.id] }
+      : p;
+
+  const rawCurrentProduct = products[currentIndex] || products[0];
+  const currentProduct = rawCurrentProduct
+    ? withLocalizedPrice(rawCurrentProduct)
+    : undefined;
+  const rawIncomingProduct =
+    incomingIndex !== null ? products[incomingIndex] : null;
+  const incomingProduct = rawIncomingProduct
+    ? withLocalizedPrice(rawIncomingProduct)
+    : null;
 
   // ─── 1. Aggressive Image & Resource Preloading ───────────────────────────
   useEffect(() => {

@@ -55,6 +55,7 @@ export default function ProductCard({
             isSoldOut ? "opacity-75 grayscale-[35%]" : ""
           }`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          priority={index === 0}
         />
 
         {isSoldOut && (

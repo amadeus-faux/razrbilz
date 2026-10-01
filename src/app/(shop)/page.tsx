@@ -1,14 +1,16 @@
 import ProductGrid from "@/components/product/ProductGrid";
 import { prisma } from "@/lib/prisma";
-import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
-import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import { pageMeta } from "@/lib/seo";
 import { getHomeMetaDescription } from "@/lib/site-settings";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// ISR 60 detik: halaman disajikan dari cache CDN tanpa cold start function.
+// Edit produk lewat admin tetap instan karena route mutasi memanggil
+// revalidatePath("/"); perubahan kurs disapu lewat revalidatePath("/", "layout").
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     ...pageMeta({ path: "/", description: await getHomeMetaDescription() }),
@@ -42,17 +44,18 @@ async function getProducts() {
 }
 
 export default async function ShopPage() {
-  const cookieStore = await cookies();
-  const userCountry = normalizeCountryCode(cookieStore.get("user_country")?.value);
-
   const [products, exchangeRate] = await Promise.all([
     getProducts(),
     getActiveExchangeRate(),
   ]);
 
+  // Halaman ini di-cache (ISR), jadi cookie user_country tidak dibaca di
+  // server. Harga SSR selalu harga lokal (ID); ProductGrid menukar angkanya
+  // di client setelah mount bila cookie pengunjung berasal dari luar ID.
   const localizedProducts = products.map((p) => ({
     ...p,
-    price: resolveDisplayPrice(p.price, userCountry, exchangeRate),
+    price: resolveDisplayPrice(p.price, "ID", exchangeRate),
+    basePrice: p.price,
   }));
 
   return (
@@ -64,7 +67,7 @@ export default async function ShopPage() {
       id="products-section"
     >
       <div className="w-full my-auto">
-        <ProductGrid products={localizedProducts} />
+        <ProductGrid products={localizedProducts} exchangeRate={exchangeRate} />
       </div>
     </section>
   );

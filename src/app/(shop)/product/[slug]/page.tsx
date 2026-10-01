@@ -2,16 +2,34 @@ import ProductDetailClient from "./ProductDetailClient";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
-import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
+import { resolveDisplayPrice } from "@/lib/pricing";
 import { describe, pageMeta } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// ISR 60 detik: tanpa cold start function per kunjungan. Mutasi produk admin
+// memanggil revalidatePath("/product/<slug>"), perubahan kurs disapu lewat
+// revalidatePath("/", "layout") di route exchange-rate.
+export const revalidate = 60;
 
 interface PageParams {
   params: Promise<{ slug: string }>;
+}
+
+// Tanpa export ini Next 16 menilai rute dinamis sebagai SSR penuh per request
+// (tidak masuk prerender-manifest, Cache-Control no-store). Dengan daftar slug,
+// tiap halaman produk ikut di-generate/di-cache saat build + revalidate 60s;
+// slug baru setelah build tetap dilayani on-demand (dynamicParams default true).
+export async function generateStaticParams() {
+  try {
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true },
+    });
+    return products.map((p) => ({ slug: p.slug }));
+  } catch (error) {
+    console.error("Error generating product params:", error);
+    return [];
+  }
 }
 
 async function getActiveProducts() {
@@ -73,10 +91,6 @@ export async function generateMetadata({
 
 export default async function ProductDetailPage({ params }: PageParams) {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  // Default to "ID" — ensure country is always treated as local unless explicitly international
-  const rawCountry = cookieStore.get("user_country")?.value ?? "";
-  const userCountry = normalizeCountryCode(rawCountry);
 
   const [allProducts, exchangeRate] = await Promise.all([
     getActiveProducts(),
@@ -91,13 +105,16 @@ export default async function ProductDetailPage({ params }: PageParams) {
 
   const initialIndex = allProducts.findIndex((p) => p.slug === slug);
 
-  // Serialize product list for the client orchestrator with localized prices
+  // Halaman di-cache (ISR) sehingga cookie user_country tidak dibaca di server:
+  // harga SSR selalu harga lokal (ID). ProductDetailClient menukar angkanya di
+  // client setelah mount untuk pengunjung internasional (basePrice + kurs ikut
+  // dikirim).
   const serializedProducts = allProducts.map((p) => ({
     id: p.id,
     name: p.name,
     slug: p.slug,
     description: p.description,
-    price: resolveDisplayPrice(p.price, userCountry, exchangeRate),
+    price: resolveDisplayPrice(p.price, "ID", exchangeRate),
     basePrice: p.price,
     stock: p.stock,
     images: p.images,
@@ -121,6 +138,7 @@ export default async function ProductDetailPage({ params }: PageParams) {
     <ProductDetailClient
       products={serializedProducts}
       initialIndex={initialIndex >= 0 ? initialIndex : 0}
+      exchangeRate={exchangeRate}
     />
   );
 }

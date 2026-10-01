@@ -41,6 +41,20 @@ export function isInternational(region?: string | null): boolean {
 }
 
 /**
+ * Reads the `user_country` cookie in the browser. Only call this client-side
+ * after mount (inside useEffect): halaman ISR tidak boleh membaca cookie saat
+ * render server agar output HTML tetap bisa di-cache.
+ */
+export function readUserCountryCookie(fallback = "ID"): string {
+  if (typeof document === "undefined") return fallback;
+  const match = document.cookie.match(/(?:^|;\s*)user_country=([^;]*)/);
+  return normalizeCountryCode(
+    match ? decodeURIComponent(match[1]) : "",
+    fallback
+  );
+}
+
+/**
  * Rounds a price to nearest multiple of 5,000 and subtracts 1,000:
  * Formula: Math.ceil(amount / 5000) * 5000 - 1000
  *
