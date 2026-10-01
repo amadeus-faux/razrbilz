@@ -41,8 +41,8 @@ export default function PolicyPage() {
           <p>
             Every RAZRBILZ piece is made to order. Production takes{" "}
             <strong className="text-foreground font-medium">14–21 days</strong>, and the delivery
-            estimate shown at checkout is counted from the moment your order is ready to ship —
-            so total time from payment to arrival is the production period plus the shipping
+            estimate shown at checkout is counted from the moment your order is ready to ship.
+            The total time from payment to arrival is the production period plus the shipping
             duration.
           </p>
           <p>

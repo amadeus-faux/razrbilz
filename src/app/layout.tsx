@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { PageTransitionProvider } from "@/context/PageTransitionContext";
 import PageTransitionOverlay from "@/components/animations/PageTransitionOverlay";
@@ -33,10 +34,9 @@ export const metadata: Metadata = {
   // Tanpa metadataBase, semua URL relatif (OG image, canonical, sitemap) jadi
   // rusak saat link dibagikan ke WhatsApp/Instagram.
   metadataBase: new URL(siteOrigin()),
-  title: {
-    default: "RAZRBILZ",
-    template: "%s — RAZRBILZ",
-  },
+  // String polos, tanpa template: judul tab cukup nama halamannya sendiri,
+  // tanpa sufiks brand. Halaman tanpa judul sendiri tetap tampil "RAZRBILZ".
+  title: "RAZRBILZ",
   description:
     "RAZRBILZ is a streetwear label from Bandung, Indonesia.",
   keywords: [
@@ -76,6 +76,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </PageTransitionProvider>
         {/* mode default "auto": hanya mengirim event di build produksi */}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

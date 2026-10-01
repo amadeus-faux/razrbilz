@@ -8,7 +8,7 @@ import ProductActions from "./ProductActions";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Admin — Katalog Produk" },
+  title: { absolute: "Admin: Katalog Produk" },
 };
 
 export const dynamic = "force-dynamic";

@@ -4,7 +4,7 @@ import EditProductForm from "./EditProductForm";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Admin — Edit Produk" },
+  title: { absolute: "Admin: Edit Produk" },
 };
 
 export default async function EditProductPage({

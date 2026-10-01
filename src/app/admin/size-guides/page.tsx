@@ -3,7 +3,7 @@ import SizeGuidesClient from "./SizeGuidesClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Admin — Size Guide" },
+  title: { absolute: "Admin: Size Guide" },
 };
 
 export const dynamic = "force-dynamic";

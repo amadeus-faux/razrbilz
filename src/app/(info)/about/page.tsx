@@ -13,7 +13,7 @@ export default function AboutPage() {
       {/* Hero heading */}
       <div className="space-y-2 pb-8 border-b border-border">
         <p className="text-[10px] font-medium tracking-[0.2em] uppercase text-muted">
-          RAZRBILZ ID — Bandung, Indonesia
+          RAZRBILZ ID, Bandung, Indonesia
         </p>
         <h1 className="text-xl font-light tracking-tight text-foreground leading-snug">
           About the Brand

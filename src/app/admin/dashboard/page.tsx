@@ -5,7 +5,7 @@ import { calculateDashboardStats, DashboardStatsResult } from "@/lib/dashboard-s
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { absolute: "Admin — Dashboard" },
+  title: { absolute: "Admin: Dashboard" },
 };
 
 export const dynamic = "force-dynamic";
