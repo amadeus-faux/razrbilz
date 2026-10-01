@@ -24,7 +24,7 @@ export function resolveLocale(countryOrRegion?: string | null): Locale {
 
 const en = {
   backToShop: "Continue Shopping",
-  secureCheckout: "Secure Checkout",
+  secureCheckout: "RAZRBILZ ID",
 
   contactInformation: "Contact Information",
   deliveryAddress: "Delivery Address",
@@ -72,7 +72,7 @@ const en = {
 
   optionsAvailable: "{count} options available",
   optionsAvailableOne: "{count} option available",
-  calculatingRates: "Calculating Biteship shipping rates...",
+  calculatingRates: "Calculating shipping rates...",
   completeAddressForRates: "Complete the delivery address above to see courier options.",
   ratesFallbackLead: "The shipping costs below are an",
   ratesFallbackEmph: "estimated fallback",
@@ -234,7 +234,7 @@ export type CheckoutKey = keyof typeof en;
 
 const id: Record<CheckoutKey, string> = {
   backToShop: "Kembali Belanja",
-  secureCheckout: "Checkout Aman",
+  secureCheckout: "RAZRBILZ ID",
 
   contactInformation: "Informasi Kontak",
   deliveryAddress: "Alamat Pengiriman",
@@ -284,7 +284,7 @@ const id: Record<CheckoutKey, string> = {
   // Bahasa Indonesia tidak memiliki bentuk jamak, jadi kunci singular memakai
   // teks yang sama; pemilihannya tetap di sisi pemanggil.
   optionsAvailableOne: "{count} opsi tersedia",
-  calculatingRates: "Menghitung tarif pengiriman Biteship...",
+  calculatingRates: "Menghitung tarif pengiriman...",
   completeAddressForRates: "Lengkapi alamat pengiriman di atas untuk melihat opsi kurir.",
   ratesFallbackLead: "Ongkir di bawah adalah",
   ratesFallbackEmph: "estimasi fallback",
