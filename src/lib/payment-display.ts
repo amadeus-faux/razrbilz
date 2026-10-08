@@ -80,3 +80,21 @@ export function retailOutletLabel(
   // sadar-lokal, supaya UI Inggris tidak menampilkan "gerai retail".
   return nameOrCode?.trim() || (locale === "en" ? "retail outlet" : "gerai retail");
 }
+
+/**
+ * Label tampilan channel pembayaran. Duitku mengirim nama teknis seperti
+ * "MANDIRI VA H2H" / "NUSAPAY QRIS"; pembeli cukup melihat nama channelnya.
+ *
+ * MURNI tampilan: pengelompokan kategori dan payload ke Duitku tetap memakai
+ * kode (`paymentMethod`) serta nama asli, jadi transaksi tidak terpengaruh.
+ * Nama yang tidak terdaftar di peta ditampilkan apa adanya (fallback aman).
+ */
+const CHANNEL_DISPLAY_LABELS: Record<string, string> = {
+  "MANDIRI VA H2H": "MANDIRI VA",
+  "NUSAPAY QRIS": "QRIS",
+};
+
+export function paymentChannelLabel(name?: string | null): string {
+  const raw = (name ?? "").trim();
+  return CHANNEL_DISPLAY_LABELS[raw.toUpperCase()] ?? raw;
+}

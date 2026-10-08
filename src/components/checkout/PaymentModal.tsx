@@ -10,7 +10,6 @@ import {
   AlertCircle,
   X,
   RefreshCw,
-  Building2,
   ArrowRight,
   ShieldCheck,
   QrCode,
@@ -19,7 +18,7 @@ import {
 import Link from "next/link";
 import QRCode from "qrcode";
 import { formatRupiah } from "@/lib/utils";
-import { classifyPaymentMethod, retailOutletLabel } from "@/lib/payment-display";
+import { classifyPaymentMethod, paymentChannelLabel, retailOutletLabel } from "@/lib/payment-display";
 import { t, tf, messageParts, type CheckoutKey, type Locale } from "@/lib/checkout-i18n";
 
 export interface PaymentModalData {
@@ -27,7 +26,6 @@ export interface PaymentModalData {
   total: number;
   paymentMethod: string;
   paymentName: string;
-  paymentImage?: string;
   vaNumber?: string | null;
   qrString?: string | null;
   paymentCode?: string | null;
@@ -328,24 +326,11 @@ export function PaymentModal({ isOpen, onClose, data, locale }: PaymentModalProp
             <>
               {/* Payment Method Badge & Expiry Countdown */}
               <div className="flex items-center justify-between p-3.5 rounded-xl bg-surface border border-border">
-                <div className="flex items-center gap-3">
-                  {data.paymentImage ? (
-                    <div className="w-10 h-6 bg-white border border-border rounded flex items-center justify-center p-0.5">
-                      <img
-                        src={data.paymentImage}
-                        alt={data.paymentName}
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <Building2 size={20} className="text-muted" />
-                  )}
-                  <div>
-                    <p className="text-xs font-semibold text-foreground tracking-wide">
-                      {data.paymentName}
-                    </p>
-                    <p className="text-[10px] text-muted">{t("pmDuitkuDirect", locale)}</p>
-                  </div>
+                <div>
+                  <p className="text-xs font-semibold text-foreground tracking-wide">
+                    {paymentChannelLabel(data.paymentName)}
+                  </p>
+                  <p className="text-[10px] text-muted">{t("pmDuitkuDirect", locale)}</p>
                 </div>
 
                 <div className="text-right">

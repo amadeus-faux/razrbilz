@@ -16,6 +16,7 @@ import {
   type Locale,
 } from "@/lib/checkout-i18n";
 import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
+import { paymentChannelLabel } from "@/lib/payment-display";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
 import type { BiteshipCourierRate } from "@/lib/biteship";
@@ -37,7 +38,6 @@ import {
   Truck,
   CreditCard,
   AlertCircle,
-  HelpCircle,
   ShoppingBag,
 } from "lucide-react";
 
@@ -46,7 +46,6 @@ const emptyItems: CartItem[] = [];
 interface PaymentMethodOption {
   paymentMethod: string;
   paymentName: string;
-  paymentImage: string;
   totalFee: string;
 }
 
@@ -577,7 +576,6 @@ export default function CheckoutPage() {
           paymentMethod:
             result.paymentMethod || selectedPaymentMethod?.paymentMethod || "VA",
           paymentName: selectedPaymentMethod?.paymentName || "Virtual Account",
-          paymentImage: selectedPaymentMethod?.paymentImage,
           vaNumber: result.vaNumber || null,
           qrString: result.qrString || null,
           paymentCode: result.paymentCode || null,
@@ -1166,7 +1164,7 @@ export default function CheckoutPage() {
                                   </p>
                                   {isCategoryActive && selectedPaymentMethod && (
                                     <span className="text-[9px] uppercase px-2 py-0.5 rounded-full bg-foreground text-background font-medium tracking-wide">
-                                      {selectedPaymentMethod.paymentName}
+                                      {paymentChannelLabel(selectedPaymentMethod.paymentName)}
                                     </span>
                                   )}
                                 </div>
@@ -1212,17 +1210,8 @@ export default function CheckoutPage() {
                                             <div className="w-1.5 h-1.5 rounded-full bg-background" />
                                           )}
                                         </div>
-                                        {method.paymentImage && (
-                                          <div className="relative w-10 h-5 flex-shrink-0 bg-white border border-border rounded p-0.5 flex items-center justify-center">
-                                            <img
-                                              src={method.paymentImage}
-                                              alt={method.paymentName}
-                                              className="max-h-full max-w-full object-contain"
-                                            />
-                                          </div>
-                                        )}
                                         <p className="text-xs text-foreground truncate font-medium">
-                                          {method.paymentName}
+                                          {paymentChannelLabel(method.paymentName)}
                                         </p>
                                       </div>
                                       <span className="text-[10px] text-muted whitespace-nowrap ml-2">
@@ -1312,9 +1301,8 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted flex items-center gap-1">
+                    <span className="text-muted">
                       {t("shipping", locale)}
-                      <HelpCircle size={12} className="text-muted" />
                     </span>
                     <span className="text-foreground">
                       {selectedCourier ? formatRupiah(selectedCourier.price) : t("selectCourier", locale)}
