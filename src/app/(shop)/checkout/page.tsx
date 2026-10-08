@@ -19,6 +19,7 @@ import { checkoutSchema, type CheckoutFormData } from "@/lib/checkout-schema";
 import { paymentChannelLabel } from "@/lib/payment-display";
 import { COUNTRIES } from "@/lib/countries";
 import { INDONESIA_PROVINCES } from "@/lib/indonesia-provinces";
+import { firstProductOverLimit, MAX_QTY_PER_PRODUCT } from "@/lib/order-limits";
 import type { BiteshipCourierRate } from "@/lib/biteship";
 import {
   PRODUCTION_TIME_MIN_DAYS,
@@ -513,6 +514,18 @@ export default function CheckoutPage() {
     }
     if (!selectedPaymentMethod) {
       alert(t("selectPaymentFirst", locale));
+      return;
+    }
+    // Batas 5 per produk (Terms bagian 8) sudah ditegakkan di cart, tapi isi cart
+    // bisa datang dari tab lain atau localStorage yang diedit langsung. Server
+    // tetap otoritas final; pemeriksaan ini hanya menghindari submit yang pasti
+    // ditolak setelah customer mengisi seluruh form.
+    if (firstProductOverLimit(items)) {
+      alert(
+        translateMessage("errMaxQtyPerProduct", locale, {
+          max: MAX_QTY_PER_PRODUCT,
+        })
+      );
       return;
     }
     setSubmitting(true);

@@ -5,6 +5,7 @@ import { generateOrderNumber } from "@/lib/utils";
 import { sendOrderReceivedEmail } from "@/lib/email";
 import { resolveDisplayPrice, isInternational } from "@/lib/pricing";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
+import { MAX_QTY_PER_PRODUCT } from "@/lib/order-limits";
 import { reportHandledError } from "@/lib/sentry";
 import {
   getServerShippingRates,
@@ -88,7 +89,6 @@ export async function POST(request: Request) {
 
     // 2.2 Validasi quantity ketat di SERVER, sebelum cek stok & perhitungan total.
     //     Harus integer, minimal 1, dan ada batas maksimum wajar per produk.
-    const MAX_QTY_PER_PRODUCT = 5;
     for (const item of items) {
       const q = item.quantity;
       if (typeof q !== "number" || !Number.isInteger(q) || q < 1) {

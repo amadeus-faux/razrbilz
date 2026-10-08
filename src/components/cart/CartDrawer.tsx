@@ -12,9 +12,10 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-import { useCartStore, type CartItem } from "@/store/cart-store";
+import { useCartStore, maxQtyForLine, type CartItem } from "@/store/cart-store";
 import { useCartDrawerStore } from "@/store/cart-drawer-store";
 import { formatRupiah } from "@/lib/utils";
+import { MAX_QTY_PER_PRODUCT } from "@/lib/order-limits";
 import { resolveDisplayPrice } from "@/lib/pricing";
 import { usePageTransition } from "@/context/PageTransitionContext";
 
@@ -255,8 +256,13 @@ export default function CartDrawer() {
             <div className="cart-drawer-scroll">
               {items.map((item) => {
                 const price = unitPrice(item);
-                const atMax =
+                const atStock =
                   typeof item.stock === "number" && item.quantity >= item.stock;
+                // Batas 5 per produk menggabungkan semua ukuran, jadi kuota baris
+                // ini bergantung pada baris lain milik produk yang sama.
+                const atProductLimit =
+                  item.quantity >= maxQtyForLine(items, item.productId, item.size);
+                const atMax = atStock || atProductLimit;
 
                 return (
                   <div
@@ -339,7 +345,11 @@ export default function CartDrawer() {
                       </div>
 
                       <div className="mt-2 flex items-center justify-between gap-2">
-                        {atMax ? (
+                        {atProductLimit ? (
+                          <span className="text-[9px] uppercase tracking-wider text-amber-700">
+                            Max {MAX_QTY_PER_PRODUCT} per product
+                          </span>
+                        ) : atStock ? (
                           <span className="text-[9px] uppercase tracking-wider text-amber-700">
                             Max qty {item.stock}
                           </span>
