@@ -3,7 +3,7 @@ import { createBiteshipOrder } from "@/lib/biteship";
 import { checkDuitkuTransaction } from "@/lib/duitku";
 import { WEIGHT_PER_ITEM_GRAMS } from "@/lib/shipping-cost";
 import { resolveDimensionsCm } from "@/lib/package-dimensions";
-import { sendPaymentSuccessEmail } from "@/lib/email";
+import { sendPaymentSuccessEmail, sendPaymentReceivedNotification } from "@/lib/email";
 import { reportHandledError } from "@/lib/sentry";
 
 // 3.4: jendela tambahan SETELAH expiredAt sebelum order benar-benar di-expire.
@@ -214,6 +214,24 @@ export async function markOrderPaid({
       paymentMethodName: updatedOrder.duitkuPaymentMethod,
       paidAt: updatedOrder.paidAt,
     });
+
+    // Notifikasi internal ke pemilik toko. Dibungkus try/catch terpisah supaya
+    // kegagalan notifikasi (jika terjadi) tidak mungkin menyentuh status paid.
+    try {
+      await sendPaymentReceivedNotification({
+        orderId: updatedOrder.id,
+        orderNumber: updatedOrder.orderNumber,
+        total: updatedOrder.total,
+        paymentMethodCode: updatedOrder.duitkuPaymentMethod,
+        customerName: updatedOrder.customerName,
+        customerEmail: updatedOrder.email,
+      });
+    } catch (error) {
+      console.error(
+        `[Email] Notifikasi pemilik gagal untuk ${updatedOrder.orderNumber}:`,
+        error
+      );
+    }
   }
 
   // Pre-Order: DO NOT call Biteship yet. Wait until admin marks ready-to-ship.

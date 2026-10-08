@@ -3,6 +3,7 @@ import { render, toPlainText } from "@react-email/render";
 import type { ReactElement } from "react";
 
 import { prisma } from "@/lib/prisma";
+import { formatRupiah } from "@/lib/utils";
 import { resolveLocale } from "@/lib/checkout-i18n";
 import { isInternationalCountry } from "@/lib/shipping-cost";
 import { EMAIL_COPY } from "@/email/copy";
@@ -422,5 +423,54 @@ export async function sendContactMessageEmail(p: {
     `[Email] Notifikasi Contact Us dari ${p.email} <${p.name}> ke ${to}: ${result.message}`
   );
 
+  return result;
+}
+
+/**
+ * Notifikasi internal ke pemilik toko saat pembayaran masuk.
+ *
+ * Teks murni Bahasa Indonesia tanpa templat HTML: ini pesan sistem untuk
+ * pemilik, bukan komunikasi ke customer, jadi tidak mengikuti locale pesanan.
+ * Tujuan dari OWNER_EMAIL_TO (fallback alamat pemilik) supaya bisa diganti
+ * tanpa menyentuh kode, sama seperti CONTACT_EMAIL_TO.
+ *
+ * Dikirim SESUDAH status paid terkunci oleh pemegang lock, sehingga callback
+ * Duitku yang retry tidak mengirim notifikasi dobel. deliver() tidak pernah
+ * melempar dan pemanggil juga membungkusnya try/catch, jadi kegagalan
+ * notifikasi tidak bisa membatalkan transaksi.
+ */
+export async function sendPaymentReceivedNotification(p: {
+  orderId: string;
+  orderNumber: string;
+  total: number;
+  paymentMethodCode?: string | null;
+  customerName: string;
+  customerEmail: string;
+}): Promise<EmailResult> {
+  const to = process.env.OWNER_EMAIL_TO || "razrbilz@gmail.com";
+  const base = siteUrl();
+  const subject = `Pembayaran diterima ${p.orderNumber}`;
+  const lines = [
+    `Nomor order: ${p.orderNumber}`,
+    `Total: ${formatRupiah(p.total)}`,
+    `Metode (kode Duitku): ${p.paymentMethodCode || "tidak diketahui"}`,
+    `Customer: ${p.customerName} <${p.customerEmail}>`,
+  ];
+  if (base) lines.push(`Admin: ${base}/admin/orders`);
+  const text = `${lines.join("\n")}\n`;
+
+  const result = await deliver({ to, subject, text });
+
+  if (result.success) {
+    await logEmailSent({
+      orderId: p.orderId,
+      event: "EMAIL_OWNER_PAYMENT_NOTIFY",
+      recipient: to,
+      subject,
+      detail: { paymentMethod: p.paymentMethodCode ?? null },
+    });
+  }
+
+  console.log(`[Email] Notifikasi pemilik ${p.orderNumber} ke ${to}: ${result.message}`);
   return result;
 }
