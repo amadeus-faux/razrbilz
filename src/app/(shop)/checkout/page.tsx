@@ -12,6 +12,8 @@ import {
   t,
   tf,
   translateMessage,
+  formatUsd,
+  translatePayPalError,
   type CheckoutKey,
   type Locale,
 } from "@/lib/checkout-i18n";
@@ -84,6 +86,10 @@ function getMethodCategory(m: PaymentMethodOption): string {
   const code = m.paymentMethod.toUpperCase();
   const name = m.paymentName.toUpperCase();
 
+  // PayPal bukan kategori Duitku. Tanpa cabang ini, metode PayPal terpilih akan
+  // jatuh ke "other" dan ikut membuka akordeon Duitku "Metode Lainnya".
+  if (code === "PAYPAL" || name.includes("PAYPAL")) return "paypal";
+
   if (code === "VC" || name.includes("CREDIT CARD") || name.includes("KARTU KREDIT")) return "cc";
   if (name.includes("QRIS") || code === "NQ" || code === "SP" || code === "LQ" || code === "GQ") return "qris";
   if (code === "DA" || code === "OV" || code === "SA" || code === "LA" || name.includes("OVO") || name.includes("DANA") || name.includes("SHOPEEPAY") || name.includes("LINKAJA")) return "ewallet";
@@ -145,6 +151,7 @@ export default function CheckoutPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [modalData, setModalData] = useState<PaymentModalData | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [paypalCancelled, setPaypalCancelled] = useState(false);
 
   const {
     register,
@@ -238,6 +245,19 @@ export default function CheckoutPage() {
       document.documentElement.lang = "en";
     };
   }, [locale]);
+
+  // PayPal mengarahkan balik ke /checkout?paypal=cancelled saat buyer membatalkan.
+  // Tampilkan banner sekali, lalu bersihkan query string agar reload tidak mengulanginya.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("paypal") === "cancelled") {
+      setPaypalCancelled(true);
+      // App Router menimpa window.history.replaceState (quirk proyek yang sudah
+      // terbukti), jadi pakai router.replace supaya query string benar-benar hilang.
+      router.replace(window.location.pathname, { scroll: false });
+    }
+  }, [router]);
 
   const getItemPrice = useCallback(
     (it: CartItem) => {
@@ -482,9 +502,13 @@ export default function CheckoutPage() {
             setPaymentMethods(data.methods);
             setSelectedPaymentMethod((prev) =>
               prev &&
-              data.methods.some(
-                (m: PaymentMethodOption) => m.paymentMethod === prev.paymentMethod
-              )
+              // PayPal bukan metode Duitku: jangan sampai pilihan PayPal ter-reset
+              // ke null hanya karena "PAYPAL" tidak ada di daftar metode Duitku
+              // (efek ini bisa jalan lagi saat kurs/kurir berubah).
+              (prev.paymentMethod === "PAYPAL" ||
+                data.methods.some(
+                  (m: PaymentMethodOption) => m.paymentMethod === prev.paymentMethod
+                ))
                 ? prev
                 : null
             );
@@ -530,6 +554,57 @@ export default function CheckoutPage() {
     }
     setSubmitting(true);
     const fullName = `${data.firstName} ${data.lastName || ""}`.trim();
+
+    // PayPal: alur redirect, terpisah total dari jalur Duitku di bawah (tanpa
+    // modal, tanpa halaman instruksi). Cart SENGAJA tidak dikosongkan di sini:
+    // buyer meninggalkan situs ke PayPal dan bisa membatalkan di sana. Bila batal,
+    // mereka kembali ke /checkout?paypal=cancelled dengan cart utuh sehingga bisa
+    // memilih metode lain. Cart dikosongkan di /paypal/return setelah capture OK.
+    if (isPaypalSelected) {
+      try {
+        const res = await fetch("/api/paypal/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...data,
+            customerName: fullName,
+            address: data.address,
+            apartment: data.apartment || null,
+            stateProvince: isInternational ? (data.province || null) : null,
+            province: isIndonesia ? data.province : "",
+            courier: `${selectedCourier.courier_name} - ${selectedCourier.courier_service_name}`,
+            courierCode: selectedCourier.courier_code,
+            courierServiceCode: selectedCourier.courier_service_code,
+            exchangeRateUsed: exchangeRate,
+            items: items.map((item) => ({
+              productId: item.productId,
+              size: item.size,
+              quantity: item.quantity,
+              priceAtBuy: getItemPrice(item),
+            })),
+          }),
+        });
+
+        const result = await res.json().catch(() => null);
+
+        if (!res.ok || !result?.approveUrl) {
+          if (result?.code === "RATE_CHANGED") {
+            setPricingNonce((n) => n + 1);
+          }
+          throw new Error(
+            translatePayPalError(result?.code, locale, result?.errorParams ?? undefined)
+          );
+        }
+
+        // Navigasi penuh ke PayPal. submitting dibiarkan true agar tombol tetap
+        // "Menyiapkan PayPal..." sampai halaman ini berganti (hindari kedip).
+        window.location.href = result.approveUrl;
+      } catch (err) {
+        alert(err instanceof Error ? err.message : t("paypalOrderFailed", locale));
+        setSubmitting(false);
+      }
+      return;
+    }
 
     try {
       const res = await fetch("/api/checkout", {
@@ -649,6 +724,14 @@ export default function CheckoutPage() {
       : 0;
   const totalDue = total + paymentFee;
 
+  // Perkiraan USD untuk PayPal, hanya untuk ditampilkan di kartu pilihan.
+  // Angka final dihitung ulang di server dari kurs aktif saat membuat order.
+  const paypalUsdValue =
+    exchangeRate > 0 && total > 0
+      ? Math.round((total / exchangeRate) * 100) / 100
+      : 0;
+  const isPaypalSelected = selectedPaymentMethod?.paymentMethod === "PAYPAL";
+
   return (
     <div className="container-shop pt-10 pb-10 min-h-screen">
       <div className="max-w-6xl mx-auto">
@@ -672,6 +755,18 @@ export default function CheckoutPage() {
 
             {/* ── LEFT COLUMN: Form Sections (7 cols) ─────────────────────── */}
             <div className="lg:col-span-7 space-y-6">
+
+              {paypalCancelled && (
+                <div
+                  role="status"
+                  className="p-4 bg-amber-50 border border-amber-500/25 rounded-xl flex items-start gap-3"
+                >
+                  <AlertCircle size={15} className="text-amber-700 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-amber-800 leading-relaxed">
+                    {t("paypalCancelled", locale)}
+                  </p>
+                </div>
+              )}
 
               {/* 1. Contact Information */}
               <div className="bg-surface border border-border p-6 rounded-2xl space-y-4">
@@ -1111,6 +1206,66 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* PayPal: opsi statis, selalu tersedia begitu langkah 4 terbuka.
+                    Tidak diambil dari daftar Duitku, jadi tidak terpengaruh loadingMethods. */}
+                {paymentStepUnlocked && (
+                  <div
+                    className={`border rounded-xl transition-all overflow-hidden ${isPaypalSelected
+                      ? "border-foreground/80 bg-surface/80 shadow-sm"
+                      : "border-border bg-surface hover:border-foreground/30"
+                      }`}
+                  >
+                    <button
+                      type="button"
+                      aria-label={t("paypalChoose", locale)}
+                      aria-pressed={isPaypalSelected}
+                      onClick={() => {
+                        setSelectedCategory("paypal");
+                        setSelectedPaymentMethod({
+                          paymentMethod: "PAYPAL",
+                          paymentName: "PayPal",
+                          totalFee: "0",
+                        });
+                      }}
+                      className="w-full flex items-center justify-between p-3.5 text-left cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${isPaypalSelected
+                            ? "border-foreground bg-foreground"
+                            : "border-border bg-surface-hover"
+                            }`}
+                        >
+                          {isPaypalSelected && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-background" />
+                          )}
+                        </div>
+                        <p className="text-sm text-foreground font-semibold tracking-tight truncate">
+                          PayPal
+                        </p>
+                      </div>
+                      {paypalUsdValue > 0 && (
+                        <span className="text-[11px] text-muted whitespace-nowrap ml-2 font-medium">
+                          {formatUsd(paypalUsdValue, locale)}
+                        </span>
+                      )}
+                    </button>
+
+                    {isPaypalSelected && (
+                      <div className="px-4 pb-4 pt-1 space-y-2 border-t border-border/50">
+                        <p className="text-xs text-foreground pt-2 font-medium">
+                          {tf("paypalChargeLine", locale, {
+                            amount: formatUsd(paypalUsdValue, locale),
+                          })}
+                        </p>
+                        <p className="text-[11px] text-muted leading-relaxed">
+                          {t("paypalUsdNote", locale)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {!paymentStepUnlocked ? (
                   <div className="py-6 text-center text-xs text-muted space-y-1">
                     <CreditCard size={20} strokeWidth={1.5} className="mx-auto mb-2 text-muted" />
@@ -1363,7 +1518,7 @@ export default function CheckoutPage() {
                     {submitting ? (
                       <>
                         <Loader2 size={16} className="animate-spin" />
-                        <span>{t("processing", locale)}</span>
+                        <span>{t(isPaypalSelected ? "paypalPreparing" : "processing", locale)}</span>
                       </>
                     ) : (
                       <span>{t("submitCta", locale)}</span>

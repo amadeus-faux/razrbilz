@@ -5202,6 +5202,7 @@ export namespace Prisma {
     shippingCost: number | null
     subtotal: number | null
     total: number | null
+    paypalExchangeRate: number | null
     shippingRetryCount: number | null
     exchangeRate: number | null
   }
@@ -5210,6 +5211,7 @@ export namespace Prisma {
     shippingCost: number | null
     subtotal: number | null
     total: number | null
+    paypalExchangeRate: number | null
     shippingRetryCount: number | null
     exchangeRate: number | null
   }
@@ -5251,6 +5253,11 @@ export namespace Prisma {
     duitkuPaymentCode: string | null
     duitkuFee: string | null
     duitkuStatusMessage: string | null
+    paypalOrderId: string | null
+    paypalCaptureId: string | null
+    paypalAmountUsd: string | null
+    paypalCurrency: string | null
+    paypalExchangeRate: number | null
     createdAt: Date | null
     updatedAt: Date | null
     biteshipOrderId: string | null
@@ -5301,6 +5308,11 @@ export namespace Prisma {
     duitkuPaymentCode: string | null
     duitkuFee: string | null
     duitkuStatusMessage: string | null
+    paypalOrderId: string | null
+    paypalCaptureId: string | null
+    paypalAmountUsd: string | null
+    paypalCurrency: string | null
+    paypalExchangeRate: number | null
     createdAt: Date | null
     updatedAt: Date | null
     biteshipOrderId: string | null
@@ -5351,6 +5363,11 @@ export namespace Prisma {
     duitkuPaymentCode: number
     duitkuFee: number
     duitkuStatusMessage: number
+    paypalOrderId: number
+    paypalCaptureId: number
+    paypalAmountUsd: number
+    paypalCurrency: number
+    paypalExchangeRate: number
     createdAt: number
     updatedAt: number
     biteshipOrderId: number
@@ -5370,6 +5387,7 @@ export namespace Prisma {
     shippingCost?: true
     subtotal?: true
     total?: true
+    paypalExchangeRate?: true
     shippingRetryCount?: true
     exchangeRate?: true
   }
@@ -5378,6 +5396,7 @@ export namespace Prisma {
     shippingCost?: true
     subtotal?: true
     total?: true
+    paypalExchangeRate?: true
     shippingRetryCount?: true
     exchangeRate?: true
   }
@@ -5419,6 +5438,11 @@ export namespace Prisma {
     duitkuPaymentCode?: true
     duitkuFee?: true
     duitkuStatusMessage?: true
+    paypalOrderId?: true
+    paypalCaptureId?: true
+    paypalAmountUsd?: true
+    paypalCurrency?: true
+    paypalExchangeRate?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -5469,6 +5493,11 @@ export namespace Prisma {
     duitkuPaymentCode?: true
     duitkuFee?: true
     duitkuStatusMessage?: true
+    paypalOrderId?: true
+    paypalCaptureId?: true
+    paypalAmountUsd?: true
+    paypalCurrency?: true
+    paypalExchangeRate?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -5519,6 +5548,11 @@ export namespace Prisma {
     duitkuPaymentCode?: true
     duitkuFee?: true
     duitkuStatusMessage?: true
+    paypalOrderId?: true
+    paypalCaptureId?: true
+    paypalAmountUsd?: true
+    paypalCurrency?: true
+    paypalExchangeRate?: true
     createdAt?: true
     updatedAt?: true
     biteshipOrderId?: true
@@ -5656,6 +5690,11 @@ export namespace Prisma {
     duitkuPaymentCode: string | null
     duitkuFee: string | null
     duitkuStatusMessage: string | null
+    paypalOrderId: string | null
+    paypalCaptureId: string | null
+    paypalAmountUsd: string | null
+    paypalCurrency: string | null
+    paypalExchangeRate: number | null
     createdAt: Date
     updatedAt: Date
     biteshipOrderId: string | null
@@ -5725,6 +5764,11 @@ export namespace Prisma {
     duitkuPaymentCode?: boolean
     duitkuFee?: boolean
     duitkuStatusMessage?: boolean
+    paypalOrderId?: boolean
+    paypalCaptureId?: boolean
+    paypalAmountUsd?: boolean
+    paypalCurrency?: boolean
+    paypalExchangeRate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -5778,6 +5822,11 @@ export namespace Prisma {
     duitkuPaymentCode?: boolean
     duitkuFee?: boolean
     duitkuStatusMessage?: boolean
+    paypalOrderId?: boolean
+    paypalCaptureId?: boolean
+    paypalAmountUsd?: boolean
+    paypalCurrency?: boolean
+    paypalExchangeRate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -5828,6 +5877,11 @@ export namespace Prisma {
     duitkuPaymentCode?: boolean
     duitkuFee?: boolean
     duitkuStatusMessage?: boolean
+    paypalOrderId?: boolean
+    paypalCaptureId?: boolean
+    paypalAmountUsd?: boolean
+    paypalCurrency?: boolean
+    paypalExchangeRate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -5878,6 +5932,11 @@ export namespace Prisma {
     duitkuPaymentCode?: boolean
     duitkuFee?: boolean
     duitkuStatusMessage?: boolean
+    paypalOrderId?: boolean
+    paypalCaptureId?: boolean
+    paypalAmountUsd?: boolean
+    paypalCurrency?: boolean
+    paypalExchangeRate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     biteshipOrderId?: boolean
@@ -5891,7 +5950,7 @@ export namespace Prisma {
     exchangeRate?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "stateProvince" | "shippingAddress" | "apartment" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "paidAt" | "expiredAt" | "stockReturnedAt" | "isPreOrder" | "trackingNumber" | "manualCourier" | "manualService" | "manualShippedAt" | "manualTrackingNote" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuPaymentCode" | "duitkuFee" | "duitkuStatusMessage" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount" | "needsManualReview" | "priceRegion" | "exchangeRate", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderNumber" | "customerName" | "email" | "phone" | "country" | "province" | "stateProvince" | "shippingAddress" | "apartment" | "district" | "city" | "postalCode" | "courier" | "shippingCost" | "subtotal" | "total" | "paymentStatus" | "orderStatus" | "paidAt" | "expiredAt" | "stockReturnedAt" | "isPreOrder" | "trackingNumber" | "manualCourier" | "manualService" | "manualShippedAt" | "manualTrackingNote" | "duitkuReference" | "duitkuPaymentMethod" | "duitkuPaymentUrl" | "duitkuVaNumber" | "duitkuQrString" | "duitkuPaymentCode" | "duitkuFee" | "duitkuStatusMessage" | "paypalOrderId" | "paypalCaptureId" | "paypalAmountUsd" | "paypalCurrency" | "paypalExchangeRate" | "createdAt" | "updatedAt" | "biteshipOrderId" | "biteshipTrackingId" | "biteshipStatus" | "shippingOrderError" | "shippingOrderStatus" | "shippingRetryCount" | "needsManualReview" | "priceRegion" | "exchangeRate", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | Order$itemsArgs<ExtArgs>
     shippingLogs?: boolean | Order$shippingLogsArgs<ExtArgs>
@@ -5943,6 +6002,11 @@ export namespace Prisma {
       duitkuPaymentCode: string | null
       duitkuFee: string | null
       duitkuStatusMessage: string | null
+      paypalOrderId: string | null
+      paypalCaptureId: string | null
+      paypalAmountUsd: string | null
+      paypalCurrency: string | null
+      paypalExchangeRate: number | null
       createdAt: Date
       updatedAt: Date
       biteshipOrderId: string | null
@@ -6415,6 +6479,11 @@ export namespace Prisma {
     readonly duitkuPaymentCode: FieldRef<"Order", 'String'>
     readonly duitkuFee: FieldRef<"Order", 'String'>
     readonly duitkuStatusMessage: FieldRef<"Order", 'String'>
+    readonly paypalOrderId: FieldRef<"Order", 'String'>
+    readonly paypalCaptureId: FieldRef<"Order", 'String'>
+    readonly paypalAmountUsd: FieldRef<"Order", 'String'>
+    readonly paypalCurrency: FieldRef<"Order", 'String'>
+    readonly paypalExchangeRate: FieldRef<"Order", 'Float'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly biteshipOrderId: FieldRef<"Order", 'String'>
@@ -12230,6 +12299,11 @@ export namespace Prisma {
     duitkuPaymentCode: 'duitkuPaymentCode',
     duitkuFee: 'duitkuFee',
     duitkuStatusMessage: 'duitkuStatusMessage',
+    paypalOrderId: 'paypalOrderId',
+    paypalCaptureId: 'paypalCaptureId',
+    paypalAmountUsd: 'paypalAmountUsd',
+    paypalCurrency: 'paypalCurrency',
+    paypalExchangeRate: 'paypalExchangeRate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     biteshipOrderId: 'biteshipOrderId',
@@ -12692,6 +12766,11 @@ export namespace Prisma {
     duitkuPaymentCode?: StringNullableFilter<"Order"> | string | null
     duitkuFee?: StringNullableFilter<"Order"> | string | null
     duitkuStatusMessage?: StringNullableFilter<"Order"> | string | null
+    paypalOrderId?: StringNullableFilter<"Order"> | string | null
+    paypalCaptureId?: StringNullableFilter<"Order"> | string | null
+    paypalAmountUsd?: StringNullableFilter<"Order"> | string | null
+    paypalCurrency?: StringNullableFilter<"Order"> | string | null
+    paypalExchangeRate?: FloatNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableFilter<"Order"> | string | null
@@ -12744,6 +12823,11 @@ export namespace Prisma {
     duitkuPaymentCode?: SortOrderInput | SortOrder
     duitkuFee?: SortOrderInput | SortOrder
     duitkuStatusMessage?: SortOrderInput | SortOrder
+    paypalOrderId?: SortOrderInput | SortOrder
+    paypalCaptureId?: SortOrderInput | SortOrder
+    paypalAmountUsd?: SortOrderInput | SortOrder
+    paypalCurrency?: SortOrderInput | SortOrder
+    paypalExchangeRate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrderInput | SortOrder
@@ -12763,6 +12847,7 @@ export namespace Prisma {
     id?: string
     orderNumber?: string
     duitkuReference?: string
+    paypalOrderId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -12799,6 +12884,10 @@ export namespace Prisma {
     duitkuPaymentCode?: StringNullableFilter<"Order"> | string | null
     duitkuFee?: StringNullableFilter<"Order"> | string | null
     duitkuStatusMessage?: StringNullableFilter<"Order"> | string | null
+    paypalCaptureId?: StringNullableFilter<"Order"> | string | null
+    paypalAmountUsd?: StringNullableFilter<"Order"> | string | null
+    paypalCurrency?: StringNullableFilter<"Order"> | string | null
+    paypalExchangeRate?: FloatNullableFilter<"Order"> | number | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableFilter<"Order"> | string | null
@@ -12812,7 +12901,7 @@ export namespace Prisma {
     exchangeRate?: FloatNullableFilter<"Order"> | number | null
     items?: OrderItemListRelationFilter
     shippingLogs?: ShippingLogListRelationFilter
-  }, "id" | "orderNumber" | "duitkuReference">
+  }, "id" | "orderNumber" | "duitkuReference" | "paypalOrderId">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
@@ -12851,6 +12940,11 @@ export namespace Prisma {
     duitkuPaymentCode?: SortOrderInput | SortOrder
     duitkuFee?: SortOrderInput | SortOrder
     duitkuStatusMessage?: SortOrderInput | SortOrder
+    paypalOrderId?: SortOrderInput | SortOrder
+    paypalCaptureId?: SortOrderInput | SortOrder
+    paypalAmountUsd?: SortOrderInput | SortOrder
+    paypalCurrency?: SortOrderInput | SortOrder
+    paypalExchangeRate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrderInput | SortOrder
@@ -12909,6 +13003,11 @@ export namespace Prisma {
     duitkuPaymentCode?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuFee?: StringNullableWithAggregatesFilter<"Order"> | string | null
     duitkuStatusMessage?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paypalOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paypalCaptureId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paypalAmountUsd?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paypalCurrency?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    paypalExchangeRate?: FloatNullableWithAggregatesFilter<"Order"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     biteshipOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -13490,6 +13589,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -13542,6 +13646,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -13594,6 +13703,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13646,6 +13760,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13698,6 +13817,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -13748,6 +13872,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13798,6 +13927,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14552,6 +14686,11 @@ export namespace Prisma {
     duitkuPaymentCode?: SortOrder
     duitkuFee?: SortOrder
     duitkuStatusMessage?: SortOrder
+    paypalOrderId?: SortOrder
+    paypalCaptureId?: SortOrder
+    paypalAmountUsd?: SortOrder
+    paypalCurrency?: SortOrder
+    paypalExchangeRate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -14569,6 +14708,7 @@ export namespace Prisma {
     shippingCost?: SortOrder
     subtotal?: SortOrder
     total?: SortOrder
+    paypalExchangeRate?: SortOrder
     shippingRetryCount?: SortOrder
     exchangeRate?: SortOrder
   }
@@ -14610,6 +14750,11 @@ export namespace Prisma {
     duitkuPaymentCode?: SortOrder
     duitkuFee?: SortOrder
     duitkuStatusMessage?: SortOrder
+    paypalOrderId?: SortOrder
+    paypalCaptureId?: SortOrder
+    paypalAmountUsd?: SortOrder
+    paypalCurrency?: SortOrder
+    paypalExchangeRate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -14660,6 +14805,11 @@ export namespace Prisma {
     duitkuPaymentCode?: SortOrder
     duitkuFee?: SortOrder
     duitkuStatusMessage?: SortOrder
+    paypalOrderId?: SortOrder
+    paypalCaptureId?: SortOrder
+    paypalAmountUsd?: SortOrder
+    paypalCurrency?: SortOrder
+    paypalExchangeRate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     biteshipOrderId?: SortOrder
@@ -14677,6 +14827,7 @@ export namespace Prisma {
     shippingCost?: SortOrder
     subtotal?: SortOrder
     total?: SortOrder
+    paypalExchangeRate?: SortOrder
     shippingRetryCount?: SortOrder
     exchangeRate?: SortOrder
   }
@@ -15977,6 +16128,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -16028,6 +16184,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -16095,6 +16256,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16146,6 +16312,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16197,6 +16368,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -16248,6 +16424,11 @@ export namespace Prisma {
     duitkuPaymentCode?: string | null
     duitkuFee?: string | null
     duitkuStatusMessage?: string | null
+    paypalOrderId?: string | null
+    paypalCaptureId?: string | null
+    paypalAmountUsd?: string | null
+    paypalCurrency?: string | null
+    paypalExchangeRate?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     biteshipOrderId?: string | null
@@ -16360,6 +16541,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16411,6 +16597,11 @@ export namespace Prisma {
     duitkuPaymentCode?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuFee?: NullableStringFieldUpdateOperationsInput | string | null
     duitkuStatusMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCaptureId?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalAmountUsd?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalCurrency?: NullableStringFieldUpdateOperationsInput | string | null
+    paypalExchangeRate?: NullableFloatFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     biteshipOrderId?: NullableStringFieldUpdateOperationsInput | string | null

@@ -325,6 +325,11 @@ export async function syncOrderPaymentStatus(orderNumberOrId: string) {
     if (!order) return null;
     if (order.paymentStatus === "paid") return order;
 
+    // Order PayPal dikonfirmasi lewat capture / webhook PayPal, BUKAN Duitku.
+    // Jangan tanyakan statusnya ke Duitku (orderNumber-nya tak dikenal di sana)
+    // dan jangan expire dari jalur ini; pembersihan ditangani autoExpireStaleOrders.
+    if (order.paypalOrderId) return order;
+
     // 3.4: hubungi Duitku, BEDAKAN antara "API gagal" dan "status terkonfirmasi".
     const check = await checkDuitkuSafe(order.orderNumber);
 
@@ -420,6 +425,20 @@ export async function autoExpireStaleOrders(): Promise<number> {
     let skippedCount = 0;
     for (const order of staleOrders) {
       try {
+        // Order PayPal: sumber kebenarannya capture / webhook PayPal, bukan Duitku.
+        // Bila masih pending setelah lewat grace, buyer tidak menyelesaikan di
+        // PayPal (atau capture belum masuk). Batalkan + kembalikan stok tanpa
+        // menghubungi Duitku. Bila capture/webhook PayPal datang belakangan,
+        // markOrderPaid meng-override FAILED→PAID dan menarik ulang stok.
+        if (order.paypalOrderId) {
+          await cancelOrderAndReturnStock(
+            order.id,
+            "Waktu pembayaran PayPal telah habis (Expired)"
+          );
+          expiredCount++;
+          continue;
+        }
+
         const check = await checkDuitkuSafe(order.orderNumber);
 
         // 3.4: API Duitku gagal dihubungi → JANGAN expire. Skip, retry nanti.

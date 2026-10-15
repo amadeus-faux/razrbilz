@@ -228,6 +228,20 @@ const en = {
     "The payment has not been detected yet. Please complete the payment and try again.",
   pmStatusCheckFailed: "The status could not be checked. Please try again shortly.",
   pmNetworkError: "A network error occurred.",
+
+  // ── PayPal ─────────────────────────────────────────────────────────────────
+  catPaypal: "PayPal",
+  paypalChoose: "Pay with PayPal",
+  paypalChargeLine: "You'll be charged {amount} by PayPal.",
+  paypalUsdNote:
+    "PayPal charges in USD. The rupiah total is converted at our live exchange rate; PayPal or your bank may apply their own conversion and fees.",
+  paypalPreparing: "Preparing PayPal...",
+  paypalProcessing: "Confirming your PayPal payment...",
+  paypalCancelled:
+    "PayPal payment cancelled. No charge was made. Choose another payment method below, or try PayPal again.",
+  paypalOrderFailed: "We couldn't start the PayPal payment. Please try again.",
+  paypalCaptureFailed:
+    "We couldn't confirm your PayPal payment. If you were charged, contact us with your order number.",
 } as const;
 
 export type CheckoutKey = keyof typeof en;
@@ -437,6 +451,20 @@ const id: Record<CheckoutKey, string> = {
     "Pembayaran belum terdeteksi. Silakan selesaikan pembayaran dan coba kembali.",
   pmStatusCheckFailed: "Gagal memeriksa status. Silakan coba sesaat lagi.",
   pmNetworkError: "Terjadi kesalahan jaringan.",
+
+  // ── PayPal ─────────────────────────────────────────────────────────────────
+  catPaypal: "PayPal",
+  paypalChoose: "Bayar dengan PayPal",
+  paypalChargeLine: "Anda akan ditagih {amount} oleh PayPal.",
+  paypalUsdNote:
+    "PayPal menagih dalam USD. Total rupiah dikonversi dengan kurs kami yang berlaku; PayPal atau bank Anda dapat menerapkan konversi dan biayanya sendiri.",
+  paypalPreparing: "Menyiapkan PayPal...",
+  paypalProcessing: "Mengonfirmasi pembayaran PayPal Anda...",
+  paypalCancelled:
+    "Pembayaran PayPal dibatalkan. Tidak ada tagihan yang dibuat. Pilih metode lain di bawah, atau coba PayPal lagi.",
+  paypalOrderFailed: "Kami tidak dapat memulai pembayaran PayPal. Silakan coba lagi.",
+  paypalCaptureFailed:
+    "Kami tidak dapat mengonfirmasi pembayaran PayPal Anda. Jika sudah ditagih, hubungi kami dengan nomor pesanan.",
 };
 
 const CHECKOUT_MESSAGES: Record<Locale, Record<CheckoutKey, string>> = { en, id };
@@ -503,4 +531,45 @@ export function translateMessage(
         text
       )
     : text;
+}
+
+/**
+ * Kontrak kode error API PayPal -> kunci dictionary. Route PayPal hanya mengirim
+ * kode (bukan teks); client menerjemahkan lewat `translateMessage` di bawah ini.
+ */
+export const PAYPAL_ERROR_KEY: Record<string, CheckoutKey> = {
+  CART_EMPTY: "errEmptyCart",
+  INVALID_PRODUCT: "errProductUnavailable",
+  INVALID_QTY: "errQtyInteger",
+  QTY_LIMIT: "errMaxQtyPerProduct",
+  OUT_OF_STOCK: "errStockJustGone",
+  INVALID_COURIER: "errCourierUnavailable",
+  RATE_CHANGED: "errRateChanged",
+  ORDER_CREATE_FAILED: "paypalOrderFailed",
+  CAPTURE_FAILED: "paypalCaptureFailed",
+};
+
+/** Terjemahkan kode error PayPal menjadi pesan sesuai locale. */
+export function translatePayPalError(
+  code: string | undefined | null,
+  locale: Locale,
+  vars?: Record<string, string | number>
+): string {
+  const key = PAYPAL_ERROR_KEY[code || ""] || "paypalOrderFailed";
+  return translateMessage(key, locale, vars);
+}
+
+/**
+ * Format nominal USD mengikuti bahasa: en "USD 1,234.00", id "US$ 1.234,00".
+ * Dipakai untuk menampilkan jumlah yang benar-benar ditagih PayPal.
+ */
+export function formatUsd(amount: number | string, locale: Locale): string {
+  const n = typeof amount === "number" ? amount : Number(amount);
+  const value = Number.isFinite(n) ? n : 0;
+  const [int, dec] = value.toFixed(2).split(".");
+  const grouped = int.replace(
+    /\B(?=(\d{3})+(?!\d))/g,
+    locale === "id" ? "." : ","
+  );
+  return locale === "id" ? `US$ ${grouped},${dec}` : `USD ${grouped}.${dec}`;
 }

@@ -89,6 +89,14 @@ model Order {
   duitkuPaymentCode   String?
   duitkuFee           String?
   duitkuStatusMessage String?
+  // PayPal (orders v2). paypalAmountUsd = string desimal persis ("30.00") agar
+  // verifikasi capture exact-match. Kolom lama (total/paymentStatus/createdAt)
+  // dipakai ulang; kolom di bawah hanya khusus PayPal.
+  paypalOrderId       String?       @unique
+  paypalCaptureId     String?
+  paypalAmountUsd     String?
+  paypalCurrency      String?
+  paypalExchangeRate  Float?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   biteshipOrderId     String?
