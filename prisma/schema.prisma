@@ -156,3 +156,88 @@ model Admin {
   id    String @id @default(cuid())
   email String @unique
 }
+
+// ── Early Access Gate ────────────────────────────────────────────────────────
+// Kolom snake_case (di-mapping eksplisit) karena tabel ini dibuat lewat SQL
+// manual, bukan migrate deploy. RLS aktif tanpa policy: hanya role server
+// (usebypassrls) yang bisa mengakses, kecuali gate_settings yang punya satu
+// policy SELECT untuk anon supaya proxy.ts bisa membaca status di Edge.
+
+model Subscriber {
+  id                  String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email               String    @unique
+  locale              String    @default("id")
+  status              String    @default("pending")
+  confirmationTokenHash String? @unique @map("confirmation_token_hash")
+  confirmedAt         DateTime? @map("confirmed_at") @db.Timestamptz()
+  slotNumber          Int?      @unique @map("slot_number")
+  unsubscribedAt      DateTime? @map("unsubscribed_at") @db.Timestamptz()
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  accessTokens        AccessToken[]
+  emailSends          EmailSend[]
+
+  @@map("subscribers")
+}
+
+model EarlyAccessPeriod {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  startedAt DateTime  @default(now()) @map("started_at") @db.Timestamptz()
+  endedAt   DateTime? @map("ended_at") @db.Timestamptz()
+  startedBy String?   @map("started_by")
+  accessTokens AccessToken[]
+  emailSends   EmailSend[]
+
+  @@map("early_access_periods")
+}
+
+model AccessToken {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscriberId String   @map("subscriber_id") @db.Uuid
+  periodId     String   @map("period_id") @db.Uuid
+  tokenHash    String   @unique @map("token_hash")
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz()
+  useCount     Int      @default(0) @map("use_count")
+  maxUses      Int      @default(5) @map("max_uses")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  subscriber   Subscriber      @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  period       EarlyAccessPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriberId, periodId])
+  @@map("access_tokens")
+}
+
+model EmailSend {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subscriberId      String    @map("subscriber_id") @db.Uuid
+  periodId          String?   @map("period_id") @db.Uuid
+  kind              String
+  status            String    @default("pending")
+  providerMessageId String?   @map("provider_message_id")
+  error             String?
+  sentAt            DateTime? @map("sent_at") @db.Timestamptz()
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  subscriber        Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  period            EarlyAccessPeriod? @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@map("email_sends")
+}
+
+model GateSetting {
+  id              Int      @id @default(1)
+  status          String   @default("closed")
+  currentPeriodId String?  @map("current_period_id") @db.Uuid
+  updatedBy       String?  @map("updated_by")
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz()
+
+  @@map("gate_settings")
+}
+
+model GateStatusLog {
+  id        Int      @id @default(autoincrement())
+  status    String
+  periodId  String?  @map("period_id") @db.Uuid
+  changedBy String?  @map("changed_by")
+  changedAt DateTime @default(now()) @map("changed_at") @db.Timestamptz()
+
+  @@map("gate_status_log")
+}

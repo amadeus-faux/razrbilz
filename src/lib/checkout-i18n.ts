@@ -160,6 +160,8 @@ const en = {
     "One of the products in your order is no longer valid. Please review your bag.",
   errRateChanged:
     "The conversion rate has just been updated. Please reload the checkout page to see the latest total before ordering.",
+  errRateLimited:
+    "Too many checkout attempts. Please wait {seconds} seconds and try again.",
   errDuitkuConnect: "We could not reach the payment gateway. Please try again.",
   errMissingAppUrl: "The site address is not configured on our side, so payment cannot be created.",
 
@@ -383,6 +385,8 @@ const id: Record<CheckoutKey, string> = {
     "Salah satu produk dalam pesanan Anda tidak valid. Silakan periksa keranjang.",
   errRateChanged:
     "Kurs konversi baru saja diperbarui. Silakan muat ulang halaman checkout untuk melihat total terbaru sebelum memesan.",
+  errRateLimited:
+    "Terlalu banyak percobaan checkout. Tunggu {seconds} detik lalu coba lagi.",
   errDuitkuConnect: "Gagal terhubung ke payment gateway. Silakan coba kembali.",
   errMissingAppUrl: "Alamat situs belum dikonfigurasi di sisi kami sehingga pembayaran tidak dapat dibuat.",
 
@@ -545,6 +549,7 @@ export const PAYPAL_ERROR_KEY: Record<string, CheckoutKey> = {
   OUT_OF_STOCK: "errStockJustGone",
   INVALID_COURIER: "errCourierUnavailable",
   RATE_CHANGED: "errRateChanged",
+  RATE_LIMITED: "errRateLimited",
   ORDER_CREATE_FAILED: "paypalOrderFailed",
   CAPTURE_FAILED: "paypalCaptureFailed",
 };

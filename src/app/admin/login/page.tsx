@@ -37,13 +37,6 @@ export default function AdminLoginPage() {
       });
 
       if (authError) {
-        if (
-          process.env.NEXT_PUBLIC_SUPABASE_URL?.includes("[YOUR-PROJECT-REF]") ||
-          !process.env.NEXT_PUBLIC_SUPABASE_URL
-        ) {
-          window.location.href = "/admin/dashboard";
-          return;
-        }
         throw authError;
       }
 
@@ -55,11 +48,9 @@ export default function AdminLoginPage() {
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message === "Invalid login credentials"
-            ? "Email atau password salah. Silakan periksa kembali."
-            : err.message
-          : "Gagal masuk ke dashboard admin"
+        err instanceof Error && err.message === "Invalid login credentials"
+          ? "Email atau password salah. Silakan periksa kembali."
+          : "Gagal masuk ke dashboard admin. Coba lagi beberapa saat lagi."
       );
       setLoading(false);
     }

@@ -5,6 +5,7 @@ import { resolveDisplayPrice, isInternational } from "@/lib/pricing";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { MAX_QTY_PER_PRODUCT, firstProductOverLimit } from "@/lib/order-limits";
 import { reportHandledError } from "@/lib/sentry";
+import { checkRateLimit, clientIp } from "@/lib/rate-limit";
 import { resolveLocale } from "@/lib/checkout-i18n";
 import {
   getServerShippingRates,
@@ -44,6 +45,20 @@ export async function POST(request: Request) {
   const productQuantities = new Map<string, number>();
 
   try {
+    const limit = checkRateLimit(`paypal-order:${clientIp(request)}`, {
+      max: 10,
+      windowMs: 10 * 60_000,
+    });
+    if (!limit.allowed) {
+      return NextResponse.json(
+        {
+          code: "RATE_LIMITED",
+          errorParams: { seconds: limit.retryAfterSec },
+        },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfterSec) } }
+      );
+    }
+
     const body = await request.json();
     const {
       customerName,

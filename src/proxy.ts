@@ -1,17 +1,72 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { GATE_COOKIE, isGateExempt } from "@/lib/early-access/constants";
+import { readGateStateAtEdge } from "@/lib/early-access/edge-gate";
+
+const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+/**
+ * Endpoint yang sengaja menerima POST tanpa Origin browser: webhook pihak
+ * ketiga dan laporan CSP. Semua endpoint mutasi lain wajib same-origin.
+ */
+const CSRF_EXEMPT_API_PATHS = [
+  "/api/payments/duitku/callback",
+  "/api/paypal/webhook",
+  "/api/webhooks/biteship",
+  "/api/csp-report",
+];
+
+function isCsrfExemptApi(pathname: string): boolean {
+  return CSRF_EXEMPT_API_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
+}
+
+/**
+ * Defense in depth terhadap CSRF. Cookie sesi Supabase sudah SameSite=Lax dan
+ * API JSON memicu preflight, tetapi pengecekan Origin menutup jalur form
+ * lintas-situs dan request tanpa preflight.
+ */
+function hasSameOrigin(request: NextRequest): boolean {
+  const host = request.headers.get("host");
+  if (!host) return false;
+
+  const source = request.headers.get("origin") ?? request.headers.get("referer");
+  if (!source) return false;
+
+  try {
+    return new URL(source).host === host;
+  } catch {
+    return false;
+  }
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (
+    pathname.startsWith("/api/") &&
+    MUTATION_METHODS.has(request.method) &&
+    !isCsrfExemptApi(pathname) &&
+    !hasSameOrigin(request)
+  ) {
+    return NextResponse.json(
+      { success: false, code: "ORIGIN_MISMATCH" },
+      { status: 403, headers: { "Cache-Control": "no-store" } }
+    );
+  }
 
   // Handle /admin routes
   if (pathname.startsWith("/admin")) {
     const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // If Supabase is not yet configured, allow access in local dev mode
+    // Fail-closed: tanpa konfigurasi Supabase, panel admin tidak boleh terbuka.
     if (!rawUrl || !supabaseAnonKey || rawUrl.includes("[YOUR-PROJECT-REF]")) {
-      return NextResponse.next();
+      return new NextResponse(
+        "Panel admin tidak tersedia: konfigurasi Supabase belum lengkap.",
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
     }
 
     const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
@@ -65,6 +120,50 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  // ── Early Access Gate ──────────────────────────────────────────────────────
+  // Dicek sebelum logika lain di jalur toko: halaman ter-gate tidak boleh
+  // sempat di-render atau diambil dari cache ISR.
+  //
+  // Fail-open: bila status tidak terbaca (Supabase gangguan / env belum diisi),
+  // request dibiarkan lewat. Toko yang terkunci karena outage lebih merugikan
+  // daripada gate yang bocor beberapa detik, dan webhook pembayaran sudah
+  // dikecualikan dari gate apa pun kondisinya.
+  if (!isGateExempt(pathname)) {
+    const gate = await readGateStateAtEdge();
+
+    if (gate && gate.status !== "public") {
+      const hasAccess =
+        gate.status === "early_access" &&
+        Boolean(gate.currentPeriodId) &&
+        request.cookies.get(GATE_COOKIE)?.value === gate.currentPeriodId;
+
+      if (!hasAccess) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            { success: false, code: "GATE_CLOSED" },
+            { status: 403, headers: { "Cache-Control": "no-store" } }
+          );
+        }
+
+        const url = request.nextUrl.clone();
+        url.pathname = "/newsletter";
+        url.search = "";
+        const redirect = NextResponse.redirect(url, 307);
+        // no-store wajib: tanpa ini halaman ISR yang sudah ada di cache CDN
+        // bisa tersaji untuk pengunjung yang seharusnya ter-gate.
+        redirect.headers.set("Cache-Control", "no-store");
+        return redirect;
+      }
+    }
+  }
+
+  // Route API tidak pernah melewati proxy sebelum matcher melebar. Perilakunya
+  // dijaga tetap sama (tanpa Set-Cookie geo, tanpa Vary: Cookie) supaya caching
+  // dan handshake webhook pembayaran tidak berubah sedikit pun.
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // Shop & general routes: handle regional detection & cookie
   const response = NextResponse.next();
   const existingCookie = request.cookies.get("user_country")?.value;
@@ -90,13 +189,14 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+/**
+ * Gate harus melihat SEMUA halaman publik, jadi matcher melebar dari daftar
+ * pendek sebelumnya menjadi catch-all. Yang dikecualikan hanya berkas statis:
+ * berkas di /public dan output /_next tidak pernah berisi halaman yang bisa
+ * dibocorkan gate, dan memanggil proxy untuk tiap gambar hanya menambah biaya.
+ */
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/",
-    "/product/:path*",
-    "/cart/:path*",
-    "/checkout/:path*",
-    "/payment/:path*",
+    "/((?!_next/|favicon.ico|icon.ico|logo.svg|file.svg|globe.svg|next.svg|vercel.svg|window.svg|robots.txt|sitemap.xml|products/|logo/|og/).*)",
   ],
 };

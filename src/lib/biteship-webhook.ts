@@ -95,11 +95,15 @@ export async function processBiteshipWebhook(
 
 
   try {
-    console.log("[Biteship Webhook] Processing event payload:", JSON.stringify(payload, null, 2));
-
     const event = explicitEvent || payload.event || payload.type || "order.status";
     const biteshipOrderId = payload.order_id;
     const orderNumber = payload.metadata?.order_number;
+
+    // Payload mentah bisa memuat nama, telepon, dan alamat customer. Yang
+    // dicatat hanya identifier yang dibutuhkan untuk menelusuri event.
+    console.log(
+      `[Biteship Webhook] Event '${event}' untuk order ${biteshipOrderId ?? orderNumber ?? "-"}.`
+    );
 
     if (!biteshipOrderId && !orderNumber) {
       console.log("[Biteship Webhook] Event payload without order identifier. Responding 200 OK.");

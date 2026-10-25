@@ -1,9 +1,11 @@
 // Titik masuk instrumentasi server Next.js. Fungsi `register()` dipanggil
 // sebelum server menerima request pertama.
 import * as Sentry from "@sentry/nextjs";
+import { assertCoreEnv } from "./lib/env";
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    assertCoreEnv();
     await import("./sentry.server.config");
   }
   if (process.env.NEXT_RUNTIME === "edge") {

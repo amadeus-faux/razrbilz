@@ -20,6 +20,8 @@ export interface EmailResult {
   message: string;
   /** true = email TIDAK dikirim karena jejaknya sudah ada. Bukan kegagalan. */
   skipped?: boolean;
+  /** Id kiriman dari Resend. Dipakai jejak audit email newsletter. */
+  id?: string | null;
 }
 
 /** Data pesanan yang dibutuhkan semua template. */
@@ -59,14 +61,18 @@ function siteUrl(): string | null {
  * pembayaran. Kalau API key belum dipasang (dev/staging) atau Resend sedang
  * gagal, pemanggil tetap bisa membalas customer dengan sukses + pesan kegagalan
  * yang bisa dibaca di log.
+ *
+ * Diekspor karena email newsletter (early access) memakai jalur kirim yang sama:
+ * satu alamat From, satu provider, satu tempat penanganan gagal.
  */
-async function deliver({
+export async function deliver({
   to,
   subject,
   element,
   text,
   replyTo,
   fromName,
+  headers,
 }: {
   to: string;
   subject: string;
@@ -83,6 +89,8 @@ async function deliver({
    *  Alamat From TIDAK PERNAH diganti: pengiriman atas nama domain pihak lain
    *  ditolak provider dan gagal lolos DMARC. */
   fromName?: string;
+  /** Header tambahan, mis. List-Unsubscribe untuk email newsletter. */
+  headers?: Record<string, string>;
 }): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
@@ -99,7 +107,7 @@ async function deliver({
     const fromAddress = /<([^>]+)>/.exec(from)?.[1] ?? from;
     const quotedName = fromName?.replace(/["\\]/g, "").trim();
     const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: quotedName ? `"${quotedName}" <${fromAddress}>` : from,
       to,
       subject,
@@ -107,6 +115,7 @@ async function deliver({
       // memenuhi tipe Resend pada jalur teks murni.
       ...(html ? { html, text: text ?? toPlainText(html) } : { text: text ?? "" }),
       replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
+      ...(headers ? { headers } : {}),
     });
 
     if (error) {
@@ -115,7 +124,7 @@ async function deliver({
     }
 
     console.log(`[Email] ✅ Terkirim via Resend: "${subject}" → ${to}`);
-    return { success: true, message: `Email terkirim ke ${to}` };
+    return { success: true, message: `Email terkirim ke ${to}`, id: data?.id ?? null };
   } catch (error) {
     console.error(`[Email] ❌ Gagal mengirim "${subject}" ke ${to}:`, error);
     return {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { requireAdmin } from "@/lib/require-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -17,22 +17,8 @@ const CONFIRM_WORD = "RESET";
  */
 export async function POST(request: Request) {
   // 1. Backend auth/role gate — jangan andalkan middleware (yang hanya menjaga halaman /admin).
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data?.user) {
-      return NextResponse.json(
-        { error: "Tidak terautentikasi. Silakan login ulang ke dashboard admin." },
-        { status: 401 }
-      );
-    }
-  } catch {
-    // Supabase tidak tersedia/terkonfigurasi → tolak (fail-closed), jangan pernah reset tanpa auth.
-    return NextResponse.json(
-      { error: "Verifikasi admin tidak tersedia. Reset dibatalkan demi keamanan." },
-      { status: 403 }
-    );
-  }
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
 
   // 2. Defense in depth: kata konfirmasi wajib cocok di server.
   let body: { confirm?: string } = {};

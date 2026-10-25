@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma";
+import { requireAnyEnv } from "./env";
 
 // Re-export namespace Prisma (untuk tipe seperti Prisma.ProductUpdateInput)
 // supaya route tidak perlu import lewat path relatif ke /generated.
@@ -11,7 +12,10 @@ export { Prisma } from "../../generated/prisma";
 // transaction pooler, yang tidak cocok dengan driver adapter + prepared
 // statement). DATABASE_URL (db.prisma.io) tidak dipakai karena `datasource db`
 // tidak punya `url` — koneksi murni dibuat oleh adapter pg di bawah ini.
-const rawConnectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || "";
+const rawConnectionString = requireAnyEnv(
+  ["DIRECT_URL", "DATABASE_URL"],
+  "koneksi database Prisma"
+);
 const connectionString = rawConnectionString.trim().replace(/^['"]|['"]$/g, "");
 
 const globalForPrisma = globalThis as unknown as {

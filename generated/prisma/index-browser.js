@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.10.0
- * Query Engine version: 0edf323efd1d98336f3f0a68684b56f689b900d3
+ * Prisma Client JS version: 7.10.1
+ * Query Engine version: d1b3f377ca835d73fd50954a5e22128b9ebdd6b8
  */
 Prisma.prismaVersion = {
-  client: "7.10.0",
-  engine: "0edf323efd1d98336f3f0a68684b56f689b900d3"
+  client: "7.10.1",
+  engine: "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -251,6 +251,64 @@ exports.Prisma.AdminScalarFieldEnum = {
   email: 'email'
 };
 
+exports.Prisma.SubscriberScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  locale: 'locale',
+  status: 'status',
+  confirmationTokenHash: 'confirmationTokenHash',
+  confirmedAt: 'confirmedAt',
+  slotNumber: 'slotNumber',
+  unsubscribedAt: 'unsubscribedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.EarlyAccessPeriodScalarFieldEnum = {
+  id: 'id',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  startedBy: 'startedBy'
+};
+
+exports.Prisma.AccessTokenScalarFieldEnum = {
+  id: 'id',
+  subscriberId: 'subscriberId',
+  periodId: 'periodId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  useCount: 'useCount',
+  maxUses: 'maxUses',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.EmailSendScalarFieldEnum = {
+  id: 'id',
+  subscriberId: 'subscriberId',
+  periodId: 'periodId',
+  kind: 'kind',
+  status: 'status',
+  providerMessageId: 'providerMessageId',
+  error: 'error',
+  sentAt: 'sentAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.GateSettingScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  currentPeriodId: 'currentPeriodId',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GateStatusLogScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  periodId: 'periodId',
+  changedBy: 'changedBy',
+  changedAt: 'changedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -286,7 +344,13 @@ exports.Prisma.ModelName = {
   SiteSetting: 'SiteSetting',
   ShippingLog: 'ShippingLog',
   OrderItem: 'OrderItem',
-  Admin: 'Admin'
+  Admin: 'Admin',
+  Subscriber: 'Subscriber',
+  EarlyAccessPeriod: 'EarlyAccessPeriod',
+  AccessToken: 'AccessToken',
+  EmailSend: 'EmailSend',
+  GateSetting: 'GateSetting',
+  GateStatusLog: 'GateStatusLog'
 };
 
 /**

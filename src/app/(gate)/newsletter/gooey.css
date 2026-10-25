@@ -1,0 +1,208 @@
+/**
+ * Pill gooey untuk form newsletter.
+ *
+ * Semua bentuk (pill + tombol) adalah elemen SVG di dalam satu <svg>; filter
+ * blur + alpha dipasang pada <g> yang sama. Tidak ada filter SVG yang
+ * diterapkan ke elemen HTML, jadi Safari/iOS tidak perlu menebak dukungan
+ * filter pada elemen HTML. Input dan tombol HTML berada di lapisan atas tanpa
+ * filter supaya teks dan panah tetap tajam.
+ *
+ * Geometri (stage 380px, tinggi 56px, tombol 56px, celah 12px):
+ * - DIAM: circle duduk di dalam ujung kanan pill, panah opacity 0.
+ * - TERBUKA: grup bergeser 34px ke kiri, circle bergeser 68px secara lokal
+ *   (net 34px ke kanan), celah akhir 12px. Grup tetap di tengah stage.
+ * - MUNCUL/KEMBALI: transisi antara keduanya; filter yang membentuk leher.
+ *
+ * Gerak hanya transform/opacity. Di prefers-reduced-motion filter dimatikan
+ * dan transisi transform dihapus; tombol tetap tersembunyi di DIAM.
+ */
+
+.goo-stage {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  height: 56px;
+  margin-inline: auto;
+  isolation: isolate;
+}
+
+/* SVG diletakkan lebih besar dari stage supaya bayangan filter tidak terpotong
+   oleh viewport. Angka width/height diatur dari ResizeObserver (piksel nyata,
+   tanpa viewBox). */
+.goo-svg {
+  position: absolute;
+  top: -32px;
+  left: -32px;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.goo-pill,
+.goo-circle {
+  fill: var(--color-background);
+}
+
+/* Pill statis saat lebar belum terukur (SSR / JS mati). Geometrinya sama
+   dengan pill DIAM supaya tidak ada kedipan saat SVG menggantikannya. */
+.goo-static {
+  position: absolute;
+  top: 0;
+  left: 34px;
+  right: 34px;
+  height: 56px;
+  z-index: 0;
+  border-radius: 999px;
+  background: var(--color-background);
+  box-shadow: 0 6px 20px rgba(17, 17, 17, 0.08);
+}
+
+.goo-slide,
+.goo-circle,
+.goo-input,
+.goo-btn {
+  transition: transform 0.48s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-slide {
+  transform: translateX(-34px);
+}
+
+.goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-circle {
+  transform: translateX(68px);
+}
+
+.goo-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: calc(100% - 68px);
+  height: 56px;
+  padding: 0 20px 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--color-foreground);
+  outline: none;
+  transform: translateX(34px);
+}
+
+.goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-input {
+  transform: translateX(0);
+}
+
+.goo-input::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+/* Cincin fokus mengikuti bentuk pill input, bukan kotak stage. Saat terbuka,
+   input sudah sejajar dengan pill aktif. */
+.goo-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-foreground);
+}
+
+.goo-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: none;
+  transform: translateX(-34px);
+}
+
+.goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-btn {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.goo-btn:focus-visible {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 3px;
+}
+
+.goo-arrow {
+  color: var(--color-foreground);
+  opacity: 0;
+  filter: blur(4px);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Panah masuk setelah tombol mulai memisah; saat kembali ia memudar duluan. */
+.goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-arrow {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 0.28s ease 0.12s, filter 0.28s ease 0.12s;
+}
+
+/* Honeypot: bot mengisinya, manusia tidak pernah melihatnya. */
+.goo-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Hover hanya untuk perangkat yang benar-benar punya kursor. Di layar sentuh,
+   tap memicu fokus sehingga tombol tetap muncul tanpa state hover yang lengket. */
+@media (hover: hover) and (pointer: fine) {
+  .goo-stage:hover .goo-slide {
+    transform: translateX(-34px);
+  }
+
+  .goo-stage:hover .goo-circle {
+    transform: translateX(68px);
+  }
+
+  .goo-stage:hover .goo-input {
+    transform: translateX(0);
+  }
+
+  .goo-stage:hover .goo-btn {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .goo-stage:hover .goo-arrow {
+    opacity: 1;
+    filter: blur(0);
+    transition: opacity 0.28s ease 0.12s, filter 0.28s ease 0.12s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goo-blob {
+    filter: none;
+  }
+
+  .goo-slide,
+  .goo-circle,
+  .goo-input,
+  .goo-btn {
+    transition: none;
+  }
+
+  .goo-arrow {
+    filter: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-arrow,
+  .goo-stage:hover .goo-arrow {
+    transition: opacity 0.15s ease;
+  }
+}

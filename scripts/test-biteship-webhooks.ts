@@ -2,16 +2,39 @@ import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
 import { processBiteshipWebhook } from "../src/lib/biteship-webhook";
 
+/**
+ * Mengirim event Biteship palsu ke handler asli. Handler menulis waybill,
+ * status, dan harga ke order nyata, jadi script ini wajib opt-in eksplisit dan
+ * wajib menyebut nomor order. Tidak ada lagi pemilihan order terbaru otomatis.
+ */
+const DESTRUCTIVE_FLAG = "ALLOW_DESTRUCTIVE_TESTS";
+
+function assertDestructiveAllowed(): void {
+  if (process.env[DESTRUCTIVE_FLAG] !== "1") {
+    console.error(
+      `Script ini mengubah data order nyata. Jalankan dengan ${DESTRUCTIVE_FLAG}=1 dan sebutkan nomor order, mis.\n` +
+        `  ${DESTRUCTIVE_FLAG}=1 npx tsx scripts/test-biteship-webhooks.ts <ORDER_NUMBER>`
+    );
+    process.exit(1);
+  }
+}
+
 async function main() {
-  console.log("=== Testing Biteship Webhook Handlers ===");
+  assertDestructiveAllowed();
 
-  const order = await prisma.order.findFirst({
-    where: { biteshipOrderId: { not: null } },
-    orderBy: { updatedAt: "desc" },
-  });
+  const orderNumber = process.argv[2]?.trim();
+  if (!orderNumber) {
+    console.error("Nomor order wajib disebutkan. Script tidak lagi memilih order terbaru otomatis.");
+    process.exit(1);
+  }
 
+  const order = await prisma.order.findUnique({ where: { orderNumber } });
   if (!order) {
-    console.log("No order with biteshipOrderId found in DB to test.");
+    console.error(`Order ${orderNumber} tidak ditemukan.`);
+    process.exit(1);
+  }
+  if (!order.biteshipOrderId) {
+    console.error(`Order ${orderNumber} belum punya biteshipOrderId.`);
     process.exit(1);
   }
 
@@ -70,7 +93,7 @@ async function main() {
   const priceRes = await processBiteshipWebhook(priceReq, "order.price");
   console.log("Price Response Status:", priceRes.status);
 
-  // 4. Verify results and logs in Supabase
+  // 4. Verify results and logs in Supabase (ringkas, tanpa payload mentah).
   console.log("\n--- [VERIFY SUPABASE RECORDS] ---");
   const updatedOrder = await prisma.order.findUnique({
     where: { id: order.id },
@@ -78,6 +101,7 @@ async function main() {
       shippingLogs: {
         orderBy: { createdAt: "desc" },
         take: 5,
+        select: { event: true, previousValue: true, newValue: true, createdAt: true },
       },
     },
   });
@@ -92,7 +116,7 @@ async function main() {
   });
 
   console.log("Recent Shipping Logs count:", updatedOrder?.shippingLogs.length);
-  console.log("Logs:", JSON.stringify(updatedOrder?.shippingLogs, null, 2));
+  console.log("Recent Shipping Logs:", updatedOrder?.shippingLogs);
 
   console.log("\n✅ ALL BITESHIP WEBHOOK TESTS COMPLETED SUCCESSFULLY.");
   process.exit(0);

@@ -20,6 +20,7 @@ import ProductStatsTable from "./ProductStatsTable";
 import GeoCharts from "./GeoCharts";
 import ExchangeRateCard from "./ExchangeRateCard";
 import SiteSettingsCard from "./SiteSettingsCard";
+import GateCard from "./GateCard";
 
 type Period = "7" | "30" | "90" | "year" | "all";
 
@@ -172,6 +173,9 @@ export default function DashboardClient({
           </Link>
         </div>
       </div>
+
+      {/* ── Gate Toko ─────────────────────────────────────────────────────── */}
+      <GateCard />
 
       {/* ── Stat Cards — Row 1 (Revenue, Paid, Total, Products) ─────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
