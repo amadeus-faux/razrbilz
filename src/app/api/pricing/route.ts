@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { isInternational, normalizeCountryCode } from "@/lib/pricing";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest, probe: Probe) {
   try {
     const { searchParams } = new URL(request.url);
     const countryParam = searchParams.get("country");
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const region = normalizeCountryCode(
       countryParam || cookieCountry || headerCountry || "ID"
     );
-    const rate = await getActiveExchangeRate();
+    const rate = await probe.time("fx", () => getActiveExchangeRate(probe));
     const international = isInternational(region);
 
     const response = NextResponse.json({
@@ -45,3 +46,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const GET = withProbe(handleGET);

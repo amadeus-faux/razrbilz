@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerShippingRates } from "@/lib/shipping-cost";
 import { prisma } from "@/lib/prisma";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -11,7 +12,7 @@ const NO_STORE_HEADERS = {
   },
 };
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request, probe: Probe) {
   try {
     const body = await request.json();
     const { destinationPostalCode, items, couriers, country } = body;
@@ -26,10 +27,12 @@ export async function POST(request: Request) {
       .map((i) => i?.productId)
       .filter((id): id is string => typeof id === "string" && id.length > 0);
     const products = productIds.length
-      ? await prisma.product.findMany({
-          where: { id: { in: productIds } },
-          select: { id: true, name: true, weightGrams: true, lengthCm: true, widthCm: true, heightCm: true },
-        })
+      ? await probe.time("db_products", () =>
+          prisma.product.findMany({
+            where: { id: { in: productIds } },
+            select: { id: true, name: true, weightGrams: true, lengthCm: true, widthCm: true, heightCm: true },
+          })
+        )
       : [];
     const productById = new Map(products.map((p) => [p.id, p]));
     const serverItems = rawItems.map((i) => {
@@ -44,12 +47,17 @@ export async function POST(request: Request) {
       };
     });
 
-    const result = await getServerShippingRates({
-      country,
-      destinationPostalCode,
-      items: serverItems,
-      couriers,
-    });
+    const result = await probe.time("shipping_quote", () =>
+      getServerShippingRates(
+        {
+          country,
+          destinationPostalCode,
+          items: serverItems,
+          couriers,
+        },
+        probe
+      )
+    );
 
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 400 });
@@ -76,3 +84,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = withProbe(handlePOST);

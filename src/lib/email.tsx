@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { formatRupiah } from "@/lib/utils";
 import { resolveLocale } from "@/lib/checkout-i18n";
 import { isInternationalCountry } from "@/lib/shipping-cost";
+import type { Probe } from "@/lib/perf-probe";
 import { EMAIL_COPY } from "@/email/copy";
 import {
   CancellationEmail,
@@ -73,6 +74,7 @@ export async function deliver({
   replyTo,
   fromName,
   headers,
+  probe,
 }: {
   to: string;
   subject: string;
@@ -91,6 +93,8 @@ export async function deliver({
   fromName?: string;
   /** Header tambahan, mis. List-Unsubscribe untuk email newsletter. */
   headers?: Record<string, string>;
+  /** TEMPORARY: pengukuran render vs kirim Resend. */
+  probe?: Probe;
 }): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
@@ -103,20 +107,26 @@ export async function deliver({
   }
 
   try {
-    const html = element ? await render(element) : undefined;
+    const html = element
+      ? probe
+        ? await probe.time("email_render", () => render(element))
+        : await render(element)
+      : undefined;
     const fromAddress = /<([^>]+)>/.exec(from)?.[1] ?? from;
     const quotedName = fromName?.replace(/["\\]/g, "").trim();
     const resend = new Resend(apiKey);
-    const { data, error } = await resend.emails.send({
-      from: quotedName ? `"${quotedName}" <${fromAddress}>` : from,
-      to,
-      subject,
-      // Setiap pemanggil memberi `element` ATAU `text`; `?? ""` hanya untuk
-      // memenuhi tipe Resend pada jalur teks murni.
-      ...(html ? { html, text: text ?? toPlainText(html) } : { text: text ?? "" }),
-      replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
-      ...(headers ? { headers } : {}),
-    });
+    const send = () =>
+      resend.emails.send({
+        from: quotedName ? `"${quotedName}" <${fromAddress}>` : from,
+        to,
+        subject,
+        // Setiap pemanggil memberi `element` ATAU `text`; `?? ""` hanya untuk
+        // memenuhi tipe Resend pada jalur teks murni.
+        ...(html ? { html, text: text ?? toPlainText(html) } : { text: text ?? "" }),
+        replyTo: replyTo || process.env.EMAIL_REPLY_TO || undefined,
+        ...(headers ? { headers } : {}),
+      });
+    const { data, error } = probe ? await probe.time("email_resend", send) : await send();
 
     if (error) {
       console.error(`[Email] Resend menolak kirim "${subject}" ke ${to}:`, error.message);
@@ -174,7 +184,8 @@ export async function sendOrderReceivedEmail(
     courier: string;
     expiresAt?: Date | string | null;
     instructionsUrl?: string | null;
-  }
+  },
+  probe?: Probe
 ): Promise<EmailResult> {
   if (!order.customerEmail) {
     return { success: false, message: "Email customer kosong" };
@@ -203,6 +214,7 @@ export async function sendOrderReceivedEmail(
         }
       />
     ),
+    probe,
   });
 
   if (result.success) {

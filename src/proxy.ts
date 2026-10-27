@@ -1,9 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { GATE_COOKIE, isGateExempt } from "@/lib/early-access/constants";
+import { GATE_COOKIE, GATE_STATUS_TTL_MS, isGateExempt } from "@/lib/early-access/constants";
 import { readGateStateAtEdge } from "@/lib/early-access/edge-gate";
 
 const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+/** TEMPORARY: isian pengukuran performa, dihapus setelah angka terkumpul. */
+interface ProxyMarks {
+  authMs?: number;
+  gateMs?: number;
+  gateCache?: "hit" | "miss" | "skip";
+}
+
+interface GateCacheHolder {
+  __rzGateCache?: { at: number };
+}
 
 /**
  * Endpoint yang sengaja menerima POST tanpa Origin browser: webhook pihak
@@ -41,7 +52,11 @@ function hasSameOrigin(request: NextRequest): boolean {
   }
 }
 
-export async function proxy(request: NextRequest) {
+async function handleProxy(
+  request: NextRequest,
+  marks: ProxyMarks,
+  startedAt: number
+): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   if (
@@ -96,9 +111,11 @@ export async function proxy(request: NextRequest) {
       },
     });
 
+    const authStart = performance.now();
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    marks.authMs = performance.now() - authStart;
 
     // Jika sudah login dan mencoba buka /admin/login -> arahkan ke /admin/dashboard
     if (pathname === "/admin/login") {
@@ -129,7 +146,12 @@ export async function proxy(request: NextRequest) {
   // daripada gate yang bocor beberapa detik, dan webhook pembayaran sudah
   // dikecualikan dari gate apa pun kondisinya.
   if (!isGateExempt(pathname)) {
+    const cacheEntry = (globalThis as unknown as GateCacheHolder).__rzGateCache;
+    marks.gateCache =
+      cacheEntry && Date.now() - cacheEntry.at < GATE_STATUS_TTL_MS ? "hit" : "miss";
+    const gateStart = performance.now();
     const gate = await readGateStateAtEdge();
+    marks.gateMs = performance.now() - gateStart;
 
     if (gate && gate.status !== "public") {
       const hasAccess =
@@ -160,8 +182,15 @@ export async function proxy(request: NextRequest) {
   // Route API tidak pernah melewati proxy sebelum matcher melebar. Perilakunya
   // dijaga tetap sama (tanpa Set-Cookie geo, tanpa Vary: Cookie) supaya caching
   // dan handshake webhook pembayaran tidak berubah sedikit pun.
+  // TEMPORARY: dua header pengukuran diteruskan ke route handler.
   if (pathname.startsWith("/api/")) {
-    return NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(
+      "x-rz-proxy-ms",
+      (performance.now() - startedAt).toFixed(1)
+    );
+    if (marks.gateCache) requestHeaders.set("x-rz-gate-cache", marks.gateCache);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   // Shop & general routes: handle regional detection & cookie
@@ -186,6 +215,41 @@ export async function proxy(request: NextRequest) {
   }
 
   response.headers.set("Vary", "Cookie");
+  return response;
+}
+
+/**
+ * TEMPORARY: membungkus handleProxy untuk mencatat total durasi proxy, auth,
+ * dan gate sebagai header Server-Timing. Tidak mengubah isi respons.
+ */
+export async function proxy(request: NextRequest) {
+  const startedAt = performance.now();
+  const marks: ProxyMarks = {};
+  const response = await handleProxy(request, marks, startedAt);
+
+  try {
+    const parts: string[] = [];
+    if (marks.authMs !== undefined) {
+      parts.push(`auth;dur=${marks.authMs.toFixed(1)}`);
+    }
+    if (marks.gateMs !== undefined) {
+      parts.push(
+        `gate;dur=${marks.gateMs.toFixed(1)}${marks.gateCache ? `;desc="${marks.gateCache}"` : ""}`
+      );
+    }
+    parts.push(`proxy;dur=${(performance.now() - startedAt).toFixed(1)}`);
+    const header = parts.join(", ");
+    // Route API menulis Server-Timing sendiri (proxy ikut lewat x-rz-proxy-ms);
+    // biarkan header dari handler menang agar langkah per query tidak tertimpa.
+    if (!request.nextUrl.pathname.startsWith("/api/")) {
+      response.headers.set("Server-Timing", header);
+    }
+    // Tanpa pathname: sebagian path memuat nomor order.
+    console.log(`[perf] proxy ${header}`);
+  } catch {
+    // Header respons tidak bisa diubah; abaikan.
+  }
+
   return response;
 }
 

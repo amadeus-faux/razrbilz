@@ -13,6 +13,7 @@ import { ensureConfirmationToken, readGateState } from "@/lib/early-access/gate"
 import { hashToken } from "@/lib/early-access/tokens";
 import { resendEarlyAccessTo, sendConfirmationEmail } from "@/lib/early-access/email-queue";
 import { resolveNewsletterLocale } from "@/lib/newsletter-i18n";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export const dynamic = "force-dynamic";
  * balasannya berbeda, endpoint ini jadi alat untuk memeriksa alamat mana yang
  * ada di daftar kami.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request, probe: Probe) {
   try {
     const ip = clientIp(request);
     const ipLimit = checkRateLimit(`nl-resend-ip:${ip}`, RESEND_IP_RATE_LIMIT);
@@ -58,13 +59,17 @@ export async function POST(request: Request) {
         );
       }
 
-      const accessToken = await prisma.accessToken.findUnique({
-        where: { tokenHash: accessTokenHash },
-        select: { subscriberId: true, periodId: true, expiresAt: true },
-      });
+      const accessToken = await probe.time("db_access_token", () =>
+        prisma.accessToken.findUnique({
+          where: { tokenHash: accessTokenHash },
+          select: { subscriberId: true, periodId: true, expiresAt: true },
+        })
+      );
 
       if (accessToken && accessToken.expiresAt.getTime() > Date.now()) {
-        const result = await resendEarlyAccessTo(accessToken.subscriberId, accessToken.periodId);
+        const result = await probe.time("email_access_token", () =>
+          resendEarlyAccessTo(accessToken.subscriberId, accessToken.periodId, probe)
+        );
         if (!result.success) {
           console.error(
             `[Newsletter] Kirim ulang link akses (via token) ke subscriber ${accessToken.subscriberId} gagal: ${result.message}`
@@ -88,10 +93,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const subscriber = await prisma.subscriber.findUnique({
-      where: { email },
-      select: { id: true, status: true, locale: true },
-    });
+    const subscriber = await probe.time("db_subscriber_find", () =>
+      prisma.subscriber.findUnique({
+        where: { email },
+        select: { id: true, status: true, locale: true },
+      })
+    );
 
     if (!subscriber) {
       return NextResponse.json({ success: true, code: "EMAIL_SENT" });
@@ -100,9 +107,12 @@ export async function POST(request: Request) {
     // Sudah konfirmasi: yang dibutuhkan bukan link konfirmasi lagi, melainkan
     // link masuk. Dikirim ulang hanya bila early access memang sedang berjalan.
     if (subscriber.status === "confirmed") {
-      const gate = await readGateState();
+      const gate = await probe.time("db_gate", () => readGateState());
       if (gate.status === "early_access" && gate.currentPeriodId) {
-        const result = await resendEarlyAccessTo(subscriber.id, gate.currentPeriodId);
+        const periodId = gate.currentPeriodId;
+        const result = await probe.time("email_access_token", () =>
+          resendEarlyAccessTo(subscriber.id, periodId, probe)
+        );
         if (!result.success) {
           console.error(`[Newsletter] Kirim ulang link akses ke ${email} gagal: ${result.message}`);
         }
@@ -120,14 +130,17 @@ export async function POST(request: Request) {
         ? subscriber.locale
         : resolveNewsletterLocale(cookieStore.get("user_country")?.value);
 
-    const rawToken = await ensureConfirmationToken(subscriber.id);
-    const result = await sendConfirmationEmail({
-      subscriberId: subscriber.id,
-      email,
-      locale,
-      rawToken,
-      kind: "resend_link",
-    });
+    const rawToken = await probe.time("db_token", () => ensureConfirmationToken(subscriber.id));
+    const result = await probe.time("email", () =>
+      sendConfirmationEmail({
+        subscriberId: subscriber.id,
+        email,
+        locale,
+        rawToken,
+        kind: "resend_link",
+        probe,
+      })
+    );
 
     if (!result.success) {
       console.error(`[Newsletter] Kirim ulang ke ${email} gagal: ${result.message}`);
@@ -140,3 +153,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, code: "INTERNAL_ERROR" }, { status: 500 });
   }
 }
+
+export const POST = withProbe(handlePOST);

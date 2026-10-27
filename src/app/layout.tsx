@@ -9,6 +9,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { siteOrigin } from "@/lib/site-url";
 import { BRAND_OG_IMAGE, OG_DEFAULTS } from "@/lib/seo";
 import { brandJsonLd } from "@/lib/json-ld";
+import InteractionTimingProbe from "@/components/dev/InteractionTimingProbe";
 
 // ── Tanker — single-weight display font (400/Regular only) ────────────────────
 const tanker = localFont({
@@ -77,6 +78,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* mode default "auto": hanya mengirim event di build produksi */}
         <Analytics />
         <SpeedInsights />
+        {/* TEMPORARY: pengukuran interaksi, tanpa UI */}
+        <InteractionTimingProbe />
       </body>
     </html>
   );

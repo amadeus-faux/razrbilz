@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_FALLBACK_USD_IDR } from "./pricing";
+import type { Probe } from "@/lib/perf-probe";
 
 const OPEN_ER_API_URL = "https://open.er-api.com/v6/latest/USD";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -15,17 +16,24 @@ export interface ExchangeRateInfo {
 /**
  * Fetch latest USD -> IDR exchange rate from open.er-api.com and cache in DB
  */
-export async function fetchAndCacheExchangeRate(): Promise<ExchangeRateInfo> {
+export async function fetchAndCacheExchangeRate(
+  probe?: Probe
+): Promise<ExchangeRateInfo> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    const response = await fetch(OPEN_ER_API_URL, {
-      signal: controller.signal,
-      headers: { Accept: "application/json" },
-      cache: "no-store",
-    });
-    clearTimeout(timeoutId);
+    const fetchRate = async () => {
+      const response = await fetch(OPEN_ER_API_URL, {
+        signal: controller.signal,
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      });
+      clearTimeout(timeoutId);
+      return response;
+    };
+
+    const response = probe ? await probe.time("fx_external", fetchRate) : await fetchRate();
 
     if (!response.ok) {
       throw new Error(`Exchange rate API responded with status ${response.status}`);
@@ -42,32 +50,38 @@ export async function fetchAndCacheExchangeRate(): Promise<ExchangeRateInfo> {
     const expiresAt = new Date(now.getTime() + CACHE_DURATION_MS);
 
     // Update existing API rate or create new
-    const existing = await prisma.exchangeRate.findFirst({
-      where: { isOverride: false },
-      orderBy: { updatedAt: "desc" },
-    });
+    const findExisting = () =>
+      prisma.exchangeRate.findFirst({
+        where: { isOverride: false },
+        orderBy: { updatedAt: "desc" },
+      });
+    const existing = probe ? await probe.time("db_fx_read", findExisting) : await findExisting();
 
     let saved;
     if (existing) {
-      saved = await prisma.exchangeRate.update({
-        where: { id: existing.id },
-        data: {
-          usdToIdr: idrRate,
-          source: "api",
-          updatedAt: now,
-          expiresAt,
-        },
-      });
+      const update = () =>
+        prisma.exchangeRate.update({
+          where: { id: existing.id },
+          data: {
+            usdToIdr: idrRate,
+            source: "api",
+            updatedAt: now,
+            expiresAt,
+          },
+        });
+      saved = probe ? await probe.time("db_fx_write", update) : await update();
     } else {
-      saved = await prisma.exchangeRate.create({
-        data: {
-          usdToIdr: idrRate,
-          source: "api",
-          isOverride: false,
-          updatedAt: now,
-          expiresAt,
-        },
-      });
+      const create = () =>
+        prisma.exchangeRate.create({
+          data: {
+            usdToIdr: idrRate,
+            source: "api",
+            isOverride: false,
+            updatedAt: now,
+            expiresAt,
+          },
+        });
+      saved = probe ? await probe.time("db_fx_write", create) : await create();
     }
 
     return {
@@ -125,13 +139,15 @@ export async function fetchAndCacheExchangeRate(): Promise<ExchangeRateInfo> {
  * 4. Stale DB record
  * 5. Default fallback (17,500)
  */
-export async function getActiveExchangeRateInfo(): Promise<ExchangeRateInfo> {
+export async function getActiveExchangeRateInfo(probe?: Probe): Promise<ExchangeRateInfo> {
   try {
     // 1. Check for manual override
-    const override = await prisma.exchangeRate.findFirst({
-      where: { isOverride: true },
-      orderBy: { updatedAt: "desc" },
-    });
+    const findOverride = () =>
+      prisma.exchangeRate.findFirst({
+        where: { isOverride: true },
+        orderBy: { updatedAt: "desc" },
+      });
+    const override = probe ? await probe.time("db_fx_override", findOverride) : await findOverride();
     if (override) {
       return {
         usdToIdr: override.usdToIdr,
@@ -143,13 +159,15 @@ export async function getActiveExchangeRateInfo(): Promise<ExchangeRateInfo> {
     }
 
     // 2. Check for active unexpired cache
-    const activeCache = await prisma.exchangeRate.findFirst({
-      where: {
-        isOverride: false,
-        expiresAt: { gt: new Date() },
-      },
-      orderBy: { updatedAt: "desc" },
-    });
+    const findActive = () =>
+      prisma.exchangeRate.findFirst({
+        where: {
+          isOverride: false,
+          expiresAt: { gt: new Date() },
+        },
+        orderBy: { updatedAt: "desc" },
+      });
+    const activeCache = probe ? await probe.time("db_fx_active", findActive) : await findActive();
     if (activeCache) {
       return {
         usdToIdr: activeCache.usdToIdr,
@@ -161,7 +179,7 @@ export async function getActiveExchangeRateInfo(): Promise<ExchangeRateInfo> {
     }
 
     // 3. Cache expired or not found -> fetch fresh
-    return await fetchAndCacheExchangeRate();
+    return await fetchAndCacheExchangeRate(probe);
   } catch (error) {
     console.error("[exchange-rate] Error resolving active rate:", error);
     return {
@@ -177,8 +195,8 @@ export async function getActiveExchangeRateInfo(): Promise<ExchangeRateInfo> {
 /**
  * Convenience helper returning just the number (used in pricing calculations)
  */
-export async function getActiveExchangeRate(): Promise<number> {
-  const info = await getActiveExchangeRateInfo();
+export async function getActiveExchangeRate(probe?: Probe): Promise<number> {
+  const info = await getActiveExchangeRateInfo(probe);
   return info.usdToIdr;
 }
 

@@ -8,6 +8,7 @@ import { getActiveExchangeRate } from "@/lib/exchange-rate";
 import { MAX_QTY_PER_PRODUCT } from "@/lib/order-limits";
 import { reportHandledError } from "@/lib/sentry";
 import { checkRateLimit, clientIp } from "@/lib/rate-limit";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 import {
   getServerShippingRates,
   getInternationalShippingCost,
@@ -40,7 +41,7 @@ class CheckoutError extends Error {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request, probe: Probe) {
   try {
     // Dibatasi sebelum body di-parse: percobaan berulang tidak boleh sampai
     // menyentuh DB/quote kurir. In-memory per instance, jadi ini gesekan
@@ -122,7 +123,7 @@ export async function POST(request: Request) {
     }
 
     const orderCountry = (country || "ID").trim().toUpperCase();
-    const activeRate = await getActiveExchangeRate();
+    const activeRate = await probe.time("fx", () => getActiveExchangeRate(probe));
     const orderNumber = generateOrderNumber();
     const EXPIRY_MINUTES = 60;
 
@@ -201,33 +202,40 @@ export async function POST(request: Request) {
       // 2.5: quote pakai berat asli per produk dari DB (bukan hardcode 350 g),
       // dijumlahkan sesuai quantity tiap baris item. Dimensi ikut dikirim supaya
       // berat volumetrik yang dipakai saat menagih = yang saat menampilkan tarif.
-      const quoteProducts = await prisma.product.findMany({
-        where: { id: { in: Array.from(productQuantities.keys()) } },
-        select: {
-          id: true,
-          name: true,
-          weightGrams: true,
-          lengthCm: true,
-          widthCm: true,
-          heightCm: true,
-        },
-      });
+      const quoteProducts = await probe.time("db_quote_products", () =>
+        prisma.product.findMany({
+          where: { id: { in: Array.from(productQuantities.keys()) } },
+          select: {
+            id: true,
+            name: true,
+            weightGrams: true,
+            lengthCm: true,
+            widthCm: true,
+            heightCm: true,
+          },
+        })
+      );
       const quoteProductById = new Map(quoteProducts.map((p) => [p.id, p]));
-      const quote = await getServerShippingRates({
-        country: orderCountry,
-        destinationPostalCode: postalCode,
-        items: items.map((it) => {
-          const p = quoteProductById.get(it.productId);
-          return {
-            name: p?.name,
-            quantity: it.quantity,
-            weightGrams: p?.weightGrams,
-            lengthCm: p?.lengthCm,
-            widthCm: p?.widthCm,
-            heightCm: p?.heightCm,
-          };
-        }),
-      });
+      const quote = await probe.time("shipping_quote", () =>
+        getServerShippingRates(
+          {
+            country: orderCountry,
+            destinationPostalCode: postalCode,
+            items: items.map((it) => {
+              const p = quoteProductById.get(it.productId);
+              return {
+                name: p?.name,
+                quantity: it.quantity,
+                weightGrams: p?.weightGrams,
+                lengthCm: p?.lengthCm,
+                widthCm: p?.widthCm,
+                heightCm: p?.heightCm,
+              };
+            }),
+          },
+          probe
+        )
+      );
       if (!quote.ok) {
         return NextResponse.json(
           { error: quote.error, errorKey: quote.errorCode },
@@ -253,15 +261,18 @@ export async function POST(request: Request) {
 
     // 2. Atomically verify stock, calculate server prices, decrement stock, and create order
     console.log(`[Checkout] Processing order ${orderNumber} in atomic transaction for region ${orderCountry}...`);
-    const { order, isPreOrder, validatedItems, serverTotal } = await prisma.$transaction(async (tx) => {
+    const { order, isPreOrder, validatedItems, serverTotal } = await probe.time("db_tx", () =>
+      prisma.$transaction(async (tx) => {
       const productMap = new Map<string, { id: string; name: string; price: number; stock: number; isPreOrder: boolean; images: string[] }>();
 
       // Verify and atomically decrement stock for each unique product
       for (const [productId, requiredQty] of productQuantities.entries()) {
-        const product = await tx.product.findUnique({
-          where: { id: productId },
-          select: { id: true, name: true, price: true, stock: true, isActive: true, isPreOrder: true, images: true },
-        });
+        const product = await probe.time("db_tx_lookup", () =>
+          tx.product.findUnique({
+            where: { id: productId },
+            select: { id: true, name: true, price: true, stock: true, isActive: true, isPreOrder: true, images: true },
+          })
+        );
 
         if (!product || !product.isActive) {
           throw new CheckoutError(
@@ -279,16 +290,18 @@ export async function POST(request: Request) {
         }
 
         // Atomic update with stock >= requiredQty condition to prevent race conditions
-        const updateResult = await tx.product.updateMany({
-          where: {
-            id: productId,
-            stock: { gte: requiredQty },
-            isActive: true,
-          },
-          data: {
-            stock: { decrement: requiredQty },
-          },
-        });
+        const updateResult = await probe.time("db_tx_update", () =>
+          tx.product.updateMany({
+            where: {
+              id: productId,
+              stock: { gte: requiredQty },
+              isActive: true,
+            },
+            data: {
+              stock: { decrement: requiredQty },
+            },
+          })
+        );
 
         if (updateResult.count === 0) {
           throw new CheckoutError(
@@ -330,7 +343,8 @@ export async function POST(request: Request) {
       const orderIsPreOrder = Array.from(productMap.values()).some((p) => p.isPreOrder);
       const expiredAt = new Date(Date.now() + EXPIRY_MINUTES * 60 * 1000);
 
-      const createdOrder = await tx.order.create({
+      const createdOrder = await probe.time("db_tx_create", () =>
+        tx.order.create({
         data: {
           orderNumber,
           customerName,
@@ -365,7 +379,8 @@ export async function POST(request: Request) {
             })),
           },
         },
-      });
+      })
+      );
 
       return {
         order: createdOrder,
@@ -373,7 +388,8 @@ export async function POST(request: Request) {
         validatedItems: resolvedItems,
         serverTotal: computedTotal,
       };
-    });
+      })
+    );
 
     const orderId = order.id;
     console.log(`[Checkout] Order ${orderNumber} (ID: ${order.id}) created and stock decremented successfully.`);
@@ -406,36 +422,40 @@ export async function POST(request: Request) {
         });
       }
 
-      transaction = await createDuitkuTransaction({
-        merchantOrderId: orderNumber,
-        paymentAmount: serverTotal,
-        paymentMethod: chosenMethod,
-        productDetails: `Pembayaran pesanan RAZRBILZ ${orderNumber}`,
-        customerName,
-        email,
-        phoneNumber: phone,
-        address,
-        city,
-        postalCode,
-        countryCode: country || "ID",
-        items: duitkuItems,
-        callbackUrl: `${appUrl}/api/payments/duitku/callback`,
-        returnUrl: `${appUrl}/payment/instructions/${encodeURIComponent(orderNumber)}`,
-        expiryPeriod: EXPIRY_MINUTES,
-      });
+      transaction = await probe.time("duitku_inquiry", () =>
+        createDuitkuTransaction({
+          merchantOrderId: orderNumber,
+          paymentAmount: serverTotal,
+          paymentMethod: chosenMethod,
+          productDetails: `Pembayaran pesanan RAZRBILZ ${orderNumber}`,
+          customerName,
+          email,
+          phoneNumber: phone,
+          address,
+          city,
+          postalCode,
+          countryCode: country || "ID",
+          items: duitkuItems,
+          callbackUrl: `${appUrl}/api/payments/duitku/callback`,
+          returnUrl: `${appUrl}/payment/instructions/${encodeURIComponent(orderNumber)}`,
+          expiryPeriod: EXPIRY_MINUTES,
+        })
+      );
 
-      await prisma.order.update({
-        where: { orderNumber },
-        data: {
-          duitkuReference: transaction.reference,
-          duitkuPaymentMethod: chosenMethod,
-          duitkuPaymentUrl: transaction.paymentUrl || null,
-          duitkuVaNumber: transaction.vaNumber || null,
-          duitkuQrString: transaction.qrString || null,
-          duitkuPaymentCode: transaction.paymentCode || null,
-          duitkuStatusMessage: transaction.statusMessage,
-        },
-      });
+      await probe.time("db_order_update", () =>
+        prisma.order.update({
+          where: { orderNumber },
+          data: {
+            duitkuReference: transaction!.reference,
+            duitkuPaymentMethod: chosenMethod,
+            duitkuPaymentUrl: transaction!.paymentUrl || null,
+            duitkuVaNumber: transaction!.vaNumber || null,
+            duitkuQrString: transaction!.qrString || null,
+            duitkuPaymentCode: transaction!.paymentCode || null,
+            duitkuStatusMessage: transaction!.statusMessage,
+          },
+        })
+      );
       // Diagnostik: field apa saja yang DITAK-tidak dikembalikan Duitku per metode.
       // Membantu memastikan retail (Indomaret/Alfamart) mengembalikan paymentCode
       // vs vaNumber, tanpa membocorkan nilai sensitif ke log.
@@ -491,18 +511,23 @@ export async function POST(request: Request) {
     // Email "pesanan diterima + cara bayar". Sengaja di-await: deliver() tidak
     // pernah melempar, jadi kegagalan Resend hanya tercatat di log dan customer
     // tetap menerima instruksi pembayaran di layar.
-    await sendOrderReceivedEmail({
-      orderId,
-      orderNumber,
-      customerName,
-      customerEmail: email,
-      country: orderCountry,
-      items: validatedItems,
-      total: serverTotal,
-      shippingCost: serverShippingCost,
-      courier,
-      expiresAt: order.expiredAt,
-    });
+    await probe.time("email_order_received", () =>
+      sendOrderReceivedEmail(
+        {
+          orderId,
+          orderNumber,
+          customerName,
+          customerEmail: email,
+          country: orderCountry,
+          items: validatedItems,
+          total: serverTotal,
+          shippingCost: serverShippingCost,
+          courier,
+          expiresAt: order.expiredAt,
+        },
+        probe
+      )
+    );
 
     return NextResponse.json({
       success: true,
@@ -549,3 +574,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = withProbe(handlePOST);

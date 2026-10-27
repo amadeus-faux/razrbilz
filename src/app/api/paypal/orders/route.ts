@@ -14,6 +14,7 @@ import {
   INTERNATIONAL_COURIER,
 } from "@/lib/shipping-cost";
 import { createPayPalOrder, idrToUsd, toPayPalLocale } from "@/lib/paypal";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 
 interface PayPalCheckoutItem {
   productId: string;
@@ -40,7 +41,7 @@ class PayPalRouteError extends Error {
 const EXPIRY_MINUTES = 60;
 const RATE_DRIFT_TOLERANCE = 0.02;
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request, probe: Probe) {
   let createdOrderId: string | null = null;
   const productQuantities = new Map<string, number>();
 
@@ -122,7 +123,7 @@ export async function POST(request: Request) {
     }
 
     const orderCountry = (country || "ID").trim().toUpperCase();
-    const activeRate = await getActiveExchangeRate();
+    const activeRate = await probe.time("fx", () => getActiveExchangeRate(probe));
 
     // Setiap order PayPal dikonversi ke USD, jadi kurs yang dilihat client harus
     // masih segar. Bila admin baru mengubah kurs, tolak dan minta refresh.
@@ -145,33 +146,40 @@ export async function POST(request: Request) {
       if (courierCode === INTERNATIONAL_COURIER.courier_code) {
         throw new PayPalRouteError("INVALID_COURIER");
       }
-      const quoteProducts = await prisma.product.findMany({
-        where: { id: { in: Array.from(productQuantities.keys()) } },
-        select: {
-          id: true,
-          name: true,
-          weightGrams: true,
-          lengthCm: true,
-          widthCm: true,
-          heightCm: true,
-        },
-      });
+      const quoteProducts = await probe.time("db_quote_products", () =>
+        prisma.product.findMany({
+          where: { id: { in: Array.from(productQuantities.keys()) } },
+          select: {
+            id: true,
+            name: true,
+            weightGrams: true,
+            lengthCm: true,
+            widthCm: true,
+            heightCm: true,
+          },
+        })
+      );
       const quoteProductById = new Map(quoteProducts.map((p) => [p.id, p]));
-      const quote = await getServerShippingRates({
-        country: orderCountry,
-        destinationPostalCode: postalCode,
-        items: items.map((it) => {
-          const p = quoteProductById.get(it.productId);
-          return {
-            name: p?.name,
-            quantity: it.quantity,
-            weightGrams: p?.weightGrams,
-            lengthCm: p?.lengthCm,
-            widthCm: p?.widthCm,
-            heightCm: p?.heightCm,
-          };
-        }),
-      });
+      const quote = await probe.time("shipping_quote", () =>
+        getServerShippingRates(
+          {
+            country: orderCountry,
+            destinationPostalCode: postalCode,
+            items: items.map((it) => {
+              const p = quoteProductById.get(it.productId);
+              return {
+                name: p?.name,
+                quantity: it.quantity,
+                weightGrams: p?.weightGrams,
+                lengthCm: p?.lengthCm,
+                widthCm: p?.widthCm,
+                heightCm: p?.heightCm,
+              };
+            }),
+          },
+          probe
+        )
+      );
       if (!quote.ok) {
         throw new PayPalRouteError("INVALID_COURIER");
       }
@@ -189,27 +197,32 @@ export async function POST(request: Request) {
     const orderNumber = generateOrderNumber();
 
     // Verifikasi stok + harga server + decrement atomik, lalu buat order pending.
-    const created = await prisma.$transaction(async (tx) => {
+    const created = await probe.time("db_tx", () =>
+      prisma.$transaction(async (tx) => {
       const productMap = new Map<
         string,
         { id: string; name: string; price: number; stock: number; isPreOrder: boolean; images: string[] }
       >();
 
       for (const [productId, requiredQty] of productQuantities.entries()) {
-        const product = await tx.product.findUnique({
-          where: { id: productId },
-          select: { id: true, name: true, price: true, stock: true, isActive: true, isPreOrder: true, images: true },
-        });
+        const product = await probe.time("db_tx_lookup", () =>
+          tx.product.findUnique({
+            where: { id: productId },
+            select: { id: true, name: true, price: true, stock: true, isActive: true, isPreOrder: true, images: true },
+          })
+        );
         if (!product || !product.isActive) {
           throw new PayPalRouteError("INVALID_PRODUCT");
         }
         if (product.stock < requiredQty) {
           throw new PayPalRouteError("OUT_OF_STOCK", { name: product.name });
         }
-        const updateResult = await tx.product.updateMany({
-          where: { id: productId, stock: { gte: requiredQty }, isActive: true },
-          data: { stock: { decrement: requiredQty } },
-        });
+        const updateResult = await probe.time("db_tx_update", () =>
+          tx.product.updateMany({
+            where: { id: productId, stock: { gte: requiredQty }, isActive: true },
+            data: { stock: { decrement: requiredQty } },
+          })
+        );
         if (updateResult.count === 0) {
           throw new PayPalRouteError("OUT_OF_STOCK", { name: product.name });
         }
@@ -240,62 +253,68 @@ export async function POST(request: Request) {
       const expiredAt = new Date(Date.now() + EXPIRY_MINUTES * 60 * 1000);
       const usdAmount = idrToUsd(computedTotal, activeRate);
 
-      const order = await tx.order.create({
-        data: {
-          orderNumber,
-          customerName,
-          email,
-          phone,
-          country: orderCountry,
-          priceRegion: orderCountry,
-          exchangeRate: isInternational(orderCountry) ? activeRate : null,
-          province: province || "",
-          stateProvince: stateProvince || null,
-          city,
-          district: district || "",
-          shippingAddress: address,
-          apartment: apartment || null,
-          postalCode,
-          courier,
-          shippingCost: serverShippingCost,
-          subtotal: serverSubtotal,
-          total: computedTotal,
-          paymentStatus: "pending",
-          orderStatus: "order_received",
-          expiredAt,
-          isPreOrder: orderIsPreOrder,
-          paypalAmountUsd: usdAmount,
-          paypalCurrency: "USD",
-          paypalExchangeRate: activeRate,
-          items: {
-            create: resolvedItems.map((item) => ({
-              productId: item.productId,
-              size: item.size,
-              quantity: item.quantity,
-              priceAtBuy: item.priceAtBuy,
-              productNameSnapshot: item.name,
-              productImageSnapshot: item.image,
-            })),
+      const order = await probe.time("db_tx_create", () =>
+        tx.order.create({
+          data: {
+            orderNumber,
+            customerName,
+            email,
+            phone,
+            country: orderCountry,
+            priceRegion: orderCountry,
+            exchangeRate: isInternational(orderCountry) ? activeRate : null,
+            province: province || "",
+            stateProvince: stateProvince || null,
+            city,
+            district: district || "",
+            shippingAddress: address,
+            apartment: apartment || null,
+            postalCode,
+            courier,
+            shippingCost: serverShippingCost,
+            subtotal: serverSubtotal,
+            total: computedTotal,
+            paymentStatus: "pending",
+            orderStatus: "order_received",
+            expiredAt,
+            isPreOrder: orderIsPreOrder,
+            paypalAmountUsd: usdAmount,
+            paypalCurrency: "USD",
+            paypalExchangeRate: activeRate,
+            items: {
+              create: resolvedItems.map((item) => ({
+                productId: item.productId,
+                size: item.size,
+                quantity: item.quantity,
+                priceAtBuy: item.priceAtBuy,
+                productNameSnapshot: item.name,
+                productImageSnapshot: item.image,
+              })),
+            },
           },
-        },
-      });
+        })
+      );
 
       return { order, usdAmount };
-    });
+      })
+    );
 
     createdOrderId = created.order.id;
+    const finalOrderId = created.order.id;
 
     // Buat order di PayPal. Bila gagal, kompensasi (kembalikan stok + hapus order)
     // supaya tidak ada stok terkunci tanpa pembayaran.
     let approveUrl: string | null = null;
     let paypalOrderId = "";
     try {
-      const pp = await createPayPalOrder({
-        amountUsd: created.usdAmount,
-        currency: "USD",
-        orderNumber,
-        locale: toPayPalLocale(resolveLocale(orderCountry)),
-      });
+      const pp = await probe.time("paypal_create", () =>
+        createPayPalOrder({
+          amountUsd: created.usdAmount,
+          currency: "USD",
+          orderNumber,
+          locale: toPayPalLocale(resolveLocale(orderCountry)),
+        })
+      );
       paypalOrderId = pp.id;
       approveUrl = pp.approveUrl;
     } catch (paypalError) {
@@ -309,10 +328,12 @@ export async function POST(request: Request) {
       throw new PayPalRouteError("ORDER_CREATE_FAILED", undefined, 502);
     }
 
-    await prisma.order.update({
-      where: { id: createdOrderId },
-      data: { paypalOrderId },
-    });
+    await probe.time("db_order_update", () =>
+      prisma.order.update({
+        where: { id: finalOrderId },
+        data: { paypalOrderId },
+      })
+    );
 
     // Simpan bahasa checkout yang otoritatif (dari negara kirim) supaya halaman
     // /paypal/return menampilkan bahasa yang sama setelah pulang dari PayPal.
@@ -347,6 +368,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ code: "ORDER_CREATE_FAILED" }, { status: 500 });
   }
 }
+
+export const POST = withProbe(handlePOST);
 
 /** Kembalikan stok lalu hapus order pending. Kegagalan kompensasi di-log keras. */
 async function compensate(

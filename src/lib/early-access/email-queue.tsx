@@ -7,6 +7,7 @@ import { NEWSLETTER_COPY } from "@/lib/newsletter-i18n";
 import { EMAIL_RATE_LIMITED_ERROR, PERIOD_DURATION_DAYS } from "./constants";
 import { issueAccessToken } from "./gate";
 import { signUnsubscribeToken, tokenMaxUses } from "./tokens";
+import type { Probe } from "@/lib/perf-probe";
 
 /**
  * Pengiriman email newsletter + antrean blast early access.
@@ -56,15 +57,20 @@ export async function sendConfirmationEmail(p: {
   locale: Locale;
   rawToken: string;
   kind: "confirmation" | "resend_link";
+  probe?: Probe;
 }): Promise<EmailResult> {
   const base = siteOrigin();
   const confirmUrl = `${base}/newsletter/confirm?token=${encodeURIComponent(p.rawToken)}`;
   const copy = NEWSLETTER_COPY[p.locale].email.confirmation;
-  const unsubscribeUrl = await unsubscribeUrlFor(p.subscriberId);
+  const unsubscribeUrl = p.probe
+    ? await p.probe.time("email_unsub", () => unsubscribeUrlFor(p.subscriberId))
+    : await unsubscribeUrlFor(p.subscriberId);
 
-  const row = await prisma.emailSend.create({
-    data: { subscriberId: p.subscriberId, kind: p.kind, status: "pending" },
-  });
+  const createRow = () =>
+    prisma.emailSend.create({
+      data: { subscriberId: p.subscriberId, kind: p.kind, status: "pending" },
+    });
+  const row = p.probe ? await p.probe.time("db_email_row", createRow) : await createRow();
 
   const result = await deliver({
     to: p.email,
@@ -77,17 +83,21 @@ export async function sendConfirmationEmail(p: {
         unsubscribeUrl={unsubscribeUrl}
       />
     ),
+    probe: p.probe,
   });
 
-  await prisma.emailSend.update({
-    where: { id: row.id },
-    data: {
-      status: result.success ? "sent" : "failed",
-      providerMessageId: result.id ?? null,
-      error: result.success ? null : result.message,
-      sentAt: result.success ? new Date() : null,
-    },
-  });
+  const updateRow = () =>
+    prisma.emailSend.update({
+      where: { id: row.id },
+      data: {
+        status: result.success ? "sent" : "failed",
+        providerMessageId: result.id ?? null,
+        error: result.success ? null : result.message,
+        sentAt: result.success ? new Date() : null,
+      },
+    });
+  if (p.probe) await p.probe.time("db_email_update", updateRow);
+  else await updateRow();
 
   return result;
 }
@@ -175,10 +185,13 @@ async function sendEarlyAccessEmail(p: {
   locale: Locale;
   periodId: string;
   expiresAt: Date;
+  probe?: Probe;
 }): Promise<EmailResult> {
   const rawToken = await issueAccessToken(p.subscriberId, p.periodId, p.expiresAt);
   const accessUrl = `${siteOrigin()}/early?token=${encodeURIComponent(rawToken)}`;
-  const unsubscribeUrl = await unsubscribeUrlFor(p.subscriberId);
+  const unsubscribeUrl = p.probe
+    ? await p.probe.time("email_unsub", () => unsubscribeUrlFor(p.subscriberId))
+    : await unsubscribeUrlFor(p.subscriberId);
   const copy = NEWSLETTER_COPY[p.locale].email.earlyAccess;
 
   return deliver({
@@ -194,6 +207,7 @@ async function sendEarlyAccessEmail(p: {
         unsubscribeUrl={unsubscribeUrl}
       />
     ),
+    probe: p.probe,
   });
 }
 
@@ -204,15 +218,20 @@ async function sendEarlyAccessEmail(p: {
  */
 export async function resendEarlyAccessTo(
   subscriberId: string,
-  periodId: string
+  periodId: string,
+  probe?: Probe
 ): Promise<EmailResult> {
-  const [period, subscriber] = await Promise.all([
-    prisma.earlyAccessPeriod.findUnique({ where: { id: periodId } }),
-    prisma.subscriber.findUnique({
-      where: { id: subscriberId },
-      select: { email: true, locale: true, status: true },
-    }),
-  ]);
+  const readPeriodAndSubscriber = () =>
+    Promise.all([
+      prisma.earlyAccessPeriod.findUnique({ where: { id: periodId } }),
+      prisma.subscriber.findUnique({
+        where: { id: subscriberId },
+        select: { email: true, locale: true, status: true },
+      }),
+    ]);
+  const [period, subscriber] = probe
+    ? await probe.time("db_resend_read", readPeriodAndSubscriber)
+    : await readPeriodAndSubscriber();
 
   if (!period || !subscriber || subscriber.status !== "confirmed") {
     return { success: false, message: "Tidak ada periode aktif atau subscriber tidak valid" };
@@ -227,26 +246,30 @@ export async function resendEarlyAccessTo(
     locale: subscriber.locale === "en" ? "en" : "id",
     periodId,
     expiresAt,
+    probe,
   });
 
   const rateLimited = !result.success && isRateLimited(result.message);
 
-  await prisma.emailSend.updateMany({
-    where: { subscriberId, periodId, kind: "early_access" },
-    data: rateLimited
-      ? {
-          status: "pending",
-          error: EMAIL_RATE_LIMITED_ERROR,
-          providerMessageId: null,
-          sentAt: null,
-        }
-      : {
-          status: result.success ? "sent" : "failed",
-          providerMessageId: result.id ?? null,
-          error: result.success ? null : result.message,
-          sentAt: result.success ? new Date() : null,
-        },
-  });
+  const updateRows = () =>
+    prisma.emailSend.updateMany({
+      where: { subscriberId, periodId, kind: "early_access" },
+      data: rateLimited
+        ? {
+            status: "pending",
+            error: EMAIL_RATE_LIMITED_ERROR,
+            providerMessageId: null,
+            sentAt: null,
+          }
+        : {
+            status: result.success ? "sent" : "failed",
+            providerMessageId: result.id ?? null,
+            error: result.success ? null : result.message,
+            sentAt: result.success ? new Date() : null,
+          },
+    });
+  if (probe) await probe.time("db_email_update", updateRows);
+  else await updateRows();
 
   return result;
 }

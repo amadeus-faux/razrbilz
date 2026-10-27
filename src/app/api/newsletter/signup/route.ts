@@ -13,6 +13,7 @@ import { isValidEmail, normalizeEmail } from "@/lib/early-access/db";
 import { ensureConfirmationToken } from "@/lib/early-access/gate";
 import { sendConfirmationEmail } from "@/lib/early-access/email-queue";
 import { resolveNewsletterLocale } from "@/lib/newsletter-i18n";
+import { withProbe, type Probe } from "@/lib/perf-probe";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export const dynamic = "force-dynamic";
  * Honeypot mengikuti pola form Contact Us: bot yang mengisi semua field akan
  * mengisi field tersembunyi ini, dan kami membalas sukses tanpa menyimpan apa pun.
  */
-export async function POST(request: Request) {
+async function handlePOST(request: Request, probe: Probe) {
   try {
     const ip = clientIp(request);
     const ipLimit = checkRateLimit(`nl-signup-ip:${ip}`, SIGNUP_IP_RATE_LIMIT);
@@ -59,33 +60,43 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const locale = resolveNewsletterLocale(cookieStore.get("user_country")?.value);
 
-    let subscriber = await prisma.subscriber.findUnique({ where: { email } });
+    let subscriber = await probe.time("db_subscriber_find", () =>
+      prisma.subscriber.findUnique({ where: { email } })
+    );
 
     if (!subscriber) {
-      subscriber = await prisma.subscriber.create({
-        data: { email, locale, status: "pending" },
-      });
+      subscriber = await probe.time("db_subscriber_create", () =>
+        prisma.subscriber.create({
+          data: { email, locale, status: "pending" },
+        })
+      );
     } else if (subscriber.status === "unsubscribed") {
       // Mendaftar lagi = minta dimasukkan kembali. Slot lama tidak dikembalikan:
       // slot hanya diberikan lewat fungsi konfirmasi atomik.
-      await prisma.subscriber.update({
-        where: { id: subscriber.id },
-        data: { status: "pending", unsubscribedAt: null, locale },
-      });
+      await probe.time("db_subscriber_update", () =>
+        prisma.subscriber.update({
+          where: { id: subscriber!.id },
+          data: { status: "pending", unsubscribedAt: null, locale },
+        })
+      );
     }
 
     if (subscriber.status === "confirmed") {
       return NextResponse.json({ success: true, code: "EMAIL_SENT" });
     }
 
-    const rawToken = await ensureConfirmationToken(subscriber.id);
-    const result = await sendConfirmationEmail({
-      subscriberId: subscriber.id,
-      email,
-      locale,
-      rawToken,
-      kind: "confirmation",
-    });
+    const subscriberId = subscriber.id;
+    const rawToken = await probe.time("db_token", () => ensureConfirmationToken(subscriberId));
+    const result = await probe.time("email", () =>
+      sendConfirmationEmail({
+        subscriberId,
+        email,
+        locale,
+        rawToken,
+        kind: "confirmation",
+        probe,
+      })
+    );
 
     if (!result.success) {
       console.error(`[Newsletter] Email konfirmasi ke ${email} gagal: ${result.message}`);
@@ -101,3 +112,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export const POST = withProbe(handlePOST);

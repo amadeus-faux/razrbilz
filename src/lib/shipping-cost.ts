@@ -1,6 +1,7 @@
 import { getShippingRates, type BiteshipCourierRate } from "@/lib/biteship";
 import { getOriginPostalCode } from "@/lib/origin";
 import { resolveDimensionsCm } from "@/lib/package-dimensions";
+import type { Probe } from "@/lib/perf-probe";
 
 /**
  * Sumber tunggal (server-authoritative) untuk ongkos pengiriman.
@@ -142,7 +143,8 @@ export type ShippingRatesResult =
  *   tidak tersedia/gagal. Client tidak pernah memasok harga.
  */
 export async function getServerShippingRates(
-  params: ShippingRatesParams
+  params: ShippingRatesParams,
+  probe?: Probe
 ): Promise<ShippingRatesResult> {
   const { country, destinationPostalCode, items, couriers } = params;
 
@@ -190,12 +192,14 @@ export async function getServerShippingRates(
   }
 
   try {
-    const rates = await getShippingRates({
-      originPostalCode,
-      destinationPostalCode: cleanPostal,
-      items: rateItems,
-      couriers,
-    });
+    const fetchRates = () =>
+      getShippingRates({
+        originPostalCode,
+        destinationPostalCode: cleanPostal,
+        items: rateItems,
+        couriers,
+      });
+    const rates = probe ? await probe.time("biteship_rates", fetchRates) : await fetchRates();
     if (rates && rates.length > 0) {
       return { ok: true, rates };
     }
