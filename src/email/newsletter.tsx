@@ -149,14 +149,12 @@ export function ConfirmationEmail({
 export function EarlyAccessEmail({
   locale,
   accessUrl,
-  slotNumber,
   maxUses,
   endsAt,
   unsubscribeUrl,
 }: {
   locale: Locale;
   accessUrl: string;
-  slotNumber: number | null;
   maxUses: number;
   endsAt: Date | string | null;
   unsubscribeUrl: string | null;
@@ -170,9 +168,6 @@ export function EarlyAccessEmail({
       <Text className="sectionHeading" style={emailStyles.sectionHeading}>
         {c.heading}
       </Text>
-      {slotNumber ? (
-        <Text style={{ ...emailStyles.body, marginBottom: 12 }}>{c.slotLine(slotNumber)}</Text>
-      ) : null}
       <Text style={{ ...emailStyles.body, marginBottom: 24 }}>{c.body}</Text>
 
       <Section style={{ textAlign: "center" }}>

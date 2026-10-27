@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { EARLY_ACCESS_CAP } from "./constants";
 import { hashToken } from "./tokens";
 
 /**
@@ -9,21 +8,6 @@ import { hashToken } from "./tokens";
  * fungsi SQL `confirm_and_assign_slot` yang mengunci baris dan menghitung slot
  * dalam satu transaksi. Dua konfirmasi serentak tidak bisa mendapat nomor sama.
  */
-
-export interface SlotStats {
-  taken: number;
-  remaining: number;
-  total: number;
-}
-
-export async function getSlotStats(): Promise<SlotStats> {
-  const taken = await prisma.subscriber.count({ where: { slotNumber: { not: null } } });
-  return {
-    taken,
-    remaining: Math.max(0, EARLY_ACCESS_CAP - taken),
-    total: EARLY_ACCESS_CAP,
-  };
-}
 
 export type ConfirmResult =
   | { ok: true; subscriberId: string; slotNumber: number | null; alreadyConfirmed: boolean }

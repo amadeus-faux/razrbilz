@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     }
 
     const eligible = await prisma.subscriber.count({
-      where: { status: "confirmed", slotNumber: { not: null } },
+      where: { status: "confirmed" },
     });
 
     if (declared !== eligible) {

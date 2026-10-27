@@ -8,14 +8,14 @@ import { newsletterCopy } from "@/lib/newsletter-i18n";
 
 type Result =
   | { kind: "loading" }
-  | { kind: "confirmed"; slotNumber: number | null; alreadyConfirmed: boolean }
+  | { kind: "confirmed" }
   | { kind: "invalid" }
   | { kind: "unsubscribed" }
   | { kind: "error" };
 
 /**
  * Halaman tujuan link konfirmasi email. Pemanggilan API dilakukan sekali;
- * token dikonfirmasi di server secara atomik (slot dikunci di sana).
+ * token dikonfirmasi di server secara atomik.
  */
 export default function ConfirmClient({ token, locale }: { token: string; locale: Locale }) {
   const t = newsletterCopy(locale).confirm;
@@ -39,17 +39,11 @@ export default function ConfirmClient({ token, locale }: { token: string; locale
         });
         const data = (await res.json().catch(() => null)) as {
           success?: boolean;
-          slotNumber?: number | null;
-          alreadyConfirmed?: boolean;
           code?: string;
         } | null;
 
         if (res.ok && data?.success) {
-          setResult({
-            kind: "confirmed",
-            slotNumber: data.slotNumber ?? null,
-            alreadyConfirmed: Boolean(data.alreadyConfirmed),
-          });
+          setResult({ kind: "confirmed" });
         } else if (data?.code === "UNSUBSCRIBED") {
           setResult({ kind: "unsubscribed" });
         } else {
@@ -62,22 +56,19 @@ export default function ConfirmClient({ token, locale }: { token: string; locale
   }, [token]);
 
   return (
-    <div className="flex w-full flex-col items-center text-center">
+    <div lang={locale} className="flex w-full flex-col items-center text-center">
       {result.kind === "loading" ? (
-        <p className="text-sm text-[var(--color-muted)]" role="status">
+        <p className="text-sm text-[var(--nw-warm)]" role="status">
           …
         </p>
       ) : null}
 
       {result.kind === "confirmed" ? (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">
-            {result.alreadyConfirmed ? t.headingAlready : t.heading}
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">
+            {t.heading}
           </h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
-            {result.slotNumber !== null ? t.slotLine(result.slotNumber) : t.noSlotLine}
-          </p>
-          <p className="mt-2 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.body}
           </p>
           <BackHome label={t.backHome} />
@@ -86,8 +77,10 @@ export default function ConfirmClient({ token, locale }: { token: string; locale
 
       {result.kind === "invalid" ? (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{t.invalidHeading}</h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">
+            {t.invalidHeading}
+          </h1>
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.invalidBody}
           </p>
           <BackHome label={t.backHome} />
@@ -96,10 +89,10 @@ export default function ConfirmClient({ token, locale }: { token: string; locale
 
       {result.kind === "unsubscribed" ? (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">
             {t.unsubscribedHeading}
           </h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.unsubscribedBody}
           </p>
           <BackHome label={t.backHome} />
@@ -107,7 +100,7 @@ export default function ConfirmClient({ token, locale }: { token: string; locale
       ) : null}
 
       {result.kind === "error" ? (
-        <p className="text-sm text-[var(--color-muted)]" role="alert">
+        <p className="text-sm text-[var(--nw-warm)]" role="alert">
           {newsletterCopy(locale).state.generic}
         </p>
       ) : null}
@@ -119,7 +112,7 @@ function BackHome({ label }: { label: string }) {
   return (
     <Link
       href="/newsletter"
-      className="mt-8 text-xs text-[var(--color-muted)] underline underline-offset-2 hover:text-[var(--color-foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
+      className="mt-8 text-xs text-[var(--nw-warm)] underline decoration-1 underline-offset-4 hover:text-[var(--nw-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
     >
       {label}
     </Link>

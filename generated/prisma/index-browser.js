@@ -297,6 +297,7 @@ exports.Prisma.GateSettingScalarFieldEnum = {
   id: 'id',
   status: 'status',
   currentPeriodId: 'currentPeriodId',
+  earlyAccessCap: 'earlyAccessCap',
   updatedBy: 'updatedBy',
   updatedAt: 'updatedAt'
 };

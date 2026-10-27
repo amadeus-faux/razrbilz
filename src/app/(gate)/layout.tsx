@@ -1,3 +1,6 @@
+import "./gate.css";
+import { instrumentSans, instrumentSerif } from "./fonts";
+
 /**
  * Layout untuk halaman gate (newsletter, konfirmasi, unsubscribe, /early).
  *
@@ -7,8 +10,8 @@
  */
 export default function GateLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen w-full overflow-x-clip bg-[var(--color-surface)] text-[var(--color-foreground)]">
-      <main className="mx-auto flex min-h-screen w-full max-w-[620px] flex-col items-center justify-center px-5 py-16">
+    <div className={`gate-shell gate-sans ${instrumentSerif.variable} ${instrumentSans.variable}`}>
+      <main className="mx-auto flex min-h-[100dvh] w-full max-w-[620px] flex-col items-center justify-center px-5 py-16">
         {children}
       </main>
     </div>

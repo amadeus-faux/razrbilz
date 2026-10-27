@@ -5,7 +5,6 @@ import { DoorOpen, Lock, MailWarning, RefreshCw, Rocket, Unlock } from "lucide-r
 
 interface GateOverview {
   status: "closed" | "early_access" | "public";
-  cap: number;
   currentPeriodId: string | null;
   period: {
     startedAt: string;
@@ -15,14 +14,13 @@ interface GateOverview {
   subscribers: {
     pending: number;
     confirmed: number;
-    withSlot: number;
     unsubscribed: number;
-    eligible: number;
   };
   sends: {
     pending: number;
     sent: number;
     failed: number;
+    pendingReason: "rate_limited" | null;
   };
   updatedBy: string | null;
   updatedAt: string | null;
@@ -51,7 +49,7 @@ const STATUS_META: Record<
 
 const CONFIRM_TEXT: Record<GateAction, string> = {
   start_early_access:
-    "Mulai periode early access baru dan kirim email akses ke seluruh subscriber eligible? Link periode lama langsung mati.",
+    "Mulai periode early access baru dan kirim email akses ke seluruh subscriber terkonfirmasi? Link periode lama langsung mati.",
   open_public:
     "Buka toko untuk semua pengunjung? Periode early access yang berjalan akan diakhiri.",
   close: "Tutup toko? Semua pengunjung tanpa akses akan diarahkan ke halaman newsletter.",
@@ -128,7 +126,7 @@ export default function GateCard() {
     try {
       const body: Record<string, unknown> = { action };
       if (action === "start_early_access" && gate) {
-        body.subscriberCount = gate.subscribers.eligible;
+        body.subscriberCount = gate.subscribers.confirmed;
       }
       const res = await fetch("/api/admin/gate", {
         method: "POST",
@@ -155,7 +153,7 @@ export default function GateCard() {
       } else if (res.status === 409 && data.code === "COUNT_CHANGED" && typeof data.eligible === "number") {
         // Jumlah berubah sejak kartu dimuat: segarkan angka, minta konfirmasi ulang.
         setGate((prev) =>
-          prev ? { ...prev, subscribers: { ...prev.subscribers, eligible: data.eligible } } : prev
+          prev ? { ...prev, subscribers: { ...prev.subscribers, confirmed: data.eligible } } : prev
         );
         if (data.gate) setGate(data.gate as GateOverview);
         setMessage({ text: data.error ?? "Jumlah subscriber berubah. Konfirmasi ulang.", type: "error" });
@@ -246,8 +244,7 @@ export default function GateCard() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-            <MiniStat label={`Slot Terisi (${gate.cap})`} value={`${gate.subscribers.withSlot}/${gate.cap}`} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
             <MiniStat label="Menunggu Konfirmasi" value={String(gate.subscribers.pending)} />
             <MiniStat label="Terkonfirmasi" value={String(gate.subscribers.confirmed)} />
             <MiniStat label="Berhenti" value={String(gate.subscribers.unsubscribed)} />
@@ -275,6 +272,11 @@ export default function GateCard() {
                   style={{ width: `${sentPercent}%` }}
                 />
               </div>
+              {gate.sends.pending > 0 && gate.sends.pendingReason === "rate_limited" ? (
+                <p className="text-[11px] text-amber-300 mt-2">
+                  {gate.sends.pending} email tertahan: batas harian Resend. Kirim ulang setelah kuota pulih.
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -306,7 +308,7 @@ export default function GateCard() {
             <div className="mt-4 p-4 rounded-xl bg-[#1c1b18] border border-[#2e2c28]">
               <p className="text-xs text-[#dedad3] leading-relaxed">
                 {pendingAction === "start_early_access"
-                  ? `${CONFIRM_TEXT[pendingAction]} Saat ini ${gate.subscribers.eligible} subscriber akan dikirimi email.`
+                  ? `${CONFIRM_TEXT[pendingAction]} Saat ini ${gate.subscribers.confirmed} subscriber akan dikirimi email.`
                   : CONFIRM_TEXT[pendingAction]}
               </p>
               <div className="flex gap-2 mt-3">

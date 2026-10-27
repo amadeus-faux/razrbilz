@@ -4,7 +4,7 @@ import { siteOrigin } from "@/lib/site-url";
 import type { Locale } from "@/lib/checkout-i18n";
 import { ConfirmationEmail, EarlyAccessEmail } from "@/email/newsletter";
 import { NEWSLETTER_COPY } from "@/lib/newsletter-i18n";
-import { PERIOD_DURATION_DAYS } from "./constants";
+import { EMAIL_RATE_LIMITED_ERROR, PERIOD_DURATION_DAYS } from "./constants";
 import { issueAccessToken } from "./gate";
 import { signUnsubscribeToken, tokenMaxUses } from "./tokens";
 
@@ -96,17 +96,25 @@ export interface DrainResult {
   sent: number;
   failed: number;
   remaining: number;
+  /** "rate_limited" bila pengiriman berhenti karena Resend menolak (429). */
+  paused: "rate_limited" | null;
 }
+
+function isRateLimited(message: string): boolean {
+  return /429|too many|rate/i.test(message);
+}
+
+type SendOutcome = "sent" | "failed" | "rate_limited";
 
 async function sendOneEarlyAccess(
   row: {
     id: string;
     subscriberId: string;
-    subscriber: { email: string; locale: string; slotNumber: number | null; status: string };
+    subscriber: { email: string; locale: string; status: string };
   },
   periodId: string,
   expiresAt: Date
-): Promise<boolean> {
+): Promise<SendOutcome> {
   const { subscriber } = row;
 
   if (subscriber.status !== "confirmed") {
@@ -114,7 +122,7 @@ async function sendOneEarlyAccess(
       where: { id: row.id },
       data: { status: "failed", error: `subscriber_${subscriber.status}` },
     });
-    return false;
+    return "failed";
   }
 
   const locale: Locale = subscriber.locale === "en" ? "en" : "id";
@@ -122,10 +130,24 @@ async function sendOneEarlyAccess(
     subscriberId: row.subscriberId,
     email: subscriber.email,
     locale,
-    slotNumber: subscriber.slotNumber,
     periodId,
     expiresAt,
   });
+
+  // 429 bukan kegagalan permanen: biarkan baris tetap pending supaya kirim
+  // ulang setelah kuota pulih memprosesnya lagi.
+  if (!result.success && isRateLimited(result.message)) {
+    await prisma.emailSend.update({
+      where: { id: row.id },
+      data: {
+        status: "pending",
+        error: EMAIL_RATE_LIMITED_ERROR,
+        providerMessageId: null,
+        sentAt: null,
+      },
+    });
+    return "rate_limited";
+  }
 
   await prisma.emailSend.update({
     where: { id: row.id },
@@ -137,7 +159,7 @@ async function sendOneEarlyAccess(
     },
   });
 
-  return result.success;
+  return result.success ? "sent" : "failed";
 }
 
 /**
@@ -151,7 +173,6 @@ async function sendEarlyAccessEmail(p: {
   subscriberId: string;
   email: string;
   locale: Locale;
-  slotNumber: number | null;
   periodId: string;
   expiresAt: Date;
 }): Promise<EmailResult> {
@@ -168,7 +189,6 @@ async function sendEarlyAccessEmail(p: {
       <EarlyAccessEmail
         locale={p.locale}
         accessUrl={accessUrl}
-        slotNumber={p.slotNumber}
         maxUses={tokenMaxUses()}
         endsAt={p.expiresAt}
         unsubscribeUrl={unsubscribeUrl}
@@ -190,7 +210,7 @@ export async function resendEarlyAccessTo(
     prisma.earlyAccessPeriod.findUnique({ where: { id: periodId } }),
     prisma.subscriber.findUnique({
       where: { id: subscriberId },
-      select: { email: true, locale: true, slotNumber: true, status: true },
+      select: { email: true, locale: true, status: true },
     }),
   ]);
 
@@ -205,19 +225,27 @@ export async function resendEarlyAccessTo(
     subscriberId,
     email: subscriber.email,
     locale: subscriber.locale === "en" ? "en" : "id",
-    slotNumber: subscriber.slotNumber,
     periodId,
     expiresAt,
   });
 
+  const rateLimited = !result.success && isRateLimited(result.message);
+
   await prisma.emailSend.updateMany({
     where: { subscriberId, periodId, kind: "early_access" },
-    data: {
-      status: result.success ? "sent" : "failed",
-      providerMessageId: result.id ?? null,
-      error: result.success ? null : result.message,
-      sentAt: result.success ? new Date() : null,
-    },
+    data: rateLimited
+      ? {
+          status: "pending",
+          error: EMAIL_RATE_LIMITED_ERROR,
+          providerMessageId: null,
+          sentAt: null,
+        }
+      : {
+          status: result.success ? "sent" : "failed",
+          providerMessageId: result.id ?? null,
+          error: result.success ? null : result.message,
+          sentAt: result.success ? new Date() : null,
+        },
   });
 
   return result;
@@ -239,7 +267,7 @@ export async function drainEarlyAccessQueue(
   const batch = opts?.batch ?? 10;
 
   const period = await prisma.earlyAccessPeriod.findUnique({ where: { id: periodId } });
-  if (!period) return { sent: 0, failed: 0, remaining: 0 };
+  if (!period) return { sent: 0, failed: 0, remaining: 0, paused: null };
 
   const expiresAt =
     period.endedAt ?? new Date(period.startedAt.getTime() + PERIOD_DURATION_DAYS * 24 * 60 * 60_000);
@@ -254,34 +282,28 @@ export async function drainEarlyAccessQueue(
       orderBy: { createdAt: "asc" },
       take: batch,
       include: {
-        subscriber: { select: { email: true, locale: true, slotNumber: true, status: true } },
+        subscriber: { select: { email: true, locale: true, status: true } },
       },
     });
     if (rows.length === 0) break;
 
     for (const row of rows) {
       if (Date.now() - startedAt >= deadlineMs) {
-        return { sent, failed, remaining: await countPending(periodId) };
+        return { sent, failed, remaining: await countPending(periodId), paused: null };
       }
 
-      // 429 Resend: tunggu lebih lama lalu coba satu kali lagi. Kegagalan lain
-      // langsung dicatat supaya tombol kirim ulang yang menangani.
-      const ok = await sendOneEarlyAccess(row, periodId, expiresAt);
-      if (ok) {
+      const outcome = await sendOneEarlyAccess(row, periodId, expiresAt);
+
+      // 429 = kuota Resend habis. Hentikan seluruh drain, jangan mencoba baris
+      // berikutnya: percobaan tambahan hanya memperpanjang penolakan. Baris
+      // tetap pending dan alasan tampil di panel admin.
+      if (outcome === "rate_limited") {
+        return { sent, failed, remaining: await countPending(periodId), paused: "rate_limited" };
+      }
+
+      if (outcome === "sent") {
         sent += 1;
       } else {
-        const record = await prisma.emailSend.findUnique({
-          where: { id: row.id },
-          select: { error: true, status: true },
-        });
-        if (record?.status === "failed" && /429|too many|rate/i.test(record.error ?? "")) {
-          await sleep(Math.max(delayMs * 3, 4_000));
-          const retryOk = await sendOneEarlyAccess(row, periodId, expiresAt);
-          if (retryOk) {
-            sent += 1;
-            continue;
-          }
-        }
         failed += 1;
       }
 
@@ -289,7 +311,7 @@ export async function drainEarlyAccessQueue(
     }
   }
 
-  return { sent, failed, remaining: await countPending(periodId) };
+  return { sent, failed, remaining: await countPending(periodId), paused: null };
 }
 
 async function countPending(periodId: string): Promise<number> {

@@ -38,11 +38,11 @@ export default function UnsubscribeClient({ token, locale }: { token: string; lo
   }
 
   return (
-    <div className="flex w-full flex-col items-center text-center">
+    <div lang={locale} className="flex w-full flex-col items-center text-center">
       {(phase === "ask" || phase === "working") && (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{t.heading}</h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">{t.heading}</h1>
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.body}
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
@@ -50,13 +50,13 @@ export default function UnsubscribeClient({ token, locale }: { token: string; lo
               type="button"
               onClick={handleUnsubscribe}
               disabled={phase === "working" || !token}
-              className="rounded-full bg-[var(--color-foreground)] px-6 py-3 text-xs uppercase tracking-[0.12em] text-[var(--color-background)] disabled:cursor-not-allowed disabled:bg-[var(--color-disabled)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
+              className="rounded-full bg-[var(--nw-ink)] px-6 py-3 text-xs uppercase tracking-[0.12em] text-[var(--nw-surface)] disabled:cursor-not-allowed disabled:bg-[var(--nw-disabled)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
             >
               {t.confirm}
             </button>
             <Link
               href="/newsletter"
-              className="rounded-full border border-[var(--color-border)] px-6 py-3 text-xs uppercase tracking-[0.12em] text-[var(--color-foreground)] hover:bg-[var(--color-background)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
+              className="rounded-full border border-[var(--nw-border)] px-6 py-3 text-xs uppercase tracking-[0.12em] text-[var(--nw-ink)] hover:bg-[var(--nw-surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
             >
               {t.cancel}
             </Link>
@@ -66,8 +66,8 @@ export default function UnsubscribeClient({ token, locale }: { token: string; lo
 
       {phase === "done" && (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{t.doneHeading}</h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">{t.doneHeading}</h1>
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.doneBody}
           </p>
         </>
@@ -75,15 +75,15 @@ export default function UnsubscribeClient({ token, locale }: { token: string; lo
 
       {phase === "invalid" && (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{t.invalidHeading}</h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">{t.invalidHeading}</h1>
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.invalidBody}
           </p>
         </>
       )}
 
       {phase === "error" && (
-        <p className="text-sm text-[var(--color-muted)]" role="alert">
+        <p className="text-sm text-[var(--nw-warm)]" role="alert">
           {newsletterCopy(locale).state.generic}
         </p>
       )}

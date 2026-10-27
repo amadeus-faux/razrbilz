@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import {
-  EARLY_ACCESS_CAP,
+  EMAIL_RATE_LIMITED_ERROR,
   PERIOD_DURATION_DAYS,
   START_EARLY_ACCESS_GUARD_MS,
   type GateStatus,
@@ -23,7 +23,12 @@ export interface GateState {
 }
 
 export async function readGateState(): Promise<GateState> {
-  const row = await prisma.gateSetting.findUnique({ where: { id: GATE_ROW_ID } });
+  // Select eksplisit: kolom cap boleh belum ada saat kode ini di-deploy
+  // sebelum migration dijalankan.
+  const row = await prisma.gateSetting.findUnique({
+    where: { id: GATE_ROW_ID },
+    select: { status: true, currentPeriodId: true },
+  });
   return {
     status: (row?.status as GateStatus) ?? "closed",
     currentPeriodId: row?.currentPeriodId ?? null,
@@ -45,6 +50,7 @@ async function writeGateStatus(
         updatedBy: changedBy,
         updatedAt: new Date(),
       },
+      select: { id: true },
     }),
     prisma.gateStatusLog.create({
       data: { status, periodId: periodId ?? null, changedBy },
@@ -116,10 +122,10 @@ export async function startEarlyAccess(changedBy: string | null): Promise<StartE
     data: { startedAt, endedAt, startedBy: changedBy },
   });
 
-  // Hanya yang benar-benar memegang slot: janji "100 orang pertama" tidak boleh
-  // diam-diam berubah jadi "semua yang konfirmasi".
+  // Semua subscriber yang sudah konfirmasi ikut, tanpa kuota dan tanpa syarat
+  // nomor slot. Nomor slot hanya jejak historis.
   const eligible = await prisma.subscriber.findMany({
-    where: { status: "confirmed", slotNumber: { not: null } },
+    where: { status: "confirmed" },
     select: { id: true },
   });
 
@@ -181,7 +187,6 @@ export async function issueAccessToken(
 
 export interface GateOverview {
   status: GateStatus;
-  cap: number;
   currentPeriodId: string | null;
   period: {
     startedAt: string;
@@ -191,15 +196,14 @@ export interface GateOverview {
   subscribers: {
     pending: number;
     confirmed: number;
-    withSlot: number;
     unsubscribed: number;
-    /** confirmed + punya slot: persis jumlah yang akan dikirimi email blast. */
-    eligible: number;
   };
   sends: {
     pending: number;
     sent: number;
     failed: number;
+    /** "rate_limited" bila antrean berhenti karena batas harian Resend. */
+    pendingReason: "rate_limited" | null;
   };
   updatedBy: string | null;
   updatedAt: string | null;
@@ -207,31 +211,41 @@ export interface GateOverview {
 }
 
 export async function getGateOverview(): Promise<GateOverview> {
-  const [row, pending, confirmed, withSlot, unsubscribed, eligible, recentHistory] = await Promise.all([
-    prisma.gateSetting.findUnique({ where: { id: GATE_ROW_ID } }),
+  const [row, pending, confirmed, unsubscribed, recentHistory] = await Promise.all([
+    prisma.gateSetting.findUnique({
+      where: { id: GATE_ROW_ID },
+      select: { status: true, currentPeriodId: true, updatedBy: true, updatedAt: true },
+    }),
     prisma.subscriber.count({ where: { status: "pending" } }),
     prisma.subscriber.count({ where: { status: "confirmed" } }),
-    prisma.subscriber.count({ where: { slotNumber: { not: null } } }),
     prisma.subscriber.count({ where: { status: "unsubscribed" } }),
-    prisma.subscriber.count({ where: { status: "confirmed", slotNumber: { not: null } } }),
     prisma.gateStatusLog.findMany({ orderBy: { changedAt: "desc" }, take: 8 }),
   ]);
 
   const periodId = row?.currentPeriodId ?? null;
   const period = periodId
-    ? await prisma.earlyAccessPeriod.findUnique({ where: { id: periodId } })
+    ? await prisma.earlyAccessPeriod.findUnique({
+        where: { id: periodId },
+        select: { startedAt: true, endedAt: true, startedBy: true },
+      })
     : null;
 
   const sendWhere = periodId ? { periodId, kind: "early_access" as const } : { kind: "early_access" as const };
-  const [sendsPending, sendsSent, sendsFailed] = await Promise.all([
+  const [sendsPending, sendsSent, sendsFailed, sendsRateLimited] = await Promise.all([
     prisma.emailSend.count({ where: { ...sendWhere, status: "pending" } }),
     prisma.emailSend.count({ where: { ...sendWhere, status: "sent" } }),
     prisma.emailSend.count({ where: { ...sendWhere, status: "failed" } }),
+    prisma.emailSend.count({
+      where: {
+        ...sendWhere,
+        status: "pending",
+        error: { startsWith: EMAIL_RATE_LIMITED_ERROR },
+      },
+    }),
   ]);
 
   return {
     status: (row?.status as GateStatus) ?? "closed",
-    cap: EARLY_ACCESS_CAP,
     currentPeriodId: periodId,
     period: period
       ? {
@@ -240,8 +254,13 @@ export async function getGateOverview(): Promise<GateOverview> {
           startedBy: period.startedBy,
         }
       : null,
-    subscribers: { pending, confirmed, withSlot, unsubscribed, eligible },
-    sends: { pending: sendsPending, sent: sendsSent, failed: sendsFailed },
+    subscribers: { pending, confirmed, unsubscribed },
+    sends: {
+      pending: sendsPending,
+      sent: sendsSent,
+      failed: sendsFailed,
+      pendingReason: sendsRateLimited > 0 ? "rate_limited" : null,
+    },
     updatedBy: row?.updatedBy ?? null,
     updatedAt: row?.updatedAt ? row.updatedAt.toISOString() : null,
     history: recentHistory.map((h) => ({

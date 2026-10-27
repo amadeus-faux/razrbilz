@@ -13,8 +13,8 @@
  *   (net 34px ke kanan), celah akhir 12px. Grup tetap di tengah stage.
  * - MUNCUL/KEMBALI: transisi antara keduanya; filter yang membentuk leher.
  *
- * Gerak hanya transform/opacity. Di prefers-reduced-motion filter dimatikan
- * dan transisi transform dihapus; tombol tetap tersembunyi di DIAM.
+ * Pemicu hanya fokus, isi, atau proses kirim. Hover tidak pernah menggeser
+ * bentuk; hover hanya menguatkan warna border.
  */
 
 .goo-stage {
@@ -36,11 +36,22 @@
   z-index: 0;
   pointer-events: none;
   overflow: visible;
+  /* Bayangan dipasang setelah filter goo, bukan di dalam filter, supaya
+     bentuk yang sudah menyatu yang diberi bayangan. */
+  filter: drop-shadow(0 1px 1px rgba(17, 17, 17, 0.05))
+    drop-shadow(0 10px 24px rgba(17, 17, 17, 0.1));
 }
 
 .goo-pill,
 .goo-circle {
-  fill: var(--color-background);
+  fill: var(--nw-surface);
+}
+
+/* Lapisan border 1px lebih besar dari lapisan putih. Warna harus opak:
+   feColorMatrix alpha 20 -8 menghapus fill transparan. Nilainya diturunkan
+   dari token bone yang sama, bukan angka warna terpisah. */
+.goo-border {
+  fill: var(--nw-border);
 }
 
 /* Pill statis saat lebar belum terukur (SSR / JS mati). Geometrinya sama
@@ -53,8 +64,11 @@
   height: 56px;
   z-index: 0;
   border-radius: 999px;
-  background: var(--color-background);
-  box-shadow: 0 6px 20px rgba(17, 17, 17, 0.08);
+  background: var(--nw-surface);
+  box-shadow:
+    0 0 0 1px var(--nw-border),
+    0 1px 1px rgba(17, 17, 17, 0.05),
+    0 10px 24px rgba(17, 17, 17, 0.1);
 }
 
 .goo-slide,
@@ -83,10 +97,14 @@
   border: 0;
   border-radius: 999px;
   background: transparent;
-  font-family: var(--font-sans);
+  font-family: var(--font-gate-sans);
   font-size: 16px;
-  color: var(--color-foreground);
+  color: var(--nw-ink);
   outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+  caret-color: var(--nw-ink);
   transform: translateX(34px);
 }
 
@@ -95,14 +113,28 @@
 }
 
 .goo-input::placeholder {
-  color: var(--color-muted);
+  color: var(--nw-warm);
   opacity: 1;
 }
 
-/* Cincin fokus mengikuti bentuk pill input, bukan kotak stage. Saat terbuka,
-   input sudah sejajar dengan pill aktif. */
+/* Chrome mengisi latar input dengan warna sistem saat autofill. Pill di
+   belakangnya putih, jadi latar autofill ditimpa putih yang sama. */
+.goo-input:-webkit-autofill,
+.goo-input:-webkit-autofill:hover,
+.goo-input:-webkit-autofill:focus,
+.goo-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--nw-ink);
+  -webkit-box-shadow: 0 0 0 1000px var(--nw-surface) inset;
+  caret-color: var(--nw-ink);
+  transition: background-color 9999s ease-out;
+}
+
+/* Fokus tidak memakai outline kotak. Border SVG berubah jadi ink, dan cincin
+   lembut 4px digambar oleh .goo-ring. */
+.goo-input:focus,
 .goo-input:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-foreground);
+  outline: none;
+  box-shadow: none;
 }
 
 .goo-btn {
@@ -128,13 +160,13 @@
   pointer-events: auto;
 }
 
+.goo-btn:focus,
 .goo-btn:focus-visible {
-  outline: 2px solid var(--color-foreground);
-  outline-offset: 3px;
+  outline: none;
 }
 
 .goo-arrow {
-  color: var(--color-foreground);
+  color: var(--nw-ink);
   opacity: 0;
   filter: blur(4px);
   transition: opacity 0.2s ease, filter 0.2s ease;
@@ -147,6 +179,24 @@
   transition: opacity 0.28s ease 0.12s, filter 0.28s ease 0.12s;
 }
 
+/* Cincin fokus 4px di luar bentuk aktif. Muncul untuk fokus keyboard maupun
+   klik, selama fokus masih di dalam stage. */
+.goo-ring {
+  position: absolute;
+  inset: -4px;
+  z-index: 2;
+  border-radius: 999px;
+  border: 4px solid rgba(17, 17, 17, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.goo-input:focus-visible ~ .goo-ring,
+.goo-btn:focus-visible ~ .goo-ring {
+  opacity: 1;
+}
+
 /* Honeypot: bot mengisinya, manusia tidak pernah melihatnya. */
 .goo-hp {
   position: absolute;
@@ -157,31 +207,17 @@
   pointer-events: none;
 }
 
-/* Hover hanya untuk perangkat yang benar-benar punya kursor. Di layar sentuh,
-   tap memicu fokus sehingga tombol tetap muncul tanpa state hover yang lengket. */
+/* Hover hanya menguatkan border. Tidak ada transform, jadi tombol tidak pernah
+   muncul sebelum input difokuskan. */
 @media (hover: hover) and (pointer: fine) {
-  .goo-stage:hover .goo-slide {
-    transform: translateX(-34px);
+  .goo-stage:hover {
+    --nw-border: color-mix(in srgb, var(--nw-ink) 55%, var(--nw-bg));
   }
+}
 
-  .goo-stage:hover .goo-circle {
-    transform: translateX(68px);
-  }
-
-  .goo-stage:hover .goo-input {
-    transform: translateX(0);
-  }
-
-  .goo-stage:hover .goo-btn {
-    transform: translateX(0);
-    pointer-events: auto;
-  }
-
-  .goo-stage:hover .goo-arrow {
-    opacity: 1;
-    filter: blur(0);
-    transition: opacity 0.28s ease 0.12s, filter 0.28s ease 0.12s;
-  }
+/* Focus mengalahkan hover: border jadi ink penuh saat input/tombol aktif. */
+.goo-stage:focus-within .goo-border {
+  fill: var(--nw-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -196,13 +232,13 @@
     transition: none;
   }
 
+  /* Tanpa filter dan tanpa gerak: hanya panah yang memudar masuk/keluar. */
   .goo-arrow {
     filter: none;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.3s ease;
   }
 
-  .goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-arrow,
-  .goo-stage:hover .goo-arrow {
-    transition: opacity 0.15s ease;
+  .goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-arrow {
+    transition: opacity 0.3s ease;
   }
 }

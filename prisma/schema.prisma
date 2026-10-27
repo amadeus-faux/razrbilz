@@ -226,6 +226,9 @@ model GateSetting {
   id              Int      @id @default(1)
   status          String   @default("closed")
   currentPeriodId String?  @map("current_period_id") @db.Uuid
+  // NULL = tanpa batas. Hanya fungsi SQL confirm_and_assign_slot yang membaca
+  // kolom ini; aplikasi tidak pernah memakainya untuk menolak pendaftar.
+  earlyAccessCap  Int?     @map("early_access_cap")
   updatedBy       String?  @map("updated_by")
   updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz()
 

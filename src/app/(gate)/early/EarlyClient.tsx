@@ -86,22 +86,24 @@ export default function EarlyClient({ token, locale }: { token: string; locale: 
     result.kind === "closed" || result.kind === "expired" || result.kind === "used" || result.kind === "invalid";
 
   return (
-    <div className="flex w-full flex-col items-center text-center">
+    <div lang={locale} className="flex w-full flex-col items-center text-center">
       {result.kind === "loading" ? (
-        <p className="text-sm text-[var(--color-muted)]" role="status">
+        <p className="text-sm text-[var(--nw-warm)]" role="status">
           …
         </p>
       ) : null}
 
       {result.kind === "granted" ? (
         <>
-          <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{t.heading}</h1>
-          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">
+          <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">
+            {t.heading}
+          </h1>
+          <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">
             {t.body}
           </p>
           <Link
             href="/"
-            className="mt-8 rounded-full bg-[var(--color-foreground)] px-8 py-3 text-xs uppercase tracking-[0.12em] text-[var(--color-background)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
+            className="mt-8 rounded-full bg-[var(--nw-ink)] px-8 py-3 text-xs uppercase tracking-[0.12em] text-[var(--nw-surface)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
           >
             {t.enter}
           </Link>
@@ -125,7 +127,7 @@ export default function EarlyClient({ token, locale }: { token: string; locale: 
       ) : null}
 
       {result.kind === "error" ? (
-        <p className="text-sm text-[var(--color-muted)]" role="alert">
+        <p className="text-sm text-[var(--nw-warm)]" role="alert">
           {copy.state.generic}
         </p>
       ) : null}
@@ -135,11 +137,11 @@ export default function EarlyClient({ token, locale }: { token: string; locale: 
           <button
             type="button"
             onClick={handleResend}
-            className="mt-8 text-xs text-[var(--color-muted)] underline underline-offset-2 hover:text-[var(--color-foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
+            className="mt-8 text-xs text-[var(--nw-warm)] underline decoration-1 underline-offset-4 hover:text-[var(--nw-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
           >
             {t.resendLink}
           </button>
-          <p className="mt-3 min-h-[1.25rem] text-xs text-[var(--color-muted)]" role="status" aria-live="polite">
+          <p className="mt-3 min-h-[1.25rem] text-xs text-[var(--nw-warm)]" role="status" aria-live="polite">
             {resendNote}
           </p>
         </>
@@ -151,8 +153,10 @@ export default function EarlyClient({ token, locale }: { token: string; locale: 
 function StateBlock({ heading, body }: { heading: string; body: string }) {
   return (
     <>
-      <h1 className="text-[clamp(1.5rem,4vw,2rem)] tracking-[0.04em]">{heading}</h1>
-      <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--color-muted)]">{body}</p>
+      <h1 className="gate-serif text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.05] tracking-[-0.01em]">
+        {heading}
+      </h1>
+      <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-[var(--nw-warm)]">{body}</p>
     </>
   );
 }

@@ -10,7 +10,7 @@ import { newsletterCopy } from "@/lib/newsletter-i18n";
 
 type Phase = "idle" | "submitting" | "sent";
 
-const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
 
 const STAGE_HEIGHT = 56;
 const GOO_PAD = 32;
@@ -24,6 +24,8 @@ const BUTTON_SHIFT = 34;
  *
  * Bentuk dan filter hidup di dalam satu <svg>. Input dan tombol HTML berada di
  * lapisan atas tanpa filter, jadi teks dan panah tidak pernah ikut diblur.
+ * Border adalah lapisan kedua yang 1px lebih besar; warnanya opak karena
+ * filter alpha menghapus fill transparan.
  */
 function GooShapes({ width }: { width: number }) {
   const svgWidth = width + GOO_PAD * 2;
@@ -56,18 +58,24 @@ function GooShapes({ width }: { width: number }) {
             values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"
             result="goo"
           />
-          <feDropShadow
-            in="goo"
-            dx="0"
-            dy="6"
-            stdDeviation="8"
-            floodColor="#111111"
-            floodOpacity="0.08"
-          />
         </filter>
       </defs>
       <g className="goo-slide">
         <g className="goo-blob" filter="url(#rz-goo)">
+          <rect
+            className="goo-border"
+            x={GOO_PAD + BUTTON_SHIFT - 1}
+            y={GOO_PAD - 1}
+            width={width - 68 + 2}
+            height={STAGE_HEIGHT + 2}
+            rx={STAGE_HEIGHT / 2 + 1}
+          />
+          <circle
+            className="goo-circle goo-border"
+            cx={GOO_PAD + width - 62}
+            cy={GOO_PAD + STAGE_HEIGHT / 2}
+            r={STAGE_HEIGHT / 2 + 1}
+          />
           <rect
             className="goo-pill"
             x={GOO_PAD + BUTTON_SHIFT}
@@ -101,8 +109,7 @@ export default function NewsletterClient({
   const [honeypot, setHoneypot] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [message, setMessage] = useState<{ kind: "error" | "info"; text: string } | null>(null);
-  const [slots, setSlots] = useState<{ remaining: number; total: number } | null>(null);
-  const [serverFull, setServerFull] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
   const [stageWidth, setStageWidth] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -120,19 +127,8 @@ export default function NewsletterClient({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/newsletter/slots", { signal: controller.signal })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && typeof data.remaining === "number") setSlots(data);
-      })
-      .catch(() => {});
-    return () => controller.abort();
-  }, []);
-
-  const isFull = serverFull || (slots !== null && slots.remaining <= 0);
   const filled = email.trim().length > 0;
+  const active = focusWithin || filled || phase === "submitting";
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -171,8 +167,6 @@ export default function NewsletterClient({
 
       if (data?.code === "RATE_LIMITED") {
         setMessage({ kind: "error", text: t.state.rateLimited(data.retryAfterSec ?? 60) });
-      } else if (data?.code === "SLOTS_FULL") {
-        setServerFull(true);
       } else {
         setMessage({ kind: "error", text: t.state.generic });
       }
@@ -210,134 +204,159 @@ export default function NewsletterClient({
   }
 
   return (
-    <div className="flex w-full max-w-[380px] flex-col items-center text-center">
-      <p className="text-[0.6875rem] uppercase tracking-[0.2em] text-[var(--color-muted)]">
-        {t.page.eyebrow}
-      </p>
-      <h1 className="mt-4 text-balance text-[clamp(1.75rem,5vw,2.5rem)] font-medium leading-[1.1]">
-        {t.page.headline}
-      </h1>
-      <p className="mt-4 text-sm leading-relaxed text-[var(--color-muted)]">{t.page.body}</p>
+    <div lang={locale} className="flex min-h-[calc(100dvh-8rem)] w-full flex-col">
+      <div className="flex justify-center">
+        <span className="gate-wordmark text-[0.8rem] text-[var(--nw-ink)]" aria-label="RAZRBILZ">
+          RAZRBILZ
+        </span>
+      </div>
 
-      <div className="mt-8 w-full">
-        {isFull ? (
-          <p className="text-sm leading-relaxed text-[var(--color-foreground)]">
-            {t.state.slotsFull}
-          </p>
-        ) : phase === "sent" ? (
-          <p className="text-sm leading-relaxed text-[var(--color-foreground)]">
-            {t.state.confirmPending}
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} noValidate>
-            <div
-              ref={stageRef}
-              className="goo-stage"
-              data-filled={filled ? "true" : "false"}
-              data-busy={phase === "submitting" ? "true" : "false"}
-            >
-              {stageWidth >= 160 ? (
-                <GooShapes width={stageWidth} />
-              ) : (
-                <span className="goo-static" aria-hidden="true" />
-              )}
+      <div className="flex flex-1 flex-col items-center justify-center py-16 text-center">
+        <p
+          className="gate-enter text-[0.6875rem] uppercase tracking-[0.22em] text-[var(--nw-warm)]"
+          style={{ animationDelay: "0ms" }}
+        >
+          {t.page.label}
+        </p>
+        <h1
+          className="gate-enter gate-serif mt-5 text-balance text-[clamp(2.75rem,6vw,5.5rem)] leading-[1.02] tracking-[-0.02em]"
+          style={{ animationDelay: "80ms" }}
+        >
+          {t.page.headline}
+        </h1>
+        <p
+          className="gate-enter mt-5 max-w-[34ch] text-[0.95rem] leading-relaxed text-[var(--nw-warm)] sm:text-base"
+          style={{ animationDelay: "160ms" }}
+        >
+          {t.page.subhead}
+        </p>
 
-              <label htmlFor="newsletter-email" className="sr-only">
-                {t.page.emailLabel}
-              </label>
-              <input
-                ref={inputRef}
-                id="newsletter-email"
-                className="goo-input"
-                type="email"
-                name="email"
-                inputMode="email"
-                autoComplete="email"
-                enterKeyHint="send"
-                autoCapitalize="none"
-                spellCheck={false}
-                placeholder={t.page.emailPlaceholder}
-                value={email}
-                disabled={phase === "submitting"}
-                onChange={(event) => setEmail(event.target.value)}
-              />
-              <button
-                type="submit"
-                className="goo-btn"
-                aria-label={phase === "submitting" ? t.page.submitting : t.page.submitLabel}
-                disabled={phase === "submitting"}
+        <div
+          className="gate-enter mt-10 w-full max-w-[380px]"
+          style={{ animationDelay: "240ms" }}
+        >
+          {phase === "sent" ? (
+            <p className="mx-auto max-w-[34ch] py-4 text-sm leading-relaxed text-[var(--nw-ink)]">
+              {t.state.confirmPending}
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} noValidate>
+              <div
+                ref={stageRef}
+                className="goo-stage"
+                data-filled={filled ? "true" : "false"}
+                data-busy={phase === "submitting" ? "true" : "false"}
+                onFocus={() => setFocusWithin(true)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setFocusWithin(false);
+                  }
+                }}
               >
-                <svg
-                  className="goo-arrow"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+                {stageWidth >= 160 ? (
+                  <GooShapes width={stageWidth} />
+                ) : (
+                  <span className="goo-static" aria-hidden="true" />
+                )}
+
+                <label htmlFor="newsletter-email" className="sr-only">
+                  {t.page.emailLabel}
+                </label>
+                <input
+                  ref={inputRef}
+                  id="newsletter-email"
+                  className="goo-input"
+                  type="email"
+                  name="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="send"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  placeholder={t.page.emailPlaceholder}
+                  value={email}
+                  disabled={phase === "submitting"}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="goo-btn"
+                  tabIndex={active ? 0 : -1}
+                  aria-label={phase === "submitting" ? t.page.submitting : t.page.submitLabel}
+                  disabled={phase === "submitting"}
                 >
-                  <path d="M5 12h14" />
-                  <path d="m13 6 6 6-6 6" />
-                </svg>
-              </button>
+                  <svg
+                    className="goo-arrow"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m13 6 6 6-6 6" />
+                  </svg>
+                </button>
 
-              <input
-                className="goo-hp"
-                type="text"
-                name={NEWSLETTER_HONEYPOT_FIELD}
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
-                value={honeypot}
-                onChange={(event) => setHoneypot(event.target.value)}
-              />
-            </div>
-          </form>
-        )}
+                <span className="goo-ring" aria-hidden="true" />
 
-        <p className="mt-2 min-h-5 text-xs" role="status" aria-live="polite">
-          {message ? (
-            <span
-              className={
-                message.kind === "error"
-                  ? "text-[var(--color-foreground)]"
-                  : "text-[var(--color-muted)]"
-              }
-            >
-              {message.text}
-            </span>
-          ) : null}
-        </p>
+                <input
+                  className="goo-hp"
+                  type="text"
+                  name={NEWSLETTER_HONEYPOT_FIELD}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={honeypot}
+                  onChange={(event) => setHoneypot(event.target.value)}
+                />
+              </div>
+            </form>
+          )}
 
-        {!isFull ? (
-          <p className="mt-2 text-xs text-[var(--color-muted)]">
-            {slots
-              ? `${t.page.slotsLeft(slots.remaining)} · ${t.page.noSpam}`
-              : t.page.noSpam}
+          <p
+            className="mt-5 min-h-5 text-xs leading-relaxed"
+            role="status"
+            aria-live="polite"
+          >
+            {message ? (
+              <span
+                className={
+                  message.kind === "error"
+                    ? "text-[var(--nw-ink)]"
+                    : "text-[var(--nw-warm)]"
+                }
+              >
+                {message.text}
+              </span>
+            ) : phase === "sent" ? null : (
+              <span className="text-[var(--nw-warm)]">{t.page.note}</span>
+            )}
           </p>
-        ) : null}
 
-        {showResend && !isFull && phase !== "submitting" ? (
-          <button
-            type="button"
-            onClick={handleResend}
-            className="mt-4 text-xs text-[var(--color-muted)] underline underline-offset-2 hover:text-[var(--color-foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-foreground)]"
-          >
-            {t.page.resendLink}
-          </button>
-        ) : null}
+          {showResend && phase !== "submitting" ? (
+            <button
+              type="button"
+              onClick={handleResend}
+              className="mt-4 text-xs text-[var(--nw-warm)] underline decoration-1 underline-offset-4 hover:text-[var(--nw-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
+            >
+              {t.page.resendLink}
+            </button>
+          ) : null}
+        </div>
+      </div>
 
-        <p className="mt-6 text-xs text-[var(--color-muted)]">
-          <Link
-            href="/privacy-policy"
-            className="underline underline-offset-2 hover:text-[var(--color-foreground)]"
-          >
-            {t.page.privacyLink}
-          </Link>
-        </p>
+      <div className="flex justify-center">
+        <Link
+          href="/privacy-policy"
+          className="text-xs text-[var(--nw-warm)] underline decoration-1 underline-offset-4 hover:text-[var(--nw-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nw-ink)]"
+        >
+          {t.page.privacyLink}
+        </Link>
       </div>
     </div>
   );

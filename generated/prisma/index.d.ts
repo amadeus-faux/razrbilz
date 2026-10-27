@@ -17414,16 +17414,19 @@ export namespace Prisma {
 
   export type GateSettingAvgAggregateOutputType = {
     id: number | null
+    earlyAccessCap: number | null
   }
 
   export type GateSettingSumAggregateOutputType = {
     id: number | null
+    earlyAccessCap: number | null
   }
 
   export type GateSettingMinAggregateOutputType = {
     id: number | null
     status: string | null
     currentPeriodId: string | null
+    earlyAccessCap: number | null
     updatedBy: string | null
     updatedAt: Date | null
   }
@@ -17432,6 +17435,7 @@ export namespace Prisma {
     id: number | null
     status: string | null
     currentPeriodId: string | null
+    earlyAccessCap: number | null
     updatedBy: string | null
     updatedAt: Date | null
   }
@@ -17440,6 +17444,7 @@ export namespace Prisma {
     id: number
     status: number
     currentPeriodId: number
+    earlyAccessCap: number
     updatedBy: number
     updatedAt: number
     _all: number
@@ -17448,16 +17453,19 @@ export namespace Prisma {
 
   export type GateSettingAvgAggregateInputType = {
     id?: true
+    earlyAccessCap?: true
   }
 
   export type GateSettingSumAggregateInputType = {
     id?: true
+    earlyAccessCap?: true
   }
 
   export type GateSettingMinAggregateInputType = {
     id?: true
     status?: true
     currentPeriodId?: true
+    earlyAccessCap?: true
     updatedBy?: true
     updatedAt?: true
   }
@@ -17466,6 +17474,7 @@ export namespace Prisma {
     id?: true
     status?: true
     currentPeriodId?: true
+    earlyAccessCap?: true
     updatedBy?: true
     updatedAt?: true
   }
@@ -17474,6 +17483,7 @@ export namespace Prisma {
     id?: true
     status?: true
     currentPeriodId?: true
+    earlyAccessCap?: true
     updatedBy?: true
     updatedAt?: true
     _all?: true
@@ -17569,6 +17579,7 @@ export namespace Prisma {
     id: number
     status: string
     currentPeriodId: string | null
+    earlyAccessCap: number | null
     updatedBy: string | null
     updatedAt: Date
     _count: GateSettingCountAggregateOutputType | null
@@ -17596,6 +17607,7 @@ export namespace Prisma {
     id?: boolean
     status?: boolean
     currentPeriodId?: boolean
+    earlyAccessCap?: boolean
     updatedBy?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["gateSetting"]>
@@ -17604,6 +17616,7 @@ export namespace Prisma {
     id?: boolean
     status?: boolean
     currentPeriodId?: boolean
+    earlyAccessCap?: boolean
     updatedBy?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["gateSetting"]>
@@ -17612,6 +17625,7 @@ export namespace Prisma {
     id?: boolean
     status?: boolean
     currentPeriodId?: boolean
+    earlyAccessCap?: boolean
     updatedBy?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["gateSetting"]>
@@ -17620,11 +17634,12 @@ export namespace Prisma {
     id?: boolean
     status?: boolean
     currentPeriodId?: boolean
+    earlyAccessCap?: boolean
     updatedBy?: boolean
     updatedAt?: boolean
   }
 
-  export type GateSettingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "currentPeriodId" | "updatedBy" | "updatedAt", ExtArgs["result"]["gateSetting"]>
+  export type GateSettingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "currentPeriodId" | "earlyAccessCap" | "updatedBy" | "updatedAt", ExtArgs["result"]["gateSetting"]>
 
   export type $GateSettingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GateSetting"
@@ -17633,6 +17648,7 @@ export namespace Prisma {
       id: number
       status: string
       currentPeriodId: string | null
+      earlyAccessCap: number | null
       updatedBy: string | null
       updatedAt: Date
     }, ExtArgs["result"]["gateSetting"]>
@@ -18061,6 +18077,7 @@ export namespace Prisma {
     readonly id: FieldRef<"GateSetting", 'Int'>
     readonly status: FieldRef<"GateSetting", 'String'>
     readonly currentPeriodId: FieldRef<"GateSetting", 'String'>
+    readonly earlyAccessCap: FieldRef<"GateSetting", 'Int'>
     readonly updatedBy: FieldRef<"GateSetting", 'String'>
     readonly updatedAt: FieldRef<"GateSetting", 'DateTime'>
   }
@@ -19698,6 +19715,7 @@ export namespace Prisma {
     id: 'id',
     status: 'status',
     currentPeriodId: 'currentPeriodId',
+    earlyAccessCap: 'earlyAccessCap',
     updatedBy: 'updatedBy',
     updatedAt: 'updatedAt'
   };
@@ -20937,6 +20955,7 @@ export namespace Prisma {
     id?: IntFilter<"GateSetting"> | number
     status?: StringFilter<"GateSetting"> | string
     currentPeriodId?: UuidNullableFilter<"GateSetting"> | string | null
+    earlyAccessCap?: IntNullableFilter<"GateSetting"> | number | null
     updatedBy?: StringNullableFilter<"GateSetting"> | string | null
     updatedAt?: DateTimeFilter<"GateSetting"> | Date | string
   }
@@ -20945,6 +20964,7 @@ export namespace Prisma {
     id?: SortOrder
     status?: SortOrder
     currentPeriodId?: SortOrderInput | SortOrder
+    earlyAccessCap?: SortOrderInput | SortOrder
     updatedBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
   }
@@ -20956,6 +20976,7 @@ export namespace Prisma {
     NOT?: GateSettingWhereInput | GateSettingWhereInput[]
     status?: StringFilter<"GateSetting"> | string
     currentPeriodId?: UuidNullableFilter<"GateSetting"> | string | null
+    earlyAccessCap?: IntNullableFilter<"GateSetting"> | number | null
     updatedBy?: StringNullableFilter<"GateSetting"> | string | null
     updatedAt?: DateTimeFilter<"GateSetting"> | Date | string
   }, "id">
@@ -20964,6 +20985,7 @@ export namespace Prisma {
     id?: SortOrder
     status?: SortOrder
     currentPeriodId?: SortOrderInput | SortOrder
+    earlyAccessCap?: SortOrderInput | SortOrder
     updatedBy?: SortOrderInput | SortOrder
     updatedAt?: SortOrder
     _count?: GateSettingCountOrderByAggregateInput
@@ -20980,6 +21002,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"GateSetting"> | number
     status?: StringWithAggregatesFilter<"GateSetting"> | string
     currentPeriodId?: UuidNullableWithAggregatesFilter<"GateSetting"> | string | null
+    earlyAccessCap?: IntNullableWithAggregatesFilter<"GateSetting"> | number | null
     updatedBy?: StringNullableWithAggregatesFilter<"GateSetting"> | string | null
     updatedAt?: DateTimeWithAggregatesFilter<"GateSetting"> | Date | string
   }
@@ -22280,6 +22303,7 @@ export namespace Prisma {
     id?: number
     status?: string
     currentPeriodId?: string | null
+    earlyAccessCap?: number | null
     updatedBy?: string | null
     updatedAt?: Date | string
   }
@@ -22288,6 +22312,7 @@ export namespace Prisma {
     id?: number
     status?: string
     currentPeriodId?: string | null
+    earlyAccessCap?: number | null
     updatedBy?: string | null
     updatedAt?: Date | string
   }
@@ -22296,6 +22321,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodId?: NullableStringFieldUpdateOperationsInput | string | null
+    earlyAccessCap?: NullableIntFieldUpdateOperationsInput | number | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22304,6 +22330,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodId?: NullableStringFieldUpdateOperationsInput | string | null
+    earlyAccessCap?: NullableIntFieldUpdateOperationsInput | number | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22312,6 +22339,7 @@ export namespace Prisma {
     id?: number
     status?: string
     currentPeriodId?: string | null
+    earlyAccessCap?: number | null
     updatedBy?: string | null
     updatedAt?: Date | string
   }
@@ -22320,6 +22348,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodId?: NullableStringFieldUpdateOperationsInput | string | null
+    earlyAccessCap?: NullableIntFieldUpdateOperationsInput | number | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22328,6 +22357,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodId?: NullableStringFieldUpdateOperationsInput | string | null
+    earlyAccessCap?: NullableIntFieldUpdateOperationsInput | number | null
     updatedBy?: NullableStringFieldUpdateOperationsInput | string | null
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23434,18 +23464,21 @@ export namespace Prisma {
     id?: SortOrder
     status?: SortOrder
     currentPeriodId?: SortOrder
+    earlyAccessCap?: SortOrder
     updatedBy?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type GateSettingAvgOrderByAggregateInput = {
     id?: SortOrder
+    earlyAccessCap?: SortOrder
   }
 
   export type GateSettingMaxOrderByAggregateInput = {
     id?: SortOrder
     status?: SortOrder
     currentPeriodId?: SortOrder
+    earlyAccessCap?: SortOrder
     updatedBy?: SortOrder
     updatedAt?: SortOrder
   }
@@ -23454,12 +23487,14 @@ export namespace Prisma {
     id?: SortOrder
     status?: SortOrder
     currentPeriodId?: SortOrder
+    earlyAccessCap?: SortOrder
     updatedBy?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type GateSettingSumOrderByAggregateInput = {
     id?: SortOrder
+    earlyAccessCap?: SortOrder
   }
 
   export type GateStatusLogCountOrderByAggregateInput = {

@@ -14,9 +14,6 @@ export function isGateStatus(value: unknown): value is GateStatus {
   return typeof value === "string" && (GATE_STATUSES as readonly string[]).includes(value);
 }
 
-/** "100 orang pertama". Angka yang sama dijaga CHECK constraint + fungsi SQL. */
-export const EARLY_ACCESS_CAP = 100;
-
 /** Umur periode early access sejak admin menekan tombol, juga expiry cookie. */
 export const PERIOD_DURATION_DAYS = 14;
 
@@ -43,6 +40,13 @@ export const SIGNUP_IP_RATE_LIMIT = { max: 5, windowMs: 10 * 60_000 };
 export const SIGNUP_EMAIL_RATE_LIMIT = { max: 3, windowMs: 10 * 60_000 };
 export const RESEND_IP_RATE_LIMIT = { max: 5, windowMs: 10 * 60_000 };
 export const RESEND_EMAIL_RATE_LIMIT = { max: 3, windowMs: 10 * 60_000 };
+
+/**
+ * Penanda baris email_sends yang berhenti karena Resend menolak dengan 429.
+ * Baris tetap `pending`, bukan `failed`: kirim ulang setelah kuota pulih akan
+ * memprosesnya lagi tanpa perlu requeue manual dari tombol gagal.
+ */
+export const EMAIL_RATE_LIMITED_ERROR = "rate_limited";
 
 /**
  * Pengecualian gate. Entri berakhiran `/*` = cocok untuk seluruh path di
@@ -95,7 +99,6 @@ export const GATE_EXEMPT_PATHS = [
   "/api/newsletter/signup",
   "/api/newsletter/confirm",
   "/api/newsletter/resend",
-  "/api/newsletter/slots",
   "/api/newsletter/unsubscribe",
   "/api/newsletter/early-access",
 
@@ -154,7 +157,6 @@ export function isGateExempt(pathname: string): boolean {
 export const NEWSLETTER_ERROR_CODES = [
   "INVALID_EMAIL",
   "INVALID_INPUT",
-  "SLOTS_FULL",
   "RATE_LIMITED",
   "GATE_CLOSED",
   "TOKEN_INVALID",
