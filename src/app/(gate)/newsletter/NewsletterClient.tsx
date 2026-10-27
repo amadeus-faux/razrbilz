@@ -204,14 +204,14 @@ export default function NewsletterClient({
   }
 
   return (
-    <div lang={locale} className="flex min-h-[calc(100dvh-8rem)] w-full flex-col">
+    <div lang={locale} className="flex min-h-0 w-full flex-1 flex-col">
       <div className="flex justify-center">
         <span className="gate-wordmark text-[0.8rem] text-[var(--nw-ink)]" aria-label="RAZRBILZ">
           RAZRBILZ
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center py-16 text-center">
+      <div className="gate-newsletter-inner my-auto flex w-full flex-col items-center py-16 text-center">
         <p
           className="gate-enter text-[0.6875rem] uppercase tracking-[0.22em] text-[var(--nw-warm)]"
           style={{ animationDelay: "0ms" }}
@@ -219,20 +219,20 @@ export default function NewsletterClient({
           {t.page.label}
         </p>
         <h1
-          className="gate-enter gate-serif mt-5 text-balance text-[clamp(2.75rem,6vw,5.5rem)] leading-[1.02] tracking-[-0.02em]"
+          className="gate-enter gate-headline gate-serif mt-5 text-balance text-[clamp(2.75rem,6vw,5.5rem)] leading-[1.02] tracking-[-0.02em]"
           style={{ animationDelay: "80ms" }}
         >
           {t.page.headline}
         </h1>
         <p
-          className="gate-enter mt-5 max-w-[34ch] text-[0.95rem] leading-relaxed text-[var(--nw-warm)] sm:text-base"
+          className="gate-enter gate-lead mt-5 max-w-[34ch] text-[0.95rem] leading-relaxed text-[var(--nw-warm)] sm:text-base"
           style={{ animationDelay: "160ms" }}
         >
           {t.page.subhead}
         </p>
 
         <div
-          className="gate-enter mt-10 w-full max-w-[380px]"
+          className="gate-enter gate-form mt-10 w-full max-w-[380px]"
           style={{ animationDelay: "240ms" }}
         >
           {phase === "sent" ? (

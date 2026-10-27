@@ -3,17 +3,102 @@
  * sama; warna diturunkan dari tiga nilai di bawah, bukan angka yang tersebar.
  */
 
+:root {
+  --gate-bg: #f5f2ec;
+}
+
+/* Latar kanvas ikut bone selama halaman gate aktif. Tanpa ini, area di balik
+   bilah browser dan saat overscroll tetap putih milik body global. Penanda
+   data-gate-page hanya ada di layout gate, jadi halaman toko tidak tersentuh. */
+html:has([data-gate-page]) {
+  background-color: var(--gate-bg);
+  color-scheme: light;
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+
+html:has([data-gate-page]) body {
+  background-color: var(--gate-bg);
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+
 .gate-shell {
-  --nw-bg: #f5f2ec;
+  --nw-bg: var(--gate-bg);
   --nw-surface: #ffffff;
   --nw-ink: #111111;
   --nw-warm: #6b665e;
   --nw-border: color-mix(in srgb, var(--nw-ink) 40%, var(--nw-bg));
   --nw-disabled: color-mix(in srgb, var(--nw-ink) 38%, var(--nw-bg));
 
-  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
   background: var(--nw-bg);
   color: var(--nw-ink);
+  /* Scroll hanya aktif bila konten memang lebih tinggi (landscape pendek atau
+     teks sistem diperbesar). Pada tinggi normal tidak ada scrollbar. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+}
+
+/* safe center: tetap di tengah saat muat, tetapi mulai dari atas saat konten
+   melebihi layar supaya bagian atas tidak terpotong. */
+.gate-main {
+  justify-content: safe center;
+}
+
+@media (max-height: 660px) and (orientation: portrait) {
+  .gate-main {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .gate-newsletter-inner {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+@media (max-height: 600px) and (orientation: portrait) {
+  .gate-newsletter-inner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .gate-headline {
+    margin-top: 0.75rem;
+    font-size: clamp(1.75rem, 7dvh, 2.5rem);
+  }
+
+  .gate-lead {
+    margin-top: 0.75rem;
+  }
+
+  .gate-form {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Landscape atau layar sangat pendek: beri ruang di atas/bawah dan biarkan
+   shell yang menggulir, bukan dokumen. */
+@media (max-height: 520px) {
+  .gate-main {
+    flex: 0 0 auto;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .gate-newsletter-inner {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }
 
 .gate-serif {
