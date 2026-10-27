@@ -34,7 +34,7 @@ yarn-error.log*
 .env
 .env*
 .env.local
-!.env.example
+.env.example
 
 # local data backups (mengandung data pribadi customer — jangan di-commit)
 /backups
