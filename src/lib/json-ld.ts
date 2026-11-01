@@ -8,9 +8,8 @@ import { BRAND_DESCRIPTION } from "@/lib/seo";
  * masuk ke `<script>` lewat `dangerouslySetInnerHTML`, dan satu `</script>` dari
  * dashboard tidak boleh bisa menutup tag tersebut.
  *
- * `logo` memakai /apple-icon.png (180x180, latar gelap opaque), bukan
- * /logo/Cardinal_Compass_White.png yang putih di atas transparan — di atas latar
- * putih Google mark itu tidak terlihat sama sekali.
+ * `logo` memakai /apple-icon.png (180x180, latar gelap opaque), bukan mark putih
+ * di atas transparan — di atas latar putih Google mark itu tidak terlihat sama sekali.
  */
 export function brandJsonLd() {
   const origin = siteOrigin();

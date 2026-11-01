@@ -12,6 +12,12 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
+/blob-report/
+
+# generated prisma client (dibuat oleh `prisma generate` saat build)
+/generated/
 
 # next.js
 /.next/
