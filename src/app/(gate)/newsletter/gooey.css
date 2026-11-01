@@ -73,9 +73,14 @@
 
 .goo-slide,
 .goo-circle,
-.goo-input,
 .goo-btn {
   transition: transform 0.48s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Input native tidak boleh memakai transform: iOS Safari menempatkan teks dan
+   caret di luar kotak saat keyboard membuka. left memberi lintasan yang sama. */
+.goo-input {
+  transition: left 0.48s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-slide {
@@ -89,7 +94,7 @@
 .goo-input {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 34px;
   z-index: 1;
   width: calc(100% - 68px);
   height: 56px;
@@ -105,11 +110,10 @@
   -webkit-appearance: none;
   appearance: none;
   caret-color: var(--nw-ink);
-  transform: translateX(34px);
 }
 
 .goo-stage:is(:focus-within, [data-filled="true"], [data-busy="true"]) .goo-input {
-  transform: translateX(0);
+  left: 0;
 }
 
 .goo-input::placeholder {

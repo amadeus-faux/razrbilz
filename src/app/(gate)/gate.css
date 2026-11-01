@@ -122,6 +122,13 @@ html:has([data-gate-page]) body {
   .gate-enter {
     animation: gate-rise 600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
+
+  /* fill-mode "backwards" khusus pembungkus input: keyframe akhir yang menetap
+     meninggalkan transform identitas, dan iOS Safari menempatkan teks input di
+     posisi salah saat keyboard membuka. Tampilan akhirnya sama. */
+  .gate-form {
+    animation-fill-mode: backwards;
+  }
 }
 
 @keyframes gate-rise {
