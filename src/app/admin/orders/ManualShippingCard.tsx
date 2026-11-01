@@ -10,9 +10,6 @@ import {
   Edit2,
   Copy,
   Check,
-  Calendar,
-  FileText,
-  Clock,
   PackageCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

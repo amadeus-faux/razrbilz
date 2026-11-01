@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   DollarSign,
   ShoppingBag,
-  Clock,
   Package,
   CheckCircle2,
   XCircle,

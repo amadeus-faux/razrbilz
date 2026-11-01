@@ -68,8 +68,6 @@ export function roundToNearest5000Minus1000(amount: number): number {
   return rounded > 0 ? rounded : amount;
 }
 
-// Aliases for compatibility
-export const roundToNearest1000Minus1000 = roundToNearest5000Minus1000;
 export const roundUpTo5000 = roundToNearest5000Minus1000;
 
 /**

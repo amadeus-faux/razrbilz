@@ -69,7 +69,7 @@ export async function processBiteshipWebhook(
     if (rawText && rawText.trim().length > 0) {
       payload = JSON.parse(rawText);
     }
-  } catch (parseErr) {
+  } catch {
     console.warn("[Biteship Webhook] Request body is not JSON or empty. Treating as ping.");
   }
 

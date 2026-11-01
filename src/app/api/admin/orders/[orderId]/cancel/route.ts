@@ -42,7 +42,7 @@ const PRE_PICKUP_BITESHIP_STATUSES = [
  * paymentStatus sengaja TIDAK diubah — uangnya memang sudah masuk (lihat catatan
  * Jalur A di src/lib/order-status-labels.ts).
  */
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(_request: Request, { params }: RouteParams) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 

@@ -14,7 +14,7 @@ interface RouteParams {
  * Calls Biteship GET /orders/:id and updates database status
  * POST /api/admin/orders/[orderId]/sync-shipping
  */
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(_request: Request, { params }: RouteParams) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 

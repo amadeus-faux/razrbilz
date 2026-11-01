@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import OrdersTableClient from "./OrdersTableClient";
 import OrdersDateFilter from "./OrdersDateFilter";
 import { autoExpireStaleOrders } from "@/lib/order-fulfillment";
-import { AlertCircle } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

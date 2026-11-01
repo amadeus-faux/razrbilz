@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BRAND_DESCRIPTION } from "@/lib/seo";
 
 interface FooterProps {
   showBrandWordmark?: boolean;

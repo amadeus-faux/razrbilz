@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Ruler, Check, Package2, ChevronDown, ChevronUp } from "lucide-react";
+import { Ruler, Check, Package2, ChevronDown, ChevronUp } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
 import { formatRupiah } from "@/lib/utils";
 

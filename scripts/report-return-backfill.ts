@@ -56,11 +56,6 @@ async function main() {
     orderBy: { createdAt: "asc" },
   });
 
-  const totalUnits = candidates.reduce(
-    (sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0),
-    0
-  );
-
   console.log(
     `\n=== Kandidat backfill: biteshipStatus ∈ {returned, disposed} tapi orderStatus ≠ 'returned' (${candidates.length}) ===`
   );

@@ -1,5 +1,4 @@
 import type { Locale } from "@/lib/checkout-i18n";
-import type { NewsletterErrorCode } from "@/lib/early-access/constants";
 
 /**
  * Copy halaman /newsletter, halaman turunannya, dan email early access.
@@ -70,21 +69,6 @@ const en = {
     invalidHeading: "This link does not work",
     invalidBody: "The unsubscribe link is invalid or has expired.",
   },
-  errors: {
-    INVALID_EMAIL: "That email isn't valid.",
-    INVALID_INPUT: "Please check the form and try again.",
-    RATE_LIMITED: "Too many attempts. Please try again in a few minutes.",
-    GATE_CLOSED: "The store is closed right now.",
-    TOKEN_INVALID: "This link does not work.",
-    TOKEN_EXPIRED: "This link expired.",
-    TOKEN_USED: "This link reached its use limit.",
-    ALREADY_CONFIRMED: "This address is already confirmed.",
-    NOT_FOUND: "We could not find that address.",
-    UNSUBSCRIBED: "This address is no longer on the list.",
-    EMAIL_SENT: "If that email is on our list, the link is on its way.",
-    UNSUBSCRIBE_INVALID: "The unsubscribe link is invalid or has expired.",
-    INTERNAL_ERROR: "Something went wrong. Please try again.",
-  } as Record<NewsletterErrorCode, string>,
   email: {
     confirmation: {
       subject: "Confirm your email",
@@ -110,7 +94,6 @@ const en = {
     brand: {
       wordmark: "RAZRBILZ",
       city: "Bandung, Indonesia",
-      home: "razrbilz.id",
     },
   },
 };
@@ -175,21 +158,6 @@ const id: typeof en = {
     invalidHeading: "Link ini tidak berlaku",
     invalidBody: "Link unsubscribe salah atau sudah kedaluwarsa.",
   },
-  errors: {
-    INVALID_EMAIL: "Alamat email belum valid.",
-    INVALID_INPUT: "Periksa kembali isian form.",
-    RATE_LIMITED: "Terlalu sering mencoba. Coba lagi beberapa menit.",
-    GATE_CLOSED: "Toko sedang ditutup.",
-    TOKEN_INVALID: "Link ini tidak berlaku.",
-    TOKEN_EXPIRED: "Link ini kedaluwarsa.",
-    TOKEN_USED: "Link ini sudah habis dipakai.",
-    ALREADY_CONFIRMED: "Alamat ini sudah terkonfirmasi.",
-    NOT_FOUND: "Alamat itu tidak kami temukan.",
-    UNSUBSCRIBED: "Alamat ini sudah tidak ada di daftar.",
-    EMAIL_SENT: "Jika emailmu terdaftar, linknya sedang dikirim.",
-    UNSUBSCRIBE_INVALID: "Link unsubscribe salah atau sudah kedaluwarsa.",
-    INTERNAL_ERROR: "Terjadi kesalahan. Silakan coba lagi.",
-  },
   email: {
     confirmation: {
       subject: "Konfirmasi email",
@@ -215,7 +183,6 @@ const id: typeof en = {
     brand: {
       wordmark: "RAZRBILZ",
       city: "Bandung, Indonesia",
-      home: "razrbilz.id",
     },
   },
 };

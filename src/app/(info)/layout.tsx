@@ -1,7 +1,5 @@
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export default function InfoLayout({
   children,

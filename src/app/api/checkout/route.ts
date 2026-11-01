@@ -261,7 +261,7 @@ async function handlePOST(request: Request, probe: Probe) {
 
     // 2. Atomically verify stock, calculate server prices, decrement stock, and create order
     console.log(`[Checkout] Processing order ${orderNumber} in atomic transaction for region ${orderCountry}...`);
-    const { order, isPreOrder, validatedItems, serverTotal } = await probe.time("db_tx", () =>
+    const { order, validatedItems, serverTotal } = await probe.time("db_tx", () =>
       prisma.$transaction(async (tx) => {
       const productMap = new Map<string, { id: string; name: string; price: number; stock: number; isPreOrder: boolean; images: string[] }>();
 

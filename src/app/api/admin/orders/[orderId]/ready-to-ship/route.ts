@@ -14,7 +14,7 @@ interface RouteParams {
  * Calls Biteship createOrder API and moves pre-order from 'in_production' to 'ready_to_ship'.
  * POST /api/admin/orders/[orderId]/ready-to-ship
  */
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(_request: Request, { params }: RouteParams) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 

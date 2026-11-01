@@ -232,7 +232,6 @@ const en = {
   pmNetworkError: "A network error occurred.",
 
   // ── PayPal ─────────────────────────────────────────────────────────────────
-  catPaypal: "PayPal",
   paypalChoose: "Pay with PayPal",
   paypalChargeLine: "You'll be charged {amount} by PayPal.",
   paypalUsdNote:
@@ -457,7 +456,6 @@ const id: Record<CheckoutKey, string> = {
   pmNetworkError: "Terjadi kesalahan jaringan.",
 
   // ── PayPal ─────────────────────────────────────────────────────────────────
-  catPaypal: "PayPal",
   paypalChoose: "Bayar dengan PayPal",
   paypalChargeLine: "Anda akan ditagih {amount} oleh PayPal.",
   paypalUsdNote:

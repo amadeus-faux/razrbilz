@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Clock,
   Truck,
-  Package,
   PackageCheck,
   Send,
   Copy,

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, RefreshCw, MessageSquare } from "lucide-react";
+import { AlertTriangle, RefreshCw, MessageSquare } from "lucide-react";
 
 interface PageProps {
   searchParams: Promise<{ order_id?: string }>;

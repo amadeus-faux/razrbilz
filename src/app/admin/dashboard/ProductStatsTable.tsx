@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { TrendingUp, Zap, AlertTriangle } from "lucide-react";
-import { formatRupiah } from "@/lib/utils";
 
 interface ProductStat {
   id: string;
@@ -63,7 +62,6 @@ export default function ProductStatsTable({
   const [activeTab, setActiveTab] = useState<TabId>("top");
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
-  const tabIcon = currentTab.icon;
 
   return (
     <div className="bg-[#141412] border border-[#242320] rounded-2xl p-6">

@@ -26,7 +26,6 @@ const en = {
       "Every piece is made to order at our studio in Bandung.",
     policy: "All sales are final, except for production defects.",
     policyLink: "Return & refund policy",
-    home: "razrbilz.id",
   },
 
   labels: {
@@ -37,7 +36,6 @@ const en = {
     qty: "Qty",
     subtotal: "Subtotal",
     shipping: "Shipping",
-    total: "Total",
     courier: "Courier",
     service: "Service",
     trackingNumber: "Tracking number",
@@ -45,7 +43,6 @@ const en = {
     note: "Note",
     paymentMethod: "Payment method",
     paidOn: "Paid on",
-    expiresOn: "Pay before",
   },
 
   orderReceived: {
@@ -122,7 +119,6 @@ const id: EmailCopy = {
       "Semua produk dibuat sesuai pesanan di studio kami di Bandung.",
     policy: "Semua penjualan bersifat final, kecuali terdapat cacat produksi.",
     policyLink: "Kebijakan retur & refund",
-    home: "razrbilz.id",
   },
 
   labels: {
@@ -133,7 +129,6 @@ const id: EmailCopy = {
     qty: "Jumlah",
     subtotal: "Subtotal",
     shipping: "Ongkir",
-    total: "Total",
     courier: "Kurir",
     service: "Layanan",
     trackingNumber: "Nomor resi",
@@ -141,7 +136,6 @@ const id: EmailCopy = {
     note: "Catatan",
     paymentMethod: "Metode pembayaran",
     paidOn: "Dibayar pada",
-    expiresOn: "Bayar sebelum",
   },
 
   orderReceived: {

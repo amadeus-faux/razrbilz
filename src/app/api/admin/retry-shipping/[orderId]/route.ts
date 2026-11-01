@@ -13,7 +13,7 @@ interface RouteParams {
  * Manual Retry API for Biteship Shipping Order Creation
  * POST /api/admin/retry-shipping/[orderId]
  */
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(_request: Request, { params }: RouteParams) {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;
 
