@@ -3,8 +3,9 @@
 import { useSyncExternalStore } from "react";
 import { readUserCountryCookie } from "@/lib/pricing";
 
-// Subscribe no-op: cookie user_country tidak berubah di tengah sesi toko,
-// jadi cukup dibaca sekali saat mount/hydrate.
+// Subscribe no-op: cookie dibaca sekali saat mount/hydrate. Perubahan cookie
+// setelah mount (mis. checkout mengganti negara pengiriman) baru terlihat pada
+// mount berikutnya; cart drawer mengambil pricing sendiri setiap kali dibuka.
 const subscribe = () => () => {};
 
 /**

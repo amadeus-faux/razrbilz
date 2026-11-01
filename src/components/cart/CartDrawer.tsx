@@ -87,16 +87,16 @@ export default function CartDrawer() {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
-  const pricingFetchedRef = useRef(false);
 
-  // Harga wilayah + kurs diambil sekali, saat drawer pertama kali dibuka — bukan
-  // di setiap page load.
+  // Harga wilayah + kurs disegarkan setiap drawer dibuka. Checkout menulis ulang
+  // cookie user_country saat negara pengiriman diganti, jadi fetch sekali saja
+  // membuat drawer tertinggal di mata uang negara sebelumnya. Nilai lama tetap
+  // dipakai selama fetch agar tidak berkedip.
   useEffect(() => {
-    if (!isOpen || pricingFetchedRef.current) return;
-    pricingFetchedRef.current = true;
+    if (!isOpen) return;
 
     const controller = new AbortController();
-    fetch("/api/pricing", { signal: controller.signal })
+    fetch("/api/pricing", { signal: controller.signal, cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data.region) setCountry(data.region);
@@ -421,13 +421,14 @@ export default function CartDrawer() {
                 {!isRupiah(currency) && ` Prices in ${currency}.`}
               </p>
 
-              {isOpen && (
-                <PayPalExpressCheckout
-                  country={country}
-                  exchangeRate={exchangeRate}
-                  items={items}
-                />
-              )}
+              {/* Selama negara masih non-internasional komponen ini tidak
+                  merender apa pun dan tidak memuat SDK; membiarkannya ter-mount
+                  mencegah tombol PayPal dibangun ulang setiap drawer dibuka. */}
+              <PayPalExpressCheckout
+                country={country}
+                exchangeRate={exchangeRate}
+                items={items}
+              />
 
               <Link
                 href="/checkout"
