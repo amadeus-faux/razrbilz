@@ -39,11 +39,39 @@ interface PayPalOrderResponse {
   }>;
 }
 
+interface PayPalOrderDetailsResponse {
+  id: string;
+  status?: string;
+  payer?: {
+    email_address?: string;
+    phone?: { phone_number?: { national_number?: string } };
+    name?: { given_name?: string; surname?: string };
+  };
+  purchase_units?: Array<{
+    shipping?: {
+      name?: { full_name?: string };
+      address?: {
+        address_line_1?: string;
+        address_line_2?: string;
+        admin_area_1?: string;
+        admin_area_2?: string;
+        postal_code?: string;
+        country_code?: string;
+      };
+    };
+  }>;
+}
+
 export interface CreatePayPalOrderInput {
   amountUsd: string;
   currency: string;
   orderNumber: string;
   locale: PayPalLocale;
+  /**
+   * NO_SHIPPING: alamat sudah diisi di checkout kita.
+   * GET_FROM_FILE: alamat diambil dari akun PayPal buyer (Express Checkout).
+   */
+  shippingPreference?: "NO_SHIPPING" | "GET_FROM_FILE";
 }
 
 export interface CreatePayPalOrderResult {
@@ -55,6 +83,27 @@ export interface CaptureResult {
   captureId: string;
   status: string;
   amount: { currency_code: string; value: string } | null;
+}
+
+export interface PayPalOrderDetails {
+  id: string;
+  status: string | null;
+  payer: {
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+  };
+  shipping: {
+    name: string | null;
+    address: {
+      line1: string;
+      line2: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+    };
+  } | null;
 }
 
 function getConfig(): PayPalConfig {
@@ -185,9 +234,7 @@ export async function createPayPalOrder(
         experience_context: {
           brand_name: "RAZRBILZ",
           locale: input.locale,
-          // Alamat dikirim dari form checkout kita, jadi buyer tidak perlu
-          // mengisi alamat di sisi PayPal.
-          shipping_preference: "NO_SHIPPING",
+          shipping_preference: input.shippingPreference ?? "NO_SHIPPING",
           user_action: "PAY_NOW",
           return_url: `${base}/paypal/return`,
           cancel_url: `${base}/checkout?paypal=cancelled`,
@@ -250,6 +297,61 @@ export async function capturePayPalOrder(
     amount: capture.amount
       ? { currency_code: capture.amount.currency_code, value: capture.amount.value }
       : null,
+  };
+}
+
+/**
+ * Detail order PayPal (payer + alamat kirim). Dipakai Express Checkout:
+ * alamat baru tersedia setelah buyer menyetujui order di sisi PayPal.
+ * Mengembalikan null bila request gagal; objek `shipping` null bila PayPal
+ * tidak memberikan alamat lengkap.
+ */
+export async function getPayPalOrderDetails(
+  orderId: string
+): Promise<PayPalOrderDetails | null> {
+  const { ok, status, data } = await paypalFetch<PayPalOrderDetailsResponse>(
+    `/v2/checkout/orders/${encodeURIComponent(orderId)}`,
+    { method: "GET" }
+  );
+
+  if (!ok || !data?.id) {
+    console.error(`[PayPal] get order detail gagal (HTTP ${status})`);
+    return null;
+  }
+
+  const unit = data.purchase_units?.[0];
+  const payerName = [data.payer?.name?.given_name, data.payer?.name?.surname]
+    .filter((part): part is string => Boolean(part && part.trim()))
+    .join(" ")
+    .trim();
+  const rawAddress = unit?.shipping?.address;
+  const country = rawAddress?.country_code?.trim().toUpperCase() || "";
+
+  const shipping =
+    rawAddress && country
+      ? {
+          name: unit?.shipping?.name?.full_name?.trim() || payerName || null,
+          address: {
+            line1: rawAddress.address_line_1?.trim() || "",
+            line2: rawAddress.address_line_2?.trim() || "",
+            city: rawAddress.admin_area_2?.trim() || "",
+            state: rawAddress.admin_area_1?.trim() || "",
+            postalCode: rawAddress.postal_code?.trim() || "",
+            country,
+          },
+        }
+      : null;
+
+  return {
+    id: data.id,
+    status: data.status ?? null,
+    payer: {
+      name: payerName || null,
+      email: data.payer?.email_address?.trim() || null,
+      phone:
+        data.payer?.phone?.phone_number?.national_number?.trim() || null,
+    },
+    shipping,
   };
 }
 

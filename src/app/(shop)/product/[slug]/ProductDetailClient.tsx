@@ -6,7 +6,12 @@ import gsap from "gsap";
 import { Observer } from "gsap/Observer";
 import GsapImageSlider from "@/components/product/GsapImageSlider";
 import SizeSelectorSheet from "@/components/product/SizeSelectorSheet";
-import { formatRupiah } from "@/lib/utils";
+import {
+  convertIdrPrice,
+  formatPriceAmount,
+  DEFAULT_DISPLAY_CURRENCY,
+  type DisplayCurrency,
+} from "@/lib/currency";
 import {
   resolveDisplayPrice,
   isInternational,
@@ -75,8 +80,42 @@ export default function ProductDetailClient({
   // diubah: efek GSAP (preload gambar, Observer) bergantung padanya dan tidak
   // boleh jalan ulang hanya karena harga berganti.
   const country = useUserCountryCookie();
+  const international = isInternational(country);
+
+  // Kurs USD→mata uang lokal hanya diketahui lewat /api/pricing, jadi diambil
+  // hanya untuk pengunjung internasional. Selama menunggu (atau bila gagal),
+  // harga tampil dalam IDR seperti sebelumnya.
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>(
+    DEFAULT_DISPLAY_CURRENCY
+  );
+
+  useEffect(() => {
+    if (!international) return;
+
+    const controller = new AbortController();
+    fetch("/api/pricing", { signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data || typeof data.currency !== "string" || !data.currency) return;
+        setDisplayCurrency({
+          currency: data.currency.toUpperCase(),
+          usdToCurrency:
+            Number.isFinite(data.usdToCurrency) && data.usdToCurrency > 0
+              ? data.usdToCurrency
+              : 1,
+        });
+      })
+      .catch((err) => {
+        if ((err as Error)?.name !== "AbortError") {
+          console.error("Error fetching product pricing:", err);
+        }
+      });
+
+    return () => controller.abort();
+  }, [international]);
+
   const localizedPrices = useMemo(() => {
-    if (!isInternational(country)) return null;
+    if (!international) return null;
     const map: Record<string, number> = {};
     for (const p of products) {
       map[p.id] = resolveDisplayPrice(
@@ -86,7 +125,7 @@ export default function ProductDetailClient({
       );
     }
     return map;
-  }, [products, country, exchangeRate]);
+  }, [products, country, exchangeRate, international]);
 
   const withLocalizedPrice = (p: ClientProduct): ClientProduct =>
     localizedPrices && localizedPrices[p.id] !== undefined
@@ -102,6 +141,17 @@ export default function ProductDetailClient({
   const incomingProduct = rawIncomingProduct
     ? withLocalizedPrice(rawIncomingProduct)
     : null;
+
+  // `price` di sini sudah harga IDR yang benar (lokal untuk ID, harga
+  // internasional untuk luar ID). Untuk pembeli internasional angka itu
+  // dikonversi lagi ke mata uang lokal, sama seperti kartu di homepage.
+  const formatProductPrice = (p: ClientProduct): string => {
+    if (!international) return formatPriceAmount(p.price, "IDR");
+    return formatPriceAmount(
+      convertIdrPrice(p.price, exchangeRate, displayCurrency),
+      displayCurrency.currency
+    );
+  };
 
   // ─── 1. Aggressive Image & Resource Preloading ───────────────────────────
   useEffect(() => {
@@ -334,7 +384,7 @@ export default function ProductDetailClient({
               {currentProduct.name}
             </h1>
             <p className="text-price">
-              {formatRupiah(currentProduct.price)}
+              {formatProductPrice(currentProduct)}
             </p>
             {currentProduct.stock <= 0 && (
               <div className="pt-0.5">
@@ -403,7 +453,7 @@ export default function ProductDetailClient({
                 {incomingProduct.name}
               </h1>
               <p className="text-price">
-                {formatRupiah(incomingProduct.price)}
+                {formatProductPrice(incomingProduct)}
               </p>
               {incomingProduct.stock <= 0 && (
                 <div className="pt-0.5">
@@ -446,6 +496,7 @@ export default function ProductDetailClient({
         isOpen={sheetOpen}
         onClose={() => setSheetOpen(false)}
         product={currentProduct}
+        priceDisplay={formatProductPrice(currentProduct)}
         sizes={currentProduct.sizes}
       />
     </div>

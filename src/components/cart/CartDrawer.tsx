@@ -14,9 +14,17 @@ import { createPortal } from "react-dom";
 
 import { useCartStore, maxQtyForLine, type CartItem } from "@/store/cart-store";
 import { useCartDrawerStore } from "@/store/cart-drawer-store";
-import { formatRupiah } from "@/lib/utils";
+import PayPalExpressCheckout from "@/components/cart/PayPalExpressCheckout";
 import { MAX_QTY_PER_PRODUCT } from "@/lib/order-limits";
 import { resolveDisplayPrice } from "@/lib/pricing";
+import {
+  convertIdrPrice,
+  formatPriceAmount,
+  isRupiah,
+  roundDisplayAmount,
+  DEFAULT_DISPLAY_CURRENCY,
+  type DisplayCurrency,
+} from "@/lib/currency";
 import { usePageTransition } from "@/context/PageTransitionContext";
 
 const emptyItems: CartItem[] = [];
@@ -72,6 +80,9 @@ export default function CartDrawer() {
 
   const [country, setCountry] = useState("ID");
   const [exchangeRate, setExchangeRate] = useState(17_500);
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>(
+    DEFAULT_DISPLAY_CURRENCY
+  );
 
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,6 +101,15 @@ export default function CartDrawer() {
       .then((data) => {
         if (data.region) setCountry(data.region);
         if (data.usdToIdr) setExchangeRate(data.usdToIdr);
+        if (data.currency) {
+          setDisplayCurrency({
+            currency: data.currency,
+            usdToCurrency:
+              Number.isFinite(data.usdToCurrency) && data.usdToCurrency > 0
+                ? data.usdToCurrency
+                : 1,
+          });
+        }
       })
       .catch((err) => {
         if ((err as Error)?.name !== "AbortError") {
@@ -179,15 +199,21 @@ export default function CartDrawer() {
 
   const unitPrice = useCallback(
     (item: CartItem) =>
-      resolveDisplayPrice(item.basePrice, country, exchangeRate),
-    [country, exchangeRate]
+      convertIdrPrice(
+        resolveDisplayPrice(item.basePrice, country, exchangeRate),
+        exchangeRate,
+        displayCurrency
+      ),
+    [country, exchangeRate, displayCurrency]
   );
 
   if (!mounted) return null;
 
+  const currency = displayCurrency.currency;
   const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce(
-    (sum, item) => sum + unitPrice(item) * item.quantity,
+    (sum, item) =>
+      sum + roundDisplayAmount(unitPrice(item) * item.quantity, currency),
     0
   );
 
@@ -300,7 +326,7 @@ export default function CartDrawer() {
                           Size {item.size}
                         </span>
                         <span className="text-[9px] text-muted">·</span>
-                        <span className="text-price">{formatRupiah(price)}</span>
+                        <span className="text-price">{formatPriceAmount(price, currency)}</span>
                       </div>
 
                       <div className="mt-auto pt-3 flex items-center justify-between gap-2">
@@ -340,7 +366,10 @@ export default function CartDrawer() {
                         </div>
 
                         <span className="text-[11px] text-foreground tabular-nums">
-                          {formatRupiah(price * item.quantity)}
+                          {formatPriceAmount(
+                            roundDisplayAmount(price * item.quantity, currency),
+                            currency
+                          )}
                         </span>
                       </div>
 
@@ -384,12 +413,21 @@ export default function CartDrawer() {
               <div className="flex items-baseline justify-between">
                 <span className="text-label text-muted">TOTAL</span>
                 <span className="text-lg text-foreground tabular-nums">
-                  {formatRupiah(subtotal)}
+                  {formatPriceAmount(subtotal, currency)}
                 </span>
               </div>
               <p className="mt-1.5 text-[9px] text-muted">
-                Shipping calculated at checkout. Prices in IDR.
+                Shipping calculated at checkout.
+                {!isRupiah(currency) && ` Prices in ${currency}.`}
               </p>
+
+              {isOpen && (
+                <PayPalExpressCheckout
+                  country={country}
+                  exchangeRate={exchangeRate}
+                  items={items}
+                />
+              )}
 
               <Link
                 href="/checkout"

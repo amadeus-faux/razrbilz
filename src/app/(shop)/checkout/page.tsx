@@ -5,8 +5,15 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCartStore, type CartItem } from "@/store/cart-store";
-import { formatRupiah } from "@/lib/utils";
 import { resolveDisplayPrice, normalizeCountryCode } from "@/lib/pricing";
+import {
+  convertIdrPrice,
+  formatPriceAmount,
+  formatPriceFromIdr,
+  roundDisplayAmount,
+  DEFAULT_DISPLAY_CURRENCY,
+  type DisplayCurrency,
+} from "@/lib/currency";
 import {
   resolveLocale,
   t,
@@ -213,6 +220,9 @@ export default function CheckoutPage() {
   }, [setValue]);
 
   const [exchangeRate, setExchangeRate] = useState<number>(17500);
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>(
+    DEFAULT_DISPLAY_CURRENCY
+  );
   const [pricingNonce, setPricingNonce] = useState(0);
   useEffect(() => {
     let isMounted = true;
@@ -226,6 +236,15 @@ export default function CheckoutPage() {
           const data = await res.json();
           if (isMounted && data.usdToIdr) {
             setExchangeRate(data.usdToIdr);
+          }
+          if (isMounted && typeof data.currency === "string" && data.currency) {
+            setDisplayCurrency({
+              currency: data.currency.toUpperCase(),
+              usdToCurrency:
+                Number.isFinite(data.usdToCurrency) && data.usdToCurrency > 0
+                  ? data.usdToCurrency
+                  : 1,
+            });
           }
         }
       } catch (err) {
@@ -722,7 +741,35 @@ export default function CheckoutPage() {
     customerBearsFee && selectedPaymentMethod
       ? Number(selectedPaymentMethod.totalFee) || 0
       : 0;
-  const totalDue = total + paymentFee;
+  // Nominal tampilan per mata uang pembeli. Dijumlahkan dari angka yang sudah
+  // dibulatkan agar baris item, subtotal, ongkir, dan total tetap konsisten
+  // saat dibaca. Nominal yang dikirim ke server tetap IDR di atas.
+  const currency = displayCurrency.currency;
+  const displaySubtotal = items.reduce(
+    (sum, it) =>
+      sum +
+      roundDisplayAmount(
+        convertIdrPrice(
+          getItemPrice(it) * it.quantity,
+          exchangeRate,
+          displayCurrency
+        ),
+        currency
+      ),
+    0
+  );
+  const displayShipping = roundDisplayAmount(
+    convertIdrPrice(shippingCost, exchangeRate, displayCurrency),
+    currency
+  );
+  const displayPaymentFee = roundDisplayAmount(
+    convertIdrPrice(paymentFee, exchangeRate, displayCurrency),
+    currency
+  );
+  const displayTotalDue = roundDisplayAmount(
+    displaySubtotal + displayShipping + displayPaymentFee,
+    currency
+  );
 
   // Perkiraan USD untuk PayPal, hanya untuk ditampilkan di kartu pilihan.
   // Angka final dihitung ulang di server dari kurs aktif saat membuat order.
@@ -1162,7 +1209,7 @@ export default function CheckoutPage() {
                             </div>
                           </div>
                           <span className="text-xs text-foreground font-mono">
-                            {formatRupiah(rate.price)}
+                            {formatPriceFromIdr(rate.price, exchangeRate, displayCurrency)}
                           </span>
                         </button>
                       );
@@ -1383,7 +1430,9 @@ export default function CheckoutPage() {
                                         </p>
                                       </div>
                                       <span className="text-[10px] text-muted whitespace-nowrap ml-2">
-                                        {feeNumber > 0 ? `+ ${formatRupiah(feeNumber)}` : t("noFee", locale)}
+                                        {feeNumber > 0
+                                          ? `+ ${formatPriceFromIdr(feeNumber, exchangeRate, displayCurrency)}`
+                                          : t("noFee", locale)}
                                       </span>
                                     </button>
                                   );
@@ -1449,23 +1498,27 @@ export default function CheckoutPage() {
 
                       {/* Item Total */}
                       <span className="text-xs text-foreground whitespace-nowrap">
-                        {formatRupiah(getItemPrice(it) * it.quantity)}
+                        {formatPriceAmount(
+                          roundDisplayAmount(
+                            convertIdrPrice(
+                              getItemPrice(it) * it.quantity,
+                              exchangeRate,
+                              displayCurrency
+                            ),
+                            currency
+                          ),
+                          currency
+                        )}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {isInternational && (
-                  <div className="mx-6 mt-4 p-3 bg-amber-50 border border-amber-500/25 rounded-xl text-[11px] text-amber-800 leading-relaxed">
-                    {tf("intlPriceNote", locale, { country: selectedCountry })}
-                  </div>
-                )}
-
                 {/* Price Breakdown */}
                 <div className="px-6 py-5 space-y-3">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-muted">{tf(totalCount === 1 ? "subtotalOne" : "subtotalCount", locale, { count: totalCount })}</span>
-                    <span className="text-foreground">{formatRupiah(calculatedSubtotal)}</span>
+                    <span className="text-foreground">{formatPriceAmount(displaySubtotal, currency)}</span>
                   </div>
 
                   <div className="flex justify-between items-center text-xs">
@@ -1473,7 +1526,7 @@ export default function CheckoutPage() {
                       {t("shipping", locale)}
                     </span>
                     <span className="text-foreground">
-                      {selectedCourier ? formatRupiah(selectedCourier.price) : t("selectCourier", locale)}
+                      {selectedCourier ? formatPriceAmount(displayShipping, currency) : t("selectCourier", locale)}
                     </span>
                   </div>
 
@@ -1483,7 +1536,7 @@ export default function CheckoutPage() {
                       {selectedPaymentMethod
                         ? isCustomerBearsFee(selectedPaymentMethod)
                           ? Number(selectedPaymentMethod.totalFee) > 0
-                            ? `+ ${formatRupiah(Number(selectedPaymentMethod.totalFee))}`
+                            ? `+ ${formatPriceAmount(displayPaymentFee, currency)}`
                             : t("noFee", locale)
                           : "-"
                         : t("selectPaymentMethodFirst", locale)}
@@ -1503,7 +1556,7 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <span className="text-lg text-foreground">
-                      {formatRupiah(totalDue)}
+                      {formatPriceAmount(displayTotalDue, currency)}
                     </span>
                   </div>
                 </div>

@@ -1,10 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import ProductCard from "./ProductCard";
 import {
   resolveDisplayPrice,
   isInternational,
 } from "@/lib/pricing";
+import {
+  convertIdrPrice,
+  DEFAULT_DISPLAY_CURRENCY,
+  type DisplayCurrency,
+} from "@/lib/currency";
 import { useUserCountryCookie } from "@/lib/use-user-country";
 
 export interface Product {
@@ -57,12 +64,51 @@ export default function ProductGrid({ products, exchangeRate }: ProductGridProps
   // user_country setelah hydrate; React re-render sendiri bila pengunjungnya
   // dari luar ID (lihat src/lib/use-user-country.ts).
   const country = useUserCountryCookie();
+  const international = isInternational(country);
+
+  // Kurs USD→mata uang lokal baru diketahui lewat /api/pricing, jadi hanya
+  // diambil bila pengunjung memang internasional. Selama menunggu (atau bila
+  // gagal), harga tampil dalam IDR seperti sebelumnya.
+  const [displayCurrency, setDisplayCurrency] = useState<DisplayCurrency>(
+    DEFAULT_DISPLAY_CURRENCY
+  );
+
+  useEffect(() => {
+    if (!international) return;
+
+    const controller = new AbortController();
+    fetch("/api/pricing", { signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data || typeof data.currency !== "string" || !data.currency) return;
+        setDisplayCurrency({
+          currency: data.currency.toUpperCase(),
+          usdToCurrency:
+            Number.isFinite(data.usdToCurrency) && data.usdToCurrency > 0
+              ? data.usdToCurrency
+              : 1,
+        });
+      })
+      .catch((err) => {
+        if ((err as Error)?.name !== "AbortError") {
+          console.error("Error fetching catalog pricing:", err);
+        }
+      });
+
+    return () => controller.abort();
+  }, [international]);
+
+  const currency = international ? displayCurrency.currency : "IDR";
 
   const displayPrice = (p: Product): number | undefined => {
-    if (!isInternational(country)) return p.price;
+    if (!international) return p.price;
     const base = p.basePrice ?? p.price;
     if (base === undefined) return p.price;
-    return resolveDisplayPrice(base, country, exchangeRate);
+    return convertIdrPrice(
+      resolveDisplayPrice(base, country, exchangeRate),
+      exchangeRate,
+      displayCurrency
+    );
   };
 
   if (count === 0) {
@@ -111,6 +157,7 @@ export default function ProductGrid({ products, exchangeRate }: ProductGridProps
               slug={product.slug}
               description={product.description}
               price={displayPrice(product)}
+              currency={currency}
               stock={product.stock}
               image={product.images[0] || "/placeholder-product.svg"}
               index={index}

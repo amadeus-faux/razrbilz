@@ -115,8 +115,6 @@ const en = {
   processing: "Processing your order...",
   safeCheckout: "Guaranteed safe checkout",
   sizeWord: "SIZE",
-  intlPriceNote:
-    "Product prices are adjusted for international buyers ({country}) based on live USD/IDR exchange rates.",
 
   rateLoadError: "Failed to load shipping rates. Please try again.",
   selectShippingFirst: "Please select a shipping option.",
@@ -341,8 +339,6 @@ const id: Record<CheckoutKey, string> = {
   processing: "Memproses pesanan...",
   safeCheckout: "Checkout aman terjamin",
   sizeWord: "UKURAN",
-  intlPriceNote:
-    "Harga produk disesuaikan untuk pembeli internasional ({country}) berdasarkan kurs USD/IDR real-time.",
 
   rateLoadError: "Gagal memuat tarif pengiriman. Coba kembali.",
   selectShippingFirst: "Silakan pilih opsi pengiriman.",

@@ -2,13 +2,14 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useProductTransition } from "@/context/ProductTransitionContext";
-import { formatRupiah } from "@/lib/utils";
+import { formatPriceAmount } from "@/lib/currency";
 
 interface ProductCardProps {
   name: string;
   slug: string;
   description?: string;
   price?: number;
+  currency?: string;
   stock?: number;
   image: string;
   index?: number;
@@ -19,6 +20,7 @@ export default function ProductCard({
   slug,
   description,
   price,
+  currency = "IDR",
   stock,
   image,
   index = 0,
@@ -80,7 +82,7 @@ export default function ProductCard({
         {typeof price === "number" && (
           <div className="flex items-center justify-center gap-2">
             <span className="text-price font-medium">
-              {formatRupiah(price)}
+              {formatPriceAmount(price, currency)}
             </span>
             {isSoldOut && (
               <span className="text-[9px] uppercase font-bold tracking-wider text-rose-700">

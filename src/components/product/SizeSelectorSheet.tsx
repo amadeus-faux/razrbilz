@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Ruler, Check, Package2, ChevronDown, ChevronUp } from "lucide-react";
 import { useCartStore } from "@/store/cart-store";
-import { formatRupiah } from "@/lib/utils";
 
 interface SizeOption {
   size: string;
@@ -31,6 +30,7 @@ interface SizeSelectorPopoverProps {
       };
     } | null;
   };
+  priceDisplay: string;
   sizes: (SizeOption | string)[];
 }
 
@@ -40,6 +40,7 @@ export default function SizeSelectorPopover({
   isOpen,
   onClose,
   product,
+  priceDisplay,
   sizes,
 }: SizeSelectorPopoverProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -133,7 +134,7 @@ export default function SizeSelectorPopover({
             {/* Price */}
             <div className="text-center py-3">
               <span className="text-sm font-medium tracking-wide text-foreground">
-                {formatRupiah(product.price)}
+                {priceDisplay}
               </span>
             </div>
 

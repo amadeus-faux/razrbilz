@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getActiveExchangeRate } from "@/lib/exchange-rate";
+import { currencyForCountry } from "@/lib/countries";
+import { getUsdToCurrency } from "@/lib/fx-rates";
 import { isInternational, normalizeCountryCode } from "@/lib/pricing";
 import { withProbe, type Probe } from "@/lib/perf-probe";
 
@@ -15,13 +17,29 @@ async function handleGET(request: NextRequest, probe: Probe) {
     const region = normalizeCountryCode(
       countryParam || cookieCountry || headerCountry || "ID"
     );
-    const rate = await probe.time("fx", () => getActiveExchangeRate(probe));
     const international = isInternational(region);
+    const currencyCode = international ? currencyForCountry(region) : "IDR";
+
+    const [rate, localRate] = await Promise.all([
+      probe.time("fx", () => getActiveExchangeRate(probe)),
+      international
+        ? probe.time("fx_local", () => getUsdToCurrency(currencyCode))
+        : Promise.resolve(null),
+    ]);
+
+    // Tanpa kurs lokal, tampilkan USD (dan nominalnya sama dengan tagihan
+    // PayPal) daripada diam-diam kembali ke IDR.
+    const hasLocalRate =
+      international && typeof localRate === "number" && localRate > 0;
+    const currency = international && !hasLocalRate ? "USD" : currencyCode;
+    const usdToCurrency = hasLocalRate ? (localRate as number) : 1;
 
     const response = NextResponse.json({
       region,
       usdToIdr: rate,
       isInternational: international,
+      currency,
+      usdToCurrency,
     });
 
     // If explicit country parameter was provided, sync user_country cookie
@@ -38,7 +56,7 @@ async function handleGET(request: NextRequest, probe: Probe) {
 
     response.headers.set("Vary", "Cookie");
     return response;
-  } catch (error: any) {
+  } catch (error) {
     console.error("[api/pricing] GET error:", error);
     return NextResponse.json(
       { error: "Failed to resolve pricing info" },
